@@ -36,7 +36,7 @@ func _open_dialogue_panel()->Control:
 \tpopup=dialogue
 \treturn dialogue
 
-func _show_journal(chapter:String,slides:Array[String],first_time:bool=false)->void:
+func _show_journal(chapter:String,slides:Array,first_time:bool=false)->void:
 \tvar panel=_open_dialogue_panel()
 \tif first_time:panel.finished.connect(_complete_intro_tutorial)
 \telse:panel.finished.connect(_dismiss_message)

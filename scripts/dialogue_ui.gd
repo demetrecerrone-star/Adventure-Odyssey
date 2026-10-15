@@ -23,10 +23,12 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	set_process(true)
 
-func configure_tutorial(section: String, slides: Array[String]) -> void:
+func configure_tutorial(section: String, slides: Array) -> void:
 	mode = "tutorial"
 	chapter = section
-	pages = slides.duplicate()
+	pages.clear()
+	for line in slides:
+		pages.append(str(line))
 	page_index = 0
 	showing_advice = false
 	_render()
