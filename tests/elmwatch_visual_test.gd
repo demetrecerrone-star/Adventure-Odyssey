@@ -45,6 +45,6 @@ func _run()->void:
     scene.player.position=Vector2(540,1095)
     scene._interact()
     await process_frame
-    if not _check(scene.current_map=="cottage" and scene.cottage_art!=null,"starter cottage remains reachable"):return
+    if not _check(scene.current_map=="foyer" and scene.foyer_art!=null,"approved starter cottage foyer remains reachable"):return
     print("ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS")
     quit(0)
