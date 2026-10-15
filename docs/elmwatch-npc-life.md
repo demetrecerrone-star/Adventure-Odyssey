@@ -11,11 +11,14 @@ Installed after the town-art patch by `tools/apply_npc_life.py` and
   16 minutes of active play). Modal dialogue pauses local world simulation.
 - Game time is stored in the existing offline save. Older saves safely default
   to 9:00 AM.
-- Work hours are **7:00 AM–11:59 AM** and **2:00 PM–6:59 PM**; residents alternate
-  between two nearby outdoor waypoints on seven-minute in-game intervals.
-- Lunch/break is **noon–1:59 PM**; evening stroll is **7:00 PM–6:59 AM**.
-  These are temporary schedules—later improvements can add interiors and beds
-  for off-duty residents, rather than leaving all NPCs outside at night.
+- Shop shifts are **7:00 AM–11:59 AM** and **2:00 PM–6:59 PM**.
+- Lunch/break is **noon–1:59 PM**; town evening social time is **7:00–9:59 PM**.
+  The residents are off-scene **10 PM–6:59 AM**, representing rest at homes.
+- On outdoor intervals, residents follow short waypoints and switch walking
+  direction frames. Their sprite resets to the idle frame when stationary.
+- These schedules are temporary; future NPC homes and full navigation
+  will support walking between actual doors instead of changing scenes
+  immediately on scheduled time boundaries.
 
 ## Existing residents (preserved)
 
@@ -32,10 +35,14 @@ Installed after the town-art patch by `tools/apply_npc_life.py` and
 
 Each indoor resident uses the existing NPC sprite, name, role, dialogue
 component and advice system. The Guild has two indoor residents; the Market,
-Inn and Blacksmith each have one. In-town NPCs still exist as eight actors for
-compatibility with the current game and tutorials. This means some owners
-appear both outdoors and indoors; synchronizing each NPC to only one place at
-a time is reserved for a later scene-presence pass.
+Inn and Blacksmith each have one. A **single-presence rule** now puts staff
+inside their buildings during work shifts, outside during breaks and evenings,
+and entirely off-scene overnight. At 9 AM the town has three outdoor residents
+(Garrick, Sera, Neris), while shops have their corresponding workers. At lunch
+and after 7 PM until 10 PM, all eight residents can be met outside; after
+10 PM everyone is off-scene. No named NPC is simultaneously spawned inside
+and outdoors. The roster automatically refreshes on hour-boundary transitions
+without restarting the game scene.
 
 ## Functional interactions
 
@@ -55,7 +62,8 @@ a time is reserved for a later scene-presence pass.
 - Fixed NPC destinations use safe walking areas aligned to the approved
   `elmwatch_village_new.jpg` illustration.
 - Resident movement respects the same map collision function as the player
-  and avoids directly stepping into the player.
+  and avoids directly stepping into the player. Idle and directional walk
+  frame regression tests now run with every push.
 - Doors, home storage, character mirror, quest kills, save/load and NPC dialogue
   are covered by the existing and new Godot regression scripts.
 - The blacksmith entrance still needs its own illustrated exterior. Interior
@@ -65,5 +73,7 @@ a time is reserved for a later scene-presence pass.
   authoritative world time and synchronized NPC positions.
 
 Next suggested pass: inspect in-engine screenshots on a phone, adjust spawn
-markers to each counter, then add animated idle/walk loops and independent
-citizen NPCs rather than only the eight named quest/service characters.
+markers and obstacles to the approved painted counters and doors, then add
+independent citizens with social behaviors rather than only the eight named
+quest/service characters. Shop owners currently change scene presence at
+the time boundary rather than physically walking through doors.
