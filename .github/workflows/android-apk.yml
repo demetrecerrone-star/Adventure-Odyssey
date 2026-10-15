@@ -34,7 +34,7 @@ jobs:
           from pathlib import Path
           lines = Path('scripts/game.gd').read_text().splitlines()
           headers = [(i, line) for i, line in enumerate(lines) if line.startswith('func ') or line.startswith('static func ')]
-          keys = ('creat', 'class', 'hair', 'skin', 'eye', 'character', 'save', 'load', 'stat', 'preview', 'body', 'variant', 'appearance', 'confirm', 'portrait', 'sex', 'gender')
+          keys = ('creat', 'class', 'hair', 'skin', 'eye', 'character', 'save', 'load', 'stat', 'preview', 'body', 'variant', 'appearance', 'confirm', 'portrait', 'sex', 'gender', 'world', 'player', 'continue', 'frame', 'move', 'equip', 'level', 'random')
           for p,(index, header) in enumerate(headers):
               if any(k in header.lower() for k in keys):
                   end = headers[p+1][0] if p+1 < len(headers) else len(lines)
@@ -44,6 +44,10 @@ jobs:
           print('=== GAME GLOBALS ===')
           for index,line in enumerate(lines[:165]):
               print(f'{index+1:04d}: {line}')
+          print('=== SPRITE / CLOTHING ASSETS ===')
+          for path in sorted(Path('assets').rglob('*.png')):
+              if any(k in str(path).lower() for k in ('eyes', 'eye_', 'clothing', 'outfit', 'armor', 'body', 'character', 'hair')):
+                  print(str(path))
           print('=== SMOKE TEST ===')
           for index,line in enumerate(Path('tests/smoke_test.gd').read_text().splitlines()):
               print(f'{index+1:04d}: {line}')
