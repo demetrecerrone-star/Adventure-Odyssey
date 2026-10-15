@@ -51,6 +51,10 @@ jobs:
           for path in sorted(Path('assets').rglob('*.png')):
               if any(k in str(path).lower() for k in ('eyes', 'eye_', 'clothing', 'outfit', 'armor', 'body', 'character', 'hair')):
                   print(str(path))
+          print('=== TUTORIAL GAME LOOP AND INTERACTION AUDIT ===')
+          for index,line in enumerate(lines):
+              if index >= 635:
+                  print(f'{index+1:04d}: {line}')
           print('=== SMOKE TEST ===')
           for index,line in enumerate(Path('tests/smoke_test.gd').read_text().splitlines()):
               print(f'{index+1:04d}: {line}')
