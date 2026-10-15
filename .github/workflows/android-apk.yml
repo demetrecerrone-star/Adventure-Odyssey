@@ -288,7 +288,6 @@ jobs:
           AO_RELEASE_KEYSTORE_BASE64: ${{ secrets.AO_RELEASE_KEYSTORE_BASE64 }}
           AO_RELEASE_KEYSTORE_PASSWORD: ${{ secrets.AO_RELEASE_KEYSTORE_PASSWORD }}
           AO_RELEASE_KEY_ALIAS: ${{ secrets.AO_RELEASE_KEY_ALIAS }}
-          AO_BOOTSTRAP_REQUESTED: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[bootstrap release signing]') }}
         run: |
           set -euo pipefail
           umask 077
@@ -306,10 +305,6 @@ jobs:
             export GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD="$AO_RELEASE_KEYSTORE_PASSWORD"
             echo "Exporting release APK with the saved permanent signing key."
             godot --headless --path . --export-release Android build/Adventure-Odyssey-release.apk
-          elif [[ "$AO_BOOTSTRAP_REQUESTED" == "true" ]]; then
-            # Exactly once: generate a release keystore on the ephemeral runner.
-            # The private key backup is encrypted BEFORE artifact upload.
-            bash tools/bootstrap_release_signing.sh
           else
             echo "::error::Permanent release key secrets are missing. Refusing to create an APK with a throwaway debug signature."
             echo "Set AO_RELEASE_KEYSTORE_BASE64, AO_RELEASE_KEYSTORE_PASSWORD, and AO_RELEASE_KEY_ALIAS."
@@ -321,6 +316,9 @@ jobs:
           test -x "$signer"
           "$signer" verify --verbose --print-certs "$APK" | tee build/Release-APK-Signature.txt
           grep -Fq 'Verified using v2 scheme (APK Signature Scheme v2): true' build/Release-APK-Signature.txt
+          # Lock every future release to the verified permanent signing identity.
+          # Fail rather than shipping an APK signed with a different or throwaway key.
+          grep -Fq 'Signer #1 certificate SHA-256 digest: 3b6f1540ba3394421489ca28fda428aebf58b163d8af7435c19a3ddfab663fb1' build/Release-APK-Signature.txt
           sha256sum "$APK" > build/SHA256SUMS.txt
           ls -lh "$APK"
 
