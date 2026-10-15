@@ -52,7 +52,8 @@ func _run() -> void:
 		scene.popup._on_secondary()
 		await process_frame
 		if not _check(scene.popup == null, "goodbye closes NPC dialogue"): return
-	scene.player.position=Vector2(915,870)
+	# NPC positions move with town art; interact with the actual spawned registrar.
+	scene.player.position=scene.npcs[0]["node"].position
 	scene._interact()
 	await process_frame
 	if not _check(scene.popup!=null and scene.popup.mode=="npc" and scene.popup.npc_name=="Ilyan Crest","TALK / USE opens NPC conversation"):return
