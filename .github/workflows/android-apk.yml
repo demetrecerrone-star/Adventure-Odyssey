@@ -32,6 +32,7 @@ jobs:
           python3 tools/apply_creator_improvements.py
           python3 tools/apply_creator_palette.py
           python3 tools/apply_creator_visual_polish.py
+          python3 tools/apply_bedroom_tutorial.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
           from pathlib import Path
@@ -100,6 +101,7 @@ jobs:
           python3 tools/apply_creator_improvements.py
           python3 tools/apply_creator_palette.py
           python3 tools/apply_creator_visual_polish.py
+          python3 tools/apply_bedroom_tutorial.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -109,6 +111,7 @@ jobs:
           godot --headless --path . --editor --quit
           godot --headless --path . --script res://tests/smoke_test.gd
           godot --headless --path . --script res://tests/creator_deep_test.gd
+          godot --headless --path . --script res://tests/bedroom_test.gd
       - name: Capture native rendered character creator
         shell: bash
         run: |
@@ -117,6 +120,8 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y -qq xvfb libgl1-mesa-dri libfontconfig1 libxcursor1 libxi6 libxinerama1 libxkbcommon-x11-0 libwayland-cursor0
           mkdir -p screenshots
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/creator_screenshot.gd
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/bedroom_screenshot.gd
+          test -s screenshots/starter_bedroom.png
           test -s screenshots/character_creator.png
           ls -lh screenshots/character_creator.png
       - name: Upload visual QA screenshot
@@ -155,6 +160,7 @@ jobs:
           python3 tools/apply_creator_improvements.py
           python3 tools/apply_creator_palette.py
           python3 tools/apply_creator_visual_polish.py
+          python3 tools/apply_bedroom_tutorial.py
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
@@ -195,6 +201,7 @@ jobs:
           godot --headless --path . --editor --quit
           godot --headless --path . --script res://tests/smoke_test.gd
           godot --headless --path . --script res://tests/creator_deep_test.gd
+          godot --headless --path . --script res://tests/bedroom_test.gd
 
       - name: Build signed Android APK
         shell: bash
