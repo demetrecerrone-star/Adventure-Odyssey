@@ -69,8 +69,9 @@ uniform vec4 skin : source_color = vec4(1.0);
 uniform float strength = 0.0;
 void fragment() {
     vec4 original = texture(TEXTURE,UV);
-    float flesh = step(original.b*1.12, original.r) * step(original.g*0.72,original.r);
-    flesh *= step(0.2,original.r)*(1.0-step(0.98,original.r))*original.a;
+    // Require warm skin chroma, not just the brightness of cream clothing.
+    float flesh = step(original.g*1.15, original.r) * step(original.b*1.13, original.g);
+    flesh *= step(0.44,original.r)*(1.0-step(0.99,original.r))*original.a;
     float light = dot(original.rgb,vec3(0.299,0.587,0.114));
     vec3 shaded = skin.rgb * (0.36+0.9*light);
     COLOR=vec4(mix(original.rgb,shaded,flesh*strength),original.a);
