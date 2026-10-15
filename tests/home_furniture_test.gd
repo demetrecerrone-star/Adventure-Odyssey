@@ -27,7 +27,7 @@ func _run()->void:
         if not _check(sprite!=null and sprite.texture!=null,"starter "+name+" transparent art loads"):return
         if not _check(str(scene.data["home_styles"][name])==str(scene.HOME_STARTER[name]),name+" is equipped for free"):return
         if not _check(scene.data["home_owned"][name].has(scene.HOME_STARTER[name]),name+" is permanently owned"):return
-    if not _check(scene._walkable(Vector2(1010,870)) and not scene._walkable(Vector2(700,600)),"modular collision geometry"):return
+    if not _check(scene._walkable(Vector2(1010,870)) and not scene._walkable(Vector2(510,600)),"modular collision geometry"):return
     scene._open_home_chest()
     await process_frame
     if not _check(scene.popup!=null,"working storage chest remains available"):return

@@ -22,7 +22,7 @@ sprite layers and should not be presented as finished.
 ## Playable starter bedroom (tutorial milestone one)
 
 After character confirmation, **new games** now awaken in a pixel-art bedroom.
-The house interior is drawn dynamically by `scripts/bedroom_scene.gd`.
+The bedroom now loads a separate illustrated room background and interchangeable furniture sprites through `scripts/bedroom_scene.gd`.
 Players can walk around the furniture, rest at the bed, transfer backpack items
 into persistent home storage, and revise their appearance at a mirror.
 The bottom doorway marks the **next** milestone (hallway, kitchen, living room,
@@ -34,3 +34,21 @@ and the title screen and town/forest systems are unchanged.
 during CI and manually requested Android exports. CI also runs
 `tests/bedroom_test.gd` and captures `screenshots/starter_bedroom.png`
 with the native Godot renderer. Push events do not export an APK.
+
+
+## Modular starter furniture (visual milestone)
+
+The first green oak bed, tall wooden mirror and plain wooden chest are free
+and equipped on new characters. Existing saves receive the same starter set.
+The new bedroom picture is intentionally empty underneath the furniture, so
+recoloring, swapping and placing furniture can be built without repainting it.
+Chest item storage, bed rest and mirror appearance editing continue to work.
+The player can preview their current starter selections using ROOM STYLE in
+the chest screen. Different bed colors, mirror shapes and chest styles are
+reserved for a later in-game gold cosmetic shop; purchasing and unlock screens
+are **not yet implemented**. No real-money purchases are used.
+
+CI applies `tools/apply_home_furniture.py` after the dialogue tutorial patch
+and tests the modular room using `tests/home_furniture_test.gd`.
+The checked-in sprites are lightweight previews; the high-resolution source
+sprites should replace the small previews before final art lock.

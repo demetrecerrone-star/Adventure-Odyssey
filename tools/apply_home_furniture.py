@@ -19,9 +19,9 @@ def replace_once(before: str, after: str) -> None:
 replace_once('const NPCS = [', '''const HOME_STARTER = {"Bed":"oak_green", "Mirror":"tall_oak", "Chest":"plain_wood"}
 const NPCS = [''')
 replace_once('"tutorial_stage":"wake", "storage":{}, "stats":', '''"tutorial_stage":"wake", "storage":{}, "home_styles":{"Bed":"oak_green","Mirror":"tall_oak","Chest":"plain_wood"}, "home_owned":{"Bed":["oak_green"],"Mirror":["tall_oak"],"Chest":["plain_wood"]}, "stats":''')
-replace_once('"Bed": Vector2(870, 672)', '"Bed": Vector2(742, 677)')
-replace_once('"Chest": Vector2(1350, 856)', '"Chest": Vector2(1352, 874)')
-replace_once('"Mirror": Vector2(1430, 645)', '"Mirror": Vector2(1380, 670)')
+replace_once('"Bed": Vector2(870, 672)', '"Bed": Vector2(520, 600)')
+replace_once('"Chest": Vector2(1350, 856)', '"Chest": Vector2(1515, 920)')
+replace_once('"Mirror": Vector2(1430, 645)', '"Mirror": Vector2(1615, 655)')
 replace_once('"Door": Vector2(1040, 1006)', '"Door": Vector2(1024, 1100)')
 replace_once('''\t\tworld.add_child(bedroom_art)
 \telse:
@@ -33,7 +33,7 @@ replace_once('''\t\tworld.add_child(bedroom_art)
 replace_once('''\t\tif where.x<530 or where.x>1520 or where.y<347 or where.y>1008:return false
 \t\tfor furniture in [Rect2(613,378,295,302),Rect2(1149,340,301,197),Rect2(1245,730,221,125),Rect2(1442,470,89,231),Rect2(526,737,109,130)]:''', '''\t\tif where.x<300 or where.x>1745 or where.y<425 or where.y>1135:return false
 \t\t# Collision follows the currently placed bed, storage chest, and mirror.
-\t\tfor furniture in [Rect2(612,540,250,260),Rect2(1265,827,184,100),Rect2(1325,531,121,159)]:''')
+\t\tfor furniture in [Rect2(390,480,250,260),Rect2(1432,850,190,125),Rect2(1554,545,124,174)]:''')
 replace_once('''\t_button(popup,"CLOSE",508,569,260,53,_dismiss_message)''', '''\t_button(popup,"CLOSE",332,569,260,53,_dismiss_message)
 \t_button(popup,"ROOM STYLE",677,569,280,53,_open_home_decor)''')
 source += '''
@@ -85,9 +85,9 @@ const BACKGROUND = "res://assets/home/empty_bedroom.jpg"
 const HOME_DIR = "res://assets/home/"
 const DEFAULT_STYLE = {"Bed":"oak_green", "Mirror":"tall_oak", "Chest":"plain_wood"}
 const SLOT_DATA = {
-    "Bed":{"folder":"beds", "pos":Vector2(740,671), "size":Vector2(248,258)},
-    "Mirror":{"folder":"mirrors", "pos":Vector2(1383,649), "size":Vector2(143,220)},
-    "Chest":{"folder":"chests", "pos":Vector2(1350,873), "size":Vector2(194,139)}
+    "Bed":{"folder":"beds", "pos":Vector2(520,600), "size":Vector2(248,258)},
+    "Mirror":{"folder":"mirrors", "pos":Vector2(1615,655), "size":Vector2(143,220)},
+    "Chest":{"folder":"chests", "pos":Vector2(1515,920), "size":Vector2(194,139)}
 }
 var sprites:Dictionary={}
 
@@ -133,6 +133,9 @@ test = bedroom_test.read_text(encoding="utf-8")
 needle = 'not scene._walkable(Vector2(670,470)) and scene._walkable(Vector2(1010,870))'
 if test.count(needle) != 1:
     raise SystemExit("Home collision test anchor did not match")
-test = test.replace(needle, 'not scene._walkable(Vector2(700,600)) and scene._walkable(Vector2(1010,870))', 1)
+test = test.replace(needle, 'not scene._walkable(Vector2(510,600)) and scene._walkable(Vector2(1010,870))', 1)
+# Existing bedroom proximity regression tests follow the newly placed furniture.
+test = test.replace("scene.player.position=Vector2(1340,877)", "scene.player.position=Vector2(1410,930)", 1)
+test = test.replace("scene.player.position=Vector2(1393,676)", "scene.player.position=Vector2(1540,710)", 1)
 bedroom_test.write_text(test, encoding="utf-8")
 print("HOME FURNITURE PATCH OK: starter sprites, save persistence, and style preview.")
