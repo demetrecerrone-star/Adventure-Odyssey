@@ -30,6 +30,10 @@ jobs:
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
+          # Android requires ETC2/ASTC enabled even with the GL Compatibility renderer.
+          # The archived project predates this export setting, so patch it immediately after unpacking.
+          sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
+          grep -F 'textures/vram_compression/import_etc2_astc=true' project.godot
           mkdir -p build
 
       - name: Set up Android export environment
