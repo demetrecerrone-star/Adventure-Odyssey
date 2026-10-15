@@ -117,7 +117,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Adventure-Odyssey-Character-Creator-Preview
-          path: screenshots/character_creator.png
+          path: screenshots/*.png
           if-no-files-found: error
           retention-days: 15
   android-apk:
