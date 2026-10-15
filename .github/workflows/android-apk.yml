@@ -111,10 +111,20 @@ jobs:
           set -euo pipefail
           godot --version
           godot --headless --path . --editor --quit
-          godot --headless --path . --script res://tests/smoke_test.gd
-          godot --headless --path . --script res://tests/creator_deep_test.gd
-          godot --headless --path . --script res://tests/bedroom_test.gd
-          godot --headless --path . --script res://tests/dialogue_test.gd
+          # Require PASS marker, fail on script errors and cap runtime.
+          run_scene_test() {
+            local script="$1" marker="$2"
+            timeout 80 godot --headless --path . --quit-after 300 --script "$script" 2>&1 | tee /tmp/ao_scene_test.log
+            grep -Fq "$marker" /tmp/ao_scene_test.log
+            if grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script' /tmp/ao_scene_test.log; then
+              echo "Godot script validation failed in $script"; return 1
+            fi
+          }
+          run_scene_test res://tests/smoke_test.gd 'ADVENTURE ODYSSEY SMOKE TESTS: PASS'
+          run_scene_test res://tests/creator_deep_test.gd 'ADVENTURE ODYSSEY CREATOR DEEP TEST: PASS'
+          run_scene_test res://tests/bedroom_test.gd 'ADVENTURE ODYSSEY BEDROOM TEST: PASS'
+          run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
+
       - name: Capture native rendered character creator
         shell: bash
         run: |
@@ -206,9 +216,19 @@ jobs:
         run: |
           set -euo pipefail
           godot --headless --path . --editor --quit
-          godot --headless --path . --script res://tests/smoke_test.gd
-          godot --headless --path . --script res://tests/creator_deep_test.gd
-          godot --headless --path . --script res://tests/bedroom_test.gd
+          # Require PASS marker, fail on script errors and cap runtime.
+          run_scene_test() {
+            local script="$1" marker="$2"
+            timeout 80 godot --headless --path . --quit-after 300 --script "$script" 2>&1 | tee /tmp/ao_scene_test.log
+            grep -Fq "$marker" /tmp/ao_scene_test.log
+            if grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script' /tmp/ao_scene_test.log; then
+              echo "Godot script validation failed in $script"; return 1
+            fi
+          }
+          run_scene_test res://tests/smoke_test.gd 'ADVENTURE ODYSSEY SMOKE TESTS: PASS'
+          run_scene_test res://tests/creator_deep_test.gd 'ADVENTURE ODYSSEY CREATOR DEEP TEST: PASS'
+          run_scene_test res://tests/bedroom_test.gd 'ADVENTURE ODYSSEY BEDROOM TEST: PASS'
+          run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
 
       - name: Build signed Android APK
         shell: bash

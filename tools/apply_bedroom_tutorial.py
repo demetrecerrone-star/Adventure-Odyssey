@@ -214,7 +214,7 @@ func _open_home_mirror()->void:
 \t\t_label(popup,title,348,y,185,37,20)
 \t\t_button(popup,"<",541,y-2,51,41,_mirror_adjust.bind(key,-1))
 \t\t_label(popup,value,599,y,270,37,18,Color("#f4e5bf"),true)
-\t\t_button(popup,886,y-2,51,41,_mirror_adjust.bind(key,1))
+\t\t_button(popup,">",886,y-2,51,41,_mirror_adjust.bind(key,1))
 \t_label(popup,"*Eye tint is saved; sprite iris masks are still being made.",331,530,632,26,15,Color("#b9cfd8"),true)
 \t_button(popup,"CANCEL",359,574,249,55,_mirror_cancel)
 \t_button(popup,"SAVE LOOK",677,574,245,55,_mirror_accept)
