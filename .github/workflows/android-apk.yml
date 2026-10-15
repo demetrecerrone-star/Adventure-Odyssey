@@ -29,6 +29,25 @@ jobs:
           fi
           python3 tools/apply_title_screen.py
           python3 tools/apply_dabsky_title.py
+          echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
+          python3 - <<'PY'
+          from pathlib import Path
+          lines = Path('scripts/game.gd').read_text().splitlines()
+          headers = [(i, line) for i, line in enumerate(lines) if line.startswith('func ') or line.startswith('static func ')]
+          keys = ('creat', 'class', 'hair', 'skin', 'eye', 'character', 'save', 'load', 'stat', 'preview', 'body', 'variant', 'appearance', 'confirm', 'portrait', 'sex', 'gender')
+          for p,(index, header) in enumerate(headers):
+              if any(k in header.lower() for k in keys):
+                  end = headers[p+1][0] if p+1 < len(headers) else len(lines)
+                  print(f'=== FUNCTION {header} lines {index+1}-{end} ===')
+                  for line_no in range(index, end):
+                      print(f'{line_no+1:04d}: {lines[line_no]}')
+          print('=== GAME GLOBALS ===')
+          for index,line in enumerate(lines[:165]):
+              print(f'{index+1:04d}: {line}')
+          print('=== SMOKE TEST ===')
+          for index,line in enumerate(Path('tests/smoke_test.gd').read_text().splitlines()):
+              print(f'{index+1:04d}: {line}')
+          PY
           grep -q 'func _title_button' scripts/game.gd
           test -s assets/ui/dabsky_logo.webp
           echo '=== Relevant project files ==='
