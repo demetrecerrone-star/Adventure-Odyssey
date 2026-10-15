@@ -34,6 +34,7 @@ jobs:
           python3 tools/apply_creator_visual_polish.py
           python3 tools/apply_bedroom_tutorial.py
           python3 tools/apply_dialogue_ui.py
+          python3 tools/apply_home_furniture.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
           from pathlib import Path
@@ -104,6 +105,7 @@ jobs:
           python3 tools/apply_creator_visual_polish.py
           python3 tools/apply_bedroom_tutorial.py
           python3 tools/apply_dialogue_ui.py
+          python3 tools/apply_home_furniture.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -123,6 +125,7 @@ jobs:
           run_scene_test res://tests/smoke_test.gd 'ADVENTURE ODYSSEY SMOKE TESTS: PASS'
           run_scene_test res://tests/creator_deep_test.gd 'ADVENTURE ODYSSEY CREATOR DEEP TEST: PASS'
           run_scene_test res://tests/bedroom_test.gd 'ADVENTURE ODYSSEY BEDROOM TEST: PASS'
+          run_scene_test res://tests/home_furniture_test.gd 'ADVENTURE ODYSSEY HOME FURNITURE TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
 
       - name: Capture native rendered character creator
@@ -178,6 +181,7 @@ jobs:
           python3 tools/apply_creator_visual_polish.py
           python3 tools/apply_bedroom_tutorial.py
           python3 tools/apply_dialogue_ui.py
+          python3 tools/apply_home_furniture.py
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
@@ -228,6 +232,7 @@ jobs:
           run_scene_test res://tests/smoke_test.gd 'ADVENTURE ODYSSEY SMOKE TESTS: PASS'
           run_scene_test res://tests/creator_deep_test.gd 'ADVENTURE ODYSSEY CREATOR DEEP TEST: PASS'
           run_scene_test res://tests/bedroom_test.gd 'ADVENTURE ODYSSEY BEDROOM TEST: PASS'
+          run_scene_test res://tests/home_furniture_test.gd 'ADVENTURE ODYSSEY HOME FURNITURE TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
 
       - name: Build signed Android APK
