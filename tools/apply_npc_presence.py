@@ -129,4 +129,12 @@ func _pose_resident(npc:Dictionary,walking:bool,delta:float)->void:
 \t\tspr.texture=load(sprite_path)
 '''
 p.write_text(src,encoding="utf-8")
-print("NPC PRESENCE PATCH OK: no duplicate shopkeepers, schedule-aware staffing, walking/idle sprites.")
+# The archived smoke test predates staffed interiors and assumes eight outdoors
+# at every hour. New game begins at 9 AM: only three non-shop residents are out.
+smoke=Path("tests/smoke_test.gd")
+smoke_src=smoke.read_text(encoding="utf-8")
+old='scene.current_map == "town" and scene.npcs.size() == 8,"Town/NPC population"'
+if smoke_src.count(old)!=1:
+    raise SystemExit("SMOKE TEST NPC COUNT PATCH ANCHOR FAILED")
+smoke.write_text(smoke_src.replace(old,'scene.current_map == "town" and scene.npcs.size() == 3,"Town/NPC population"'),encoding="utf-8")
+print("NPC PRESENCE PATCH OK: unique staff, clock-based locations and updated smoke test.")
