@@ -35,7 +35,7 @@ const HAIR_TINTS = [
 ]
 const PREVIEW_DIRECTIONS = ["down", "left", "up", "right"]
 const PREVIEW_DIRECTION_NAMES = ["Front", "Left", "Back", "Right"]
-const NAME_PATTERN = "^[\\p{L}\\p{N}][\\p{L}\\p{N} '\\-]{1,19}$"
+const NAME_PATTERN = "^[\\\\p{L}\\\\p{N}][\\\\p{L}\\\\p{N} '-]{1,19}$"
 const NPCS = [''')
 
 replace_once('var current_map := "town"', '''var hair_tint_index := 0
