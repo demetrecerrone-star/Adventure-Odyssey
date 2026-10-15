@@ -41,13 +41,24 @@ func _run()->void:
 	if not _check(scene._cottage_target()=="Front Door","front door detectable"):return
 	scene._interact_cottage()
 	await process_frame
-	if not _check(scene.current_map=="town" and scene.npcs.size()==3,"cottage leads to Elmwatch NPC town"):return
+	if not _check(scene.current_map=="foyer" and scene.foyer_art!=null,"kitchen and living room open approved foyer"):return
+	if not _check(scene._walkable(Vector2(1000,700)) and not scene._walkable(Vector2(110,700)),"illustrated foyer has walkable floor and solid boundary"):return
+	scene.player.position=Vector2(1024,1080)
+	if not _check(scene._foyer_target()=="Front Door","foyer front door reachable"):return
+	scene._interact_foyer()
+	await process_frame
+	if not _check(scene.current_map=="town" and scene.npcs.size()==3,"foyer leads to Elmwatch NPC town"):return
 	if not _check(scene.data["tutorial_stage"]=="elmwatch" and bool(scene.data.get("elmwatch_intro_seen",false)),"Elmwatch first visit remembered"):return
 	scene._dismiss_message()
 	if not _check(scene._near_cottage_entry(),"town cottage entrance works"):return
 	scene._interact()
 	await process_frame
-	if not _check(scene.current_map=="cottage" and scene.player.position==Vector2(1024,984),"player can return home"):return
+	if not _check(scene.current_map=="foyer" and scene.foyer_art!=null,"town returns to approved cottage foyer"):return
+	scene.player.position=Vector2(470,735)
+	if not _check(scene._foyer_target()=="Living Room","foyer connects to living room"):return
+	scene._interact_foyer()
+	await process_frame
+	if not _check(scene.current_map=="cottage" and scene.player.position==Vector2(1024,984),"foyer returns to kitchen and living room"):return
 	scene.player.position=Vector2(1024,418)
 	if not _check(scene._cottage_target()=="Bedroom Door","bedroom return door detectable"):return
 	scene._interact_cottage()
