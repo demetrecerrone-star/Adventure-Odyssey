@@ -31,6 +31,7 @@ jobs:
           python3 tools/apply_dabsky_title.py
           python3 tools/apply_creator_improvements.py
           python3 tools/apply_creator_palette.py
+          python3 tools/apply_creator_visual_polish.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
           from pathlib import Path
@@ -94,6 +95,7 @@ jobs:
           python3 tools/apply_dabsky_title.py
           python3 tools/apply_creator_improvements.py
           python3 tools/apply_creator_palette.py
+          python3 tools/apply_creator_visual_polish.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -148,6 +150,7 @@ jobs:
           python3 tools/apply_dabsky_title.py
           python3 tools/apply_creator_improvements.py
           python3 tools/apply_creator_palette.py
+          python3 tools/apply_creator_visual_polish.py
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
