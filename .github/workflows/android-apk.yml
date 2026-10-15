@@ -2,7 +2,7 @@ name: Build Adventure Odyssey Android APK
 
 on:
   push:
-    branches: [main]
+    branches: [main, home-starter-furniture]
   workflow_dispatch:
 
 permissions:
