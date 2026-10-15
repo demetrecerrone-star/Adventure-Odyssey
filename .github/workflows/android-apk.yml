@@ -41,6 +41,8 @@ jobs:
           python3 tools/apply_npc_interactions.py
           python3 tools/apply_npc_presence.py
           python3 tools/apply_cottage_foyer.py
+          test -s assets/home/approved_cottage_foyer.jpg
+          echo 'fb529e58a0e0e411a5146af1781f8eb6402450a3bd5136cb09afbbe8d0ffc401  assets/home/approved_cottage_foyer.jpg' | sha256sum -c -
           python3 tools/apply_interior_navigation.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
@@ -119,6 +121,8 @@ jobs:
           python3 tools/apply_npc_interactions.py
           python3 tools/apply_npc_presence.py
           python3 tools/apply_cottage_foyer.py
+          test -s assets/home/approved_cottage_foyer.jpg
+          echo 'fb529e58a0e0e411a5146af1781f8eb6402450a3bd5136cb09afbbe8d0ffc401  assets/home/approved_cottage_foyer.jpg' | sha256sum -c -
           python3 tools/apply_interior_navigation.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
@@ -214,6 +218,8 @@ jobs:
           python3 tools/apply_npc_interactions.py
           python3 tools/apply_npc_presence.py
           python3 tools/apply_cottage_foyer.py
+          test -s assets/home/approved_cottage_foyer.jpg
+          echo 'fb529e58a0e0e411a5146af1781f8eb6402450a3bd5136cb09afbbe8d0ffc401  assets/home/approved_cottage_foyer.jpg' | sha256sum -c -
           python3 tools/apply_interior_navigation.py
           test -f project.godot
           test -f export_presets.cfg
