@@ -181,8 +181,10 @@ jobs:
           if-no-files-found: error
           retention-days: 15
   android-apk:
-    # Actual APK builds happen only when manually requested.
-    if: github.event_name == 'workflow_dispatch'
+    # Build on demand from either a manual dispatch or a signed-off APK commit.
+    # A [build apk] commit on this development branch avoids unnecessary Android
+    # exports on every image/test-only push and does not affect main.
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/cottage-interior-tutorial' && contains(github.event.head_commit.message, '[build apk]'))
     runs-on: ubuntu-24.04
     container:
       image: barichello/godot-ci:4.7.2
