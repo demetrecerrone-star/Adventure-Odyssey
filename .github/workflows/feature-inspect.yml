@@ -1,0 +1,37 @@
+name: Inspect Adventure Odyssey Source (no APK)
+on:
+  push:
+    branches: [feature/quests-monsters-tutorial]
+    paths:
+      - '.github/workflows/feature-inspect.yml'
+      - 'feature/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reconstruct and inventory source without building Android
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat payload/part_*.bin > /tmp/adventure_odyssey_v03.zip
+          echo '861c1871c327126a1321ef0107341dbe3510cfa60cf1f0f00abac14592edb568  /tmp/adventure_odyssey_v03.zip' | sha256sum -c -
+          mkdir -p /tmp/odyssey_source
+          unzip -qo /tmp/adventure_odyssey_v03.zip -d /tmp/odyssey_source
+          cd /tmp/odyssey_source
+          echo '========== GDSCRIPT FILENAMES =========='
+          find . -type f -name '*.gd' -not -path './.godot/*' | sort
+          echo '========== SCENE FILENAMES =========='
+          find . -type f -name '*.tscn' | sort
+          echo '========== CONFIG =========='
+          sed -n '1,180p' project.godot
+          echo '========== GDSCRIPT SOURCE =========='
+          while IFS= read -r file; do
+            echo "---------- $file ----------"
+            sed -n '1,320p' "$file"
+          done < <(find . -type f -name '*.gd' -not -path './tests/*' -not -path './.godot/*' | sort)
