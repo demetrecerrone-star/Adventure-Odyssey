@@ -44,7 +44,7 @@ func _show_journal(chapter:String,slides:Array,first_time:bool=false)->void:
 
 func _show_intro_tutorial()->void:
 \t_show_journal("PROLOGUE  /  YOUR FIRST DAY",[
-\t\t"Morning sunlight filters through your bedroom window. Today is your very first day as an adventurer. A whole world waits beyond these walls.",
+\t\t"Morning light spills into your bedroom. Today is your first day as an adventurer. A whole world is waiting beyond these walls.",
 \t\t"Use the left joystick or arrow keys to walk around. When you approach something interesting, tap TALK / USE to interact with it.",
 \t\t"Your storage chest keeps items safe, and the dressing mirror lets you change your look. Rest in bed whenever you need to recover.",
 \t\t"When you're ready, explore your home and head toward Elmwatch's Adventurers Guild. Your journey is just beginning."

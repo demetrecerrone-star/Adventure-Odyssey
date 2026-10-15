@@ -46,16 +46,21 @@ func configure_npc(who: String, role: String, portrait_path: String, opening: St
 
 func _label(text_value: String, rect: Rect2, font_size: int, color: Color, centered: bool = false) -> Label:
 	var item = Label.new()
+	# Enable wrapping BEFORE setting the text, otherwise Godot may expand
+	# the minimum width to the entire sentence and overflow the dialog.
+	item.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	item.clip_text = true
+	item.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if centered else HORIZONTAL_ALIGNMENT_LEFT
+	item.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	item.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	item.add_theme_font_size_override("font_size", font_size)
+	item.add_theme_color_override("font_color", color)
 	item.text = text_value
 	item.position = rect.position
 	item.size = rect.size
-	item.add_theme_font_size_override("font_size", font_size)
-	item.add_theme_color_override("font_color", color)
-	item.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if centered else HORIZONTAL_ALIGNMENT_LEFT
-	item.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	item.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	item.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(item)
+	# Prevent a long first sentence from expanding beyond its panel.
+	item.size = rect.size
 	return item
 
 func _button(text_value: String, rect: Rect2, handler: Callable, subtle: bool = false) -> Button:
@@ -97,8 +102,8 @@ func _render() -> void:
 func _render_tutorial() -> void:
 	title_label = _label("ADVENTURER'S JOURNAL", Rect2(188, 428, 540, 46), 31, Color("#f2d399"))
 	_label(chapter.to_upper(), Rect2(583, 437, 499, 30), 16, Color("#b4dedb"), true)
-	_label("GUIDE", Rect2(174, 519, 130, 29), 18, Color("#d8b979"), true)
-	_label("%02d" % (page_index + 1), Rect2(184, 551, 111, 69), 54, Color("#f2dfb3"), true)
+	_label("STEP", Rect2(198, 527, 84, 27), 16, Color("#d8b979"), true)
+	_label("%02d" % (page_index + 1), Rect2(198, 550, 85, 61), 49, Color("#f2dfb3"), true)
 	_label("%02d / %02d" % [page_index + 1, pages.size()], Rect2(716, 651, 123, 35), 18, Color("#a6c8c8"), true)
 	body_label = _label(pages[page_index] if not pages.is_empty() else "", Rect2(350, 500, 765, 104), 25, Color("#fff1d7"))
 	body_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
@@ -141,9 +146,9 @@ func _draw() -> void:
 		draw_rect(Rect2(323, 494, 2, 139), Color("#54747a"))
 		draw_circle(Vector2(240, 568), 57, Color("#344653"))
 		draw_arc(Vector2(240, 568), 53, 0.0, TAU, 42, Color("#b9a06c"), 3.0)
-		draw_line(Vector2(240, 525), Vector2(240, 610), Color("#d2b881"), 3.0)
-		draw_line(Vector2(196, 568), Vector2(284, 568), Color("#d2b881"), 3.0)
-		draw_circle(Vector2(240, 568), 9, Color("#d9c18a"))
+		# Quiet decorative tick marks keep the page number legible.
+		draw_circle(Vector2(240, 516), 4, Color("#d9c18a"))
+		draw_circle(Vector2(240, 620), 4, Color("#d9c18a"))
 		draw_rect(Rect2(349, 601, 765, 2), Color("#3a555a"))
 	else:
 		draw_rect(Rect2(80, 428, 1131, 273), Color(0.0, 0.0, 0.0, 0.47))
