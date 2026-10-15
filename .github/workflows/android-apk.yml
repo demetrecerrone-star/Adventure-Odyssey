@@ -40,6 +40,7 @@ jobs:
           python3 tools/apply_npc_life.py
           python3 tools/apply_npc_interactions.py
           python3 tools/apply_npc_presence.py
+          python3 tools/apply_cottage_foyer.py
           python3 tools/apply_interior_navigation.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
@@ -117,6 +118,7 @@ jobs:
           python3 tools/apply_npc_life.py
           python3 tools/apply_npc_interactions.py
           python3 tools/apply_npc_presence.py
+          python3 tools/apply_cottage_foyer.py
           python3 tools/apply_interior_navigation.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
@@ -139,6 +141,7 @@ jobs:
           run_scene_test res://tests/bedroom_test.gd 'ADVENTURE ODYSSEY BEDROOM TEST: PASS'
           run_scene_test res://tests/home_furniture_test.gd 'ADVENTURE ODYSSEY HOME FURNITURE TEST: PASS'
           run_scene_test res://tests/cottage_test.gd 'ADVENTURE ODYSSEY COTTAGE TEST: PASS'
+          run_scene_test res://tests/foyer_test.gd 'ADVENTURE ODYSSEY FOYER TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
           run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'
           run_scene_test res://tests/npc_presence_test.gd 'ADVENTURE ODYSSEY NPC PRESENCE TEST: PASS'
@@ -155,12 +158,14 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/creator_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/bedroom_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/cottage_screenshot.gd
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/foyer_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/elmwatch_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/dialogue_screenshot.gd
           test -s screenshots/tutorial_dialogue.png
           test -s screenshots/npc_dialogue.png
           test -s screenshots/starter_bedroom.png
           test -s screenshots/starter_cottage.png
+          test -s screenshots/approved_cottage_foyer.png
           for site in town guild market inn blacksmith; do test -s "screenshots/elmwatch_${site}.png"; done
           test -s screenshots/character_creator.png
           ls -lh screenshots/character_creator.png
@@ -208,6 +213,7 @@ jobs:
           python3 tools/apply_npc_life.py
           python3 tools/apply_npc_interactions.py
           python3 tools/apply_npc_presence.py
+          python3 tools/apply_cottage_foyer.py
           python3 tools/apply_interior_navigation.py
           test -f project.godot
           test -f export_presets.cfg
@@ -261,6 +267,7 @@ jobs:
           run_scene_test res://tests/bedroom_test.gd 'ADVENTURE ODYSSEY BEDROOM TEST: PASS'
           run_scene_test res://tests/home_furniture_test.gd 'ADVENTURE ODYSSEY HOME FURNITURE TEST: PASS'
           run_scene_test res://tests/cottage_test.gd 'ADVENTURE ODYSSEY COTTAGE TEST: PASS'
+          run_scene_test res://tests/foyer_test.gd 'ADVENTURE ODYSSEY FOYER TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
           run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'
           run_scene_test res://tests/npc_presence_test.gd 'ADVENTURE ODYSSEY NPC PRESENCE TEST: PASS'
