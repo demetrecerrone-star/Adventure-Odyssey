@@ -33,6 +33,7 @@ jobs:
           python3 tools/apply_creator_palette.py
           python3 tools/apply_creator_visual_polish.py
           python3 tools/apply_bedroom_tutorial.py
+          python3 tools/apply_dialogue_ui.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
           from pathlib import Path
@@ -102,6 +103,7 @@ jobs:
           python3 tools/apply_creator_palette.py
           python3 tools/apply_creator_visual_polish.py
           python3 tools/apply_bedroom_tutorial.py
+          python3 tools/apply_dialogue_ui.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -112,6 +114,7 @@ jobs:
           godot --headless --path . --script res://tests/smoke_test.gd
           godot --headless --path . --script res://tests/creator_deep_test.gd
           godot --headless --path . --script res://tests/bedroom_test.gd
+          godot --headless --path . --script res://tests/dialogue_test.gd
       - name: Capture native rendered character creator
         shell: bash
         run: |
@@ -121,6 +124,9 @@ jobs:
           mkdir -p screenshots
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/creator_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/bedroom_screenshot.gd
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/dialogue_screenshot.gd
+          test -s screenshots/tutorial_dialogue.png
+          test -s screenshots/npc_dialogue.png
           test -s screenshots/starter_bedroom.png
           test -s screenshots/character_creator.png
           ls -lh screenshots/character_creator.png
@@ -161,6 +167,7 @@ jobs:
           python3 tools/apply_creator_palette.py
           python3 tools/apply_creator_visual_polish.py
           python3 tools/apply_bedroom_tutorial.py
+          python3 tools/apply_dialogue_ui.py
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
