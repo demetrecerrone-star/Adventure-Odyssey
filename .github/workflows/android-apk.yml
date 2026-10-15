@@ -282,40 +282,47 @@ jobs:
           run_scene_test res://tests/interior_navigation_test.gd 'ADVENTURE ODYSSEY INTERIOR NAVIGATION TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
 
-      - name: Build signed Android APK
+      - name: Build permanent release-signed Android APK
         shell: bash
         env:
           AO_RELEASE_KEYSTORE_BASE64: ${{ secrets.AO_RELEASE_KEYSTORE_BASE64 }}
           AO_RELEASE_KEYSTORE_PASSWORD: ${{ secrets.AO_RELEASE_KEYSTORE_PASSWORD }}
           AO_RELEASE_KEY_ALIAS: ${{ secrets.AO_RELEASE_KEY_ALIAS }}
+          AO_BOOTSTRAP_REQUESTED: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[bootstrap release signing]') }}
         run: |
           set -euo pipefail
-          trap 'rm -f /tmp/adventure_odyssey_release.jks /tmp/ao_debug.keystore' EXIT
+          umask 077
+          mkdir -p build
+          trap 'rm -f /tmp/adventure_odyssey_release.p12' EXIT
           if [[ -n "${AO_RELEASE_KEYSTORE_BASE64:-}" && \
                 -n "${AO_RELEASE_KEYSTORE_PASSWORD:-}" && \
                 -n "${AO_RELEASE_KEY_ALIAS:-}" ]]; then
-            umask 077
-            printf '%s' "$AO_RELEASE_KEYSTORE_BASE64" | base64 -d > /tmp/adventure_odyssey_release.jks
-            export GODOT_ANDROID_KEYSTORE_RELEASE_PATH=/tmp/adventure_odyssey_release.jks
+            # Future release builds always use the SAME permanent key.
+            printf '%s' "$AO_RELEASE_KEYSTORE_BASE64" | base64 -d > /tmp/adventure_odyssey_release.p12
+            keytool -list -keystore /tmp/adventure_odyssey_release.p12 \
+              -storepass "$AO_RELEASE_KEYSTORE_PASSWORD" -alias "$AO_RELEASE_KEY_ALIAS" >/dev/null
+            export GODOT_ANDROID_KEYSTORE_RELEASE_PATH=/tmp/adventure_odyssey_release.p12
             export GODOT_ANDROID_KEYSTORE_RELEASE_USER="$AO_RELEASE_KEY_ALIAS"
             export GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD="$AO_RELEASE_KEYSTORE_PASSWORD"
-            echo 'Exporting release APK using permanent signing key'
+            echo "Exporting release APK with the saved permanent signing key."
             godot --headless --path . --export-release Android build/Adventure-Odyssey-release.apk
+          elif [[ "$AO_BOOTSTRAP_REQUESTED" == "true" ]]; then
+            # Exactly once: generate a release keystore on the ephemeral runner.
+            # The private key backup is encrypted BEFORE artifact upload.
+            bash tools/bootstrap_release_signing.sh
           else
-            echo 'Signing secrets not configured. Building DEBUG TEST APK only.'
-            keytool -genkeypair -noprompt -keystore /tmp/ao_debug.keystore \
-              -storepass android -keypass android -alias androiddebugkey \
-              -keyalg RSA -keysize 2048 -validity 3650 \
-              -dname 'CN=Android Debug,O=Adventure Odyssey,C=US'
-            export GODOT_ANDROID_KEYSTORE_DEBUG_PATH=/tmp/ao_debug.keystore
-            export GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey
-            export GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android
-            godot --headless --path . --export-debug Android build/Adventure-Odyssey-debug.apk
+            echo "::error::Permanent release key secrets are missing. Refusing to create an APK with a throwaway debug signature."
+            echo "Set AO_RELEASE_KEYSTORE_BASE64, AO_RELEASE_KEYSTORE_PASSWORD, and AO_RELEASE_KEY_ALIAS."
+            exit 1
           fi
-          APK="$(find build -type f -name '*.apk' -print -quit)"
-          test -n "$APK" && test -s "$APK"
+          APK=build/Adventure-Odyssey-release.apk
+          test -s "$APK"
+          signer="$(find /usr/lib/android-sdk/build-tools -maxdepth 3 -type f -name apksigner | sort -V | tail -n 1)"
+          test -x "$signer"
+          "$signer" verify --verbose --print-certs "$APK" | tee build/Release-APK-Signature.txt
+          grep -Fq 'Verified using v2 scheme (APK Signature Scheme v2): true' build/Release-APK-Signature.txt
+          sha256sum "$APK" > build/SHA256SUMS.txt
           ls -lh "$APK"
-          sha256sum "$APK" | tee build/SHA256SUMS.txt
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -324,5 +331,8 @@ jobs:
           path: |
             build/*.apk
             build/SHA256SUMS.txt
+            build/Release-APK-Signature.txt
+            build/Adventure-Odyssey-Release-Backup.tar.gz.enc
+            build/Adventure-Odyssey-Release-Backup-Key.enc
           if-no-files-found: error
           retention-days: 30
