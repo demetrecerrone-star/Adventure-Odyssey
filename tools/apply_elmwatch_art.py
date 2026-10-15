@@ -127,6 +127,9 @@ rep('''\tfor box in blocks:
 rep('''\treturn current_map=="town" and player!=null and player.position.distance_to(Vector2(540,1095))<108.0''',
 '''\treturn current_map=="town" and player!=null and player.position.distance_to(Vector2(580,1060))<108.0''')
 
+# Reenter Elmwatch on the walkable eastern path, away from the illustrated well.
+rep('''\t\t_enter_world("town",Vector2(1900,700))''', '''\t\t_enter_world("town",Vector2(1870,585))''')
+
 src += '''
 # -- Approved Elmwatch art, addressable building doors and future NPC staging --
 func _nearest_building_entry()->String:
