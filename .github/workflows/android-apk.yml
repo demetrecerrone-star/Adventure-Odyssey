@@ -38,6 +38,7 @@ jobs:
           python3 tools/apply_cottage_tutorial.py
           python3 tools/apply_elmwatch_art.py
           python3 tools/apply_npc_life.py
+          python3 tools/apply_npc_interactions.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
           from pathlib import Path
@@ -112,6 +113,7 @@ jobs:
           python3 tools/apply_cottage_tutorial.py
           python3 tools/apply_elmwatch_art.py
           python3 tools/apply_npc_life.py
+          python3 tools/apply_npc_interactions.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -198,6 +200,7 @@ jobs:
           python3 tools/apply_cottage_tutorial.py
           python3 tools/apply_elmwatch_art.py
           python3 tools/apply_npc_life.py
+          python3 tools/apply_npc_interactions.py
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
