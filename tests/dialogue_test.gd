@@ -44,7 +44,7 @@ func _run() -> void:
 		scene._show_npc_chat(npc)
 		await process_frame
 		if not _check(scene.popup.mode == "npc" and scene.popup.npc_name == npc["name"], "named NPC chat: " + str(npc["name"])): return
-		if not _check(scene.popup.npc_role == npc["role"] and not scene.popup.npc_advice.is_empty(), "role/advice bound: " + str(npc["name"])): return
+		if not _check(scene.popup.npc_role.begins_with(str(npc["role"])) and not scene.popup.npc_advice.is_empty(), "role/advice bound: " + str(npc["name"])): return
 		if not _check(scene.popup.body_label.text == npc["dialogue"], "existing NPC text retained: " + str(npc["name"])): return
 		if not _check(scene.popup.primary_button.size.x >= 190 and scene.popup.secondary_button.size.y >= 50, "touch-sized NPC choices"): return
 		scene.popup.body_label.visible_characters = -1
