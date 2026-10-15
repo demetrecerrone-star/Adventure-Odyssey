@@ -36,6 +36,7 @@ func _run() -> void:
 	if not _check(scene.popup.mode == "tutorial" and scene.popup.chapter == "REST AND RECOVER", "context help reuses journal design"): return
 	scene.popup._on_secondary()
 	await process_frame
+	scene.data["world_minutes"]=765.0
 	scene._enter_world("town", Vector2(1030,980))
 	await process_frame
 	if not _check(scene.npcs.size() == 8, "town NPCs preserved"): return
