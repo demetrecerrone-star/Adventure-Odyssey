@@ -1,6 +1,16 @@
 # Adventure Odyssey — Android release signing
 
 ## Status
+**Provisioned 2026-10-15:** the permanent release keystore is created and the APK
+is verified with Android v2/v3 signatures. One-time bootstrap generation has
+been disabled in the active workflow so later builds cannot rotate the key.
+The certificate identity is pinned by SHA-256 to:
+`3b6f1540ba3394421489ca28fda428aebf58b163d8af7435c19a3ddfab663fb1`.
+
+**Next step for future unattended releases:** store the three existing secret
+values from the private backup in repository Actions secrets. Without them,
+future Android jobs intentionally fail rather than issue another throwaway key.
+
 Adventure Odyssey uses its own release signing identity. The Android build
 workflow **must never silently generate a new debug key** in place of the
 permanent release key; this would prevent updates from installing over previous
@@ -42,7 +52,9 @@ local saves before uninstalling a debug build.
 
 For new release APKs, launch the workflow manually using Actions → Build
 Adventure Odyssey Android APK → Run workflow after all 3 secrets are set.
-Do not run another bootstrap or generate a second key.
+Do not run another bootstrap or generate a second key. The provisioning
+script remains in project history for audit, but the active Android workflow
+does not call it.
 
 ### One-time bootstrap safety model
 
