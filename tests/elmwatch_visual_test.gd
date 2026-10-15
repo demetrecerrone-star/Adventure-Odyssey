@@ -31,7 +31,7 @@ func _run()->void:
         if not _check(scene._nearest_building_entry()==building,"entrance detects "+building):return
         scene._interact()
         await process_frame
-        if not _check(scene.current_map==building and scene.npcs.is_empty(),"entered "+building):return
+        if not _check(scene.current_map==building and scene.npcs.size()==(2 if building=="guild" else 1),"entered "+building):return
         var interior=scene.world.get_node_or_null("MapArtwork") as Sprite2D
         if not _check(interior!=null and interior.texture!=null,"interior loaded: "+building):return
         if not _check(interior.texture.resource_path==str(scene.BUILDING_ART[building]),"correct interior image: "+building):return
