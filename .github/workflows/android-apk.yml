@@ -40,6 +40,7 @@ jobs:
           python3 tools/apply_npc_life.py
           python3 tools/apply_npc_interactions.py
           python3 tools/apply_npc_presence.py
+          python3 tools/apply_interior_navigation.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
           from pathlib import Path
@@ -116,6 +117,7 @@ jobs:
           python3 tools/apply_npc_life.py
           python3 tools/apply_npc_interactions.py
           python3 tools/apply_npc_presence.py
+          python3 tools/apply_interior_navigation.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -140,6 +142,7 @@ jobs:
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
           run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'
           run_scene_test res://tests/npc_presence_test.gd 'ADVENTURE ODYSSEY NPC PRESENCE TEST: PASS'
+          run_scene_test res://tests/interior_navigation_test.gd 'ADVENTURE ODYSSEY INTERIOR NAVIGATION TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
 
       - name: Capture native rendered character creator
@@ -205,6 +208,7 @@ jobs:
           python3 tools/apply_npc_life.py
           python3 tools/apply_npc_interactions.py
           python3 tools/apply_npc_presence.py
+          python3 tools/apply_interior_navigation.py
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
@@ -260,6 +264,7 @@ jobs:
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
           run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'
           run_scene_test res://tests/npc_presence_test.gd 'ADVENTURE ODYSSEY NPC PRESENCE TEST: PASS'
+          run_scene_test res://tests/interior_navigation_test.gd 'ADVENTURE ODYSSEY INTERIOR NAVIGATION TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
 
       - name: Build signed Android APK
