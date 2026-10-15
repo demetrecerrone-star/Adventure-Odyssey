@@ -102,6 +102,23 @@ jobs:
           godot --version
           godot --headless --path . --editor --quit
           godot --headless --path . --script res://tests/smoke_test.gd
+          godot --headless --path . --script res://tests/creator_deep_test.gd
+      - name: Capture native rendered character creator
+        shell: bash
+        run: |
+          set -euo pipefail
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq xvfb libgl1-mesa-dri
+          mkdir -p screenshots
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/creator_screenshot.gd
+          file screenshots/character_creator.png
+      - name: Upload visual QA screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: Adventure-Odyssey-Character-Creator-Preview
+          path: screenshots/character_creator.png
+          if-no-files-found: error
+          retention-days: 15
   android-apk:
     # Actual APK builds happen only when manually requested.
     if: github.event_name == 'workflow_dispatch'
@@ -169,6 +186,7 @@ jobs:
           set -euo pipefail
           godot --headless --path . --editor --quit
           godot --headless --path . --script res://tests/smoke_test.gd
+          godot --headless --path . --script res://tests/creator_deep_test.gd
 
       - name: Build signed Android APK
         shell: bash
