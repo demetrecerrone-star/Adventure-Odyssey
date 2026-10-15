@@ -38,6 +38,8 @@ func _capture() -> void:
 	scene._select_body(5)
 	scene._select_hair(8)
 	scene._select_hair_tint(4)
+	scene._select_skin(3)
+	scene._select_eye(2)
 	scene._rotate_preview(1)
 	for i in range(5):
 		await process_frame
