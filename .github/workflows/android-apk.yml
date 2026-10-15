@@ -9,7 +9,36 @@ permissions:
   contents: read
 
 jobs:
+  inspect-source:
+    # Pushes inspect the archived Godot source without generating another APK.
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v4
+      - name: Inspect archived title scene and sprites
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat payload/part_*.bin > /tmp/adventure_odyssey_source.zip
+          echo "861c1871c327126a1321ef0107341dbe3510cfa60cf1f0f00abac14592edb568  /tmp/adventure_odyssey_source.zip" | sha256sum -c -
+          unzip -qo /tmp/adventure_odyssey_source.zip -d .
+          echo '=== Relevant project files ==='
+          find . -maxdepth 6 -type f \( -name '*.tscn' -o -name '*.gd' -o -name '*.png' \) | sort | head -220
+          echo '=== Title / login / sprite references ==='
+          grep -RniE 'title|login|guest|skeleton|goblin|character.creat|sprite_frames' --include='*.gd' --include='*.tscn' . | head -150 || true
+          echo '=== Candidate scripts and scenes ==='
+          find . -maxdepth 6 -type f \( -iname '*title*.gd' -o -iname '*title*.tscn' -o -iname '*menu*.gd' -o -iname '*menu*.tscn' -o -iname '*login*.gd' -o -iname '*login*.tscn' -o -iname '*main*.gd' -o -iname '*main*.tscn' \) | sort | while read -r file; do
+            echo "=== FILE: $file ==="
+            sed -n '1,280p' "$file"
+          done
+          echo '=== Project startup config ==='
+          sed -n '1,180p' project.godot
+          echo '=== Title image properties ==='
+          file assets/world/title.png
   android-apk:
+    # Actual APK builds happen only when manually requested.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     container:
       image: barichello/godot-ci:4.7.2
