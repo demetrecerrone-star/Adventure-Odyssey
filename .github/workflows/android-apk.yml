@@ -1,0 +1,108 @@
+name: Build Adventure Odyssey Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-apk:
+    runs-on: ubuntu-24.04
+    container:
+      image: barichello/godot-ci:4.7.2
+    timeout-minutes: 35
+
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v4
+
+      - name: Reconstruct and verify Godot project
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find payload -name 'part_*.bin' | wc -l)" -eq 35
+          cat payload/part_*.bin > /tmp/adventure_odyssey_v03.zip
+          echo "861c1871c327126a1321ef0107341dbe3510cfa60cf1f0f00abac14592edb568  /tmp/adventure_odyssey_v03.zip" | sha256sum -c -
+          unzip -qo /tmp/adventure_odyssey_v03.zip -d .
+          test -f project.godot
+          test -f export_presets.cfg
+          test -f assets/world/title.png
+          mkdir -p build
+
+      - name: Set up Android export environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --version
+          java -version
+          test -f project.godot
+          test -f export_presets.cfg
+          test -f assets/world/title.png
+          mkdir -p "$HOME/.local/share/godot/export_templates" "$HOME/.config" build
+          # Godot-CI preinstalls templates and editor settings for root. In
+          # GitHub Actions containers HOME may be /github/home instead.
+          if [[ -d /root/.local/share/godot/export_templates/4.7.2.stable && \
+                ! -d "$HOME/.local/share/godot/export_templates/4.7.2.stable" ]]; then
+            cp -a /root/.local/share/godot/export_templates/4.7.2.stable \
+              "$HOME/.local/share/godot/export_templates/"
+          fi
+          if [[ -d /root/.config/godot && ! -d "$HOME/.config/godot" ]]; then
+            cp -a /root/.config/godot "$HOME/.config/godot"
+          fi
+          test -d "$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          ls -l "$HOME/.local/share/godot/export_templates/4.7.2.stable/" | head -20
+
+      - name: Import assets and validate scenes
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path . --editor --quit
+          godot --headless --path . --script res://tests/smoke_test.gd
+
+      - name: Build signed Android APK
+        shell: bash
+        env:
+          AO_RELEASE_KEYSTORE_BASE64: ${{ secrets.AO_RELEASE_KEYSTORE_BASE64 }}
+          AO_RELEASE_KEYSTORE_PASSWORD: ${{ secrets.AO_RELEASE_KEYSTORE_PASSWORD }}
+          AO_RELEASE_KEY_ALIAS: ${{ secrets.AO_RELEASE_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          trap 'rm -f /tmp/adventure_odyssey_release.jks /tmp/ao_debug.keystore' EXIT
+          if [[ -n "${AO_RELEASE_KEYSTORE_BASE64:-}" && \
+                -n "${AO_RELEASE_KEYSTORE_PASSWORD:-}" && \
+                -n "${AO_RELEASE_KEY_ALIAS:-}" ]]; then
+            umask 077
+            printf '%s' "$AO_RELEASE_KEYSTORE_BASE64" | base64 -d > /tmp/adventure_odyssey_release.jks
+            export GODOT_ANDROID_KEYSTORE_RELEASE_PATH=/tmp/adventure_odyssey_release.jks
+            export GODOT_ANDROID_KEYSTORE_RELEASE_USER="$AO_RELEASE_KEY_ALIAS"
+            export GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD="$AO_RELEASE_KEYSTORE_PASSWORD"
+            echo 'Exporting release APK using permanent signing key'
+            godot --headless --path . --export-release Android build/Adventure-Odyssey-release.apk
+          else
+            echo 'Signing secrets not configured. Building DEBUG TEST APK only.'
+            keytool -genkeypair -noprompt -keystore /tmp/ao_debug.keystore \
+              -storepass android -keypass android -alias androiddebugkey \
+              -keyalg RSA -keysize 2048 -validity 3650 \
+              -dname 'CN=Android Debug,O=Adventure Odyssey,C=US'
+            export GODOT_ANDROID_KEYSTORE_DEBUG_PATH=/tmp/ao_debug.keystore
+            export GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey
+            export GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android
+            godot --headless --path . --export-debug Android build/Adventure-Odyssey-debug.apk
+          fi
+          APK="$(find build -type f -name '*.apk' -print -quit)"
+          test -n "$APK" && test -s "$APK"
+          ls -lh "$APK"
+          sha256sum "$APK" | tee build/SHA256SUMS.txt
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Adventure-Odyssey-Android-APK
+          path: |
+            build/*.apk
+            build/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
