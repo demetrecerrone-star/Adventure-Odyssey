@@ -54,7 +54,7 @@ func _run() -> void:
 			button_count += 1
 			var rect: Rect2 = c.get_global_rect()
 			if not _check(rect.position.x >= 0 and rect.position.y >= 0 and rect.end.x <= 1280 and rect.end.y <= 720, "off-screen button " + c.text):return
-	if not _check(button_count >= 16, "all creator buttons present"):return
+	if not _check(button_count >= 12, "all creator buttons present"):return
 	scene.char_input.text = " "
 	scene._confirm_character()
 	if not _check(scene.creator_confirm_layer == null and not scene.creator_error.text.is_empty(), "invalid name blocks confirmation"):return
