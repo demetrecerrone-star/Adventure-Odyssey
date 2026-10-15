@@ -60,11 +60,30 @@ func _run()->void:
         if not _check(scene.popup!=null and scene.popup.mode=="npc","shopkeeper conversation accessible: "+building):return
         if not _check(scene.popup.npc_name==resident["name"],"correct named worker: "+building):return
         scene._dismiss_message()
+        if building=="guild":
+            # Captain Elara should register training inside the Guild, too.
+            scene.data["quest_kills"]=3
+            scene.player.position=scene.npcs[1]["node"].position+Vector2(28,12)
+            scene._interact()
+            await process_frame
+            if not _check(bool(scene.data.get("guild_training_completed",false)),"guild training can complete inside"):return
+            if not _check(scene.popup.mode=="npc" and scene.popup.body_label.text.contains("training assignment is complete"),"completion dialogue appears"):return
+            scene._dismiss_message()
+            scene._save()
+            if not _check(scene._load_save() and bool(scene.data.get("guild_training_completed",false)),"guild quest completion persists"):return
         scene.player.position=Vector2(1024,1090)
         scene._interact()
         await process_frame
         if not _check(scene.current_map=="town" and scene.npcs.size()==8,"return from "+building+" restores town"):return
 
+    # The village healer still restores HP and speaks with the player.
+    scene.data["hp"]=32
+    scene.player.position=scene.npcs[6]["node"].position+Vector2(28,12)
+    scene._interact()
+    await process_frame
+    if not _check(int(scene.data["hp"])==int(scene.data["max_hp"]),"town healer restores health"):return
+    if not _check(scene.popup.mode=="npc","healer conversation appears"):return
+    scene._dismiss_message()
     scene._enter_world("bedroom",scene.BEDROOM_SPAWN)
     await process_frame
     if not _check(scene.bedroom_art!=null,"starter bedroom and interactable furniture unaffected"):return
