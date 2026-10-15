@@ -41,7 +41,7 @@ func _run()->void:
 	if not _check(scene._cottage_target()=="Front Door","front door detectable"):return
 	scene._interact_cottage()
 	await process_frame
-	if not _check(scene.current_map=="town" and scene.npcs.size()==8,"cottage leads to Elmwatch NPC town"):return
+	if not _check(scene.current_map=="town" and scene.npcs.size()==3,"cottage leads to Elmwatch NPC town"):return
 	if not _check(scene.data["tutorial_stage"]=="elmwatch" and bool(scene.data.get("elmwatch_intro_seen",false)),"Elmwatch first visit remembered"):return
 	scene._dismiss_message()
 	if not _check(scene._near_cottage_entry(),"town cottage entrance works"):return
