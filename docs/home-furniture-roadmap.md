@@ -12,6 +12,7 @@
 - [ ] Add previews, placement changes, and save/load validation for unlocked variants
 - [ ] Implement prices and purchases using earned **in-game gold** (no real-money checkout)
 - [ ] Allow additional flooring, wallpaper, lighting, and decorations later
-- [ ] Complete hallway, kitchen, living room, front entrance and Elmwatch tutorial transition
+- [x] Playable hallway, kitchen, living room, front entrance and Elmwatch tutorial transition (prototype art)
+- [ ] Replace cottage prototype with final illustrated backgrounds and decorative sprites
 
 Assets for upcoming cosmetic variants are in the art pack created during this design milestone; only the three free defaults are committed to the game right now.
