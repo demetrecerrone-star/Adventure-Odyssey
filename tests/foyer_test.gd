@@ -23,6 +23,11 @@ func _run()->void:
     if not _check(image!=null and image.texture!=null,"approved painting is visible"):return
     if not _check(image.texture.resource_path=="res://assets/home/approved_cottage_foyer.jpg","loads the exact approved image asset"):return
     if not _check(is_equal_approx(image.scale.x,image.scale.y),"painting preserves original aspect ratio"):return
+    # No edge of the approved painting may disappear beyond the playable scene.
+    var bounds:Rect2=Rect2(image.position,image.texture.get_size()*image.scale)
+    if not _check(bounds.position.x>=-0.5 and bounds.position.y>=-0.5,"top and left illustration edges remain visible"):return
+    if not _check(bounds.end.x<=2048.5 and bounds.end.y<=1280.5,"bottom threshold and right wall remain visible"):return
+    if not _check(absf(bounds.get_center().x-1024.0)<0.5 and absf(bounds.get_center().y-640.0)<0.5,"foyer illustration centered properly"):return
     if not _check(scene._walkable(Vector2(500,735)) and scene._walkable(Vector2(1024,1080)),"both foyer doors accessible"):return
     if not _check(not scene._walkable(Vector2(140,780)) and not scene._walkable(Vector2(1024,290)),"walls block walking outside painting"):return
     scene.player.position=Vector2(500,735)
