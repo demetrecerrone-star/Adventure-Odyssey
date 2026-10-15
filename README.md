@@ -52,3 +52,19 @@ CI applies `tools/apply_home_furniture.py` after the dialogue tutorial patch
 and tests the modular room using `tests/home_furniture_test.gd`.
 The checked-in sprites are lightweight previews; the high-resolution source
 sprites should replace the small previews before final art lock.
+
+## Connected cottage and Elmwatch exit (tutorial milestone two)
+
+The bedroom doorway now enters an explorable cottage interior with a hallway,
+living room, kitchen, a fireplace, a family travel map, and a pantry containing
+one non-repeatable starter Health Potion. Players can return through the
+bedroom door, step outside into Elmwatch Village, and re-enter their cottage
+from the western/southern edge of town. The first visit to each area uses the
+existing Adventurer's Journal dialogue, with tutorial flags saved so prompts
+do not repeat unnecessarily. Godot checks test the route in both directions,
+collision, inventory persistence, and the first-visit reward.
+
+The cottage uses a warm code-rendered art prototype for the current gameplay
+milestone. Matching high-detail illustrated room backgrounds and individual
+decoration sprites are an upcoming visual pass, not yet the finished art.
+Furniture purchases and cosmetic unlocks remain deferred.
