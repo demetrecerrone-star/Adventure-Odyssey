@@ -10,7 +10,11 @@ func _ready()->void:
     if background.texture==null:
         push_error("Missing approved cottage artwork")
         return
-    var factor:float=maxf(2048.0/float(background.texture.get_width()),1280.0/float(background.texture.get_height()))
-    background.scale=Vector2(factor,factor)
-    background.position=Vector2((2048.0-float(background.texture.get_width())*factor)*0.5,(1280.0-float(background.texture.get_height())*factor)*0.5)
+    # Fit the ENTIRE approved painting. Cover-scaling clipped the outer beams
+    # and front threshold on screens with a wider-than-art aspect ratio.
+    var painted_size:Vector2=background.texture.get_size()
+    var factor:float=minf(2048.0/painted_size.x,1280.0/painted_size.y)
+    background.scale=Vector2.ONE*factor
+    background.position=(Vector2(2048,1280)-painted_size*factor)*0.5
+    background.z_index=-10
     add_child(background)
