@@ -111,7 +111,8 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y -qq xvfb libgl1-mesa-dri libfontconfig1 libxcursor1 libxi6 libxinerama1 libxkbcommon-x11-0 libwayland-cursor0
           mkdir -p screenshots
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/creator_screenshot.gd
-          file screenshots/character_creator.png
+          test -s screenshots/character_creator.png
+          ls -lh screenshots/character_creator.png
       - name: Upload visual QA screenshot
         uses: actions/upload-artifact@v4
         with:
