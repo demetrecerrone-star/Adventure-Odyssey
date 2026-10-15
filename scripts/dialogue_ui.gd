@@ -103,7 +103,8 @@ func _render_tutorial() -> void:
 	title_label = _label("ADVENTURER'S JOURNAL", Rect2(188, 428, 540, 46), 31, Color("#f2d399"))
 	_label(chapter.to_upper(), Rect2(583, 437, 499, 30), 16, Color("#b4dedb"), true)
 	_label("STEP", Rect2(198, 527, 84, 27), 16, Color("#d8b979"), true)
-	_label("%02d" % (page_index + 1), Rect2(198, 550, 85, 61), 49, Color("#f2dfb3"), true)
+	var step_number = _label("%02d" % (page_index + 1), Rect2(189, 546, 103, 76), 45, Color("#f2dfb3"), true)
+	step_number.clip_text = false
 	_label("%02d / %02d" % [page_index + 1, pages.size()], Rect2(716, 651, 123, 35), 18, Color("#a6c8c8"), true)
 	body_label = _label(pages[page_index] if not pages.is_empty() else "", Rect2(350, 500, 765, 104), 25, Color("#fff1d7"))
 	body_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
