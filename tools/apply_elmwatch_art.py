@@ -21,13 +21,14 @@ const BUILDING_ART = {
     "inn":"res://assets/interiors/lantern_inn.jpg",
     "blacksmith":"res://assets/interiors/blacksmith.jpg"
 }
-# Door coordinates are first-pass entry markers near the existing NPC districts.
-# After visual QA on the approved map, refine them to match the illustrated doors.
+# Door markers match the illustrated town: inn northwest, market northeast,
+# cottage southwest, guild southeast. Forge is a TEMPORARY guild-side entry
+# until the town illustration receives a separate workshop exterior.
 const ELMWATCH_DOORS = {
-    "guild":Vector2(915,735),
-    "market":Vector2(1380,560),
-    "inn":Vector2(778,1060),
-    "blacksmith":Vector2(1875,1010)
+    "guild":Vector2(1566,1072),
+    "market":Vector2(1640,460),
+    "inn":Vector2(620,450),
+    "blacksmith":Vector2(1795,1074)
 }
 const BUILDING_LABELS = {
     "guild":"ADVENTURERS GUILD",
@@ -100,6 +101,31 @@ rep('''	if _near_cottage_entry():
 		_enter_world(entry,Vector2(1024,980))
 		return
 	var n=_nearest_npc()''')
+
+
+# Stage existing NPCs outside their visible shops; dialogue remains unchanged.
+rep('"ilyan_crest", Vector2(915,870)', '"ilyan_crest", Vector2(1555,1194)')
+rep('"mara_fenwick", Vector2(1380,680)', '"mara_fenwick", Vector2(1500,610)')
+rep('"brann_ironhand", Vector2(1770,1010)', '"brann_ironhand", Vector2(1855,1198)')
+rep('"tamsin_reed", Vector2(680,1060)', '"tamsin_reed", Vector2(750,570)')
+rep('"captain_elara_voss", Vector2(1130,1180)', '"captain_elara_voss", Vector2(1370,1185)')
+rep('"garrick_thorn", Vector2(1900,730)', '"garrick_thorn", Vector2(1890,820)')
+rep('"sister_sera_vale", Vector2(580,660)', '"sister_sera_vale", Vector2(770,820)')
+rep('"neris_crowe", Vector2(1600,1190)', '"neris_crowe", Vector2(1120,1150)')
+# Replace obsolete collisions from the old map with illustrated rooftops.
+rep('''\tvar blocks=[Rect2(620,240,390,350),Rect2(1170,170,310,330),Rect2(400,680,345,360),Rect2(1460,665,385,350),Rect2(265,170,310,310),Rect2(1370,900,360,305)]''',
+'''\tvar blocks=[Rect2(305,82,480,310),Rect2(1370,125,485,303),Rect2(405,837,353,186),Rect2(1395,837,380,206)]''')
+rep('''\tfor box in blocks:
+\t\tif box.has_point(where):return false
+\treturn true''',
+'''\tfor box in blocks:
+\t\tif box.has_point(where):return false
+\t# Fountain and well are solid objects.
+\tif where.distance_to(Vector2(1040,680))<132.0:return false
+\tif where.distance_to(Vector2(1897,708))<68.0:return false
+\treturn true''')
+rep('''\treturn current_map=="town" and player!=null and player.position.distance_to(Vector2(540,1095))<108.0''',
+'''\treturn current_map=="town" and player!=null and player.position.distance_to(Vector2(580,1060))<108.0''')
 
 src += '''
 # -- Approved Elmwatch art, addressable building doors and future NPC staging --
