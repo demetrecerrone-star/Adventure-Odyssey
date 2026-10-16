@@ -55,6 +55,7 @@ jobs:
           python3 tools/apply_world_expansion.py
           python3 tools/generate_gear_art.py
           python3 tools/apply_item_art.py
+          python3 tools/apply_monster_loot.py
           python3 tools/generate_character_layers.py
           python3 tools/apply_character_layers.py
           python3 tools/apply_equipment_visuals.py
@@ -150,6 +151,7 @@ jobs:
           python3 tools/apply_world_expansion.py
           python3 tools/generate_gear_art.py
           python3 tools/apply_item_art.py
+          python3 tools/apply_monster_loot.py
           python3 tools/generate_character_layers.py
           python3 tools/apply_character_layers.py
           python3 tools/apply_equipment_visuals.py
@@ -198,6 +200,7 @@ jobs:
           run_scene_test res://tests/equipment_visuals_test.gd 'ADVENTURE ODYSSEY EQUIPMENT VISUALS TEST: PASS'
           run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
           run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
+          run_scene_test res://tests/monster_loot_test.gd 'ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
@@ -326,6 +329,7 @@ jobs:
           python3 tools/apply_world_expansion.py
           python3 tools/generate_gear_art.py
           python3 tools/apply_item_art.py
+          python3 tools/apply_monster_loot.py
           python3 tools/generate_character_layers.py
           python3 tools/apply_character_layers.py
           python3 tools/apply_equipment_visuals.py
@@ -404,6 +408,7 @@ jobs:
           run_scene_test res://tests/equipment_visuals_test.gd 'ADVENTURE ODYSSEY EQUIPMENT VISUALS TEST: PASS'
           run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
           run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
+          run_scene_test res://tests/monster_loot_test.gd 'ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
