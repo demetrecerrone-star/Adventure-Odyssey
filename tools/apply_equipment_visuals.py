@@ -30,6 +30,14 @@ rep('''\tdata["equipment"].erase(slot)
 \t_save()''','''\tdata["equipment"].erase(slot)
 \t_update_worn_equipment_frames()
 \t_save()''')
+# The wearable sprite and item icon share the exact new image source and
+# material colors; keep the recovered SVG when a new preview is unavailable.
+rep('''	var path:String="res://assets/items/%s.svg" % item.to_lower().replace("'","").replace(" ","_")''',
+'''	var slug:String=item.to_lower().replace("'","").replace(" ","_")
+	var path:String="res://assets/equipment_item_icons/%s.png" % slug
+	if not ResourceLoader.exists(path):
+		path="res://assets/items/%s.svg" % slug''')
+
 s+='''
 # -- Equipment appearance controller: path-safe and save-compatible ----------
 # No enlarged inventory icons are used as character art. Files must be
