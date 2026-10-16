@@ -19,13 +19,13 @@ func _run()->void:
     scene._random_default()
     scene._enter_world("town",Vector2(1030,980))
     await process_frame
-    if not _check(scene.npcs.size()==3,"only residents not staffed in businesses appear at 9 AM"):return
+    if not _check(scene.npcs.size()==5,"only residents not staffed in businesses appear at 9 AM"):return
     if not _check(scene._world_clock_text()=="9:00 AM","new game starts at nine in the morning"):return
     if not _check(scene.clock_label!=null,"in-game clock visible on phone HUD"):return
     if not _check(scene._routine_slot()==0,"morning is working schedule"):return
     scene.data["world_minutes"]=720.0
     scene._tick_town_residents(0.4)
-    if not _check(scene.npcs.size()==8,"all eight residents are outside for lunch"):return
+    if not _check(scene.npcs.size()==10,"all ten residents are outside for lunch"):return
     if not _check(scene._routine_slot()==1,"midday routine stage"):return
     if not _check(str(scene.npcs[0]["routine_state"])=="On Break","registrar enters a break state"):return
     var before:Vector2=scene.npcs[0]["node"].position
@@ -43,7 +43,7 @@ func _run()->void:
     if not _check(scene._routine_slot()==2 and str(scene.npcs[0]["routine_state"])=="Evening Stroll","evening routine stage"):return
     scene.data["world_minutes"]=600.0
     scene._tick_town_residents(0.4)
-    if not _check(scene.npcs.size()==3,"working staff absent from streets"):return
+    if not _check(scene.npcs.size()==5,"working staff absent from streets"):return
     if not _check(scene._routine_slot()==0 and scene.npcs[0]["routine_state"]=="Working","morning work resumes"):return
     scene._tick_world_time(60.0)
     if not _check(scene._world_clock_text()=="11:30 AM","time advances at the intended rate"):return
@@ -76,7 +76,7 @@ func _run()->void:
         scene.player.position=Vector2(1024,1090)
         scene._interact()
         await process_frame
-        if not _check(scene.current_map=="town" and scene.npcs.size()==3,"return from "+building+" restores town"):return
+        if not _check(scene.current_map=="town" and scene.npcs.size()==5,"return from "+building+" restores town"):return
 
     # The village healer still restores HP and speaks with the player.
     scene.data["hp"]=32

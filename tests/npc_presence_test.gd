@@ -25,7 +25,7 @@ func _run()->void:
     scene._enter_world("town",Vector2(1030,980))
     await process_frame
     var outdoor:Array[String]=_names(scene)
-    if not _ok(outdoor.size()==3,"only three outdoor residents in morning"):return
+    if not _ok(outdoor.size()==5,"only three outdoor residents in morning"):return
     if not _ok(outdoor.has("Sister Sera Vale") and outdoor.has("Garrick Thorn") and outdoor.has("Neris Crowe"),"outdoor mentors available during shop hours"):return
     if not _ok(not outdoor.has("Ilyan Crest"),"registrar is not duplicated outdoors"):return
     scene._enter_world("guild",Vector2(1030,980))
@@ -39,7 +39,7 @@ func _run()->void:
     if not _ok(scene.npcs.size()==0,"no staff duplicated in indoor guild during lunch"):return
     scene._enter_world("town",Vector2(1030,980))
     await process_frame
-    if not _ok(scene.npcs.size()==8,"all eight residents can be met outdoors at lunch"):return
+    if not _ok(scene.npcs.size()==10,"all ten residents can be met outdoors at lunch"):return
     var all_names:Array[String]=_names(scene)
     var unique:Dictionary={}
     for name in all_names:
@@ -47,12 +47,12 @@ func _run()->void:
         unique[name]=true
     scene.player.position=scene.NPC_ROUTINES["mara_fenwick"][1]
     scene._tick_town_residents(0.25)
-    if not _ok(scene.npcs.size()==8,"daytime roaming retains roster"):return
+    if not _ok(scene.npcs.size()==10,"daytime roaming retains roster"):return
 
     # The same shopkeeper is not both inside and outside in the evening.
     scene.data["world_minutes"]=1260.0
     scene._tick_world_time(0.0)
-    if not _ok(scene.npcs.size()==8,"eight residents attend the evening town"):return
+    if not _ok(scene.npcs.size()==10,"ten residents attend the evening town"):return
     scene._enter_world("market",Vector2(1030,980))
     await process_frame
     if not _ok(scene.npcs.is_empty(),"market is unattended after closing"):return
@@ -68,7 +68,7 @@ func _run()->void:
 
     scene.data["world_minutes"]=540.0
     scene._tick_world_time(0.0)
-    if not _ok(scene.npcs.size()==3,"morning residents return automatically without loading the map"):return
+    if not _ok(scene.npcs.size()==5,"morning residents return automatically without loading the map"):return
     scene._enter_world("market",Vector2(1030,980))
     await process_frame
     if not _ok(scene.npcs.size()==1 and scene.npcs[0]["name"]=="Mara Fenwick","shopkeeper returns to counter at opening"):return
@@ -78,7 +78,7 @@ func _run()->void:
     await process_frame
     scene.data["world_minutes"]=765.0
     scene._tick_world_time(0.0)
-    if not _ok(scene.npcs.size()==8,"lunch transition adds villagers without map reload"):return
+    if not _ok(scene.npcs.size()==10,"lunch transition adds villagers without map reload"):return
     var resident:Dictionary=scene.npcs[0]
     scene._tick_town_residents(0.4)
     var tex:Texture2D=resident["sprite"].texture
