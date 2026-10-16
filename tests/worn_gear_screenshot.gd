@@ -35,6 +35,10 @@ func _copy_visible_sprite(parent:Node2D, source:Sprite2D) -> void:
 	clone.texture=source.texture
 	clone.position=source.position
 	clone.offset=source.offset
+	clone.scale=source.scale
+	clone.rotation=source.rotation
+	clone.modulate=source.modulate
+	clone.self_modulate=source.self_modulate
 	clone.centered=source.centered
 	clone.flip_h=source.flip_h
 	clone.flip_v=source.flip_v
