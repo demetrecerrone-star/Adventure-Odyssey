@@ -111,8 +111,6 @@ jobs:
   validate-title:
     # Validate the actual unpacked Godot game but do not export Android.
     if: github.event_name == 'push'
-    permissions:
-      contents: write
     runs-on: ubuntu-24.04
     container:
       image: barichello/godot-ci:4.7.2
@@ -294,26 +292,18 @@ jobs:
           test -s screenshots/equipment_headgear_off_hairstyles.png
           test -s screenshots/ao_original_character_contact_sheet.png
           ls -lh screenshots/character_creator.png
-      - name: Publish cottage render reviews without touching main artwork
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/ao-cottage-qa
-          cp screenshots/cottage_*.png /tmp/ao-cottage-qa/
-          git config user.name "adventure-odyssey-qa[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout --orphan qa-cottage-visual-20261016
-          git rm -rf --quiet --ignore-unmatch . || true
-          mkdir -p previews/cottage
-          cp /tmp/ao-cottage-qa/*.png previews/cottage/
-          git add -f previews/cottage/*.png
-          git commit -m "Save actual Godot-rendered cottage screenshot previews"
-          git push --force origin HEAD:refs/heads/qa-cottage-visual-20261016
       - name: Upload visual QA screenshot
         uses: actions/upload-artifact@v4
         with:
           name: Adventure-Odyssey-Character-Creator-Preview
           path: screenshots/*.png
+          if-no-files-found: error
+          retention-days: 15
+      - name: Upload native cottage decor previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: Adventure-Odyssey-Cottage-Visual-Previews
+          path: screenshots/cottage_*.png
           if-no-files-found: error
           retention-days: 15
       - name: Upload Oldstone pixel art review
