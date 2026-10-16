@@ -61,7 +61,9 @@ func _run()->void:
 			if str(entry[0])==rare_item:probability=float(entry[1])
 		if not _check(probability>0.0 and probability<=0.03,"rare item has nonzero small per-kill chance: "+str(species)):return
 		if not _check(not game._gear_def(rare_item).is_empty(),"rare drop matches existing catalog: "+rare_item):return
-		var forced_rare:Dictionary=game._award_monster_loot({"species":species,"loot_claimed":false,"drop":""},{rare_item:0.0,"sigil_roll":1.0})
+		var fixed_rolls:Dictionary={"sigil_roll":1.0}
+		fixed_rolls[rare_item]=0.0
+		var forced_rare:Dictionary=game._award_monster_loot({"species":species,"loot_claimed":false,"drop":""},fixed_rolls)
 		if not _check(int(forced_rare["items"].get(rare_item,0))==1,"rare reward reachable with winning roll: "+str(species)):return
 
 
