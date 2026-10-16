@@ -72,18 +72,21 @@ func _run()->void:
     if not _ok(game.popup.chapter.contains("ASSIGNMENT COMPLETE"),"mission completion is clear"):return
     if not _ok(game.hp_label.text.contains("Slimes: 3/3"),"quest HUD never exceeds three"):return
     game._dismiss_message()
+    var gold_earned_from_slimes:int=int(game.data["gold"])
+    var potions_after_slimes:int=int(game.data["inventory"].get("Health Potion",0))
+    if not _ok(gold_earned_from_slimes>=gold_before+9 and gold_earned_from_slimes<=gold_before+15,"slimes retain base gold and optional coin bonuses"):return
     game._enter_world("guild",Vector2(1030,980))
     await process_frame
     mentor=game.npcs[1]
     game._interact_resident(mentor)
     await process_frame
     if not _ok(bool(game.data.get("guild_training_completed",false)),"Guild captain awards completion"):return
-    if not _ok(int(game.data["gold"])==gold_before+9+20,"three monster drops plus exactly 20 guild gold"):return
-    if not _ok(int(game.data["inventory"].get("Health Potion",0))==potions_before+1,"one quest potion rewarded"):return
+    if not _ok(int(game.data["gold"])==gold_earned_from_slimes+20,"guild pays exactly 20 gold beyond all monster coins"):return
+    if not _ok(int(game.data["inventory"].get("Health Potion",0))==potions_after_slimes+1,"one quest potion beyond potential monster drops"):return
     if not _ok(game.popup.mode=="npc" and game.popup.body_label.text.contains("training assignment is complete"),"completion uses established NPC dialogue"):return
     game._dismiss_message()
     game._interact_resident(mentor)
-    if not _ok(int(game.data["gold"])==gold_before+9+20 and int(game.data["inventory"].get("Health Potion",0))==potions_before+1,"repeated Captain conversation cannot duplicate rewards"):return
+    if not _ok(int(game.data["gold"])==gold_earned_from_slimes+20 and int(game.data["inventory"].get("Health Potion",0))==potions_after_slimes+1,"repeated Captain conversation cannot duplicate rewards"):return
     if not _ok(game.hp_label.text.contains("Guild: DONE"),"completed mission visible on HUD"):return
     game._dismiss_message()
     game._save()
