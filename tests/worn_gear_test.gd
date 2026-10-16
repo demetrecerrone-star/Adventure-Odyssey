@@ -30,7 +30,7 @@ func _run()->void:
 		var sprite:Sprite2D=game.worn_equipment_sprites[slot]
 		if not _ok(sprite.visible and sprite.texture!=null,"equipped item appears: "+name):return
 		if not _ok(sprite.texture.get_size()==game.base_sprite.texture.get_size(),"item matches body sprite alignment: "+name):return
-		if slot=="head" and not _ok(not game.hair_sprite.visible,"hood covers hair"):return
+		if slot=="head" and not _ok(sprite.z_index>game.hair_sprite.z_index,"hood layers above hair"):return
 		game._unequip_slot(slot)
 		if not _ok(not sprite.visible,"remove item clears visual: "+name):return
 		count+=1
@@ -43,7 +43,7 @@ func _run()->void:
 				game.anim_frame=frame
 				game._set_player_frame()
 				for name in ["Iron Axe","Iron Plate","Leather Hood","Forest Cloak","Padded Gloves","Steel Boots","Copper Ring"]:
-					var path:String=game._worn_gear_path(name)
+					var path:String=game._worn_gear_texture_path(str(game._gear_def(name)["slot"]),name,face,frame)
 					if not _ok(ResourceLoader.exists(path),"aligned worn art exists: "+name+" "+path):return
 	game.data["body"]=2
 	game.facing="down"

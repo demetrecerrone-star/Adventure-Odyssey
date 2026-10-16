@@ -94,3 +94,7 @@
 ### Equipment attachment interface milestone
 
 `tools/apply_equipment_visuals.py` creates seven correctly ordered Sprite2D gear nodes on the actual playable character and keeps them in sync when equipped items, direction or animation change. It looks up only purpose-drawn 128px-height pose-aligned worn textures under `assets/equipment_worn/<slot>/<item_slug>/base_variant_NN/<direction>_<frame>.png`. **These individual textures have not yet been finished**, so the nodes remain hidden and the default outfit stays visible (no fake enlarged inventory icons or unclothed frames). No class gates or save format changes. `tests/equipment_visuals_test.gd` verifies seven slot nodes, equipment changes, missing-art fallbacks and walking-frame updates.
+
+### First-pass worn-item preview stage
+
+Generator `tools/generate_worn_gear.py` prepares 34 prototype worn sprites using original recovered-icon motifs and palette, across all eight body types, four directions and three frames. `tools/apply_equipment_visuals.py` is the sole renderer; it prefers production artwork under `assets/equipment_worn/<slot>/<slug>` and temporarily falls back to `assets/worn_gear/<slug>` when no approved production overlay exists. No second conflicting appearance renderer is run. The art is FIRST PASS ONLY, not approved final art; original inventory icons and sprites remain untouched. Tests validate equipping, seven slots and saved items.

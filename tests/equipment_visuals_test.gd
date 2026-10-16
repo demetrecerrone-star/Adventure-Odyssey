@@ -27,8 +27,8 @@ func _run()->void:
 		game._equip_item(item)
 		var slot:String=game._gear_def(item)["slot"]
 		if not _ok(game._equipped(slot)==item,"unrestricted item equipped: "+item):return
-		if not _ok(not game.worn_equipment_sprites[slot].visible,"missing on-character art never silently faked: "+item):return
-	if not _ok(game.starter_clothes_sprites["starter_top"].visible and game.starter_clothes_sprites["starter_shoes"].visible,"safe starter clothing fallback"):return
+		if not _ok(game.worn_equipment_sprites[slot].visible and game.worn_equipment_sprites[slot].texture!=null,"generated wear preview loaded: "+item):return
+	if not _ok(not game.starter_clothes_sprites["starter_top"].visible and not game.starter_clothes_sprites["starter_shoes"].visible,"valid worn armor and boots cover starter layers"):return
 	game._save()
 	if not _ok(game._load_save() and game._equipped("armor")=="Guard Breastplate","save compatible"):return
 	for direction in ["down","left","up","right"]:
@@ -36,6 +36,6 @@ func _run()->void:
 		for frame in range(3):
 			game.anim_frame=frame
 			game._set_player_frame()
-			if not _ok(game.worn_equipment_sprites.size()==7 and game.starter_clothes_sprites["starter_top"].visible,"safe for all directions/frames"):return
+			if not _ok(game.worn_equipment_sprites.size()==7 and game.worn_equipment_sprites["armor"].visible,"worn gear visible across four directions and frames"):return
 	print("ADVENTURE ODYSSEY EQUIPMENT VISUALS TEST: PASS")
 	quit(0)

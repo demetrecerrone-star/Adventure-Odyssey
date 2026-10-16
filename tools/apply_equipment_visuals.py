@@ -39,7 +39,11 @@ const WORN_DRAW_ORDER={"cloak":0,"armor":3,"gloves":4,"boots":4,"weapon":5,"head
 
 func _worn_gear_texture_path(slot:String,item:String,direction:String,frame:int)->String:
 	var slug:String=item.to_lower().replace("'","").replace(" ","_")
-	return "res://assets/equipment_worn/%s/%s/base_variant_%02d/%s_%02d.png" % [slot,slug,int(data.get("body",0))+1,direction,frame]
+	var original:String="res://assets/equipment_worn/%s/%s/base_variant_%02d/%s_%02d.png" % [slot,slug,int(data.get("body",0))+1,direction,frame]
+	if ResourceLoader.exists(original):return original
+	# Approved final item sprites take priority; these temporary previews use
+	# original item icon colors and outlines and need manual visual refinement.
+	return "res://assets/worn_gear/%s/base_variant_%02d/%s_%02d.png" % [slug,int(data.get("body",0))+1,direction,frame]
 
 func _create_worn_equipment_nodes()->void:
 	worn_equipment_sprites.clear()
