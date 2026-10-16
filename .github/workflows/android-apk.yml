@@ -60,6 +60,7 @@ jobs:
           python3 tools/apply_character_layers.py
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_sigils_currency.py
+          python3 tools/apply_cottage_cosmetic_shop.py
           python3 tools/apply_cottage_collections.py
           python3 tools/apply_ui_lifecycle_guard.py
           python3 tools/apply_guardian_weapon_quest.py
@@ -161,6 +162,7 @@ jobs:
           python3 tools/apply_character_layers.py
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_sigils_currency.py
+          python3 tools/apply_cottage_cosmetic_shop.py
           python3 tools/apply_cottage_collections.py
           python3 tools/apply_ui_lifecycle_guard.py
           python3 tools/apply_guardian_weapon_quest.py
@@ -170,6 +172,7 @@ jobs:
           # Generate only the pose-aligned equipment art; legacy oversized-icon previews remain archived in tools/.
           python3 tools/generate_worn_equipment_art.py
           python3 tools/generate_guardian_quest_weapons.py
+          godot --headless --path . --script res://tools/generate_home_cosmetics.gd
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -215,6 +218,7 @@ jobs:
           run_scene_test res://tests/monster_loot_test.gd 'ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS'
           run_scene_test res://tests/guardian_weapons_test.gd 'ADVENTURE ODYSSEY GUARDIAN WEAPONS TEST: PASS'
           run_scene_test res://tests/sigils_currency_test.gd 'ADVENTURE ODYSSEY SIGILS CURRENCY TEST: PASS'
+          run_scene_test res://tests/cottage_boutique_test.gd 'ADVENTURE ODYSSEY COTTAGE BOUTIQUE TEST: PASS'
           run_scene_test res://tests/cottage_collections_test.gd 'ADVENTURE ODYSSEY COTTAGE COLLECTIONS TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
@@ -242,6 +246,7 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/appearance_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/worn_gear_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/worn_equipment_icons_screenshot.gd
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/cottage_boutique_screenshot.gd
           test -s screenshots/worn_equipment_previews.png
           test -s screenshots/equipment_walk_pose_grid.png
           test -s screenshots/equipment_fit_8x4.png
@@ -281,6 +286,9 @@ jobs:
           test -s screenshots/equipment_headgear_on_hairstyles.png
           test -s screenshots/equipment_headgear_off_hairstyles.png
           test -s screenshots/ao_original_character_contact_sheet.png
+          test -s screenshots/cottage_sigil_boutique.png
+          test -s screenshots/cottage_premium_furniture.png
+          test -s screenshots/cottage_sigil_purchased.png
           ls -lh screenshots/character_creator.png
       - name: Upload visual QA screenshot
         uses: actions/upload-artifact@v4
@@ -365,6 +373,7 @@ jobs:
           python3 tools/apply_character_layers.py
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_sigils_currency.py
+          python3 tools/apply_cottage_cosmetic_shop.py
           python3 tools/apply_cottage_collections.py
           python3 tools/apply_ui_lifecycle_guard.py
           python3 tools/apply_guardian_weapon_quest.py
@@ -373,6 +382,7 @@ jobs:
           # Generate only the pose-aligned equipment art; legacy oversized-icon previews remain archived in tools/.
           python3 tools/generate_worn_equipment_art.py
           python3 tools/generate_guardian_quest_weapons.py
+          godot --headless --path . --script res://tools/generate_home_cosmetics.gd
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
@@ -449,6 +459,7 @@ jobs:
           run_scene_test res://tests/monster_loot_test.gd 'ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS'
           run_scene_test res://tests/guardian_weapons_test.gd 'ADVENTURE ODYSSEY GUARDIAN WEAPONS TEST: PASS'
           run_scene_test res://tests/sigils_currency_test.gd 'ADVENTURE ODYSSEY SIGILS CURRENCY TEST: PASS'
+          run_scene_test res://tests/cottage_boutique_test.gd 'ADVENTURE ODYSSEY COTTAGE BOUTIQUE TEST: PASS'
           run_scene_test res://tests/cottage_collections_test.gd 'ADVENTURE ODYSSEY COTTAGE COLLECTIONS TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
