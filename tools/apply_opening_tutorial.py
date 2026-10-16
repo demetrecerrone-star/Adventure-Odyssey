@@ -11,7 +11,7 @@ def rep(a,b):
     s=s.replace(a,b,1)
 
 rep('''\t\t"Use the left joystick or arrow keys to walk around. When you approach something interesting, tap TALK / USE to interact with it.",''',
-''' \t\t"Use the left joystick or arrow keys to walk. Approach a person, door or furnishing and tap TALK / USE to interact.",'''.lstrip())
+'''\t\t"Use the left joystick or arrow keys to walk. Approach a person, door or furnishing and tap TALK / USE to interact.",''')
 rep('''\t\t"Your storage chest keeps items safe, and the dressing mirror lets you change your look. Rest in bed whenever you need to recover.",''',
 '''\t\t"The chest stores equipment, your dressing mirror changes your look, and the bed restores health. All three remain yours whenever you return home.",''')
 rep('''\t\t"When you're ready, explore your home and head toward Elmwatch's Adventurers Guild. Your journey is just beginning."''',
