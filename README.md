@@ -25,10 +25,11 @@ After character confirmation, **new games** now awaken in a pixel-art bedroom.
 The bedroom now loads a separate illustrated room background and interchangeable furniture sprites through `scripts/bedroom_scene.gd`.
 Players can walk around the furniture, rest at the bed, transfer backpack items
 into persistent home storage, and revise their appearance at a mirror.
-The bottom doorway marks the **next** milestone (hallway, kitchen, living room,
-front door, and then Elmwatch Guild). It currently displays a transition message;
-the rest of the cottage is not yet implemented. Existing saves remain compatible,
-and the title screen and town/forest systems are unchanged.
+The bedroom doorway now opens the **cottage foyer**, which connects to the
+combined living room/kitchen and the outside entrance to Elmwatch Village.
+Players may also return from Elmwatch to the cottage, and then to the only
+bedroom. Existing saves remain compatible; the chest, mirror, bed, title
+screen, and town/forest gameplay are preserved.
 
 `tools/apply_bedroom_tutorial.py` installs this after the creator patches
 during CI and manually requested Android exports. CI also runs
@@ -52,3 +53,12 @@ CI applies `tools/apply_home_furniture.py` after the dialogue tutorial patch
 and tests the modular room using `tests/home_furniture_test.gd`.
 The checked-in sprites are lightweight previews; the high-resolution source
 sprites should replace the small previews before final art lock.
+
+## Starter cottage interior art and tests (October 2026)
+
+- The approved painted foyer is stored at `assets/home/approved_cottage_foyer.jpg` and rendered by `scripts/house_room_scene.gd` without changing its aspect ratio.
+- The combined living room/kitchen is playable and currently uses the code-drawn fallback in `house_room_scene.gd`. The approved living-room painting is **not yet a checked-in file**; the scene can load it from `assets/home/living_room_kitchen.png` once its source asset is made available.
+- The bedroom remains a single room with three functional, independently rendered starter-furniture sprites; alternate furniture remains future earned-in-game-currency cosmetics.
+- The foyer and living room/kitchen connect through the same talk/use interaction as other game objects; players can leave for Elmwatch and return via the cottage entrance in the southern-western area of the town map.
+- The kitchen pantry grants exactly one Health Potion per save and does not replenish on subsequent visits.
+- `tests/starter_house_test.gd` checks paintings, round-trip navigation, furniture separation and pantry persistence. `tests/starter_house_screenshot.gd` captures rendered foyer and living room previews into the visual QA artifact without exporting an APK.
