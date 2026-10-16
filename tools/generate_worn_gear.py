@@ -79,7 +79,7 @@ def cloak(dst,w,h,main,face):
     cx=w//2
     for y in range(57,min(125,h)):
         t=(y-57)/68
-        radius=int(16+13*t)
+        radius=int(20+16*t)
         # Wide flowing panels are drawn behind the body in front/side views.
         for x in range(cx-radius,cx+radius+1):
             d=abs(x-cx)
@@ -101,6 +101,32 @@ def hood(dst,w,h,main,face):
             shade=0.30 if edge<3 else 0.72 if (x+y)%9<5 else 0.92
             set_pixel(dst,w,h,x,y,tuple(int(c*shade) for c in main),245)
 
+def plated_armor(dst,w,h,main,face):
+    """Pixel-silhouette pauldrons and overlapping chestplate instead of a dyed tee."""
+    cx=w//2
+    half=15 if face in ("down","up") else 11
+    for y in range(61,87):
+        for x in range(cx-half,cx+half+1):
+            edge=(x==cx-half or x==cx+half or y==61 or y==86)
+            if edge:shade=0.22
+            elif abs(x-cx)<3:shade=0.79
+            elif y in (69,70,79,80):shade=0.45
+            else:shade=0.64+0.12*((x+y)%5==0)
+            steel=tuple(min(255,int(max(95,c)*shade+24)) for c in main)
+            set_pixel(dst,w,h,x,y,steel,253)
+    for sign in (-1,1):
+        shoulder=cx+sign*(half+2)
+        for y in range(62,73):
+            for x in range(shoulder-5,shoulder+6):
+                edge=(x in (shoulder-5,shoulder+5) or y in (62,72))
+                shade=0.2 if edge else 0.65 if y<67 else 0.51
+                set_pixel(dst,w,h,x,y,[min(255,max(100,c)*shade+24) for c in main],252)
+    # Small central crest gives the armor an unmistakable chestplate shape.
+    for y in range(68,77):
+        for x in range(cx-3,cx+4):
+            edge=(abs(x-cx)==3 or y in (68,76))
+            set_pixel(dst,w,h,x,y,(40,43,48) if edge else (178,142,78),253)
+
 def gloves(dst,w,h,main,source):
     skin=skin_reference(source,w)
     for y in range(72,min(98,h)):
@@ -120,13 +146,17 @@ def worn_sprite(item,definition,w,h,source,colors,cells,face):
     main=main_color(colors,cells)
     if slot=="armor":
         result=tint_layer(starter[0],main,w,h,kind)
+        if kind=="plate":
+            plated_armor(result,w,h,main,face)
         if kind=="cloth" and ("Robe" in item):
             cx=w//2
-            for y in range(87,107):
-                radius=int(13+(y-87)*.3)
+            for y in range(84,113):
+                radius=int(13+(y-84)*.27)
                 for x in range(cx-radius,cx+radius):
-                    shade=0.46 if x in (cx-radius,cx+radius-1) else 0.77
-                    set_pixel(result,w,h,x,y,[c*shade for c in main],235)
+                    edge=(x in (cx-radius,cx+radius-1))
+                    stripe=((x-cx)%8==0)
+                    shade=0.31 if edge else 0.64 if stripe else 0.79
+                    set_pixel(result,w,h,x,y,[c*shade for c in main],246)
     elif slot=="boots":
         result=tint_layer(starter[2],main,w,h,kind)
     elif slot=="gloves":
@@ -136,8 +166,15 @@ def worn_sprite(item,definition,w,h,source,colors,cells,face):
     elif slot=="cloak":
         cloak(result,w,h,main,face)
     elif slot=="weapon":
-        x=w//2+(4 if face in ("down","up") else -29 if face=="left" else 10)
-        draw_icon(result,w,h,colors,cells,x,69,30)
+        size=44 if kind in ("staff","spear","bow") else 40
+        x=w//2+(5 if face in ("down","up") else -36 if face=="left" else 12)
+        y=59 if kind in ("staff","spear","bow") else 65
+        if kind=="staff":
+            staff_x=x+size//2
+            for sy in range(y+6,min(120,y+size+12)):
+                set_pixel(result,w,h,staff_x,sy,(84,59,42),254)
+                set_pixel(result,w,h,staff_x+1,sy,(155,119,66),254)
+        draw_icon(result,w,h,colors,cells,x,y,size)
     elif slot=="accessory":
         x=w//2-6 if face in ("down","up") else w//2+(0 if face=="left" else -12)
         draw_icon(result,w,h,colors,cells,x,64,11)
