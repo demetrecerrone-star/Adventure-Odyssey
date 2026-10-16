@@ -48,7 +48,9 @@ func _copy_visible_sprite(parent:Node2D, source:Sprite2D) -> void:
 
 func _player_cell(game:Node, parent:Node, center:Vector2, magnification:float) -> void:
 	var anchor=Node2D.new()
-	anchor.position=center
+	# The in-world base sprite is offset above the actor origin. Normalize
+	# that shared offset for the contact sheet without changing layer spacing.
+	anchor.position=center-game.base_sprite.position*magnification
 	anchor.scale=Vector2(magnification,magnification)
 	parent.add_child(anchor)
 	var selected:Array=[game.base_sprite,game.hair_sprite]
