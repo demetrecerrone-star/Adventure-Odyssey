@@ -66,7 +66,7 @@ func _create_worn_equipment_nodes()->void:
 		node.visible=false
 		player.add_child(node)
 		worn_equipment_sprites[slot]=node
-	# Hair remains foremost except when future headgear artwork requests masking.
+	# Show the original hairstyle unless a complete helmet/hood sprite is visible.
 	base_sprite.z_index=1
 	for layer in starter_clothes_sprites.values():
 		if layer!=null and is_instance_valid(layer):layer.z_index=2
@@ -104,7 +104,7 @@ func _update_worn_equipment_frames()->void:
 	if starter_clothes_sprites.has("starter_shoes"):
 		starter_clothes_sprites["starter_shoes"].visible=not hide_shoes
 	if hair_sprite!=null and is_instance_valid(hair_sprite):
-		hair_sprite.visible=not (worn_equipment_sprites.has("head") and worn_equipment_sprites["head"].visible and facing=="up")
+		hair_sprite.visible=not (worn_equipment_sprites.has("head") and worn_equipment_sprites["head"].visible)
 '''
 p.write_text(s,encoding='utf8')
 print('AO EQUIPMENT VISUAL CONTROLLER: PASS / seven slots / pose-aware asset lookup / modest missing-art fallback')
