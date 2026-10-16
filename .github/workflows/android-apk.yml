@@ -148,6 +148,7 @@ jobs:
           python3 tools/generate_gear_art.py
           python3 tools/apply_item_art.py
           python3 tools/apply_app_icon.py
+          python3 tools/audit_character_sprites.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -229,6 +230,15 @@ jobs:
         with:
           name: Adventure-Odyssey-Character-Creator-Preview
           path: screenshots/*.png
+          if-no-files-found: error
+          retention-days: 15
+      - name: Upload unchanged player sprite baseline backup and audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: Adventure-Odyssey-Original-Player-Sprite-Backup
+          path: |
+            screenshots/ao_original_character_sprites.zip
+            screenshots/ao_character_sprite_baseline_manifest.json
           if-no-files-found: error
           retention-days: 15
   android-apk:
