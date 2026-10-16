@@ -34,7 +34,8 @@ func _run()->void:
 		for body in range(1,9):
 			var sheet:String="res://assets/guardian_weapon_sheets/%s/base_variant_%02d.png" % [slug,body]
 			if not _ok(ResourceLoader.exists(sheet),klass+" sheet for body "+str(body)):return
-			if not _ok(load(sheet).get_width()==231 and load(sheet).get_height()==512,"sheets are 3x4 synchronized 77x128 frames"):return
+			var source:Texture2D=load("res://assets/characters/base_variant_%02d/down_00.png" % body)
+			if not _ok(load(sheet).get_width()==source.get_width()*3 and load(sheet).get_height()==512,"sheets are correctly registered 3x4 body-specific poses"):return
 			expected_sheets+=1
 			for face in ["down","left","up","right"]:
 				for frame in range(3):
