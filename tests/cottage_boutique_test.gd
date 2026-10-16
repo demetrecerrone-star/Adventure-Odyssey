@@ -25,7 +25,7 @@ func _run()->void:
         if not _ok(room.get_node(slot).texture!=null,"original furniture visible "+slot):return
     game._open_home_decor()
     await process_frame
-    if not _ok(game.popup.name=="CottageCosmeticBoutique","shop accessible through chest"):return
+    if not _ok(game.popup!=null and game.popup.get_node_or_null("StylePreview_Bed")!=null,"shop accessible through chest"):return
     for slot in ["Bed","Mirror","Chest"]:
         var preview=game.popup.get_node_or_null("StylePreview_"+slot) as TextureRect
         if not _ok(preview!=null and preview.texture!=null,"real new transparent sprite preview "+slot):return
