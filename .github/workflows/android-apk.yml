@@ -47,6 +47,7 @@ jobs:
           python3 tools/apply_combat_feedback.py
           python3 tools/apply_slime_ai.py
           python3 tools/apply_class_skills.py
+          python3 tools/apply_skill_icons.py
           python3 tools/apply_app_icon.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
@@ -131,6 +132,7 @@ jobs:
           python3 tools/apply_combat_feedback.py
           python3 tools/apply_slime_ai.py
           python3 tools/apply_class_skills.py
+          python3 tools/apply_skill_icons.py
           python3 tools/apply_app_icon.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
@@ -159,6 +161,7 @@ jobs:
           run_scene_test res://tests/combat_feedback_test.gd 'ADVENTURE ODYSSEY COMBAT FEEDBACK TEST: PASS'
           run_scene_test res://tests/slime_ai_test.gd 'ADVENTURE ODYSSEY SLIME AI TEST: PASS'
           run_scene_test res://tests/class_skills_test.gd 'ADVENTURE ODYSSEY CLASS SKILLS TEST: PASS'
+          run_scene_test res://tests/skill_icons_test.gd 'ADVENTURE ODYSSEY SKILL ICONS TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
@@ -248,6 +251,7 @@ jobs:
           python3 tools/apply_combat_feedback.py
           python3 tools/apply_slime_ai.py
           python3 tools/apply_class_skills.py
+          python3 tools/apply_skill_icons.py
           python3 tools/apply_app_icon.py
           test -f project.godot
           test -f export_presets.cfg
@@ -307,6 +311,7 @@ jobs:
           run_scene_test res://tests/combat_feedback_test.gd 'ADVENTURE ODYSSEY COMBAT FEEDBACK TEST: PASS'
           run_scene_test res://tests/slime_ai_test.gd 'ADVENTURE ODYSSEY SLIME AI TEST: PASS'
           run_scene_test res://tests/class_skills_test.gd 'ADVENTURE ODYSSEY CLASS SKILLS TEST: PASS'
+          run_scene_test res://tests/skill_icons_test.gd 'ADVENTURE ODYSSEY SKILL ICONS TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
