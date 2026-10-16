@@ -2,7 +2,7 @@
 """Add distinct, save-compatible Odyssey Sigils and ready-for-art home styling.
 
 Runs after item_art, monster_loot and home_furniture. Sigils are separate from
-gold: early guild and one-time boss milestones grant small amounts. Only styles
+gold: rare boss RNG can award small amounts. Only styles
 with an actual installed sprite can be purchased; no blank or fictitious paid
 cosmetics. Preserve all original furniture and the approved app icon.
 """
@@ -34,11 +34,9 @@ rep('\t_label(popup,"Gold: %d   •   Collected supplies and equipment" % int(da
 rep('\t_label(popup,"More designs will be earnable with in-game gold in a future update.",290,511,703,42,17,Color("#b9cfd8"),true)',
 '''\t_draw_sigil_coin(popup,Vector2(296,517),29)
 \t_label(popup,"Sigils: %d  |  Special cottage styles use Sigils when their art arrives." % _sigils_balance(),336,510,671,42,16,Color("#b9cfd8"),true)''')
-# Once-only quest and boss rewards respect existing completion checks.
-rep('\t\t\tdata["guild_training_completed"]=true',
-    '\t\t\tdata["guild_training_completed"]=true\n\t\t\t_award_sigils(5)')
-rep('\t\t\tdata["guardian_defeated"]=true',
-    '\t\t\tdata["guardian_defeated"]=true\n\t\t\t_award_sigils(25)')
+# Sigils drop randomly from actual boss loot, not Guild quest handouts.
+# Future real-money purchase fulfillment will be implemented separately with
+# verified purchase records, not client-controlled awards or balance editing.
 
 s+='''
 # -- Two distinct currencies: gold for trades, Sigils for exclusive cosmetics.
