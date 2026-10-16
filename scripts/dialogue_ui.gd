@@ -49,11 +49,11 @@ func offer_quest_accept(handler: Callable) -> void:
 	# Keep the accept option available even after toggling ASK FOR ADVICE.
 	quest_accept_callback = handler
 	if mode == "npc":
-	    _render()
+		_render()
 
 func _accept_quest_pressed() -> void:
 	if quest_accept_callback.is_valid():
-	    quest_accept_callback.call()
+		quest_accept_callback.call()
 
 func _label(text_value: String, rect: Rect2, font_size: int, color: Color, centered: bool = false) -> Label:
 	var item = Label.new()
