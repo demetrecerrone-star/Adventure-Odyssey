@@ -41,7 +41,7 @@ func _run()->void:
         if sprite.name=="OdysseySigilCoin":
             coin_size=on_screen
             if not _ok(on_screen.x<=22.0 and on_screen.y<=22.0,"Sigil coin fits its header slot"):return
-        elif sprite.name=="CottagePreviewSprite":
+        elif sprite.name.begins_with("CottagePreviewSprite"):
             previews+=1
             if sprite.position.x<650.0:
                 if not _ok(on_screen.x<=51.0 and on_screen.y<=46.0,"small tier thumbnail stays beside label"):return
