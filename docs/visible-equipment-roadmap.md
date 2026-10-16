@@ -17,8 +17,8 @@
 
 ## 1. Sprite reconstruction (first visual review milestone)
 
-- [ ] Inventory every source character's frame dimensions, pivot/anchor, facing directions, animation count, proportions, and existing clothing areas.
-- [ ] Back up all original eight body variants and their directional sprites before any edits.
+- [x] Inventory all eight original source characters: 128 px high, 74–79 px wide depending on variant; 4 directions × 3 frames per body, centered Sprite2D with bottom-aligned anchor; clothing is baked into the source pixels. Audit recorded at `screenshots/ao_character_sprite_baseline_manifest.json` in CI artifact. ✅
+- [x] Back up all original eight body variants and separate hair sprites before edits: 240 original PNGs in `ao_original_character_sprites.zip`, plus SHA-256 manifest. Archived original source ZIP in `payload/` remains unchanged. ✅
 - [ ] Reconstruct neutral base-body art **from existing character artwork** without changing identity, proportions, face, hairstyle, or skin palette. Since clothing is baked in, redraw covered regions; do not assume deleting pixels yields a usable body.
 - [ ] Add permanent opaque, nonsexualized underwear as part of each base appearance (practical shorts; appropriate coverage on all character variants). Characters must never render unclothed.
 - [ ] Export matching idle/walk/combat directional frames for all eight body variants, preserving the project's native pixel resolution, frame registration, and alpha.
