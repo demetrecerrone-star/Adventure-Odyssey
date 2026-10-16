@@ -48,7 +48,7 @@ func _run() -> void:
     if not _check(scene._house_target() == "Front Door", "front door can be used"): return
     scene._interact()
     await process_frame
-    if not _check(scene.current_map == "town" and scene.npcs.size() == 8, "outside opens Elmwatch and existing NPCs"): return
+    if not _check(scene.current_map == "town" and scene.npcs.size() == 3, "outside opens Elmwatch and existing NPCs"): return
     if not _check(scene.data.get("tutorial_stage", "") == "elmwatch", "exit tutorial stage saved"): return
     scene.player.position = Vector2(540, 1095)
     if not _check(scene._near_cottage_entry(), "town cottage doorway nearby"): return

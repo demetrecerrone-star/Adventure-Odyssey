@@ -48,6 +48,6 @@ func _run()->void:
 	if not _check(int(scene.data["hair_tint"])==1 and scene.data["map"]=="bedroom","bedroom choices persist in saved game"):return
 	scene._enter_world("town",Vector2(1030,980))
 	await process_frame
-	if not _check(scene.npcs.size()==8 and scene.current_map=="town","old town remains accessible"):return
+	if not _check(scene.npcs.size()==3 and scene.current_map=="town","old town remains accessible"):return
 	print("ADVENTURE ODYSSEY BEDROOM TEST: PASS")
 	quit(0)

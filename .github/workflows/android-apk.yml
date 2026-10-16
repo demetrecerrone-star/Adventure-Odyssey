@@ -36,6 +36,11 @@ jobs:
           python3 tools/apply_dialogue_ui.py
           python3 tools/apply_home_furniture.py
           python3 tools/apply_starter_house.py
+          python3 tools/apply_elmwatch_art.py
+          python3 tools/apply_npc_life.py
+          python3 tools/apply_npc_interactions.py
+          python3 tools/apply_npc_presence.py
+          python3 tools/apply_interior_navigation.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
           from pathlib import Path
@@ -108,6 +113,11 @@ jobs:
           python3 tools/apply_dialogue_ui.py
           python3 tools/apply_home_furniture.py
           python3 tools/apply_starter_house.py
+          python3 tools/apply_elmwatch_art.py
+          python3 tools/apply_npc_life.py
+          python3 tools/apply_npc_interactions.py
+          python3 tools/apply_npc_presence.py
+          python3 tools/apply_interior_navigation.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -130,6 +140,10 @@ jobs:
           run_scene_test res://tests/home_furniture_test.gd 'ADVENTURE ODYSSEY HOME FURNITURE TEST: PASS'
           run_scene_test res://tests/starter_house_test.gd 'ADVENTURE ODYSSEY STARTER HOUSE TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
+          run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
+          run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'
+          run_scene_test res://tests/npc_presence_test.gd 'ADVENTURE ODYSSEY NPC PRESENCE TEST: PASS'
+          run_scene_test res://tests/interior_navigation_test.gd 'ADVENTURE ODYSSEY INTERIOR NAVIGATION TEST: PASS'
 
       - name: Capture native rendered character creator
         shell: bash
@@ -141,12 +155,18 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/creator_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/bedroom_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/starter_house_screenshot.gd
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/elmwatch_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/dialogue_screenshot.gd
           test -s screenshots/tutorial_dialogue.png
           test -s screenshots/npc_dialogue.png
           test -s screenshots/starter_bedroom.png
           test -s screenshots/starter_foyer.png
           test -s screenshots/starter_living.png
+          test -s screenshots/elmwatch_town.png
+          test -s screenshots/elmwatch_guild.png
+          test -s screenshots/elmwatch_market.png
+          test -s screenshots/elmwatch_inn.png
+          test -s screenshots/elmwatch_blacksmith.png
           test -s screenshots/character_creator.png
           ls -lh screenshots/character_creator.png
       - name: Upload visual QA screenshot
@@ -189,6 +209,11 @@ jobs:
           python3 tools/apply_dialogue_ui.py
           python3 tools/apply_home_furniture.py
           python3 tools/apply_starter_house.py
+          python3 tools/apply_elmwatch_art.py
+          python3 tools/apply_npc_life.py
+          python3 tools/apply_npc_interactions.py
+          python3 tools/apply_npc_presence.py
+          python3 tools/apply_interior_navigation.py
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
@@ -242,6 +267,10 @@ jobs:
           run_scene_test res://tests/home_furniture_test.gd 'ADVENTURE ODYSSEY HOME FURNITURE TEST: PASS'
           run_scene_test res://tests/starter_house_test.gd 'ADVENTURE ODYSSEY STARTER HOUSE TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
+          run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
+          run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'
+          run_scene_test res://tests/npc_presence_test.gd 'ADVENTURE ODYSSEY NPC PRESENCE TEST: PASS'
+          run_scene_test res://tests/interior_navigation_test.gd 'ADVENTURE ODYSSEY INTERIOR NAVIGATION TEST: PASS'
 
       - name: Build signed Android APK
         shell: bash

@@ -62,3 +62,11 @@ sprites should replace the small previews before final art lock.
 - The foyer and living room/kitchen connect through the same talk/use interaction as other game objects; players can leave for Elmwatch and return via the cottage entrance in the southern-western area of the town map.
 - The kitchen pantry grants exactly one Health Potion per save and does not replenish on subsequent visits.
 - `tests/starter_house_test.gd` checks paintings, round-trip navigation, furniture separation and pantry persistence. `tests/starter_house_screenshot.gd` captures rendered foyer and living room previews into the visual QA artifact without exporting an APK.
+
+## Reconciled Elmwatch NPC and town milestone (October 2026)
+
+The advanced Elmwatch town picture, painted interiors for the Adventurers Guild, Market, Lantern Inn and Blacksmith, and all eight existing named NPCs are now wired into the **main** build. No new NPCs or duplicated cottages were created. The newer single-bedroom + foyer + combined living/kitchen arrangement takes precedence over the older prototype cottage layout.
+
+NPCs have a save-persistent local world clock (starting at 9 AM), directional walking animations, morning/afternoon indoor work shifts, outdoor midday breaks and evening strolls, and overnight off-scene rest. Shop staff spawn only where their schedule places them. The healer restores HP; Captain Elara can complete the persistent three-slime training goal. Dialogue and town-to-business doorways work via TALK / USE. The shops do not yet implement purchase screens.
+
+CI smoke, starter-house, dialogue, Elmwatch visual, NPC routine/presence and indoor collision tests run against the reconstructed Godot source on every push, and CI captures five Elmwatch previews. Signed Android APK exports are still manual only. The approved living room/kitchen image still needs import; this integration leaves its temporary fallback untouched.

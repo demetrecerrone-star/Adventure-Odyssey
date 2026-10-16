@@ -38,12 +38,14 @@ func _run() -> void:
 	await process_frame
 	scene._enter_world("town", Vector2(1030,980))
 	await process_frame
-	if not _check(scene.npcs.size() == 8, "town NPCs preserved"): return
+	scene.data["world_minutes"] = 720.0
+	scene._tick_world_time(0.0)
+	if not _check(scene.npcs.size() == 8, "all eight NPCs present on their midday break"): return
 	for npc in scene.npcs:
 		scene._show_npc_chat(npc)
 		await process_frame
 		if not _check(scene.popup.mode == "npc" and scene.popup.npc_name == npc["name"], "named NPC chat: " + str(npc["name"])): return
-		if not _check(scene.popup.npc_role == npc["role"] and not scene.popup.npc_advice.is_empty(), "role/advice bound: " + str(npc["name"])): return
+		if not _check(scene.popup.npc_role.begins_with(npc["role"]) and not scene.popup.npc_advice.is_empty(), "role/advice bound: " + str(npc["name"])): return
 		if not _check(scene.popup.body_label.text == npc["dialogue"], "existing NPC text retained: " + str(npc["name"])): return
 		if not _check(scene.popup.primary_button.size.x >= 190 and scene.popup.secondary_button.size.y >= 50, "touch-sized NPC choices"): return
 		scene.popup.body_label.visible_characters = -1
@@ -52,7 +54,7 @@ func _run() -> void:
 		scene.popup._on_secondary()
 		await process_frame
 		if not _check(scene.popup == null, "goodbye closes NPC dialogue"): return
-	scene.player.position=Vector2(915,870)
+	scene.player.position=scene.npcs[0]["node"].position+Vector2(25,12)
 	scene._interact()
 	await process_frame
 	if not _check(scene.popup!=null and scene.popup.mode=="npc" and scene.popup.npc_name=="Ilyan Crest","TALK / USE opens NPC conversation"):return
