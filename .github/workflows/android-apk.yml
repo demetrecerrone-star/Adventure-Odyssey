@@ -61,6 +61,7 @@ jobs:
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_sigils_currency.py
           python3 tools/apply_cottage_collections.py
+          python3 tools/apply_cottage_gold_shop.py
           python3 tools/apply_ui_lifecycle_guard.py
           python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_oldstone_dungeon.py
@@ -162,6 +163,7 @@ jobs:
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_sigils_currency.py
           python3 tools/apply_cottage_collections.py
+          python3 tools/apply_cottage_gold_shop.py
           python3 tools/apply_ui_lifecycle_guard.py
           python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_oldstone_dungeon.py
@@ -216,6 +218,7 @@ jobs:
           run_scene_test res://tests/guardian_weapons_test.gd 'ADVENTURE ODYSSEY GUARDIAN WEAPONS TEST: PASS'
           run_scene_test res://tests/sigils_currency_test.gd 'ADVENTURE ODYSSEY SIGILS CURRENCY TEST: PASS'
           run_scene_test res://tests/cottage_collections_test.gd 'ADVENTURE ODYSSEY COTTAGE COLLECTIONS TEST: PASS'
+          run_scene_test res://tests/cottage_gold_shop_test.gd 'ADVENTURE ODYSSEY COTTAGE GOLD SHOP TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
@@ -232,6 +235,7 @@ jobs:
           mkdir -p screenshots
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/creator_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/bedroom_screenshot.gd
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/cottage_shop_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/oldstone_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/starter_house_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/elmwatch_screenshot.gd
@@ -252,6 +256,12 @@ jobs:
           test -s screenshots/tutorial_dialogue.png
           test -s screenshots/npc_dialogue.png
           test -s screenshots/starter_bedroom.png
+          test -s screenshots/cottage_gold_shop_menu.png
+          test -s screenshots/cottage_sigil_shop_menu.png
+          test -s screenshots/cottage_gold_furniture_room.png
+          test -s screenshots/cottage_noble_queen_room.png
+          test -s screenshots/cottage_castle_king_room.png
+          test -s screenshots/cottage_royal_unisex_room.png
           test -s screenshots/oldstone_entrance.png
           test -s screenshots/oldstone_halls.png
           test -s screenshots/oldstone_library.png
@@ -366,6 +376,7 @@ jobs:
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_sigils_currency.py
           python3 tools/apply_cottage_collections.py
+          python3 tools/apply_cottage_gold_shop.py
           python3 tools/apply_ui_lifecycle_guard.py
           python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_oldstone_dungeon.py
@@ -450,6 +461,7 @@ jobs:
           run_scene_test res://tests/guardian_weapons_test.gd 'ADVENTURE ODYSSEY GUARDIAN WEAPONS TEST: PASS'
           run_scene_test res://tests/sigils_currency_test.gd 'ADVENTURE ODYSSEY SIGILS CURRENCY TEST: PASS'
           run_scene_test res://tests/cottage_collections_test.gd 'ADVENTURE ODYSSEY COTTAGE COLLECTIONS TEST: PASS'
+          run_scene_test res://tests/cottage_gold_shop_test.gd 'ADVENTURE ODYSSEY COTTAGE GOLD SHOP TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
