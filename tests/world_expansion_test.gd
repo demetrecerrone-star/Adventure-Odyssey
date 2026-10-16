@@ -50,11 +50,21 @@ func _run()->void:
 	if not _check(bool(scene.data.get("guardian_defeated",false)),"boss defeated flag stored"):return
 	if not _check(scene._sigils_balance() in [0,5],"boss-only Sigils are a rare 5-Sigil roll, not a guaranteed 25"):return
 	var first_boss_sigils:int=scene._sigils_balance()
-	if not _check(int(scene.data["inventory"].get("Guardian Relic",0))==1,"boss unique relic dropped once"):return
+	if not _check(scene.data.get("guardian_quest_state","")=="ready","story quest becomes claimable"):return
+	if not _check(int(scene.data["inventory"].get("Guardian Relic",0))==0,"relic waits for quest claim"):return
 	scene._enter_world("ruins",Vector2(1900,655))
 	scene._enter_world("sanctum",Vector2(175,650))
-	if not _check(scene.mobs.is_empty(),"guardian cannot be farmed by re-entry"):return
-	if not _check(scene._sigils_balance()==first_boss_sigils,"guardian Sigils cannot be farmed on re-entry"):return
+	if not _check(scene.mobs.is_empty(),"story instance remains complete until claimed"):return
+	if not _check(scene._claim_guardian_quest_reward(),"quest can be claimed once"):return
+	if not _check(int(scene.data["inventory"].get("Guardian Relic",0))==1,"quest awards unique relic"):return
+	if not _check(int(scene.data["inventory"].get("Oldstone Oathblade",0))==1,"class reward delivered"):return
+	if not _check(scene._sigils_balance()==first_boss_sigils+30,"quest bonus adds thirty Sigils"):return
+	if not _check(not scene._claim_guardian_quest_reward(),"repeat claim denied"):return
+	scene._dismiss_message()
+	scene.data["guardian_last_defeat_unix"]=Time.get_unix_time_from_system()-61.0
+	scene._enter_world("ruins",Vector2(1900,655))
+	scene._enter_world("sanctum",Vector2(175,650))
+	if not _check(scene.mobs.size()==1,"boss returns after sixty second cooldown"):return
 	if not _check(scene._save() and scene._load_save() and bool(scene.data["guardian_defeated"]),"boss progress saved"):return
 	print("ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS")
 	quit(0)
