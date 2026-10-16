@@ -149,5 +149,28 @@ new_active=new_active.replace("    ","\t")
 if game.count(old_active)!=1:
     raise SystemExit("COTTAGE GOLD SHOP: collection save migration anchor changed")
 game=game.replace(old,new,1).replace(old_active,new_active,1)
+# Tidy original Sigil collection panel spacing for phone-scale readability.
+# Do not alter assets or costs, only where the existing Godot controls render.
+replacements = (
+    ('_draw_sigil_coin(popup,Vector2(1014,78),32)',
+     '_draw_sigil_coin(popup,Vector2(953,79),20)'),
+    ('_label(popup,"%d SIGILS" % _sigils_balance(),1050,79,157,34,19',
+     '_label(popup,"%d SIGILS" % _sigils_balance(),1043,82,161,32,18'),
+    ('_cottage_image(popup,picture_path,Rect2(103,y+8,80,73))',
+     '_cottage_image(popup,picture_path,Rect2(111,y+22,49,44))'),
+    ('_cottage_image(popup,path,Rect2(677+j*162,391,146,132))',
+     '_cottage_image(popup,path,Rect2(685+j*162,382,132,112))'),
+    ('_label(popup,slot.to_upper(),681+j*162,532,142,29,17',
+     '_label(popup,slot.to_upper(),681+j*162,509,142,25,16'),
+    ('_label(popup,"EQUIPPED",824,559,201,29,19',
+     '_label(popup,"EQUIPPED",824,556,201,28,18'),
+    ('_button(popup,"EQUIP THIS STYLE",812,555,230,41',
+     '_button(popup,"EQUIP THIS STYLE",812,547,230,41'),
+)
+for original, replacement in replacements:
+    if game.count(original) != 1:
+        raise SystemExit("COTTAGE SHOP LAYOUT ANCHOR FAILED: " + original)
+    game = game.replace(original, replacement, 1)
+
 game_file.write_text(game,encoding="utf-8")
 print("AO COTTAGE GOLD SHOP: three independent illustrated upgrades and persistent currency-safe inventory.")
