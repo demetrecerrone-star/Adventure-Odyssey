@@ -61,6 +61,7 @@ jobs:
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_sigils_currency.py
           python3 tools/apply_ui_lifecycle_guard.py
+          python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_app_icon.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
@@ -159,10 +160,12 @@ jobs:
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_sigils_currency.py
           python3 tools/apply_ui_lifecycle_guard.py
+          python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_app_icon.py
           python3 tools/audit_character_sprites.py
           # Generate only the pose-aligned equipment art; legacy oversized-icon previews remain archived in tools/.
           python3 tools/generate_worn_equipment_art.py
+          python3 tools/generate_guardian_quest_weapons.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -205,6 +208,7 @@ jobs:
           run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
           run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
           run_scene_test res://tests/monster_loot_test.gd 'ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS'
+          run_scene_test res://tests/guardian_weapons_test.gd 'ADVENTURE ODYSSEY GUARDIAN WEAPONS TEST: PASS'
           run_scene_test res://tests/sigils_currency_test.gd 'ADVENTURE ODYSSEY SIGILS CURRENCY TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
@@ -340,9 +344,11 @@ jobs:
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_sigils_currency.py
           python3 tools/apply_ui_lifecycle_guard.py
+          python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_app_icon.py
           # Generate only the pose-aligned equipment art; legacy oversized-icon previews remain archived in tools/.
           python3 tools/generate_worn_equipment_art.py
+          python3 tools/generate_guardian_quest_weapons.py
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
@@ -416,6 +422,7 @@ jobs:
           run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
           run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
           run_scene_test res://tests/monster_loot_test.gd 'ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS'
+          run_scene_test res://tests/guardian_weapons_test.gd 'ADVENTURE ODYSSEY GUARDIAN WEAPONS TEST: PASS'
           run_scene_test res://tests/sigils_currency_test.gd 'ADVENTURE ODYSSEY SIGILS CURRENCY TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
