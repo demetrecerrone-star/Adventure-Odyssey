@@ -38,7 +38,7 @@
 - [ ] Use shared per-frame attachment points / offsets so gear follows walking, attacks, skills, turns and idle animation.
 - [x] Wire all seven equipment visual slots to inventory equip/unequip events without class gates; handle blank slots gracefully and preserve save data. All 34 equippable catalog entries passed Godot visibility regression tests (run 38908862777). ✅
 - [x] Add safe missing-art fallback (starter clothes stay visible, no unclothed sprite) and basic hood/hair occlusion handling. ✅
-- [ ] Inspect each helmet + hairstyle combination and manually refine hair masks as needed.
+- [ ] Visually review every helmet/hood silhouette on all appearances. Current approved behavior: when headgear artwork is present, temporarily hide all hair in every direction. Hair masking and visible bangs are **deferred optional cosmetics**, not a release requirement.
 - [x] Preserve existing equipment saves, with equipped visual layers resynchronized after saving/loading and map transitions; cosmetic style additions remain future scope. ✅
 
 **Acceptance:** On an in-game test character, equipping and removing a hood, chest piece, cloak, gloves, boots and weapon produces correct visible changes with no obvious gaps or clipping while moving.
@@ -107,7 +107,13 @@ Generator `tools/generate_worn_gear.py` prepares 34 prototype worn sprites using
 
 ### Current verified checkpoint
 
-The source sprite and first-pass equipment art system is functional, not yet final art. Full Godot build validation: [run 38909843330](https://github.com/demetrecerrone-star/Adventure-Odyssey/actions/runs/38909843330). The first 34 paired inventory-icon/worn-icon drafts have been rendered and user-visible reviews provided. Remaining visual polish includes pixel-level clothing reconstruction, better face/hood and all hairstyle masks, gloves and jewelry readability, attack animations, and actual Android emulator checks. Do **not** check off the final art, icon approval, or Android tasks solely from a first-pass render.
+The source sprite and first-pass equipment art system is functional, not yet final art. Full Godot build validation: [run 38909843330](https://github.com/demetrecerrone-star/Adventure-Odyssey/actions/runs/38909843330). The first 34 paired inventory-icon/worn-icon drafts have been rendered and user-visible reviews provided. Remaining visual polish includes pixel-level clothing reconstruction, cleaner hood/headgear silhouettes; optional hair masks are deferred, gloves and jewelry readability, attack animations, and actual Android emulator checks. Do **not** check off the final art, icon approval, or Android tasks solely from a first-pass render.
+
+### Headgear simplification — approved direction (October 16, 2026)
+
+- Hair and headgear remain separate assets; **all hair is temporarily hidden whenever a valid visible hood or helmet equips into the head slot**, regardless of facing. Unequipping (or missing headgear art) restores the original hairstyle, its chosen tint, and the unchanged hair texture. No per-pixel clipping/masks in this milestone.
+- The earlier experimental `tools/apply_headgear_hair_masks.py` prototype was removed from the workflow and source tree; its Git history remains for future optional cosmetic research. No new save fields, equipment restrictions, or item IDs.
+- Headgear tests verify the visible state and restore behavior across every hairstyle, eight body variants, and all 12 direction/walk combinations. Leave visual-polish acceptance unchecked until the latest Godot validation and actual screenshots are reviewed.
 
 ### Live-renderer visual QA
 
@@ -115,7 +121,7 @@ The source sprite and first-pass equipment art system is functional, not yet fin
 
 ### Second-pass pixel cleanup (awaiting Godot CI and visual approval)
 
-Refined opaque original-variant underwear bases: paint out the starter shirt's engraved emblem and bulky boot silhouettes; retain a sleeveless slate undershirt, modest charcoal boxer shorts, and smaller bare feet beneath independently removable starter clothes. Keep eight body variants × four facings × three original frames registered to exact original sizes, with first-pass output still requiring manual pixel review. In the equipment renderer, show front/side hair beneath the hood silhouette while hiding it for rear-facing hoods, and depth-order held weapons behind the body while facing up. `tests/character_polish_test.gd` runs new body/undergarment and existing class/equipment validation; no APK on push.
+Refined opaque original-variant underwear bases: paint out the starter shirt's engraved emblem and bulky boot silhouettes; retain a sleeveless slate undershirt, modest charcoal boxer shorts, and smaller bare feet beneath independently removable starter clothes. Keep eight body variants × four facings × three original frames registered to exact original sizes, with first-pass output still requiring manual pixel review. In the equipment renderer, hide the hairstyle entirely whenever an actual hood or helmet overlay is visible (in every facing); restore the original hairstyle and tint when removed, and depth-order held weapons behind the body while facing up. `tests/character_polish_test.gd` runs new body/undergarment and existing class/equipment validation; no APK on push.
 
 
 ## Development handoff: parallel gameplay track (preserved)
@@ -129,7 +135,7 @@ This is a sequence of work areas, not a separate game, replacement class system,
 - [x] Preserve eight appearance variants, six unrestricted-equipment classes, 34 equippable item IDs, their saves, and the existing creator/home/town systems.
 - [x] Implement pixel cleanup for shirt/boots and directional hood/hair layering; engineering changes confirmed in build run [38912129559](https://github.com/demetrecerrone-star/Adventure-Odyssey/actions/runs/38912129559). **Art approval still open.**
 - [x] Validate rear-facing weapon placement, hood/hair visibility, front/back cloak depth and restored starter garments for every 8-body × 4-facing × 3-walk-frame combination; `tests/character_polish_test.gd` passed in [run 38913149934](https://github.com/demetrecerrone-star/Adventure-Odyssey/actions/runs/38913149934). ✅
-- [ ] Review actual updated Godot screen captures at native gameplay size; clean remaining clothing seams, silhouettes, helmets and weapon grip placement.
+- [ ] Review actual updated Godot screen captures at native gameplay size; clean remaining clothing seams, silhouettes, headgear and weapon grip placement.
 - [ ] Add and validate equipped attack, casting and skill-animation attachment frames; current walk/idle sprite previews must not be mistaken for complete combat animation.
 - [ ] Validate visually on Android emulator; only export signed test APK after explicit approval.
 
