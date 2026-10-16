@@ -107,5 +107,17 @@ func _sell_monster_material(item:String)->void:
     _refresh_hud()
     _open_item_inventory()
 '''
+# The historical game script uses tabs; keep appended GDScript in that style.
+marker="\n# -- Field loot, material trade-in, and anti-duplicate reward accounting -------"
+assert s.count(marker)==1
+prefix,gd=s.split(marker,1)
+gd=marker+gd
+lines=[]
+for line in gd.split("\n"):
+    spaces=len(line)-len(line.lstrip(" "))
+    if spaces and spaces%4:
+        raise SystemExit("AO LOOT INDENTATION: unexpected mixed indentation")
+    lines.append("\t"*(spaces//4)+line[spaces:])
+s=prefix+"\n".join(lines)
 p.write_text(s,encoding="utf8")
 print("AO MONSTER LOOT: PASS / creature tables, gold rewards, material sales, single-claim protection")
