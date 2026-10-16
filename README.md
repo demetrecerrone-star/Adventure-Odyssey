@@ -129,3 +129,7 @@ All 24 existing skills now drive lightweight animated vector combat cues, with u
 ## Equipment, weapon proficiency and Elmwatch economy
 
 Mara Fenwick's market, Brann Ironhand's forge and Tamsin Reed's inn now have functioning interactions. Any class may equip swords, axes, bows, armor and accessories, with damage/defense bonuses and plate movement tradeoffs. Weapon-type proficiency grows through use and persists across saves; forge upgrades use earned gold and Iron Ore, with a three-upgrade cap. Shops buy and sell items for earned currency; equipped items cannot be sold accidentally. Inn beds restore HP and advance the in-game clock for four gold. Existing character saves migrate to empty equipment safely; original 18 starting skills and character appearance remain intact. Regression: tests/economy_test.gd.
+
+## Dedicated mage and assassin mentor characters
+
+Mira Ashwood and Kael Rook no longer share Neris and Garrick's visible sprite artwork. Their new SVG character designs have distinct mage/assassin garments, colors, silhouettes, faces, weapons, and four facing directions; a subtle walk bob replaces duplicated animation for these characters. Their NPC dialogue portraits use their corresponding artwork. This is a first-pass stylized game-ready vector sprite set; hand-animated multi-frame pixel art can be refined later. The original eight NPC assets and routines remain unchanged. Regression: tests/mentor_art_test.gd.
