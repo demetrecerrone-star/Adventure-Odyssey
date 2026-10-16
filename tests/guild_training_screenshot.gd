@@ -28,7 +28,8 @@ func _run()->void:
     scene._enter_world("forest",Vector2(450,650))
     scene._dismiss_message()
     scene.player.position=Vector2(550,500)
-    for i in range(15):await process_frame
+    scene._attack()
+    for i in range(10):await process_frame
     if not _snap("thornbrook_combat.png"):
         push_error("GUILD SCREENSHOT FAILED: forest combat")
         quit(1)

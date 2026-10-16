@@ -44,6 +44,7 @@ jobs:
           python3 tools/apply_opening_tutorial.py
           python3 tools/apply_guild_training.py
           python3 tools/apply_forest_background.py
+          python3 tools/apply_combat_feedback.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
           from pathlib import Path
@@ -124,6 +125,7 @@ jobs:
           python3 tools/apply_opening_tutorial.py
           python3 tools/apply_guild_training.py
           python3 tools/apply_forest_background.py
+          python3 tools/apply_combat_feedback.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -148,6 +150,7 @@ jobs:
           run_scene_test res://tests/opening_tutorial_test.gd 'ADVENTURE ODYSSEY OPENING TUTORIAL TEST: PASS'
           run_scene_test res://tests/guild_training_test.gd 'ADVENTURE ODYSSEY GUILD TRAINING TEST: PASS'
           run_scene_test res://tests/forest_background_test.gd 'ADVENTURE ODYSSEY FOREST BACKGROUND TEST: PASS'
+          run_scene_test res://tests/combat_feedback_test.gd 'ADVENTURE ODYSSEY COMBAT FEEDBACK TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
           run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'
@@ -229,6 +232,7 @@ jobs:
           python3 tools/apply_opening_tutorial.py
           python3 tools/apply_guild_training.py
           python3 tools/apply_forest_background.py
+          python3 tools/apply_combat_feedback.py
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
@@ -284,6 +288,7 @@ jobs:
           run_scene_test res://tests/opening_tutorial_test.gd 'ADVENTURE ODYSSEY OPENING TUTORIAL TEST: PASS'
           run_scene_test res://tests/guild_training_test.gd 'ADVENTURE ODYSSEY GUILD TRAINING TEST: PASS'
           run_scene_test res://tests/forest_background_test.gd 'ADVENTURE ODYSSEY FOREST BACKGROUND TEST: PASS'
+          run_scene_test res://tests/combat_feedback_test.gd 'ADVENTURE ODYSSEY COMBAT FEEDBACK TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
           run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'
