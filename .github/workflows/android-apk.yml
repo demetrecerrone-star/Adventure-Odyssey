@@ -153,6 +153,8 @@ jobs:
           python3 tools/apply_character_layers.py
           python3 tools/apply_app_icon.py
           python3 tools/audit_character_sprites.py
+          python3 tools/generate_player_appearance.py
+          python3 tools/apply_player_appearance.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -185,6 +187,7 @@ jobs:
           run_scene_test res://tests/skillbook_vfx_test.gd 'ADVENTURE ODYSSEY SKILLBOOK VFX TEST: PASS'
           run_scene_test res://tests/economy_test.gd 'ADVENTURE ODYSSEY ECONOMY TEST: PASS'
           run_scene_test res://tests/item_art_test.gd 'ADVENTURE ODYSSEY ITEM ART TEST: PASS'
+          run_scene_test res://tests/appearance_layers_test.gd 'ADVENTURE ODYSSEY APPEARANCE LAYERS TEST: PASS'
           run_scene_test res://tests/character_layers_test.gd 'ADVENTURE ODYSSEY CHARACTER LAYERS TEST: PASS'
           run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
           run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
@@ -303,6 +306,8 @@ jobs:
           python3 tools/generate_character_layers.py
           python3 tools/apply_character_layers.py
           python3 tools/apply_app_icon.py
+          python3 tools/generate_player_appearance.py
+          python3 tools/apply_player_appearance.py
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
@@ -366,6 +371,7 @@ jobs:
           run_scene_test res://tests/skillbook_vfx_test.gd 'ADVENTURE ODYSSEY SKILLBOOK VFX TEST: PASS'
           run_scene_test res://tests/economy_test.gd 'ADVENTURE ODYSSEY ECONOMY TEST: PASS'
           run_scene_test res://tests/item_art_test.gd 'ADVENTURE ODYSSEY ITEM ART TEST: PASS'
+          run_scene_test res://tests/appearance_layers_test.gd 'ADVENTURE ODYSSEY APPEARANCE LAYERS TEST: PASS'
           run_scene_test res://tests/character_layers_test.gd 'ADVENTURE ODYSSEY CHARACTER LAYERS TEST: PASS'
           run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
           run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
