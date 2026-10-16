@@ -14,7 +14,7 @@
 - [x] Connect existing item icons to equipment, backpack and shop menus; save/load equipped items.
 - [x] Godot automated item art/equipment validation was passing at the last reported equipment milestone.
 - [x] Prototype source-derived underwear/base and independently rendered starter top/bottoms/footwear sprites in Godot; **visual approval still pending**. ✅
-- [ ] Visible *equipped* armor, hoods, gloves, cloaks, boots, accessories and weapons on player sprites (not yet built; do not confuse with working equipment menus).
+- [x] First-pass visible *equipped* armor, hoods, gloves, cloaks, boots, accessories and weapons now render on player sprites from per-frame worn art (34 items). Technical implementation passed Godot run 38909843330. **Visual polish and approval remain open.** ✅
 
 ## 1. Sprite reconstruction (first visual review milestone)
 
@@ -59,9 +59,9 @@
 
 ## 4. Game integration and regression tests
 
-- [ ] Implement the Godot equipment visual controller using body variant, direction, animation frame, equipped item IDs and saved appearance.
-- [ ] Keep stats, weapon proficiency, gold/shop systems, skill effects and the 18 starting abilities independent of clothing visuals.
-- [ ] Add automated checks for layer presence, item-to-sprite lookup, equipped/unequipped changes, save compatibility, and fallback behavior.
+- [x] Implement the Godot equipment visual controller using body variant, direction, animation frame, equipped item IDs and saved appearance; Godot worn-art validation passed. ✅
+- [x] Keep stats, weapon proficiency, gold/shop systems, skill effects and the 18 starting abilities independent of the visuals; existing Godot gameplay regression suite passed with the overlays. ✅
+- [x] Add and pass automated checks for layer presence, item-to-sprite lookup, equipped/unequipped changes, save compatibility, and missing-art fallback behavior. ✅
 - [ ] Test **8 body variants × 4 facing directions**, representative idle/walk/attack frames, all **6 classes**, and mixed equipment combinations.
 - [ ] Verify accessibly sized equipment/menu icons and no touch HUD overlap on the Samsung Galaxy S23 FE landscape target.
 - [ ] Capture and share **actual Godot screenshots**, not visual concept art, of base underwear, starting clothes, fully equipped characters, inventory icons, and the character moving in four directions.
@@ -104,3 +104,7 @@ Generator `tools/generate_worn_gear.py` prepares 34 prototype worn sprites using
 
 ### Matched wearable equipment art, second visual review milestone
 `tools/generate_worn_equipment_art.py` generates 3,264 **individual, frame-aligned 128px body-size** transparent worn sprite layers for all 34 equipable items (12 weapons, 12 armor, 10 accessories) covering eight body variants, four facing directions and three movement frames. This is *new hand-authored first-pass pixel art* using a palette matching the item motifs, not replacements for the four approved concept sheets. Alongside worn art it generates **34 alternate icon previews** in `assets/equipment_item_icons/` cropped from the very same worn sprites. Original `assets/items/*.svg`, body sprites, compass icon and saved item IDs stay untouched. The seven-slot Godot renderer already prioritizes these full-size correctly attached sprite layers over the old proof-of-concept enlarged icon visual fallbacks. `tests/worn_equipment_art_test.gd` checks item/slot parity, icon dimensions, every body/facing/frame, six-class equip freedom and saves. Native Godot QA captures full loadouts and all alternate icons; do not mark final art approved until reviewed.
+
+### Current verified checkpoint
+
+The source sprite and first-pass equipment art system is functional, not yet final art. Full Godot build validation: [run 38909843330](https://github.com/demetrecerrone-star/Adventure-Odyssey/actions/runs/38909843330). The first 34 paired inventory-icon/worn-icon drafts have been rendered and user-visible reviews provided. Remaining visual polish includes pixel-level clothing reconstruction, better face/hood and all hairstyle masks, gloves and jewelry readability, attack animations, and actual Android emulator checks. Do **not** check off the final art, icon approval, or Android tasks solely from a first-pass render.
