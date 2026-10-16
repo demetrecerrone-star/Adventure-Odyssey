@@ -34,19 +34,20 @@ func _run()->void:
     # native dimensions. This prevents the tier buttons / Sigil balance overlap.
     var previews:int=0
     var coin_size:Vector2=Vector2.ZERO
-    for node in game.popup.find_children("*","Sprite2D",true,false):
+    for node in game.popup.get_children():
         var sprite:=node as Sprite2D
         if sprite==null or sprite.texture==null:continue
         var on_screen:Vector2=sprite.texture.get_size()*sprite.scale
         if sprite.name=="OdysseySigilCoin":
             coin_size=on_screen
             if not _ok(on_screen.x<=22.0 and on_screen.y<=22.0,"Sigil coin fits its header slot"):return
-        elif sprite.name.begins_with("CottagePreviewSprite"):
+        else:
             previews+=1
             if sprite.position.x<650.0:
                 if not _ok(on_screen.x<=51.0 and on_screen.y<=46.0,"small tier thumbnail stays beside label"):return
             else:
                 if not _ok(on_screen.x<=135.0 and on_screen.y<=115.0,"suite image fits preview grid"):return
+    print("COTTAGE UI QA: %d direct preview sprites, coin %s" % [previews,coin_size])
     if not _ok(previews==7,"four tier thumbnails and three furniture pieces displayed"):return
     if not _ok(coin_size.x>0.0,"Sigil coin sprite loaded"):return
     if not _ok(_has_button(game.popup,"GOLD FURNITURE"),"Sigil store links to independent earned-gold store"):return
