@@ -56,7 +56,7 @@ func _run()->void:
 	if not _check(slime["node"].position.distance_to(scene.player.position)>=d,"retreat moves away from player"):return
 	# Lost player makes slime return toward home without clipping.
 	scene.player.position=Vector2(120,655)
-	slime["node"].position=home+Vector2(335,0)
+	slime["node"].position=home+Vector2(0,335)
 	slime["state"]="pursue"
 	scene._tick_slime_ai(0.1)
 	if not _check(slime["state"]=="return","leash breaks pursuit"):return
