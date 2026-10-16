@@ -85,11 +85,11 @@ rep('''	summon_actor=null
 	#''') if False else None
 # End of _enter_world currently followed by more setup; keep one anchored line.
 rep('''	summon_actor=null
-	npc_presence_key=_presence_window()''',
+	world=Node2D.new()''',
 '''	summon_actor=null
 	mentor_skill_cooldown=0.0
 	mentor_smoke_timer=0.0
-	npc_presence_key=_presence_window()''')
+	world=Node2D.new()''')
 rep('''	_button(hud,"SAVE",1024,158,216,43,_save)''',
 '''	_button(hud,"SAVE",1024,158,216,43,_save)
 	if _has_mentor_skill():_add_mentor_skill_button()''')
