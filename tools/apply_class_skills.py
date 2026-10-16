@@ -54,7 +54,12 @@ rep('''	_button(hud,"ATTACK",1022,558,218,60,_attack)''',
 '''	_button(hud,"ATTACK",1022,558,218,60,_attack)
 	var skills:Array=_starter_skills()
 	for slot in range(3):
-		_button(hud,str(skills[slot]["name"]).to_upper(),510+slot*169,579,165,60,_use_starting_skill.bind(slot))''')
+		var name:String=str(skills[slot]["name"]).to_upper()
+		_button(hud,name,510+slot*169,579,165,60,_use_starting_skill.bind(slot))
+		# Long names must remain fully visible on a phone landscape screen.
+		for child in hud.get_children():
+			if child is Button and child.text==name:
+				child.add_theme_font_size_override("font_size",18)''')
 
 rep('''	if who=="Captain Elara Voss" and not bool(data.get("slime_training_accepted",false))''',
 '''	# Starter abilities are available immediately; mentors will later offer
