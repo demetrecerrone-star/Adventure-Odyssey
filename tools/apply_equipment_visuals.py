@@ -35,7 +35,7 @@ s+='''
 # No enlarged inventory icons are used as character art. Files must be
 # purpose-drawn 128px-high sprites aligned to the underlayer pose.
 const WORN_EQUIPMENT_SLOTS=["cloak","armor","gloves","boots","weapon","head","accessory"]
-const WORN_DRAW_ORDER={"cloak":-1,"armor":1,"gloves":2,"boots":2,"weapon":3,"head":4,"accessory":4}
+const WORN_DRAW_ORDER={"cloak":0,"armor":3,"gloves":4,"boots":4,"weapon":5,"head":8,"accessory":6}
 
 func _worn_gear_texture_path(slot:String,item:String,direction:String,frame:int)->String:
 	var slug:String=item.to_lower().replace("'","").replace(" ","_")
@@ -55,7 +55,10 @@ func _create_worn_equipment_nodes()->void:
 		player.add_child(node)
 		worn_equipment_sprites[slot]=node
 	# Hair remains foremost except when future headgear artwork requests masking.
-	hair_sprite.z_index=5
+	base_sprite.z_index=1
+	for layer in starter_clothes_sprites.values():
+		if layer!=null and is_instance_valid(layer):layer.z_index=2
+	hair_sprite.z_index=7
 	_update_worn_equipment_frames()
 
 func _update_worn_equipment_frames()->void:
