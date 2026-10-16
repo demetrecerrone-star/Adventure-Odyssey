@@ -40,6 +40,30 @@ func _run()->void:
 	if not _check(int(forced["bonus_gold"])==2 and int(forced["items"].get("Slime Gel",0))==1,"forced slime bonus and gel drop"):return
 	if not _check(int(game.data["inventory"].get("Slime Gel",0))==before_gel+1,"rolled slime gel reaches backpack"):return
 	if not _check(game._award_monster_loot(sample,{"Slime Gel":0.0})["items"].is_empty(),"reward claims are single-use"):return
+	# Even the first monster kill can roll a tiny rare chance; no pity/threshold.
+	var before_sigils:int=game._sigils_balance()
+	var rare_slime:Dictionary={"species":"slime","drop":"","loot_claimed":false}
+	var rare_reward:Dictionary=game._award_monster_loot(rare_slime,{"sigil_roll":0.0,"Slime Core Charm":0.0,"Slime Gel":1.0,"Health Potion":1.0})
+	if not _check(int(rare_reward["sigils"])==1 and game._sigils_balance()==before_sigils+1,"tiny Sigil chance can succeed immediately"):return
+	if not _check(int(rare_reward["items"].get("Slime Core Charm",0))==1,"0.25-percent charm can drop on first roll"):return
+	if not _check(game._gear_def("Slime Core Charm").get("slot","")=="accessory","rare drop uses existing equippable item"):return
+	var rare_repeat:Dictionary=game._award_monster_loot(rare_slime,{"sigil_roll":0.0,"Slime Core Charm":0.0})
+	if not _check(int(rare_repeat["sigils"])==0 and rare_repeat["items"].is_empty() and game._sigils_balance()==before_sigils+1,"rare currency and gear cannot be duplicated"):return
+	var no_luck:Dictionary=game._award_monster_loot({"species":"slime","drop":"","loot_claimed":false},{"sigil_roll":1.0,"Slime Core Charm":1.0,"Slime Gel":1.0,"Health Potion":1.0})
+	if not _check(int(no_luck["sigils"])==0 and no_luck["items"].is_empty(),"no hidden guaranteed rare reward or pity threshold"):return
+	# Check each existing enemy's tiny probability produces real catalog loot.
+	var rare_items:Dictionary={"slime":"Slime Core Charm","wolf":"Forest Fang","goblin":"Guard Sigil","fungus":"Wisdom Bead","guardian":"Ember Pendant"}
+	for species in rare_items.keys():
+		var rare_item:String=str(rare_items[species])
+		var table:Dictionary=game.MONSTER_LOOT_PROFILES[species]
+		var probability:float=0.0
+		for entry in table["rolls"]:
+			if str(entry[0])==rare_item:probability=float(entry[1])
+		if not _check(probability>0.0 and probability<=0.03,"rare item has nonzero small per-kill chance: "+str(species)):return
+		if not _check(not game._gear_def(rare_item).is_empty(),"rare drop matches existing catalog: "+rare_item):return
+		var forced_rare:Dictionary=game._award_monster_loot({"species":species,"loot_claimed":false,"drop":""},{rare_item:0.0,"sigil_roll":1.0})
+		if not _check(int(forced_rare["items"].get(rare_item,0))==1,"rare reward reachable with winning roll: "+str(species)):return
+
 
 	game.data["guild_training_completed"]=true
 	game.data["level"]=3
