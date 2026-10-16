@@ -69,6 +69,10 @@ func _run()->void:
 	game._equip_item("Iron Sword")
 	game.facing="down"
 	game.anim_frame=0
+	game.player.position=actor.position+Vector2(-70,0)
+	game.attack_cooldown=0.0
+	game._attack()
+	if not _check(game.combat_pose_timer>0.0 and game.combat_pose_kind=="strike" and game.anim_frame==2,"normal ATTACK also triggers aligned pose"):return
 	game._play_ability_fx("Power Slash","cleave")
 	if not _check(game.combat_pose_timer>0.0 and game.combat_pose_kind=="strike" and game.anim_frame==2,"successful strike holds a registered frame"):return
 	if not _check(game.worn_equipment_sprites["weapon"].visible and game.worn_equipment_sprites["weapon"].texture!=null,"sword remains aligned to strike frame"):return

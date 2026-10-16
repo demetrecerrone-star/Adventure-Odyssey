@@ -44,6 +44,13 @@ rep('''\tvar accent:Color=Color(str(CLASS_ACCENTS.get(str(data.get("class","Warr
 \tvar accent:Color=Color(str(CLASS_ACCENTS.get(str(data.get("class","Warrior")),"#fff0cb")))
 \tvar effect=Node2D.new()''')
 
+# Basic attacks use the same registered equipment-frame pose as skill casts.
+rep('''\t_record_weapon_proficiency()
+\tvar dmg=8+''',
+'''\t_record_weapon_proficiency()
+\t_start_combat_pose("cleave")
+\tvar dmg=8+''')
+
 # The original mover checks only the first attempted position, allowing a
 # creature to stop forever against rocks/trees. Preserve walkable, home leash,
 # player radius and slow effects; steer a little to either side when blocked.

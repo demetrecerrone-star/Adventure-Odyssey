@@ -20,19 +20,22 @@ Reconciled October 16, 2026 against the existing GitHub game systems and the cot
 - [ ] Review existing wolf, goblin, Thorncap and Guardian behavior using the current monster implementation. Do not replace the functioning slime and boss systems.
 - [ ] Test wander → detect → pursue → attack/telegraph → retreat/leash → resume, including obstacle edges, damage, death and dropped loot.
 - [ ] Address only demonstrated bugs in pursuit timing, target distance, death cleanup and room/map transition resets.
-- [ ] Add deterministic Godot headless behavior tests and in-engine encounter screenshots before altering balance.
+- [x] Add deterministic Godot tests for common creature states, real-rock obstacle detours, anti-overlap movement and boss telegraphs. No enemy balance changes.
+- [ ] Inspect live enemy encounters and obstacle behavior visually on emulator.
 
 ### 2 — Skill visual effects and mentor progression
 
 - [ ] Review all 18 starting skills and six mentor skills before generating new art; keep existing mechanics, names and unlocked saves.
-- [ ] Improve distinct attacks, projectiles, traps, shields, healing, summons and movement feedback at game pixel scale.
+- [x] Replace name-hash effect selection with named native-rendered patterns for all 24 skills; screenshots captured in CI.
+- [ ] Refine and approve all distinct visual effects at native gameplay pixel scale.
 - [ ] Verify cooldowns, combat/casting animation hooks, quest unlocks, HUD readability and saved mentor progress.
 
 ### 3 — Visible equipment production-art review
 
 - [ ] Inspect the current 8 body variants × 4 directions × 3 frames, 34 equippable catalog designs and existing worn layers.
 - [ ] Improve mismatched attachment placement and item icon/worn-gear pairs while retaining original item designs.
-- [ ] Extend attack/cast/skill attachment frames and visually review varied gear mixes before lock.
+- [x] Ordinary ATTACK and successful skills use existing registered source poses with synchronized equipment frames.
+- [ ] Add bespoke attack/cast animation art and visually approve gear mixes before production lock.
 
 ### 4 — World expansion and quality pass
 

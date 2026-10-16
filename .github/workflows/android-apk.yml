@@ -245,6 +245,7 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/elmwatch_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/guild_training_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/class_skills_screenshot.gd
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/combat_polish_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/dialogue_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/item_art_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/appearance_screenshot.gd
@@ -283,6 +284,8 @@ jobs:
           test -s screenshots/starter_skills_warrior.png
           test -s screenshots/starter_skills_mage.png
           test -s screenshots/starter_skills_necromancer.png
+          test -s screenshots/combat_effects_starters.png
+          test -s screenshots/combat_effects_mentors.png
           test -s screenshots/character_creator.png
           test -s screenshots/equipment_original_art.png
           test -s screenshots/market_original_art.png
