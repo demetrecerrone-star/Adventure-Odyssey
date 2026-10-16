@@ -22,10 +22,12 @@ jobs:
           set -euo pipefail
           cat payload/part_*.bin > /tmp/adventure_odyssey_source.zip
           echo "861c1871c327126a1321ef0107341dbe3510cfa60cf1f0f00abac14592edb568  /tmp/adventure_odyssey_source.zip" | sha256sum -c -
+          # Snapshot the pristine checkout before the historical ZIP can overwrite it.
+          tar -cf /tmp/ao-current-overlay.tar --exclude='./.git' --exclude='./payload' .
           unzip -qo /tmp/adventure_odyssey_source.zip -d .
           # The historical ZIP includes older copies of tracked overlays/scripts.
-          # Restore the checked-out index before applying the current pipeline.
-          git restore --worktree -- .
+          # Restore current checkout files without Git ownership assumptions in containers.
+          tar -xf /tmp/ao-current-overlay.tar -C .
           if ! command -v python3 >/dev/null 2>&1; then
             apt-get update -qq
             DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3
@@ -132,10 +134,12 @@ jobs:
           set -euo pipefail
           cat payload/part_*.bin > /tmp/adventure_odyssey_source.zip
           echo "861c1871c327126a1321ef0107341dbe3510cfa60cf1f0f00abac14592edb568  /tmp/adventure_odyssey_source.zip" | sha256sum -c -
+          # Snapshot the pristine checkout before the historical ZIP can overwrite it.
+          tar -cf /tmp/ao-current-overlay.tar --exclude='./.git' --exclude='./payload' .
           unzip -qo /tmp/adventure_odyssey_source.zip -d .
           # The historical ZIP includes older copies of tracked overlays/scripts.
-          # Restore the checked-out index before applying the current pipeline.
-          git restore --worktree -- .
+          # Restore current checkout files without Git ownership assumptions in containers.
+          tar -xf /tmp/ao-current-overlay.tar -C .
           if ! command -v python3 >/dev/null 2>&1; then
             apt-get update -qq
             DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3
@@ -379,10 +383,12 @@ jobs:
           test "$(find payload -name 'part_*.bin' | wc -l)" -eq 35
           cat payload/part_*.bin > /tmp/adventure_odyssey_v03.zip
           echo "861c1871c327126a1321ef0107341dbe3510cfa60cf1f0f00abac14592edb568  /tmp/adventure_odyssey_v03.zip" | sha256sum -c -
+          # Snapshot the pristine checkout before the historical ZIP can overwrite it.
+          tar -cf /tmp/ao-current-overlay.tar --exclude='./.git' --exclude='./payload' .
           unzip -qo /tmp/adventure_odyssey_v03.zip -d .
           # The historical ZIP includes older copies of tracked overlays/scripts.
-          # Restore the checked-out index before applying the current pipeline.
-          git restore --worktree -- .
+          # Restore current checkout files without Git ownership assumptions in containers.
+          tar -xf /tmp/ao-current-overlay.tar -C .
           if ! command -v python3 >/dev/null 2>&1; then
             apt-get update -qq
             DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3
