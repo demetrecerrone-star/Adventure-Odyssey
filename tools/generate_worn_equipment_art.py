@@ -30,7 +30,7 @@ TINTS={
  'Leather Vest':('#8b593d','#c6925f','#45372f'),'Iron Chainmail':('#657586','#a7b6bb','#2f4250'),
  'Iron Plate':('#627d99','#d7e2dd','#354862'),'Apprentice Robe':('#654b85','#c49fe8','#352951'),
  'Reinforced Jerkin':('#71583f','#c1a176','#40372f'),'Guard Breastplate':('#697993','#e1e0c7','#344052'),
- 'Leather Hood':('#5e564e','#b59d80','#302f36'),'Forest Cloak':('#42644e','#8db76a','#243e38'),
+ 'Leather Hood':('#536c42','#afc17f','#2c4030'),'Forest Cloak':('#42644e','#8db76a','#243e38'),
  'Padded Gloves':('#796d53','#c2a578','#423833'),'Steel Boots':('#687d91','#b7c9d0','#384253'),
  'Copper Ring':('#a96c42','#e2ae67','#4e342a'),'Silver Ring':('#8796a2','#e6eae5','#4d5967'),
  'Vitality Charm':('#659e68','#d4eaa4','#2f5449'),'Wisdom Bead':('#698fc3','#c7e8e6','#394675'),
@@ -143,8 +143,12 @@ def render(slot,name,body,face,frame,w,h):
   elif back:
    art.outlined(shift([(-19,44),(-23,27),(-19,14),(-10,7),(10,7),(19,14),(23,27),(19,44),(0,52)]),primary,dark,2)
    art.ring(cx,28,13,14,light,1)
+   art.line(cx,13,cx,43,dark,2)
+   art.line(cx-13,35,cx+13,35,light,1)
   else:
    art.outlined(shift([(-18,44),(-23,28),(-17,13),(-4,8),(13,12),(19,24),(9,24),(9,40),(0,49)]),primary,dark,2)
+   art.line(cx-12,18,cx-4,45,light,2)
+   art.line(cx+8,13,cx+12,33,dark,1)
  elif slot=='gloves':
   for sign in (-1,1):
    x=cx+sign*(25 if not profile else 17)
