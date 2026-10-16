@@ -155,7 +155,7 @@ jobs:
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_app_icon.py
           python3 tools/audit_character_sprites.py
-          python3 tools/generate_worn_gear.py
+          # Generate only the pose-aligned equipment art; legacy oversized-icon previews remain archived in tools/.
           python3 tools/generate_worn_equipment_art.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
@@ -320,7 +320,7 @@ jobs:
           python3 tools/apply_character_layers.py
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_app_icon.py
-          python3 tools/generate_worn_gear.py
+          # Generate only the pose-aligned equipment art; legacy oversized-icon previews remain archived in tools/.
           python3 tools/generate_worn_equipment_art.py
           test -f project.godot
           test -f export_presets.cfg
