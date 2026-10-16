@@ -23,7 +23,9 @@ rep('\t\tdata["gold"]=int(data["gold"])+int(best.get("gold",3))',
 \t\tdata["gold"]=int(data["gold"])+total_gold
 \t\t_combat_popup(best["node"].position+Vector2(0,-40),"+%d GOLD" % total_gold,Color("#f6d782"))
 \t\tfor item_name in loot_summary.get("items",{}).keys():
-\t\t\t_combat_popup(best["node"].position+Vector2(0,-62),"+%d %s" % [int(loot_summary["items"][item_name]),str(item_name)],Color("#acd9b1"))''')
+\t\t\t_combat_popup(best["node"].position+Vector2(0,-62),"+%d %s" % [int(loot_summary["items"][item_name]),str(item_name)],Color("#acd9b1"))
+\t\tif int(loot_summary.get("sigils",0))>0:
+\t\t\t_combat_popup(best["node"].position+Vector2(0,-82),"+1 SIGIL!",Color("#72b9ff"))''')
 rep('''\t\t\t_record_expedition_kill(species)
 \t\t\tvar drop:String=str(best.get("drop",""))
 \t\t\tif drop!="":
@@ -45,11 +47,13 @@ s+='''
 # random coins and items are rolled ONCE on defeat, independent of damage type.
 # Drop probabilities and merchant sale values are early balance targets.
 const MONSTER_LOOT_PROFILES={
-    "slime":{"coin_bonus":[0,2],"rolls":[["Slime Gel",0.35],["Health Potion",0.06]]},
-    "wolf":{"coin_bonus":[0,3],"rolls":[["Beast Hide",0.55],["Health Potion",0.08]]},
-    "goblin":{"coin_bonus":[0,4],"rolls":[["Iron Ore",0.30],["Health Potion",0.10]]},
-    "fungus":{"coin_bonus":[0,2],"rolls":[["Enchanted Thread",0.45],["Health Potion",0.09]]},
-    "guardian":{"coin_bonus":[8,16],"rolls":[]}
+    # Every roll is independent per actual kill, including first kills.
+    # Zero kill-count thresholds or escalating pity for ultra-rare gear.
+    "slime":{"coin_bonus":[0,2],"sigil_chance":0.005,"rolls":[["Slime Gel",0.35],["Health Potion",0.06],["Slime Core Charm",0.0025]]},
+    "wolf":{"coin_bonus":[0,3],"sigil_chance":0.0075,"rolls":[["Beast Hide",0.55],["Health Potion",0.08],["Forest Fang",0.0035]]},
+    "goblin":{"coin_bonus":[0,4],"sigil_chance":0.0075,"rolls":[["Iron Ore",0.30],["Health Potion",0.10],["Guard Sigil",0.0025]]},
+    "fungus":{"coin_bonus":[0,2],"sigil_chance":0.006,"rolls":[["Enchanted Thread",0.45],["Health Potion",0.09],["Wisdom Bead",0.003]]},
+    "guardian":{"coin_bonus":[8,16],"sigil_chance":0.0,"rolls":[["Ember Pendant",0.03]]}
 }
 const MONSTER_MATERIAL_SELL_VALUES={
     "Slime Gel":2,"Wolf Pelt":4,"Beast Hide":5,"Iron Ore":7,
@@ -64,7 +68,7 @@ func _loot_add_item(items:Dictionary,item:String,amount:int=1)->void:
 func _award_monster_loot(mob:Dictionary,forced_rolls:Dictionary={})->Dictionary:
     # Guard both the live kill path and direct reward calls against duplication.
     if bool(mob.get("loot_claimed",false)):
-        return {"bonus_gold":0,"items":{}}
+        return {"bonus_gold":0,"items":{},"sigils":0}
     mob["loot_claimed"]=true
     _ensure_gear()
     var species:String=str(mob.get("species","slime"))
@@ -86,10 +90,16 @@ func _award_monster_loot(mob:Dictionary,forced_rolls:Dictionary={})->Dictionary:
     for entry in profile["rolls"]:
         var item:String=str(entry[0])
         var chance:float=float(entry[1])
+        # Distinct RNG draw for every entry: a 0.25% drop can occur on kill 1.
         var roll:float=float(forced_rolls.get(item,randf()))
         if roll<chance:
             _loot_add_item(items,item)
-    return {"bonus_gold":coin_bonus,"items":items}
+    var sigils:int=0
+    var sigil_chance:float=float(profile.get("sigil_chance",0.0))
+    if sigil_chance>0.0 and float(forced_rolls.get("sigil_roll",randf()))<sigil_chance:
+        sigils=1
+        data["sigils"]=maxi(0,int(data.get("sigils",0)))+sigils
+    return {"bonus_gold":coin_bonus,"items":items,"sigils":sigils}
 
 func _sell_monster_material(item:String)->void:
     _ensure_gear()
