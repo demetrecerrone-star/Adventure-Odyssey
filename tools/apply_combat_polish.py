@@ -5,6 +5,7 @@ Run after oldstone_dungeon and before the icon/export step. Preserve legacy
 state, class skills, item art, UI, and approved source images.
 """
 from pathlib import Path
+import runpy
 
 p=Path("scripts/game.gd")
 s=p.read_text(encoding="utf-8")
@@ -102,3 +103,5 @@ func _start_combat_pose(kind:String)->void:
 '''
 p.write_text(s,encoding="utf-8")
 print("AO COMBAT POLISH: PASS / steer around obstacles, named skill effects, pose-aligned worn gear")
+# Both existing CI/export reconstruction paths already invoke this entrypoint.
+runpy.run_path(str(Path(__file__).with_name("apply_skill_effect_readability.py")), run_name="__main__")

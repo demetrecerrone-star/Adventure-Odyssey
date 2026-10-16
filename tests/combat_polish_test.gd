@@ -82,5 +82,7 @@ func _run()->void:
 	game.anim_frame=0
 	game._set_player_frame()
 	if not _check(game.anim_frame==0 and game.worn_equipment_sprites["weapon"].visible,"idle and gear alignment resume after casting"):return
-	print("ADVENTURE ODYSSEY COMBAT POLISH TEST: PASS / collision detours, 24 named cues, aligned attack and cast poses")
+	var readability=load("res://tests/skill_effect_readability_checks.gd").new()
+	if not _check(readability.run(game),"readable FX timing, placement, trails and cleanup"):return
+	print("ADVENTURE ODYSSEY COMBAT POLISH TEST: PASS / collision detours, 24 named cues, aligned attack and cast poses, readable effects")
 	quit(0)
