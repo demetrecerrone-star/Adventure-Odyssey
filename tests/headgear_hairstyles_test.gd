@@ -56,8 +56,8 @@ func _run() -> void:
 				game.anim_frame=frame
 				game._set_player_frame()
 				if not _ok(game.hair_sprite.visible,"unequipped hood restores hair "+str(hair)+" "+face+"/"+str(frame)):return
-			if not _ok(game.hair_sprite.texture!=null,"unequipped hood restores original hair sprite"):return
-			if not _ok(game.hair_sprite.modulate.is_equal_approx(game.HAIR_TINTS[hair%game.HAIR_TINTS.size()]),"hair tint unchanged with head slot empty"):return
+				if not _ok(game.hair_sprite.texture!=null,"unequipped hood restores original hair sprite"):return
+				if not _ok(game.hair_sprite.modulate.is_equal_approx(game.HAIR_TINTS[hair%game.HAIR_TINTS.size()]),"hair tint unchanged with head slot empty"):return
 				if not _ok(not game.worn_equipment_sprites["head"].visible,"unequipped hood hides overlay"):return
 	game._equip_item("Leather Hood")
 	if not _ok(game._save() and game._load_save() and game._equipped("head")=="Leather Hood","saved hood item restored"):return
