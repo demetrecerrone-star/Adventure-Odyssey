@@ -30,6 +30,14 @@ rep('''	mentor_skill_cooldown=float(info["cooldown"])
 
 rep('''		var mission:String="Guild: DONE"''','''		var mission:String="Guild: DONE"''') if False else None
 
+# The mentor milestone already provided a journal-backed skillbook callback.
+# Keep it for compatibility but replace the old HUD entry with this richer panel.
+rep('''func _open_skillbook()->void:
+	_show_journal("SKILLBOOK",_skillbook_lines())''',
+'''func _open_skillbook_legacy()->void:
+	_show_journal("SKILLBOOK",_skillbook_lines())''')
+rep('''	_add_skillbook_button()''', '''	# Rich skillbook button is registered beside the quest journal.''')
+
 s+=r'''
 # -- Usable class skillbook and objective journal ------------------------------
 const CLASS_ACCENTS={
