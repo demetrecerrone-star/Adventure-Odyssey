@@ -67,7 +67,7 @@ func _test()->void:
 					cloak_depth_ok=cloak.z_index<game.base_sprite.z_index
 				if not _expect(weapon_depth_ok,"weapon correctly ordered at "+face+"/"+str(frame)):return
 				if not _expect(cloak_depth_ok,"cloak correctly ordered at "+face+"/"+str(frame)):return
-				if not _expect(game.hair_sprite.visible!=is_back,"hood/hair visibility at "+face+"/"+str(frame)):return
+				if not _expect(not game.hair_sprite.visible,"hood hides hair in every facing "+face+"/"+str(frame)):return
 				if not _expect(not game.starter_clothes_sprites["starter_top"].visible,"chest armor occludes starter top"):return
 				if not _expect(not game.starter_clothes_sprites["starter_shoes"].visible,"boots occlude starter shoes"):return
 	# Removing equipment must restore the underlying garments and hairstyle.
