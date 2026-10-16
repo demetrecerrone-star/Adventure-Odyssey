@@ -46,6 +46,7 @@ jobs:
           python3 tools/apply_forest_background.py
           python3 tools/apply_combat_feedback.py
           python3 tools/apply_slime_ai.py
+          python3 tools/apply_class_skills.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
           from pathlib import Path
@@ -128,6 +129,7 @@ jobs:
           python3 tools/apply_forest_background.py
           python3 tools/apply_combat_feedback.py
           python3 tools/apply_slime_ai.py
+          python3 tools/apply_class_skills.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -154,6 +156,7 @@ jobs:
           run_scene_test res://tests/forest_background_test.gd 'ADVENTURE ODYSSEY FOREST BACKGROUND TEST: PASS'
           run_scene_test res://tests/combat_feedback_test.gd 'ADVENTURE ODYSSEY COMBAT FEEDBACK TEST: PASS'
           run_scene_test res://tests/slime_ai_test.gd 'ADVENTURE ODYSSEY SLIME AI TEST: PASS'
+          run_scene_test res://tests/class_skills_test.gd 'ADVENTURE ODYSSEY CLASS SKILLS TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
           run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'
@@ -237,6 +240,7 @@ jobs:
           python3 tools/apply_forest_background.py
           python3 tools/apply_combat_feedback.py
           python3 tools/apply_slime_ai.py
+          python3 tools/apply_class_skills.py
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
@@ -294,6 +298,7 @@ jobs:
           run_scene_test res://tests/forest_background_test.gd 'ADVENTURE ODYSSEY FOREST BACKGROUND TEST: PASS'
           run_scene_test res://tests/combat_feedback_test.gd 'ADVENTURE ODYSSEY COMBAT FEEDBACK TEST: PASS'
           run_scene_test res://tests/slime_ai_test.gd 'ADVENTURE ODYSSEY SLIME AI TEST: PASS'
+          run_scene_test res://tests/class_skills_test.gd 'ADVENTURE ODYSSEY CLASS SKILLS TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
           run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'
