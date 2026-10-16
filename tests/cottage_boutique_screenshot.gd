@@ -21,7 +21,7 @@ func _run()->void:
     scene._enter_world("bedroom",scene.BEDROOM_SPAWN)
     await process_frame
     scene._award_sigils(100)
-    scene._open_home_decor()
+    scene._open_cottage_piece_boutique()
     if not await _capture("cottage_sigil_boutique.png"):
         push_error("AO COTTAGE SCREENSHOT: boutique capture failed")
         quit(1)
@@ -34,7 +34,7 @@ func _run()->void:
         push_error("AO COTTAGE SCREENSHOT: equipped room capture failed")
         quit(1)
         return
-    scene._open_home_decor()
+    scene._open_cottage_piece_boutique()
     if not await _capture("cottage_sigil_purchased.png"):
         push_error("AO COTTAGE SCREENSHOT: purchased style screen failed")
         quit(1)
