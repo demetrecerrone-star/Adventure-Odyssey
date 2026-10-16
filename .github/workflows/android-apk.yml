@@ -541,12 +541,60 @@ jobs:
           AO_RELEASE_KEY_ALIAS: ${{ secrets.AO_RELEASE_KEY_ALIAS }}
         run: |
           set -euo pipefail
-          trap 'rm -f /tmp/adventure_odyssey_release.jks /tmp/ao_debug.keystore' EXIT
+          trap 'rm -f /tmp/adventure_odyssey_release.jks /tmp/AoSigningPreflight.java' EXIT
           if [[ -n "${AO_RELEASE_KEYSTORE_BASE64:-}" && \
                 -n "${AO_RELEASE_KEYSTORE_PASSWORD:-}" && \
                 -n "${AO_RELEASE_KEY_ALIAS:-}" ]]; then
             umask 077
-            printf '%s' "$AO_RELEASE_KEYSTORE_BASE64" | base64 -d > /tmp/adventure_odyssey_release.jks
+            if ! printf '%s' "$AO_RELEASE_KEYSTORE_BASE64" | base64 -d > /tmp/adventure_odyssey_release.jks 2>/dev/null; then
+              echo '::error::Signing preflight: keystore secret is not valid Base64.'
+              exit 1
+            fi
+            # JDK keystore API provides precise checks without printing credentials,
+            # aliases, key bytes, or raw exception text. Password stays in environment.
+            cat > /tmp/AoSigningPreflight.java <<'JAVA'
+          import java.io.*;
+          import java.nio.file.*;
+          import java.security.*;
+          import java.util.*;
+          class AoSigningPreflight {
+            static void fail(String message) {
+              System.out.println("::error::Signing preflight: " + message);
+              System.exit(1);
+            }
+            public static void main(String[] args) {
+              char[] password = System.getenv("AO_RELEASE_KEYSTORE_PASSWORD").toCharArray();
+              try {
+                File file = new File("/tmp/adventure_odyssey_release.jks");
+                if (!file.isFile() || file.length() == 0) fail("decoded keystore is empty or missing.");
+                KeyStore store = null;
+                try { store = KeyStore.getInstance(file, password); }
+                catch (IOException e) {
+                  String text = String.valueOf(e.getMessage()).toLowerCase(Locale.ROOT);
+                  if (e.getCause() instanceof UnrecoverableKeyException || text.contains("password") || text.contains("tampered"))
+                    fail("keystore could not be unlocked with the configured store password; verify the matching password and file.");
+                  fail("decoded file is not a readable JKS/PKCS12 keystore; verify Base64 was made from the actual keystore file.");
+                }
+                catch (Exception e) { fail("keystore format/provider could not be loaded."); }
+                String alias = System.getenv("AO_RELEASE_KEY_ALIAS");
+                if (!store.containsAlias(alias)) fail("store password accepted, but the configured alias does not exist in this keystore.");
+                if (!store.isKeyEntry(alias)) fail("configured alias is not a private signing-key entry.");
+                Key key = null;
+                try { key = store.getKey(alias, password); }
+                catch (UnrecoverableKeyException e) { fail("store password and alias accepted, but private-key password differs from the configured password."); }
+                if (!(key instanceof PrivateKey)) fail("configured entry has no usable private signing key.");
+                java.security.cert.Certificate cert = store.getCertificate(alias);
+                if (cert == null) fail("signing entry has no certificate.");
+                String fingerprint = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(cert.getEncoded()));
+                if (!fingerprint.equals("3b6f1540ba3394421489ca28fda428aebf58b163d8af7435c19a3ddfab663fb1"))
+                  fail("credentials are valid, but this keystore is not the original permanent signing identity; use the original backup.");
+                System.out.println("Signing preflight: store password, alias, private key and original certificate verified.");
+              } catch (Exception e) { fail("unexpected keystore validation failure; no credential details printed."); }
+              finally { Arrays.fill(password, '\0'); }
+            }
+          }
+          JAVA
+            java /tmp/AoSigningPreflight.java
             export GODOT_ANDROID_KEYSTORE_RELEASE_PATH=/tmp/adventure_odyssey_release.jks
             export GODOT_ANDROID_KEYSTORE_RELEASE_USER="$AO_RELEASE_KEY_ALIAS"
             export GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD="$AO_RELEASE_KEYSTORE_PASSWORD"
