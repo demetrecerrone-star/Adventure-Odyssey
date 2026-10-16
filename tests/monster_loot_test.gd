@@ -118,6 +118,6 @@ func _run()->void:
 	if not _check(int(game.data["inventory"].get("Ember Shard",0))>=1,"guardian grants ember shard"):return
 	game._enter_world("ruins",Vector2(1900,655))
 	game._enter_world("sanctum",Vector2(175,650))
-	if not _check(game.mobs.is_empty(),"guardian cannot immediately respawn before Guild quest is claimed"):return
+	if not _check(game.mobs.is_empty(),"guardian cannot immediately respawn during first-victory cooldown"):return
 	print("ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS / coins, creature items, trade, persistence and unique boss")
 	quit(0)

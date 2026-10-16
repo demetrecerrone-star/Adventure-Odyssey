@@ -54,7 +54,7 @@ func _run()->void:
 	if not _check(int(scene.data["inventory"].get("Guardian Relic",0))==0,"relic waits for quest claim"):return
 	scene._enter_world("ruins",Vector2(1900,655))
 	scene._enter_world("sanctum",Vector2(175,650))
-	if not _check(scene.mobs.is_empty(),"story instance remains complete until claimed"):return
+	if not _check(scene.mobs.is_empty(),"return honors first-victory cooldown"):return
 	if not _check(scene._claim_guardian_quest_reward(),"quest can be claimed once"):return
 	if not _check(int(scene.data["inventory"].get("Guardian Relic",0))==1,"quest awards unique relic"):return
 	if not _check(int(scene.data["inventory"].get("Oldstone Oathblade",0))==1,"class reward delivered"):return

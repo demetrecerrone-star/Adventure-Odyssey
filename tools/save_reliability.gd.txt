@@ -1,0 +1,92 @@
+# Validate without mutating the live character or discarding newer optional fields.
+func _normalized_save(value:Variant)->Dictionary:
+	if not value is Dictionary:return {}
+	if not CLASSES.has(value.get("class", "")) or not value.get("stats") is Dictionary or not value.has("body"):return {}
+	for attribute in STATS:
+		if not _save_number(value["stats"].get(attribute)):return {}
+	var normalized:Dictionary=_default_character()
+	normalized.merge(value.duplicate(true),true)
+	for key in ["body","hair","hair_tint","skin_tone","eye_color","level","xp","points","hp","max_hp","gold","sigils","quest_kills"]:
+		if not _save_number(normalized[key]):return {}
+		normalized[key]=maxi(0,int(normalized[key]))
+	for key in ["inventory","storage","home_styles","home_owned"]:
+		if not normalized[key] is Dictionary:return {}
+	for key in ["inventory","storage"]:
+		for item in normalized[key]:
+			if not _save_number(normalized[key][item]) or normalized[key][item]<0:return {}
+	for attribute in STATS:
+		normalized["stats"][attribute]=maxi(0,int(normalized["stats"][attribute]))
+	if not normalized["name"] is String or not normalized["map"] is String:return {}
+	var maps:Array=["bedroom","foyer","living","town","forest","guild","market","inn","blacksmith","ruins","halls","library","chapel","sanctum"]
+	var position_value:Variant=value.get("pos")
+	if not maps.has(normalized["map"]) or not position_value is Array or position_value.size()!=2:
+		normalized["map"]="bedroom"
+		normalized["pos"]=[BEDROOM_SPAWN.x,BEDROOM_SPAWN.y]
+	elif not _save_number(position_value[0]) or not _save_number(position_value[1]):return {}
+	normalized["body"]=clampi(normalized["body"],0,7)
+	normalized["hair"]=clampi(normalized["hair"],0,HAIR.size()-1)
+	normalized["hair_tint"]=clampi(normalized["hair_tint"],0,HAIR_TINTS.size()-1)
+	normalized["skin_tone"]=clampi(normalized["skin_tone"],0,SKIN_NAMES.size()-1)
+	normalized["eye_color"]=clampi(normalized["eye_color"],0,EYE_NAMES.size()-1)
+	normalized["level"]=maxi(1,normalized["level"])
+	normalized["max_hp"]=maxi(1,normalized["max_hp"])
+	normalized["hp"]=clampi(normalized["hp"],0,normalized["max_hp"])
+	if bool(normalized.get("guardian_defeated",false)) and not normalized.has("guardian_quest_state"):
+		normalized["guardian_quest_state"]="ready"
+	return normalized
+
+func _save_number(value:Variant)->bool:
+	return (value is int or value is float) and is_finite(float(value))
+
+func _read_save(path:String)->Dictionary:
+	if not FileAccess.file_exists(path):return {}
+	var parser=JSON.new()
+	if parser.parse(FileAccess.get_file_as_string(path))!=OK:return {}
+	return _normalized_save(parser.data)
+
+# Write to a sibling temporary file, verify it, then atomically replace its target.
+# A failed write/rename leaves the existing destination untouched.
+func _write_save_file(path:String, contents:String)->bool:
+	var temporary:String=path+".tmp"
+	var file=FileAccess.open(temporary,FileAccess.WRITE)
+	if file==null:return false
+	file.store_string(contents)
+	file.flush()
+	var error:Error=file.get_error()
+	file.close()
+	if error!=OK or _read_save(temporary).is_empty():return false
+	return DirAccess.rename_absolute(temporary,path)==OK
+
+func _save()->bool:
+	if player!=null and is_instance_valid(player):
+		data["map"]=current_map
+		data["pos"]=[player.position.x,player.position.y]
+	if _normalized_save(data).is_empty():return false
+	# Never replace a known-good backup with a corrupt primary.
+	if not _read_save(SAVE_PATH).is_empty():
+		if not _write_save_file(SAVE_PATH+".bak",FileAccess.get_file_as_string(SAVE_PATH)):return false
+	return _write_save_file(SAVE_PATH,JSON.stringify(data,"\t"))
+
+func _has_save()->bool:
+	return not _read_save(SAVE_PATH).is_empty() or not _read_save(SAVE_PATH+".bak").is_empty()
+
+func _load_save()->bool:
+	var loaded:Dictionary=_read_save(SAVE_PATH)
+	if loaded.is_empty():loaded=_read_save(SAVE_PATH+".bak")
+	if loaded.is_empty():return false
+	data=loaded
+	return true
+
+func _save_active_character()->void:
+	# Title/creator data must never overwrite the player's existing character.
+	if player!=null and is_instance_valid(player):_save()
+
+func _notification(what:int)->void:
+	if what==NOTIFICATION_APPLICATION_PAUSED or what==NOTIFICATION_APPLICATION_FOCUS_OUT or what==NOTIFICATION_WM_CLOSE_REQUEST:
+		_save_active_character()
+
+func _combat_target_prompt(target:Dictionary)->String:
+	if target.is_empty():return "Approach an enemy to attack  |  Retreat to recover"
+	var names:Dictionary={"slime":"Green Slime","wolf":"Wolf","goblin":"Goblin Scout","fungus":"Thorncap","guardian":"Oldstone Guardian"}
+	var species:String=str(target.get("species","slime"))
+	return "ATTACK: %s %d/%d HP" % [str(names.get(species,species.capitalize())),maxi(0,int(target["hp"])),int(target["max_hp"])]

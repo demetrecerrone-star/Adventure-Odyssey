@@ -31,7 +31,7 @@ func _run()->void:
 		if not _ok(game.mobs.size()==(1 if m=="sanctum" else 3),"encounters exist in "+m):return
 		for mob in game.mobs:
 			var creature_path:String=str(mob["sprite"].texture.resource_path)
-			if not _ok(creature_path.contains("res://assets/creatures/oldstone/"),"native Oldstone sprite on "+m):return
+			if not _ok(creature_path=="res://assets/creatures/animated/"+str(mob["appearance"])+".png","native Oldstone sprite on "+m):return
 			if not _ok(mob["sprite"].texture.get_width()>=150,"actual illustrated enemy texture "+m):return
 	if not _ok(game._oldstone_next_room("halls")=="library" and game._oldstone_next_room("library")=="chapel" and game._oldstone_next_room("chapel")=="sanctum","correct forward floor order"):return
 	if not _ok(game._oldstone_previous_room("halls")=="ruins" and game._oldstone_previous_room("library")=="halls" and game._oldstone_previous_room("chapel")=="library","correct retreat order"):return

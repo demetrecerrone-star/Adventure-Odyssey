@@ -23,6 +23,9 @@ jobs:
           cat payload/part_*.bin > /tmp/adventure_odyssey_source.zip
           echo "861c1871c327126a1321ef0107341dbe3510cfa60cf1f0f00abac14592edb568  /tmp/adventure_odyssey_source.zip" | sha256sum -c -
           unzip -qo /tmp/adventure_odyssey_source.zip -d .
+          # The historical ZIP includes older copies of tracked overlays/scripts.
+          # Restore the checked-out index before applying the current pipeline.
+          git restore --worktree -- .
           if ! command -v python3 >/dev/null 2>&1; then
             apt-get update -qq
             DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3
@@ -66,6 +69,10 @@ jobs:
           python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_oldstone_dungeon.py
           python3 tools/apply_combat_polish.py
+          python3 tools/apply_monster_animation.py
+          python3 tools/apply_save_reliability.py
+          python3 tools/apply_touch_input.py
+          python3 tools/apply_guardian_instance.py
           python3 tools/apply_app_icon.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
@@ -126,6 +133,9 @@ jobs:
           cat payload/part_*.bin > /tmp/adventure_odyssey_source.zip
           echo "861c1871c327126a1321ef0107341dbe3510cfa60cf1f0f00abac14592edb568  /tmp/adventure_odyssey_source.zip" | sha256sum -c -
           unzip -qo /tmp/adventure_odyssey_source.zip -d .
+          # The historical ZIP includes older copies of tracked overlays/scripts.
+          # Restore the checked-out index before applying the current pipeline.
+          git restore --worktree -- .
           if ! command -v python3 >/dev/null 2>&1; then
             apt-get update -qq
             DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3
@@ -169,6 +179,10 @@ jobs:
           python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_oldstone_dungeon.py
           python3 tools/apply_combat_polish.py
+          python3 tools/apply_monster_animation.py
+          python3 tools/apply_save_reliability.py
+          python3 tools/apply_touch_input.py
+          python3 tools/apply_guardian_instance.py
           python3 tools/apply_app_icon.py
           python3 tools/audit_character_sprites.py
           # Generate only the pose-aligned equipment art; legacy oversized-icon previews remain archived in tools/.
@@ -203,6 +217,10 @@ jobs:
           run_scene_test res://tests/extended_enemy_ai_test.gd 'ADVENTURE ODYSSEY EXTENDED ENEMY AI TEST: PASS /'
           run_scene_test res://tests/dungeon_combat_ai_test.gd 'ADVENTURE ODYSSEY DUNGEON COMBAT AI TEST: PASS /'
           run_scene_test res://tests/combat_polish_test.gd 'ADVENTURE ODYSSEY COMBAT POLISH TEST: PASS /'
+          run_scene_test res://tests/monster_animation_test.gd 'ADVENTURE ODYSSEY MONSTER ANIMATION TEST: PASS'
+          run_scene_test res://tests/save_reliability_test.gd 'ADVENTURE ODYSSEY SAVE RELIABILITY TEST: PASS'
+          run_scene_test res://tests/touch_regression_test.gd 'TOUCH REGRESSION: 16 passed; 0 failed'
+          run_scene_test res://tests/touch_input_test.gd 'TOUCH INPUT: 34 passed; 0 failed'
           run_scene_test res://tests/class_skills_test.gd 'ADVENTURE ODYSSEY CLASS SKILLS TEST: PASS'
           run_scene_test res://tests/skill_icons_test.gd 'ADVENTURE ODYSSEY SKILL ICONS TEST: PASS'
           run_scene_test res://tests/mentor_quests_test.gd 'ADVENTURE ODYSSEY MENTOR QUESTS TEST: PASS'
@@ -221,6 +239,7 @@ jobs:
           run_scene_test res://tests/oldstone_dungeon_test.gd 'ADVENTURE ODYSSEY OLDSTONE DUNGEON TEST: PASS'
           run_scene_test res://tests/monster_loot_test.gd 'ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS'
           run_scene_test res://tests/guardian_weapons_test.gd 'ADVENTURE ODYSSEY GUARDIAN WEAPONS TEST: PASS'
+          run_scene_test res://tests/guardian_instance_test.gd 'ADVENTURE ODYSSEY GUARDIAN INSTANCE TEST: PASS'
           run_scene_test res://tests/sigils_currency_test.gd 'ADVENTURE ODYSSEY SIGILS CURRENCY TEST: PASS'
           run_scene_test res://tests/cottage_collections_test.gd 'ADVENTURE ODYSSEY COTTAGE COLLECTIONS TEST: PASS'
           run_scene_test res://tests/cottage_gold_shop_test.gd 'ADVENTURE ODYSSEY COTTAGE GOLD SHOP TEST: PASS'
@@ -334,8 +353,16 @@ jobs:
           if-no-files-found: error
           retention-days: 15
   android-apk:
-    # Actual APK builds happen only when manually requested.
-    if: github.event_name == 'workflow_dispatch'
+    # Ordinary pushes remain validation-only. This unique opt-in marks the
+    # single signed APK explicitly requested for the 2026-10-16 gameplay batch.
+    needs: [inspect-source, validate-title]
+    if: >-
+      always() &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event_name == 'push' &&
+        contains(github.event.head_commit.message, '[ao-release-20261016-monsters-guardian]') &&
+        needs.inspect-source.result == 'success' &&
+        needs.validate-title.result == 'success'))
     runs-on: ubuntu-24.04
     container:
       image: barichello/godot-ci:4.7.2
@@ -353,6 +380,9 @@ jobs:
           cat payload/part_*.bin > /tmp/adventure_odyssey_v03.zip
           echo "861c1871c327126a1321ef0107341dbe3510cfa60cf1f0f00abac14592edb568  /tmp/adventure_odyssey_v03.zip" | sha256sum -c -
           unzip -qo /tmp/adventure_odyssey_v03.zip -d .
+          # The historical ZIP includes older copies of tracked overlays/scripts.
+          # Restore the checked-out index before applying the current pipeline.
+          git restore --worktree -- .
           if ! command -v python3 >/dev/null 2>&1; then
             apt-get update -qq
             DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3
@@ -396,6 +426,10 @@ jobs:
           python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_oldstone_dungeon.py
           python3 tools/apply_combat_polish.py
+          python3 tools/apply_monster_animation.py
+          python3 tools/apply_save_reliability.py
+          python3 tools/apply_touch_input.py
+          python3 tools/apply_guardian_instance.py
           python3 tools/apply_app_icon.py
           # Generate only the pose-aligned equipment art; legacy oversized-icon previews remain archived in tools/.
           python3 tools/generate_worn_equipment_art.py
@@ -460,6 +494,10 @@ jobs:
           run_scene_test res://tests/extended_enemy_ai_test.gd 'ADVENTURE ODYSSEY EXTENDED ENEMY AI TEST: PASS /'
           run_scene_test res://tests/dungeon_combat_ai_test.gd 'ADVENTURE ODYSSEY DUNGEON COMBAT AI TEST: PASS /'
           run_scene_test res://tests/combat_polish_test.gd 'ADVENTURE ODYSSEY COMBAT POLISH TEST: PASS /'
+          run_scene_test res://tests/monster_animation_test.gd 'ADVENTURE ODYSSEY MONSTER ANIMATION TEST: PASS'
+          run_scene_test res://tests/save_reliability_test.gd 'ADVENTURE ODYSSEY SAVE RELIABILITY TEST: PASS'
+          run_scene_test res://tests/touch_regression_test.gd 'TOUCH REGRESSION: 16 passed; 0 failed'
+          run_scene_test res://tests/touch_input_test.gd 'TOUCH INPUT: 34 passed; 0 failed'
           run_scene_test res://tests/class_skills_test.gd 'ADVENTURE ODYSSEY CLASS SKILLS TEST: PASS'
           run_scene_test res://tests/skill_icons_test.gd 'ADVENTURE ODYSSEY SKILL ICONS TEST: PASS'
           run_scene_test res://tests/mentor_quests_test.gd 'ADVENTURE ODYSSEY MENTOR QUESTS TEST: PASS'
@@ -478,6 +516,7 @@ jobs:
           run_scene_test res://tests/oldstone_dungeon_test.gd 'ADVENTURE ODYSSEY OLDSTONE DUNGEON TEST: PASS'
           run_scene_test res://tests/monster_loot_test.gd 'ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS'
           run_scene_test res://tests/guardian_weapons_test.gd 'ADVENTURE ODYSSEY GUARDIAN WEAPONS TEST: PASS'
+          run_scene_test res://tests/guardian_instance_test.gd 'ADVENTURE ODYSSEY GUARDIAN INSTANCE TEST: PASS'
           run_scene_test res://tests/sigils_currency_test.gd 'ADVENTURE ODYSSEY SIGILS CURRENCY TEST: PASS'
           run_scene_test res://tests/cottage_collections_test.gd 'ADVENTURE ODYSSEY COTTAGE COLLECTIONS TEST: PASS'
           run_scene_test res://tests/cottage_gold_shop_test.gd 'ADVENTURE ODYSSEY COTTAGE GOLD SHOP TEST: PASS'
@@ -508,15 +547,8 @@ jobs:
             echo 'Exporting release APK using permanent signing key'
             godot --headless --path . --export-release Android build/Adventure-Odyssey-release.apk
           else
-            echo 'Signing secrets not configured. Building DEBUG TEST APK only.'
-            keytool -genkeypair -noprompt -keystore /tmp/ao_debug.keystore \
-              -storepass android -keypass android -alias androiddebugkey \
-              -keyalg RSA -keysize 2048 -validity 3650 \
-              -dname 'CN=Android Debug,O=Adventure Odyssey,C=US'
-            export GODOT_ANDROID_KEYSTORE_DEBUG_PATH=/tmp/ao_debug.keystore
-            export GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey
-            export GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android
-            godot --headless --path . --export-debug Android build/Adventure-Odyssey-debug.apk
+            echo '::error::Permanent release signing secrets are missing; refusing a debug or unsigned substitute.'
+            exit 1
           fi
           APK="$(find build -type f -name '*.apk' -print -quit)"
           test -n "$APK" && test -s "$APK"

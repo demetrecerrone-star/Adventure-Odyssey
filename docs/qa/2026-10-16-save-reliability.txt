@@ -1,0 +1,17 @@
+Save/progression reliability overlay
+
+Integration:
+Copy tools/apply_save_reliability.py, tools/save_reliability.gd.txt, and tests/save_reliability_test.gd into the repository. Run python3 tools/apply_save_reliability.py after apply_monster_animation.py (or apply_app_icon.py), in every reconstruction branch. Add run_scene_test res://tests/save_reliability_test.gd 'ADVENTURE ODYSSEY SAVE RELIABILITY TEST: PASS' to both workflow test suites. No binary export, publication, or merge was performed.
+
+Changes:
+- Non-mutating validation and backward-compatible normalization of incomplete legacy character saves, with safe bedroom positioning when location is absent and preservation of unknown fields.
+- Checked temporary writes and same-directory atomic rename, plus previous known-good backup; corrupt/missing primary can recover backup. A failed write preserves primary. Invalid primary never replaces valid backup.
+- Save active gameplay on suspension, focus loss, window-close notification, and quit; title/creator focus changes cannot replace a saved character.
+- Refresh level label, name the actual enemy target, and stop directing completed Guild training back for an already-collected reward.
+
+Verification:
+Clean reconstruction used archive extraction, tracked-file overlay, ordered workflow patches, worn equipment + guardian weapon generation, then reliability overlay. Godot 4.6.3 headless import passed with no errors (repository target is 4.7.2).
+Twelve runtime suites passed with error-scanned logs: save_reliability, creator_deep, guild_training, opening_tutorial, bedroom, starter_house, economy, class_skills, mentor_quests, monster_loot, dungeon_combat_ai, guardian_weapons. Python overlay compiles and a second invocation exits successfully without edits.
+
+Remaining integration check:
+oldstone_dungeon does not pass in this initial art snapshot: the tracked old test expects the former SVG folder; the art worker's corrected assertion expects all animated assets, while this snapshot only contains seven of eleven. Final combined art branch must rerun this and monster visual suites. No display/socket workarounds attempted; visual touch/device testing and Godot 4.7.2 remain unverified.

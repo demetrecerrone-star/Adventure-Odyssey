@@ -1,0 +1,33 @@
+{
+  "cell_size": [
+    128,
+    128
+  ],
+  "sheet_size": [
+    512,
+    768
+  ],
+  "rows": [
+    "walk_down",
+    "walk_right",
+    "walk_up",
+    "attack_down",
+    "attack_right",
+    "attack_up"
+  ],
+  "left": "mirror_right",
+  "baseline": 120,
+  "files": {
+    "cursed_fungus.png": "ce179b512ac5b5c6c1de4ba89206a5529aed326d13f231846c8be9c73b0ea91a",
+    "fungus.png": "2e08d807448118f93d07887fe6905ec2a3c03cf8673c92201b1af0353d9f17e6",
+    "goblin.png": "c44fb049f316685adec0e38e491b9c9f717eb0daf793fc756faccc9d791c638c",
+    "guardian.png": "02491276d3b7dbe1fd8486d00a30219b2ba82abe259a06ffbf1fe29e26b64a68",
+    "ruins_archer.png": "b9364242f8d993f74bafcca044f4d1f7776dd39d80f104456abdb0f48e28e648",
+    "ruins_skeleton.png": "7d6f11a149120e46d0862882396945e8982320024804d61f3aa39eefd7607344",
+    "ruins_wolf.png": "1c2bb182b61ef0bdfd1d245365aecabdb281267f2e9bfd6e5ddc2d78aabf0234",
+    "spore_bat.png": "22cf0d17478b9f51a2e0ce20bf44780389d008c9871d063a9e2e8c8ed154d74e",
+    "stone_goblin.png": "c0abe9d9fd39906e98f75f851c71dc53d2a7dac95e97241bf2f2f08950cb2fc6",
+    "stone_golem.png": "64bcbf0c5f6f72ee75ef939ec80ac098c279a46669eabbbe91ea9f2082c951ed",
+    "wolf.png": "48953cb3e211558c6ea4b70332194c78096f957ed55a02b62b35949f427c357c"
+  }
+}

@@ -7,7 +7,7 @@
 - **Gold:** ordinary monster drops, equipment, potions, crafting/blacksmith services, inn rest, and routine furniture purchases when released. Existing equipment, NPC merchants and gold save data are preserved.
 - **Sigils:** rare boss-only chance rewards for future cosmetic furniture, appearance options, and non-stat-changing novelty items. Real-money Sigil packs are a **future** feature, not implemented or for sale yet. New characters start with **0 Sigils** and old saves safely default to 0.
 - **Guild field training (one-time):** grants its existing 20 gold and potion, **no Sigils**. Normal enemies and ordinary quests do not issue this cosmetic currency.
-- **Oldstone guardian (one-time):** **10% independent chance to drop 5 Sigils**, not a guaranteed payout. Existing gold, XP, relic and Ember Shard remain. Guardian remains permanently cleared on that save; repeatable Sigil-eligible boss encounters can be designed in future content, but are not yet in this build.
+- **Oldstone guardian:** **10% independent chance to drop 5 Sigils**, not a guaranteed payout. Existing gold, XP and Ember Shard remain. The first successful encounter completes the personal story instance; it remains cleared until departure. Returning enables regular encounters on the existing 60-second victory cooldown, independently of claiming the one-time Guild reward. The Guild reward and its existing amounts are unchanged by this encounter fix.
 
 Both balances can be seen in the game's HUD/backpack/decor interface. Sigils use a separate saved `sigils` integer; spending/earning never converts ordinary gold or changes free stat allocation, class skills, unrestricted equipment or progression gates. Sigil boss RNG is independent of any rare gear roll, including on a boss's first victory.
 
@@ -19,7 +19,7 @@ Both balances can be seen in the game's HUD/backpack/decor interface. Sigils use
 | Wolf | 6 (forest) / 10 (ruins) | 0–3 | Wolf Pelt, plus inherited Beast Hide | Beast Hide 55%; Health Potion 8% |
 | Goblin | 8 (forest) / 11 (ruins) | 0–4 | Iron Ore | Additional Iron Ore 30%; Health Potion 10% |
 | Fungus | 5 (forest) / 9 (ruins) | 0–2 | Herb, plus inherited Enchanted Thread | Enchanted Thread 45%; Health Potion 9% |
-| Oldstone guardian | 65 + 100 fixed boss bonus | 8–16 | Guardian Relic and Ember Shard, first victory only | None |
+| Oldstone guardian | 65 + 100 first-story-clear bonus | 8–16 | Ember Shard each victory; unique relic via one-time Guild claim | None |
 
 ### Independent RNG and extremely rare rewards
 
@@ -31,7 +31,7 @@ Each kill rolls each possible item **independently**, including rare items. A 0.
 | Wolf | Forest Fang | 0.35% | None |
 | Goblin | Guard Sigil | 0.25% | None |
 | Fungus | Wisdom Bead | 0.3% | None |
-| Oldstone guardian (one-time) | Ember Pendant | 3% | **10% for 5 Sigils**; once per clear |
+| Oldstone guardian | Ember Pendant | 3% | **10% for 5 Sigils**; once per clear |
 
 Regular gold and the existing progression-friendly material cadence remain in place. Higher rarity is exciting but does not restrict class equipment access. The drop tables and tiny percentages are tuning values that can be adjusted after emulator/playtesting.
 
@@ -51,6 +51,6 @@ When the game is ready to sell Sigils for real money, use a proper store purchas
 
 - `tests/monster_loot_test.gd`: ordinary monsters cannot yield Sigils even with a perfect roll, rare gear can drop on the first kill, boss Sigil success and failure branches, single-claim protection, material selling, persistence and boss uniqueness.
 - `tests/sigils_currency_test.gd`: coin resource/HUD, earning/spending, older-save migration, zero-cost original furniture and art-gated purchases.
-- `tests/guild_training_test.gd`, `tests/world_expansion_test.gd`: Guild grants no Sigils, guardian's rare Sigil reward is not repeatable after first victory.
+- `tests/guild_training_test.gd`, `tests/world_expansion_test.gd`: starter Guild training grants no Sigils; each Guardian encounter has its own rare boss roll. Guardian Legacy is a separate existing one-time claim.
 - CI validates the reconstructed Godot source and game tests on pushes. **Do not build a new APK until emulator verification and user approval.**
 - The currency icon is a *first-pass in-game vector interpretation* of the user-approved gold-and-blue AO coin concept, not a replacement for the original app icon. Review game-scale legibility before final art approval.
