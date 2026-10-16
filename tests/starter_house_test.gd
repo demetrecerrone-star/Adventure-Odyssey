@@ -31,6 +31,8 @@ func _run() -> void:
     scene._interact()
     await process_frame
     if not _check(scene.current_map == "living" and scene.house_art != null, "foyer opens living room/kitchen"): return
+    if not _check(scene.house_art.background != null and scene.house_art.background.texture != null, "approved living room painting loads"): return
+    if not _check(scene.house_art.background.texture.resource_path.ends_with("living_room_kitchen.png"), "approved PNG, not the procedural fallback"): return
     if not _check(scene._walkable(scene.player.position), "living arrival is walkable"): return
     if not _check(not scene._walkable(Vector2(700,600)), "living sofa blocks passage"): return
     if not _check(not scene._walkable(Vector2(1550,520)), "kitchen counter blocks passage"): return

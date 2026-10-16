@@ -57,7 +57,7 @@ sprites should replace the small previews before final art lock.
 ## Starter cottage interior art and tests (October 2026)
 
 - The approved painted foyer is stored at `assets/home/approved_cottage_foyer.jpg` and rendered by `scripts/house_room_scene.gd` without changing its aspect ratio.
-- The combined living room/kitchen is playable and currently uses the code-drawn fallback in `house_room_scene.gd`. The approved living-room painting is **not yet a checked-in file**; the scene can load it from `assets/home/living_room_kitchen.png` once its source asset is made available.
+- The exact approved painted living room/kitchen is now committed at `assets/home/living_room_kitchen.png` and loads directly through `house_room_scene.gd` (no procedural fallback needed).
 - The bedroom remains a single room with three functional, independently rendered starter-furniture sprites; alternate furniture remains future earned-in-game-currency cosmetics.
 - The foyer and living room/kitchen connect through the same talk/use interaction as other game objects; players can leave for Elmwatch and return via the cottage entrance in the southern-western area of the town map.
 - The kitchen pantry grants exactly one Health Potion per save and does not replenish on subsequent visits.
@@ -73,6 +73,6 @@ CI smoke, starter-house, dialogue, Elmwatch visual, NPC routine/presence and ind
 
 ## Approved living-room alignment and guided first day (October 2026)
 
-The exact approved `living_room_kitchen.png` was located in the Adventure Odyssey Library, but its original raw bytes still need to be imported into GitHub at `assets/home/living_room_kitchen.png`. The game already loads that path when available; the fallback painting remains until it is checked in. No new artwork is needed. Living-room collision zones now match the approved hearth, sofa, dining table, and kitchen counters, with the foyer return at the bottom-center doorway. The **one-bedroom** floor plan is unchanged.
+The exact approved `living_room_kitchen.png` was recovered from the Adventure Odyssey Library and checked in as unmodified, original PNG binary content at `assets/home/living_room_kitchen.png`. Godot renders this painting directly. No new artwork was generated or substituted. Living-room collision zones now match the approved hearth, sofa, dining table, and kitchen counters, with the foyer return at the bottom-center doorway. The **one-bedroom** floor plan is unchanged.
 
 `tools/apply_opening_tutorial.py` adds first-day journal improvements and saved contextual guidance for chest, mirror, foyer, pantry, Elmwatch, Guild and training. Players can explore out of order and revisit their home. `tests/opening_tutorial_test.gd` exercises this path, save/load and existing Guild NPCs. APK exports remain manual.
