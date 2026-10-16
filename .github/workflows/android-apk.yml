@@ -586,9 +586,9 @@ jobs:
                 java.security.cert.Certificate cert = store.getCertificate(alias);
                 if (cert == null) fail("signing entry has no certificate.");
                 String fingerprint = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(cert.getEncoded()));
-                if (!fingerprint.equals("3b6f1540ba3394421489ca28fda428aebf58b163d8af7435c19a3ddfab663fb1"))
-                  fail("credentials are valid, but this keystore is not the original permanent signing identity; use the original backup.");
-                System.out.println("Signing preflight: store password, alias, private key and original certificate verified.");
+                if (!fingerprint.equals("d66e7daf0e5c7c735bf9f1c866afc204e2d0355687ac37d385cf3016e42eac36"))
+                  fail("credentials are valid, but this keystore does not match the currently configured release signing identity; use its matching backup.");
+                System.out.println("Signing preflight: store password, alias, private key and configured release certificate verified.");
               } catch (Exception e) { fail("unexpected keystore validation failure; no credential details printed."); }
               finally { Arrays.fill(password, '\0'); }
             }
@@ -598,7 +598,7 @@ jobs:
             export GODOT_ANDROID_KEYSTORE_RELEASE_PATH=/tmp/adventure_odyssey_release.jks
             export GODOT_ANDROID_KEYSTORE_RELEASE_USER="$AO_RELEASE_KEY_ALIAS"
             export GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD="$AO_RELEASE_KEYSTORE_PASSWORD"
-            echo 'Exporting release APK using permanent signing key'
+            echo 'Exporting release APK using configured release signing key'
             godot --headless --path . --export-release Android build/Adventure-Odyssey-release.apk
           else
             echo '::error::Permanent release signing secrets are missing; refusing a debug or unsigned substitute.'
@@ -606,12 +606,12 @@ jobs:
           fi
           APK="$(find build -type f -name '*.apk' -print -quit)"
           test -n "$APK" && test -s "$APK"
-          # Preserve the permanent signing identity verified on 2026-10-15.
+          # Verify the replacement release signing identity generated on 2026-10-16.
           signer="$(find /usr/lib/android-sdk/build-tools -maxdepth 3 -type f -name apksigner | sort -V | tail -n 1)"
           test -x "$signer"
           "$signer" verify --verbose --print-certs "$APK" | tee build/Release-APK-Signature.txt
           grep -Fq 'Verified using v2 scheme (APK Signature Scheme v2): true' build/Release-APK-Signature.txt
-          grep -Fq 'Signer #1 certificate SHA-256 digest: 3b6f1540ba3394421489ca28fda428aebf58b163d8af7435c19a3ddfab663fb1' build/Release-APK-Signature.txt
+          grep -Fq 'Signer #1 certificate SHA-256 digest: d66e7daf0e5c7c735bf9f1c866afc204e2d0355687ac37d385cf3016e42eac36' build/Release-APK-Signature.txt
           ls -lh "$APK"
           sha256sum "$APK" | tee build/SHA256SUMS.txt
 
