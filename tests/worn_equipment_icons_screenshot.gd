@@ -18,9 +18,13 @@ func _capture()->void:
 	scene._enter_world("town",Vector2(1030,980))
 	await process_frame
 	scene._clear_ui()
+	# CanvasLayer is outside the 2D camera transform; cover the whole screen.
+	var overlay=CanvasLayer.new()
+	overlay.layer=99
+	root.add_child(overlay)
 	var canvas=Control.new()
 	canvas.size=Vector2(1280,720)
-	root.add_child(canvas)
+	overlay.add_child(canvas)
 	var bg=ColorRect.new()
 	bg.color=Color("#192938")
 	bg.size=Vector2(1280,720)
