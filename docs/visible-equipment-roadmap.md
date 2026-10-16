@@ -13,22 +13,26 @@
 - [x] Integrate 39 recovered-art-derived inventory icons: 12 weapons, 12 armor pieces, 10 accessories, 5 materials.
 - [x] Connect existing item icons to equipment, backpack and shop menus; save/load equipped items.
 - [x] Godot automated item art/equipment validation was passing at the last reported equipment milestone.
-- [ ] **Not implemented:** clothing-free base sprites, independent underwear/starter clothes layers, or visible equipment overlays on the moving character. Existing appearance variants contain baked-in clothing.
+- [x] Prototype source-derived underwear/base and independently rendered starter top/bottoms/footwear sprites in Godot; **visual approval still pending**. ✅
+- [ ] Visible *equipped* armor, hoods, gloves, cloaks, boots, accessories and weapons on player sprites (not yet built; do not confuse with working equipment menus).
 
 ## 1. Sprite reconstruction (first visual review milestone)
 
 - [x] Inventory all eight original source characters: 128 px high, 74–79 px wide depending on variant; 4 directions × 3 frames per body, centered Sprite2D with bottom-aligned anchor; clothing is baked into the source pixels. Audit recorded at `screenshots/ao_character_sprite_baseline_manifest.json` in CI artifact. ✅
 - [x] Back up all original eight body variants and separate hair sprites before edits: 240 original PNGs in `ao_original_character_sprites.zip`, plus SHA-256 manifest. Archived original source ZIP in `payload/` remains unchanged. ✅
-- [ ] Reconstruct neutral base-body art **from existing character artwork** without changing identity, proportions, face, hairstyle, or skin palette. Since clothing is baked in, redraw covered regions; do not assume deleting pixels yields a usable body.
+- [x] Produce the **first reconstructed underlayer prototype** for all 96 body frames from unchanged original artwork, with independent starter top, bottoms, and footwear frames. Godot rendering and regression checks passed on run 38907028048. ✅
+- [ ] Polish and approve the underlayer base art: remove remaining baked clothing artifacts, refine bare feet, preserve faces/skin/hair, and compare at gameplay scale. The first pass is **not final art**.
 - [ ] Add permanent opaque, nonsexualized underwear as part of each base appearance (practical shorts; appropriate coverage on all character variants). Characters must never render unclothed.
 - [ ] Export matching idle/walk/combat directional frames for all eight body variants, preserving the project's native pixel resolution, frame registration, and alpha.
-- [ ] Show actual in-engine comparisons of original sprites and reconstructed base sprites for approval before changing production visuals.
+- [x] Capture actual Godot-rendered 8-variant × 4-direction comparison grids for underwear prototypes and starter clothes (GitHub Actions run 38907028048, visual QA artifact). ✅
+- [ ] Obtain visual approval and finish per-pixel corrections before treating these prototypes as final production artwork.
 
 **Acceptance:** All eight variants render with consistent proportions and alignment facing up/down/left/right; skin/hair variations work; no naked frame, missing pixels, or baked clothing showing through.
 
 ## 2. Clothes and equipment layering
 
-- [ ] Create separate starter-shirt, trousers and simple-shoes sprite layers that fit the new bases; these remain visible in uncovered regions.
+- [x] Create separate and independently rendered starter top, starter bottoms, and starter shoes layers for all 96 original character frames; existing outfit is reconstructable and Godot tests pass. ✅
+- [ ] Finalize the chosen starter trousers/shoes designs and ensure they sit cleanly over approved underwear bases at every frame.
 - [ ] Define explicit draw order/occlusion by facing: cloak behind body, torso armor above undershirt, gloves above arms, boots above shoes, headgear with hair clipping/masking, and weapon attached to hand.
 - [ ] Use shared per-frame attachment points / offsets so gear follows walking, attacks, skills, turns and idle animation.
 - [ ] Wire equipment visuals to the existing seven gear slots without class gates; support equip/unequip without restarting scenes.
