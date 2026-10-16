@@ -125,3 +125,7 @@ After completing Captain Elara's introductory Guild assignment and reaching leve
 ## Skillbook, visual combat effects, quest journal
 
 All 24 existing skills now drive lightweight animated vector combat cues, with unique per-name geometry, class colors, targeting traces and short animation lifetimes (not imported sprite sheets). The landscape HUD gains SKILLBOOK and QUEST JOURNAL controls. The skillbook lists all 3 class starters and a fourth mentor skill, including mechanics and cooldowns, and shows unlock state; the journal displays main story, Guild, mentor and side-quest sections. Class skill unlock rules and original compass artwork remain unchanged. Regression: tests/skillbook_vfx_test.gd.
+
+## Equipment, weapon proficiency and Elmwatch economy
+
+Mara Fenwick's market, Brann Ironhand's forge and Tamsin Reed's inn now have functioning interactions. Any class may equip swords, axes, bows, armor and accessories, with damage/defense bonuses and plate movement tradeoffs. Weapon-type proficiency grows through use and persists across saves; forge upgrades use earned gold and Iron Ore, with a three-upgrade cap. Shops buy and sell items for earned currency; equipped items cannot be sold accidentally. Inn beds restore HP and advance the in-game clock for four gold. Existing character saves migrate to empty equipment safely; original 18 starting skills and character appearance remain intact. Regression: tests/economy_test.gd.
