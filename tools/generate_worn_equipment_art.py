@@ -30,7 +30,7 @@ TINTS={
  'Leather Vest':('#8b593d','#c6925f','#45372f'),'Iron Chainmail':('#657586','#a7b6bb','#2f4250'),
  'Iron Plate':('#627d99','#d7e2dd','#354862'),'Apprentice Robe':('#654b85','#c49fe8','#352951'),
  'Reinforced Jerkin':('#71583f','#c1a176','#40372f'),'Guard Breastplate':('#697993','#e1e0c7','#344052'),
- 'Leather Hood':('#536c42','#afc17f','#2c4030'),'Forest Cloak':('#42644e','#8db76a','#243e38'),
+ 'Leather Hood':('#5e564e','#b59d80','#302f36'),'Forest Cloak':('#42644e','#8db76a','#243e38'),
  'Padded Gloves':('#796d53','#c2a578','#423833'),'Steel Boots':('#687d91','#b7c9d0','#384253'),
  'Copper Ring':('#a96c42','#e2ae67','#4e342a'),'Silver Ring':('#8796a2','#e6eae5','#4d5967'),
  'Vitality Charm':('#659e68','#d4eaa4','#2f5449'),'Wisdom Bead':('#698fc3','#c7e8e6','#394675'),
@@ -143,12 +143,8 @@ def render(slot,name,body,face,frame,w,h):
   elif back:
    art.outlined(shift([(-19,44),(-23,27),(-19,14),(-10,7),(10,7),(19,14),(23,27),(19,44),(0,52)]),primary,dark,2)
    art.ring(cx,28,13,14,light,1)
-   art.line(cx,13,cx,43,dark,2)
-   art.line(cx-13,35,cx+13,35,light,1)
   else:
    art.outlined(shift([(-18,44),(-23,28),(-17,13),(-4,8),(13,12),(19,24),(9,24),(9,40),(0,49)]),primary,dark,2)
-   art.line(cx-12,18,cx-4,45,light,2)
-   art.line(cx+8,13,cx+12,33,dark,1)
  elif slot=='gloves':
   for sign in (-1,1):
    x=cx+sign*(25 if not profile else 17)
@@ -217,8 +213,44 @@ def render(slot,name,body,face,frame,w,h):
  return art.buf
 
 def make_icon(source,width,height,slot,name):
- # The icon is directly cropped from the real worn-item rendering, so colors,
- # shape and material highlights always match on-character gear.
+ # Matching equipment motifs are rendered at readable inventory icon size.
+ # Tiny rings and gloves are redrawn from the SAME worn-gear palette, because
+ # blindly enlarging both character hands produces two unreadable dots.
+ primary,highlight,outline=[rgba(v) for v in TINTS[name]]
+ metal=rgba('#f0ddb4')
+ if slot in ('accessory','gloves','boots'):
+  icon=Art(96,96)
+  if slot=='accessory':
+   if 'Ring' in name or 'Band' in name:
+    icon.ring(48,58,29,20,outline,10)
+    icon.ring(48,58,26,18,primary,7)
+    icon.line(28,53,33,48,highlight,4)
+    icon.outlined([(48,16),(59,28),(52,40),(44,40),(37,28)],primary,outline,3)
+    icon.polygon([(48,20),(54,28),(49,33),(43,28)],highlight)
+    icon.dot(44,26,metal)
+   else:
+    icon.line(35,20,43,28,metal,2)
+    icon.line(61,20,53,28,metal,2)
+    icon.line(43,28,48,39,metal,2)
+    icon.line(53,28,48,39,metal,2)
+    icon.outlined([(48,29),(67,49),(57,71),(48,79),(39,71),(29,49)],primary,outline,4)
+    icon.polygon([(48,37),(56,49),(48,62),(40,49)],highlight)
+    icon.dot(44,44,metal)
+  elif slot=='gloves':
+   for center in (26,68):
+    icon.outlined([(center-13,24),(center+13,24),(center+17,59),(center+9,77),(center-11,78),(center-18,59)],primary,outline,3)
+    icon.rect(center-12,28,center+12,34,highlight)
+    icon.line(center-9,51,center+10,51,outline,2)
+    icon.line(center,58,center,73,highlight,2)
+  elif slot=='boots':
+   for center in (29,67):
+    icon.outlined([(center-11,17),(center+8,17),(center+11,66),(center+19,69),(center+20,82),(center-18,82),(center-18,65)],primary,outline,3)
+    icon.rect(center-10,23,center+7,27,highlight)
+    icon.line(center-13,69,center+13,69,highlight,3)
+    icon.line(center-17,79,center+18,79,outline,3)
+  return icon.buf
+ # For swords, robes, cloaks and helmets the complete worn silhouette is
+ # already recognizable and can be cropped without painting over its design.
  alpha=[(x,y) for y in range(height) for x in range(width) if source[(y*width+x)*4+3]>90]
  if not alpha:raise ValueError('Cannot make icon from empty gear '+name)
  left=min(x for x,y in alpha);right=max(x for x,y in alpha)
