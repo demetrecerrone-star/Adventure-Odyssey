@@ -78,3 +78,7 @@
 5. **Android:** emulator first, signed APK only when explicitly approved.
 
 **Checking rule:** Check off a task only after files are committed and its stated validation has succeeded; a concept image or planned task is not the same as implementation.
+
+### Baseline review
+
+`tests/character_source_atlas.gd` emits a **native-source** 96-frame contact sheet for the 8 body variants, 4 facings and 3 walking frames. Columns 1–8 are appearances; rows are down, left, up, right, each with animation frames 0/1/2. This is a pre-edit visual reference, not a claim that reconstructed underwear or gear sprites exist yet. The original source PNGs and hair sprites are archived separately by `tools/audit_character_sprites.py` and verified by their SHA-256 hashes. Never alter their original copies.
