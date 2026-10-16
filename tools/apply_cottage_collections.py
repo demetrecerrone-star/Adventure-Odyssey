@@ -54,7 +54,8 @@ func _ensure_cottage_collections()->void:
         data["cottage_style_choices"]={}
     var active:String=str(data.get("cottage_active_tier","starter"))
     if not COTTAGE_COLLECTION_TIERS.has(active) or not data["cottage_tiers_owned"].has(active):
-        data["cottage_active_tier"]="starter"
+        active="starter"
+    data["cottage_active_tier"]=active
 
 func _cottage_asset_path(tier:String,style:String,slot:String)->String:
     return "res://assets/home/collections/%s/%s/%s.svg" % [tier,style,slot.to_lower()]
