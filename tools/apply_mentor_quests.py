@@ -92,7 +92,8 @@ rep('''	summon_actor=null
 	world=Node2D.new()''')
 rep('''	_button(hud,"SAVE",1024,158,216,43,_save)''',
 '''	_button(hud,"SAVE",1024,158,216,43,_save)
-	if _has_mentor_skill():_add_mentor_skill_button()''')
+	if _has_mentor_skill():_add_mentor_skill_button()
+	_add_skillbook_button()''')
 rep('''	# Starter abilities are available immediately; mentors will later offer
 	# separate advanced quest skills, not lock or award these first eighteen.
 	if bool(data.get("guild_training_completed",false)) and who==_skill_mentor():
@@ -297,6 +298,8 @@ func _use_mentor_skill()->void:
 	var info:Dictionary=_mentor_skill_info()
 	last_skill_name=str(info["name"])
 	mentor_skill_cooldown=float(info["cooldown"])
+	var palette={"Warrior":Color("#f3a75d"),"Ranger":Color("#a1e3a5"),"Mage":Color("#f39d60"),"Necromancer":Color("#b99ae9"),"Assassin":Color("#b5a1df"),"Paladin":Color("#ffe7a4")}
+	_mentor_combat_flash(player.position,palette.get(hero_class,Color.WHITE),125.0)
 	match hero_class:
 		"Warrior":
 			for mob in targets:
@@ -330,6 +333,47 @@ func _use_mentor_skill()->void:
 	_refresh_mentor_button()
 	_refresh_hud()
 	_save()
+
+# -- Combat feedback and field skillbook ---------------------------------------
+func _skillbook_lines()->Array:
+	var entries:Array=["CLASS SKILLBOOK / %s" % str(data.get("class","Warrior")),"STARTING ABILITIES  /  AVAILABLE FROM LEVEL 1"]
+	for entry in _starter_skills():
+		entries.append("%s  |  %.1fs cooldown" % [str(entry["name"]),float(entry["cd"])])
+	var advanced:Dictionary=_mentor_skill_info()
+	if _has_mentor_skill():
+		entries.append("ADVANCED: %s  |  %.1fs cooldown  /  LEARNED" % [str(advanced["name"]),float(advanced["cooldown"])])
+	else:
+		entries.append("ADVANCED: %s  /  LOCKED" % str(advanced["name"]))
+		entries.append("Mentor: %s" % _skill_mentor())
+		entries.append("Training: %s" % (_mentor_quest_state() if _mentor_quest_state()!="" else "not started"))
+	return entries
+
+func _open_skillbook()->void:
+	_show_journal("SKILLBOOK",_skillbook_lines())
+
+func _add_skillbook_button()->void:
+	if hud==null or not is_instance_valid(hud):return
+	if hud.get_node_or_null("SkillbookButton")!=null:return
+	_button(hud,"SKILLBOOK",1024,274,216,42,_open_skillbook)
+	for child in hud.get_children():
+		if child is Button and child.text=="SKILLBOOK":
+			child.name="SkillbookButton"
+			break
+
+func _mentor_combat_flash(center:Vector2,tint:Color,diameter:float)->void:
+	if world==null or not is_instance_valid(world):return
+	var ring=Polygon2D.new()
+	var vertices=PackedVector2Array()
+	for index in range(25):
+		var theta=float(index)*TAU/24.0
+		vertices.append(Vector2(cos(theta),sin(theta))*diameter)
+	ring.polygon=vertices
+	ring.color=Color(tint.r,tint.g,tint.b,0.23)
+	ring.position=center
+	world.add_child(ring)
+	var tween=create_tween()
+	tween.tween_property(ring,"modulate:a",0.0,0.38)
+	tween.tween_callback(ring.queue_free)
 '''
 p.write_text(s,encoding="utf-8")
 print("MENTOR QUEST PATCH OK: six mentors, persistent trials, six additional combat abilities.")
