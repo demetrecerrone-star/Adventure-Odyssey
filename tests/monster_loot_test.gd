@@ -114,10 +114,10 @@ func _run()->void:
 	var guardian:Dictionary=game.mobs[0]
 	game._apply_slime_damage(guardian,999,true)
 	if not _check(bool(game.data.get("guardian_defeated",false)),"one-time guardian progress preserved"):return
-	if not _check(int(game.data["inventory"].get("Guardian Relic",0))==1,"unique guardian relic retained"):return
+	if not _check(game.data.get("guardian_quest_state","")=="ready","first boss clear unlocks one-time Guild quest"):return
 	if not _check(int(game.data["inventory"].get("Ember Shard",0))>=1,"guardian grants ember shard"):return
 	game._enter_world("ruins",Vector2(1900,655))
 	game._enter_world("sanctum",Vector2(175,650))
-	if not _check(game.mobs.is_empty(),"guardian cannot be farmed after completion"):return
+	if not _check(game.mobs.is_empty(),"guardian cannot immediately respawn before Guild quest is claimed"):return
 	print("ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS / coins, creature items, trade, persistence and unique boss")
 	quit(0)
