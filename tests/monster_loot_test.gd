@@ -40,17 +40,28 @@ func _run()->void:
 	if not _check(int(forced["bonus_gold"])==2 and int(forced["items"].get("Slime Gel",0))==1,"forced slime bonus and gel drop"):return
 	if not _check(int(game.data["inventory"].get("Slime Gel",0))==before_gel+1,"rolled slime gel reaches backpack"):return
 	if not _check(game._award_monster_loot(sample,{"Slime Gel":0.0})["items"].is_empty(),"reward claims are single-use"):return
-	# Even the first monster kill can roll a tiny rare chance; no pity/threshold.
+	# Independent, first-kill RNG for rare equipment; NOT currency from field mobs.
 	var before_sigils:int=game._sigils_balance()
 	var rare_slime:Dictionary={"species":"slime","drop":"","loot_claimed":false}
 	var rare_reward:Dictionary=game._award_monster_loot(rare_slime,{"sigil_roll":0.0,"Slime Core Charm":0.0,"Slime Gel":1.0,"Health Potion":1.0})
-	if not _check(int(rare_reward["sigils"])==1 and game._sigils_balance()==before_sigils+1,"tiny Sigil chance can succeed immediately"):return
+	if not _check(int(rare_reward["sigils"])==0 and game._sigils_balance()==before_sigils,"slimes cannot give Sigils, even with a perfect roll"):return
 	if not _check(int(rare_reward["items"].get("Slime Core Charm",0))==1,"0.25-percent charm can drop on first roll"):return
 	if not _check(game._gear_def("Slime Core Charm").get("slot","")=="accessory","rare drop uses existing equippable item"):return
 	var rare_repeat:Dictionary=game._award_monster_loot(rare_slime,{"sigil_roll":0.0,"Slime Core Charm":0.0})
-	if not _check(int(rare_repeat["sigils"])==0 and rare_repeat["items"].is_empty() and game._sigils_balance()==before_sigils+1,"rare currency and gear cannot be duplicated"):return
+	if not _check(int(rare_repeat["sigils"])==0 and rare_repeat["items"].is_empty() and game._sigils_balance()==before_sigils,"rare equipment cannot be duplicated"):return
 	var no_luck:Dictionary=game._award_monster_loot({"species":"slime","drop":"","loot_claimed":false},{"sigil_roll":1.0,"Slime Core Charm":1.0,"Slime Gel":1.0,"Health Potion":1.0})
 	if not _check(int(no_luck["sigils"])==0 and no_luck["items"].is_empty(),"no hidden guaranteed rare reward or pity threshold"):return
+	# Boss Sigils can roll on first clear but are never automatic.
+	var boss_winner:Dictionary={"species":"guardian","drop":"","loot_claimed":false}
+	var boss_lucky:Dictionary=game._award_monster_loot(boss_winner,{"sigil_roll":0.0,"Ember Pendant":1.0})
+	if not _check(int(boss_lucky["sigils"])==5 and game._sigils_balance()==before_sigils+5,"boss-only 10-percent roll awards five Sigils"):return
+	var repeat_reward:Dictionary=game._award_monster_loot(boss_winner,{"sigil_roll":0.0})
+	if not _check(int(repeat_reward["sigils"])==0 and game._sigils_balance()==before_sigils+5,"same guardian cannot issue currency twice"):return
+	var boss_unlucky:Dictionary=game._award_monster_loot({"species":"guardian","drop":"","loot_claimed":false},{"sigil_roll":1.0,"Ember Pendant":1.0})
+	if not _check(int(boss_unlucky["sigils"])==0 and game._sigils_balance()==before_sigils+5,"boss Sigils are not guaranteed"):return
+	for normal_species in ["slime","wolf","goblin","fungus"]:
+		if not _check(float(game.MONSTER_LOOT_PROFILES[normal_species]["sigil_chance"])==0.0,"no ordinary monster Sigil chance: "+normal_species):return
+
 	# Check each existing enemy's tiny probability produces real catalog loot.
 	var rare_items:Dictionary={"slime":"Slime Core Charm","wolf":"Forest Fang","goblin":"Guard Sigil","fungus":"Wisdom Bead","guardian":"Ember Pendant"}
 	for species in rare_items.keys():
