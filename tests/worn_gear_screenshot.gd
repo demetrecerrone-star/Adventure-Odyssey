@@ -1,71 +1,127 @@
 extends SceneTree
-# Visual QA for actual Godot on-character gear layer textures (not concept art).
-func _initialize()->void:
+# Visual QA built from the actual playable character Sprite2D state.
+# Preview clones preserve visibility, textures and draw order established by
+# the seven-slot equipment renderer. They do not redraw item art by hand.
+func _initialize() -> void:
 	call_deferred("_run")
 
-func _sprite(parent:Node,path:String,center:Vector2,z:int)->Sprite2D:
-	var s=Sprite2D.new()
-	s.position=center
-	s.scale=Vector2(1.52,1.52)
-	s.z_index=z
-	s.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
-	s.texture=load(path)
-	parent.add_child(s)
-	return s
+func _label(parent:Node, value:String, at:Vector2, size:int=16) -> void:
+	var node=Label.new()
+	node.text=value
+	node.position=at
+	node.add_theme_font_size_override("font_size",size)
+	node.add_theme_color_override("font_color",Color("#f4dfb9"))
+	parent.add_child(node)
 
-func _label(parent:Node,label:String,x:float,y:float,sz:int)->void:
-	var l=Label.new()
-	l.text=label
-	l.position=Vector2(x,y)
-	l.add_theme_font_size_override("font_size",sz)
-	l.add_theme_color_override("font_color",Color("#f8dba5"))
-	parent.add_child(l)
-
-func _wearable_texture(slot:String,item:String,rel:String)->String:
-	var slug:String=item.to_lower().replace("'","").replace(" ","_")
-	var aligned:String="res://assets/equipment_worn/"+slot+"/"+slug+"/"+rel
-	if ResourceLoader.exists(aligned):return aligned
-	return "res://assets/worn_gear/"+slug+"/"+rel
-
-func _run()->void:
-	var canvas=Node2D.new()
-	root.add_child(canvas)
+func _canvas(title:String, subtitle:String) -> Dictionary:
+	var overlay=CanvasLayer.new()
+	overlay.layer=99
+	root.add_child(overlay)
+	var canvas=Control.new()
+	canvas.size=Vector2(1280,720)
+	overlay.add_child(canvas)
 	var bg=ColorRect.new()
-	bg.color=Color("#1b2735")
 	bg.size=Vector2(1280,720)
+	bg.color=Color("#192634")
 	canvas.add_child(bg)
-	_label(canvas,"ADVENTURE ODYSSEY / EQUIPPED ART / FIRST FULL-SET PREVIEW",38,20,26)
-	_label(canvas,"Pose-aligned pixel art and item silhouettes; visual approval still pending",38,54,17)
-	var sets=[
-		{"class":"WARRIOR","body":4,"armor":"Guard Breastplate","head":"Leather Hood","cloak":"Forest Cloak","gloves":"Padded Gloves","boots":"Steel Boots","weapon":"Iron Axe","accessory":"Copper Ring"},
-		{"class":"MAGE","body":6,"armor":"Apprentice Robe","head":"","cloak":"Forest Cloak","gloves":"Padded Gloves","boots":"Steel Boots","weapon":"Ember Staff","accessory":"Moon Brooch"}
-	]
-	var directions=["down","left","up","right"]
-	for row in range(2):
-		var equip:Dictionary=sets[row]
-		var variant:String="base_variant_%02d" % int(equip["body"])
-		_label(canvas,str(equip["class"])+(" / heavy armor + axe" if row==0 else " / robe + staff"),44,112+row*302,19)
-		for col in range(4):
-			var face:String=directions[col]
-			var frame:String=face+"_00.png"
-			var rel:String=variant+"/"+frame
-			var center=Vector2(225+col*280,220+row*302)
-			_label(canvas,face.to_upper(),center.x-30,128+row*302,15)
-			if equip["cloak"]!="":
-				var slug:String=str(equip["cloak"]).to_lower().replace(" ","_")
-				_sprite(canvas,_wearable_texture("cloak",str(equip["cloak"]),rel),center,0 if face=="up" else -1)
-			_sprite(canvas,"res://assets/character_layers/underwear_base/"+rel,center,1)
-			_sprite(canvas,"res://assets/character_layers/starter_pants/"+rel,center,2)
-			for slot in ["armor","boots","gloves","accessory","weapon","head"]:
-				var item:String=str(equip.get(slot,""))
-				if item=="":continue
-				var slug:String=item.to_lower().replace("'","").replace(" ","_")
-				var layer:int=4 if slot=="armor" else 5 if slot in ["boots","gloves"] else 7 if slot in ["head","weapon"] else 6
-				_sprite(canvas,_wearable_texture(slot,item,rel),center,layer)
+	_label(canvas,title,Vector2(32,16),23)
+	_label(canvas,subtitle,Vector2(34,50),15)
+	return {"overlay":overlay,"canvas":canvas}
+
+func _copy_visible_sprite(parent:Node2D, source:Sprite2D) -> void:
+	if source==null or not is_instance_valid(source) or not source.visible or source.texture==null:
+		return
+	var clone=Sprite2D.new()
+	clone.texture=source.texture
+	clone.position=source.position
+	clone.offset=source.offset
+	clone.centered=source.centered
+	clone.flip_h=source.flip_h
+	clone.flip_v=source.flip_v
+	clone.z_index=source.z_index
+	clone.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+	parent.add_child(clone)
+
+func _player_cell(game:Node, parent:Node, center:Vector2, magnification:float) -> void:
+	var anchor=Node2D.new()
+	anchor.position=center
+	anchor.scale=Vector2(magnification,magnification)
+	parent.add_child(anchor)
+	var selected:Array=[game.base_sprite,game.hair_sprite]
+	for slot in game.STARTER_CLOTHES_LAYERS:
+		selected.append(game.starter_clothes_sprites[slot])
+	for slot in game.WORN_EQUIPMENT_SLOTS:
+		selected.append(game.worn_equipment_sprites[slot])
+	# Match actual player child order for sprites sharing a z_index.
+	for child in game.player.get_children():
+		if child is Sprite2D and selected.has(child):
+			_copy_visible_sprite(anchor,child)
+
+func _loadout(game:Node, equipment:Dictionary, body:int, hair:int) -> void:
+	game._ensure_gear()
+	for slot in game.WORN_EQUIPMENT_SLOTS:
+		if game._equipped(slot)!="":
+			game._unequip_slot(slot)
+	game.data["body"]=body
+	game.data["hair"]=clampi(hair,0,game.HAIR.size()-1)
+	for slot in equipment.keys():
+		var item:String=str(equipment[slot])
+		game.data["inventory"][item]=1
+		game._equip_item(item)
+	game._set_player_frame()
+
+func _capture(name:String) -> bool:
+	for i in range(15):
+		await process_frame
+	var picture:Image=root.get_texture().get_image()
+	return picture!=null and picture.get_width()>=1280 and picture.get_height()>=720 and picture.save_png("res://screenshots/"+name)==OK
+
+func _run() -> void:
+	var game=load("res://scenes/main.tscn").instantiate()
+	root.add_child(game)
+	current_scene=game
+	await process_frame
+	game._random_default()
+	game._enter_world("town",Vector2(1030,980))
+	await process_frame
+	game._clear_ui()
+	var warrior={"armor":"Guard Breastplate","head":"Leather Hood","cloak":"Forest Cloak","gloves":"Padded Gloves","boots":"Steel Boots","weapon":"Iron Axe","accessory":"Copper Ring"}
+	var mage={"armor":"Apprentice Robe","cloak":"Forest Cloak","gloves":"Padded Gloves","boots":"Steel Boots","weapon":"Ember Staff","accessory":"Moon Brooch"}
+	var facings=["down","left","up","right"]
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://screenshots"))
-	for i in range(16):await process_frame
-	var shot=root.get_texture().get_image()
-	if shot==null or shot.save_png("res://screenshots/worn_equipment_previews.png")!=OK:
-		push_error("AO WORN GEAR SCREENSHOT FAILED");quit(1);return
-	print("AO WORN GEAR SCREENSHOT: PASS")
+	var layout=_canvas("ADVENTURE ODYSSEY / LIVE EQUIPMENT RENDERER", "Two equipped loadouts • four directions • gameplay sprite depth and hairstyle")
+	var canvas:Control=layout["canvas"]
+	for row in range(2):
+		var gear:Dictionary=warrior if row==0 else mage
+		_loadout(game,gear,3 if row==0 else 5,2 if row==0 else 5)
+		_label(canvas,"WARRIOR / breastplate + axe + hood" if row==0 else "MAGE / robe + staff + visible hair",Vector2(38,100+row*300),18)
+		for col in range(4):
+			game.facing=facings[col]
+			game.anim_frame=0
+			game._set_player_frame()
+			var center=Vector2(208+col*290,224+row*300)
+			_label(canvas,str(facings[col]).to_upper(),Vector2(center.x-24,129+row*300),14)
+			_player_cell(game,canvas,center,1.46)
+	if not await _capture("worn_equipment_previews.png"):
+		push_error("LIVE EQUIPMENT PREVIEW CAPTURE FAILED")
+		quit(1)
+		return
+	layout["overlay"].queue_free()
+	await process_frame
+	var walk=_canvas("ADVENTURE ODYSSEY / EQUIPPED WALK FRAMES", "Live renderer • warrior equipment • 4 directions × 3 walking frames • check grip and clipping")
+	var walk_canvas:Control=walk["canvas"]
+	_loadout(game,warrior,3,2)
+	for frame in range(3):
+		for col in range(4):
+			game.facing=facings[col]
+			game.anim_frame=frame
+			game._set_player_frame()
+			var center=Vector2(190+col*290,175+frame*181)
+			_label(walk_canvas,str(facings[col]).to_upper()+"  /  FRAME "+str(frame),Vector2(center.x-68,94+frame*181),14)
+			_player_cell(game,walk_canvas,center,1.20)
+	if not await _capture("equipment_walk_pose_grid.png"):
+		push_error("LIVE WALK POSE GRID CAPTURE FAILED")
+		quit(1)
+		return
+	print("ADVENTURE ODYSSEY LIVE EQUIPMENT PREVIEWS: PASS / two loadouts and twelve walking poses")
 	quit(0)
