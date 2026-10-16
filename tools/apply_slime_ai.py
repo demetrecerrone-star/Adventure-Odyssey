@@ -45,30 +45,20 @@ rep('''	best["hp"]=int(best["hp"])-dmg
 
 # The old global timer function no longer governs attacks, but remains a
 # compatibility wrapper for scripted callers while behavior is per-enemy.
-rep('''func _enemy_attack()->void:
-	for mob in mobs:
-		if not mob["alive"]:continue
-		if player.position.distance_to(mob["node"].position)<105:
-			var evade=minf(0.35,0.05+float(data["stats"]["Agility"])*0.003)
-			if randf()<evade:
-				_combat_popup(player.position,"DODGE",Color("#8ce7ee"))
-				hint_label.text="DODGE! Your Agility avoided the attack."
-			else:
-				_combat_popup(player.position,"-5 HP",Color("#ff9a98"))
-				data["hp"]=maxi(0,int(data["hp"])-5)
-				hint_label.text="A slime hits you for 5 damage."
-				_refresh_hud()
-				if int(data["hp"])==0:
-					data["hp"]=int(data["max_hp"])
-					_enter_world("town",Vector2(1030,980))
-					_message("You fainted and were brought safely back to Elmwatch.")
-			return''',
-'''func _enemy_attack()->void:
-	# Compatibility for existing calls: attacks now originate per slime.
+# Use stable function boundaries so earlier combat-presentation patches can
+# vary inside _enemy_attack without breaking this integration.
+start=s.index("func _enemy_attack()->void:")
+stop=s.index("func _refresh_hud()->void:",start)
+if start<0 or stop<=start:
+    raise SystemExit("SLIME AI PATCH: enemy attack function boundaries not found")
+s=s[:start]+'''func _enemy_attack()->void:
+	# Compatibility: legacy callers request a single nearby slime attack.
 	for mob in mobs:
 		if mob["alive"] and player.position.distance_to(mob["node"].position)<105:
 			_slime_attack(mob)
-			return''')
+			return
+
+'''+s[stop:]
 
 s+='''
 # -- Thornbrook enemy behavior state machine -----------------------------------
