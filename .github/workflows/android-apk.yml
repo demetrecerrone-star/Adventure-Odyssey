@@ -175,6 +175,7 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/starter_house_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/elmwatch_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/guild_training_screenshot.gd
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/class_skills_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/dialogue_screenshot.gd
           test -s screenshots/tutorial_dialogue.png
           test -s screenshots/npc_dialogue.png
@@ -188,6 +189,9 @@ jobs:
           test -s screenshots/elmwatch_blacksmith.png
           test -s screenshots/guild_quest_offer.png
           test -s screenshots/thornbrook_combat.png
+          test -s screenshots/skill_quest_offer.png
+          test -s screenshots/skill_unlock_journal.png
+          test -s screenshots/mage_arcane_bolt.png
           test -s screenshots/character_creator.png
           ls -lh screenshots/character_creator.png
       - name: Upload visual QA screenshot
