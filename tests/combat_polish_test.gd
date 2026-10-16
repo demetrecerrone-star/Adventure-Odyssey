@@ -60,8 +60,8 @@ func _run()->void:
 		fx.set_script(load("res://scripts/skill_effect.gd"))
 		game.world.add_child(fx)
 		fx.call("configure",name,Vector2(430,640),Vector2(580,660),Color.WHITE,"advanced")
-		if not _check(fx.pattern==str(all_styles[name]),"named pattern: "+name):return
-		seen[fx.pattern]=true
+		if not _check(str(fx.get("pattern"))==str(all_styles[name]),"named pattern: "+name):return
+		seen[str(fx.get("pattern"))]=true
 		fx.queue_free()
 	if not _check(all_styles.size()==24 and seen.size()>=12,"all 24 skills resolve to distinct semantic families"):return
 

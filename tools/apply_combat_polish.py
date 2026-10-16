@@ -34,8 +34,7 @@ rep('''func _play_ability_fx(skill_name:String,kind:String)->void:
 ''','''func _play_ability_fx(skill_name:String,kind:String)->void:
 \t_start_combat_pose(kind)
 ''')
-rep('''if current_map=="forest" and kind not in ["heal","buff","barrier","shield","trap","summon","step"]:''',
-'''if _is_adventure_combat_zone() and kind not in ["heal","buff","barrier","shield","trap","summon","step"]:''')
+# World expansion already broadens target selection beyond Thornbrook.
 rep('''\teffect.call("configure",skill_name,player.position,target,accent)''',
 '''\teffect.call("configure",skill_name,player.position,target,accent,kind)''')
 rep('''\tvar accent:Color=Color(str(CLASS_ACCENTS.get(str(data.get("class","Warrior")),"#fff0cb")))
