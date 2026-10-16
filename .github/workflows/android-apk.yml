@@ -41,6 +41,7 @@ jobs:
           python3 tools/apply_npc_interactions.py
           python3 tools/apply_npc_presence.py
           python3 tools/apply_interior_navigation.py
+          python3 tools/apply_opening_tutorial.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
           from pathlib import Path
@@ -118,6 +119,7 @@ jobs:
           python3 tools/apply_npc_interactions.py
           python3 tools/apply_npc_presence.py
           python3 tools/apply_interior_navigation.py
+          python3 tools/apply_opening_tutorial.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -139,6 +141,7 @@ jobs:
           run_scene_test res://tests/bedroom_test.gd 'ADVENTURE ODYSSEY BEDROOM TEST: PASS'
           run_scene_test res://tests/home_furniture_test.gd 'ADVENTURE ODYSSEY HOME FURNITURE TEST: PASS'
           run_scene_test res://tests/starter_house_test.gd 'ADVENTURE ODYSSEY STARTER HOUSE TEST: PASS'
+          run_scene_test res://tests/opening_tutorial_test.gd 'ADVENTURE ODYSSEY OPENING TUTORIAL TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
           run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'
@@ -214,6 +217,7 @@ jobs:
           python3 tools/apply_npc_interactions.py
           python3 tools/apply_npc_presence.py
           python3 tools/apply_interior_navigation.py
+          python3 tools/apply_opening_tutorial.py
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
@@ -266,6 +270,7 @@ jobs:
           run_scene_test res://tests/bedroom_test.gd 'ADVENTURE ODYSSEY BEDROOM TEST: PASS'
           run_scene_test res://tests/home_furniture_test.gd 'ADVENTURE ODYSSEY HOME FURNITURE TEST: PASS'
           run_scene_test res://tests/starter_house_test.gd 'ADVENTURE ODYSSEY STARTER HOUSE TEST: PASS'
+          run_scene_test res://tests/opening_tutorial_test.gd 'ADVENTURE ODYSSEY OPENING TUTORIAL TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
           run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'

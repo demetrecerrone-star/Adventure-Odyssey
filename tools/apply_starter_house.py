@@ -42,9 +42,9 @@ rep('''func _walkable(where:Vector2)->bool:
 \tif current_map=="foyer":
 \t\treturn Rect2(390,352,1260,778).has_point(where)
 \tif current_map=="living":
-\t\tif not Rect2(382,340,1294,758).has_point(where):return false
-\t\t# Keep the central dining table and kitchen fixtures solid.
-\t\tfor furnishing in [Rect2(885,661,280,205),Rect2(1250,267,430,367),Rect2(475,283,271,207)]:
+\t\tif not Rect2(435,260,1250,862).has_point(where):return false
+\t\t# Approved art layout: hearth/sofa left, dining table center, kitchen counters right.
+\t\tfor furnishing in [Rect2(470,188,304,208),Rect2(536,514,390,187),Rect2(648,683,281,141),Rect2(1081,534,298,324),Rect2(1450,270,240,509),Rect2(1490,937,145,112)]:
 \t\t\tif furnishing.has_point(where):return false
 \t\treturn true
 \tif current_map=="bedroom":''')
@@ -91,7 +91,7 @@ func _house_target()->String:
 \tif current_map=="foyer":
 \t\tpoints={"Bedroom":Vector2(1024,335),"Living Room":Vector2(460,705),"Front Door":Vector2(1024,1082)}
 \telse:
-\t\tpoints={"Foyer":Vector2(424,710),"Hearth":Vector2(651,506),"Kitchen":Vector2(1480,650),"Pantry":Vector2(1570,830)}
+\t\tpoints={"Foyer":Vector2(1024,1060),"Hearth":Vector2(648,464),"Kitchen":Vector2(1408,706),"Pantry":Vector2(1513,846)}
 \tvar nearest:=182.0
 \tvar selected:=""
 \tfor key in points.keys():
@@ -112,7 +112,7 @@ func _interact_house()->void:
 \t\t"Bedroom":
 \t\t\t_enter_house_room("bedroom",Vector2(1024,935))
 \t\t"Living Room":
-\t\t\t_enter_house_room("living",Vector2(525,715))
+\t\t\t_enter_house_room("living",Vector2(1024,950))
 \t\t"Foyer":
 \t\t\t_enter_house_room("foyer",Vector2(625,715))
 \t\t"Front Door":

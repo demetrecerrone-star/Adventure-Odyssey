@@ -31,19 +31,23 @@ func _run() -> void:
     scene._interact()
     await process_frame
     if not _check(scene.current_map == "living" and scene.house_art != null, "foyer opens living room/kitchen"): return
-    if not _check(not scene._walkable(Vector2(1000, 750)), "living table collision"): return
-    scene.player.position = Vector2(1570, 830)
+    if not _check(scene._walkable(scene.player.position), "living arrival is walkable"): return
+    if not _check(not scene._walkable(Vector2(700,600)), "living sofa blocks passage"): return
+    if not _check(not scene._walkable(Vector2(1550,520)), "kitchen counter blocks passage"): return
+    if not _check(not scene._walkable(Vector2(1200, 710)), "living dining table collision"): return
+    scene.player.position = Vector2(1513, 846)
     if not _check(scene._house_target() == "Pantry", "kitchen pantry proximity"): return
     var potions_before:int = int(scene.data["inventory"].get("Health Potion",0))
     scene._interact()
     if not _check(int(scene.data["inventory"].get("Health Potion",0)) == potions_before+1, "one starter potion collected"): return
     scene._interact()
     if not _check(int(scene.data["inventory"].get("Health Potion",0)) == potions_before+1, "pantry reward cannot repeat"): return
-    scene.player.position = Vector2(423, 710)
+    scene.player.position = Vector2(1024, 1060)
     if not _check(scene._house_target() == "Foyer", "living room can return to foyer"): return
     scene._interact()
     await process_frame
     if not _check(scene.current_map == "foyer", "return to foyer"): return
+    if not _check(scene._walkable(scene.player.position), "return spawn is walkable"): return
     scene.player.position = Vector2(1024, 1070)
     if not _check(scene._house_target() == "Front Door", "front door can be used"): return
     scene._interact()

@@ -70,3 +70,9 @@ The advanced Elmwatch town picture, painted interiors for the Adventurers Guild,
 NPCs have a save-persistent local world clock (starting at 9 AM), directional walking animations, morning/afternoon indoor work shifts, outdoor midday breaks and evening strolls, and overnight off-scene rest. Shop staff spawn only where their schedule places them. The healer restores HP; Captain Elara can complete the persistent three-slime training goal. Dialogue and town-to-business doorways work via TALK / USE. The shops do not yet implement purchase screens.
 
 CI smoke, starter-house, dialogue, Elmwatch visual, NPC routine/presence and indoor collision tests run against the reconstructed Godot source on every push, and CI captures five Elmwatch previews. Signed Android APK exports are still manual only. The approved living room/kitchen image still needs import; this integration leaves its temporary fallback untouched.
+
+## Approved living-room alignment and guided first day (October 2026)
+
+The exact approved `living_room_kitchen.png` was located in the Adventure Odyssey Library, but its original raw bytes still need to be imported into GitHub at `assets/home/living_room_kitchen.png`. The game already loads that path when available; the fallback painting remains until it is checked in. No new artwork is needed. Living-room collision zones now match the approved hearth, sofa, dining table, and kitchen counters, with the foyer return at the bottom-center doorway. The **one-bedroom** floor plan is unchanged.
+
+`tools/apply_opening_tutorial.py` adds first-day journal improvements and saved contextual guidance for chest, mirror, foyer, pantry, Elmwatch, Guild and training. Players can explore out of order and revisit their home. `tests/opening_tutorial_test.gd` exercises this path, save/load and existing Guild NPCs. APK exports remain manual.
