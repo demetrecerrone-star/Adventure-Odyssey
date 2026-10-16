@@ -17,3 +17,13 @@ Ordinary ATTACK and successful skill casts briefly select registered walking fra
 ## Verification
 
 The new combat polish regression checks actual collision-detour behavior on a Thornbrook rock, correct styles for all 24 named skills, and worn equipment synchronization for normal attacks and skill casts. GitHub Actions captures screenshots/combat_effects_starters.png and screenshots/combat_effects_mentors.png with the live Godot renderer, alongside all previous screenshots. Push builds do not export an APK.
+
+## Dungeon attack-cycle follow-up
+
+The shared AI still had a forest-only check after resolving a hit. In all five Oldstone maps it returned before assigning the attack cooldown and before processing the other enemies. The check now stops only when the attack replaces the world, such as when the player faints. Normal 2.25-second and Guardian 3.5-second cooldowns are preserved.
+
+The Guardian also inherited the ordinary enemy's 133-unit windup cancellation distance despite starting attacks within 165 units and having 175-unit hit reach. Its windup now uses the existing 175-unit hit reach; stepping beyond it still avoids the attack. Ordinary enemies retain their original range.
+
+`tests/dungeon_combat_ai_test.gd` covers attack completion, cooldown timing and multiple enemies across Thornbrook and all five Oldstone maps; Guardian reach at 150, 175 and 176 units; and stopping old-room processing after fainting. It runs in the existing validation workflow without exporting an APK.
+
+Local verification used Godot 4.7.2 on the reconstructed project. The new test reproduced 23 failing assertions before the fix, with no unrelated runtime errors, and passed after the fix. All 40 gameplay regression scripts then passed. Android emulator verification and dedicated animation art remain pending; no APK was exported.

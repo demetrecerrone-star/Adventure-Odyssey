@@ -16,6 +16,23 @@ def rep(old,new):
         raise SystemExit(f"COMBAT POLISH PATCH ANCHOR FAILED ({n}): {old[:120]!r}")
     s=s.replace(old,new,1)
 
+# The shared state machine now serves every dungeon room. Only abandon an
+# attack tick when that attack replaced the world (for example, fainting).
+rep('''\tvar dt:float=clampf(delta,0.0,0.15)
+\tfor mob in mobs:''',
+'''\tvar dt:float=clampf(delta,0.0,0.15)
+\tvar combat_world:Node2D=world
+\tfor mob in mobs:''')
+rep('''\t\t\t\t# _slime_attack can change the map if the player faints.
+\t\t\t\tif current_map!="forest":return''',
+'''\t\t\t\t# Stop before touching old enemies if the attack replaced the world.
+\t\t\t\tif world!=combat_world:return''')
+# The Guardian starts attacks at 165 units and can hit at 175. Applying the
+# ordinary creature's 133-unit cutoff cancelled valid boss telegraphs.
+rep('''\t\t\tif player_dist>133.0:''',
+'''\t\t\tvar windup_reach:float=175.0 if str(mob.get("species",""))=="guardian" else 133.0
+\t\t\tif player_dist>windup_reach:''')
+
 # An attacking or casting character borrows a registered source animation
 # frame, so hair and all seven worn gear sprites follow the identical pose.
 # Dedicated bespoke attack/cast art can later replace this safe interim cue.

@@ -21,6 +21,7 @@ Reconciled October 16, 2026 against the existing GitHub game systems and the cot
 - [ ] Test wander → detect → pursue → attack/telegraph → retreat/leash → resume, including obstacle edges, damage, death and dropped loot.
 - [ ] Address only demonstrated bugs in pursuit timing, target distance, death cleanup and room/map transition resets.
 - [x] Add deterministic Godot tests for common creature states, real-rock obstacle detours, anti-overlap movement and boss telegraphs. No enemy balance changes.
+- [x] Fix and test dungeon attack cooldowns, Guardian windup range and post-faint cleanup across the forest and all five Oldstone maps; all 40 Godot regression scripts pass locally.
 - [ ] Inspect live enemy encounters and obstacle behavior visually on emulator.
 
 ### 2 — Skill visual effects and mentor progression
