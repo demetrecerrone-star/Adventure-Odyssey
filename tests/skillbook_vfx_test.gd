@@ -34,7 +34,7 @@ func _run()->void:
 		game._play_ability_fx(str(game._mentor_skill_info()["name"]),"advanced")
 		var count:int=0
 		for effect in game.world.get_children():
-			if effect.name=="AbilityEffect":
+			if effect.has_method("configure"):
 				count+=1
 				if not _ok(effect.has_method("configure"),klass+" effect draws world geometry"):return
 		if not _ok(count==4,klass+" three starters plus advanced effect"):return
