@@ -69,7 +69,7 @@ The advanced Elmwatch town picture, painted interiors for the Adventurers Guild,
 
 NPCs have a save-persistent local world clock (starting at 9 AM), directional walking animations, morning/afternoon indoor work shifts, outdoor midday breaks and evening strolls, and overnight off-scene rest. Shop staff spawn only where their schedule places them. The healer restores HP; Captain Elara can complete the persistent three-slime training goal. Dialogue and town-to-business doorways work via TALK / USE. The shops do not yet implement purchase screens.
 
-CI smoke, starter-house, dialogue, Elmwatch visual, NPC routine/presence and indoor collision tests run against the reconstructed Godot source on every push, and CI captures five Elmwatch previews. Signed Android APK exports are still manual only. The approved living room/kitchen image still needs import; this integration leaves its temporary fallback untouched.
+CI smoke, starter-house, opening-tutorial, dialogue, Elmwatch visual, NPC routine/presence and indoor collision tests run against the reconstructed Godot source on every push, and CI captures the Elmwatch and house visual previews. Both approved cottage paintings are now checked into `main` and have passed Godot import and gameplay validation. Signed Android APK exports are still manual only.
 
 ## Approved living-room alignment and guided first day (October 2026)
 
