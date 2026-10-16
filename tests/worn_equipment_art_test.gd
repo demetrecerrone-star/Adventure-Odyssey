@@ -16,7 +16,7 @@ func _run()->void:
 	game._enter_world("town",Vector2(1030,980))
 	await process_frame
 	game._ensure_gear()
-	if not _check(game.ITEM_CATALOG.size()==34,"all 34 existing equippable items included"):return
+	if not _check(game.ITEM_CATALOG.size()==40,"34 original items plus 6 Guardian quest heirlooms"):return
 	var seen_icons:Dictionary={}
 	var all_names:Array=game.ITEM_CATALOG.keys()
 	for entry in all_names:
@@ -37,7 +37,7 @@ func _run()->void:
 		if not _check(worn_path.begins_with("res://assets/equipment_worn/"),"bespoke sprite takes priority: "+item):return
 		game._unequip_slot(slot)
 		if not _check(not node.visible,"removing item hides artwork: "+item):return
-	if not _check(seen_icons.size()==34,"unique matching icons for 34 wearable items"):return
+	if not _check(seen_icons.size()==40,"unique matching icons for 40 wearable items"):return
 	for klass in ["Warrior","Ranger","Mage","Necromancer","Assassin","Paladin"]:
 		game.data["class"]=klass
 		for item in ["Iron Sword","Guard Breastplate","Leather Hood","Forest Cloak","Padded Gloves","Steel Boots","Copper Ring"]:
