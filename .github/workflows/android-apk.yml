@@ -140,10 +140,13 @@ jobs:
           mkdir -p screenshots
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/creator_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/bedroom_screenshot.gd
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/starter_house_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/dialogue_screenshot.gd
           test -s screenshots/tutorial_dialogue.png
           test -s screenshots/npc_dialogue.png
           test -s screenshots/starter_bedroom.png
+          test -s screenshots/starter_foyer.png
+          test -s screenshots/starter_living.png
           test -s screenshots/character_creator.png
           ls -lh screenshots/character_creator.png
       - name: Upload visual QA screenshot
