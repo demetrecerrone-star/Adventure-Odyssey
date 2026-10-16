@@ -28,10 +28,10 @@ func _run() -> void:
 	scene._process(0.02)
 	if not _check(scene.mobs[0]["indicator"].targeted,"nearest opponent is highlighted"):return
 	if not _check(scene.prompt.text.contains("Green Slime 35/35 HP"),"attack prompt reveals target health"):return
-	scene.monster_timer=1.7
+	scene.mobs[0]["state"]="windup"
 	scene._update_slime_targeting()
 	if not _check(scene.mobs[0]["indicator"].attack_warning,"nearby attack telegraph appears"):return
-	scene.monster_timer=0.0
+	scene.mobs[0]["state"]="pursue"
 	scene._update_slime_targeting()
 	if not _check(not scene.mobs[0]["indicator"].attack_warning,"warning resets with attack timer"):return
 	var slime=scene.mobs[0]
