@@ -97,5 +97,16 @@ func _buy_sigil_cottage_style(slot:String,variant:String)->bool:
 \t_save()
 \treturn true
 '''
+# Keep the appended GDScript consistent with game.gd's tab indentation.
+marker="\\n# -- Two distinct currencies: gold for trades, Sigils for exclusive cosmetics."
+assert s.count(marker)==1
+pre,gd=s.split(marker,1)
+lines=[]
+for line in (marker+gd).split("\\n"):
+    spaces=len(line)-len(line.lstrip(" "))
+    if spaces and spaces%4:
+        raise SystemExit("AO SIGILS INDENTATION: mixed spaces")
+    lines.append("\\t"*(spaces//4)+line[spaces:])
+s=pre+"\\n".join(lines)
 path.write_text(s,encoding="utf8")
 print("AO SIGILS PATCH OK: separate saved currency, coin UI, once-only rewards, art-gated cottage unlocks.")
