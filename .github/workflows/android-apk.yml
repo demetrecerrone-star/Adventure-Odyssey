@@ -157,6 +157,7 @@ jobs:
           python3 tools/audit_character_sprites.py
           python3 tools/generate_worn_gear.py
           python3 tools/generate_worn_equipment_art.py
+          python3 tools/apply_matched_item_icons.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
         shell: bash
@@ -192,6 +193,7 @@ jobs:
           run_scene_test res://tests/character_layers_test.gd 'ADVENTURE ODYSSEY CHARACTER LAYERS TEST: PASS'
           run_scene_test res://tests/worn_gear_test.gd 'ADVENTURE ODYSSEY WORN GEAR TEST: PASS'
           run_scene_test res://tests/worn_equipment_art_test.gd 'ADVENTURE ODYSSEY WORN EQUIPMENT ART TEST: PASS'
+          run_scene_test res://tests/matched_item_icons_test.gd 'ADVENTURE ODYSSEY MATCHED ITEM ICON TEST: PASS'
           run_scene_test res://tests/equipment_visuals_test.gd 'ADVENTURE ODYSSEY EQUIPMENT VISUALS TEST: PASS'
           run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
           run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
@@ -321,6 +323,7 @@ jobs:
           python3 tools/apply_app_icon.py
           python3 tools/generate_worn_gear.py
           python3 tools/generate_worn_equipment_art.py
+          python3 tools/apply_matched_item_icons.py
           test -f project.godot
           test -f export_presets.cfg
           test -f assets/world/title.png
@@ -387,6 +390,7 @@ jobs:
           run_scene_test res://tests/character_layers_test.gd 'ADVENTURE ODYSSEY CHARACTER LAYERS TEST: PASS'
           run_scene_test res://tests/worn_gear_test.gd 'ADVENTURE ODYSSEY WORN GEAR TEST: PASS'
           run_scene_test res://tests/worn_equipment_art_test.gd 'ADVENTURE ODYSSEY WORN EQUIPMENT ART TEST: PASS'
+          run_scene_test res://tests/matched_item_icons_test.gd 'ADVENTURE ODYSSEY MATCHED ITEM ICON TEST: PASS'
           run_scene_test res://tests/equipment_visuals_test.gd 'ADVENTURE ODYSSEY EQUIPMENT VISUALS TEST: PASS'
           run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
           run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
