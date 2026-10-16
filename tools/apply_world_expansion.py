@@ -174,15 +174,6 @@ rep('''		data["xp"]=int(data["xp"])+25
 
 rep('''			_show_journal("FIRST FIELD ASSIGNMENT COMPLETE",[''',
 '''			_show_journal("FIRST FIELD ASSIGNMENT COMPLETE",[''') if False else None
-rep('''	if current_map!="forest":return
-	for mob in mobs:
-		if not bool(mob.get("alive",false)):continue
-		mob["mentor_mark_timer"]''',
-'''	if not _is_adventure_combat_zone():return
-	for mob in mobs:
-		if not bool(mob.get("alive",false)):continue
-		mob["mentor_mark_timer"]''')
-
 rep('''	if not _has_mentor_skill() or player==null or current_map!="forest":return''',
 '''	if not _has_mentor_skill() or player==null or not _is_adventure_combat_zone():return''')
 rep('''	if current_map=="forest" and kind not in ["heal","buff","barrier","shield","trap","summon","step"]:''',
