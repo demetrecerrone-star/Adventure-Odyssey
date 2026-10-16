@@ -149,6 +149,32 @@ new_active=new_active.replace("    ","\t")
 if game.count(old_active)!=1:
     raise SystemExit("COTTAGE GOLD SHOP: collection save migration anchor changed")
 game=game.replace(old,new,1).replace(old_active,new_active,1)
+# Godot TextureRect has intrinsic dimensions until IGNORE_SIZE is assigned.
+# Establish stretch/expand rules BEFORE calling .size, so each thumbnail
+# stays within its requested slot rather than covering neighboring labels.
+scale_fixups = (
+    ("""\tpicture.position=rect.position
+\tpicture.size=rect.size
+\tpicture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+\tpicture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED""",
+     """\tpicture.position=rect.position
+\tpicture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+\tpicture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+\tpicture.size=rect.size"""),
+    ("""\ticon.position=where
+\ticon.size=Vector2(size,size)
+\ticon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+\ticon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED""",
+     """\ticon.position=where
+\ticon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+\ticon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+\ticon.size=Vector2(size,size)"""),
+)
+for original, replacement in scale_fixups:
+    if game.count(original) != 1:
+        raise SystemExit("COTTAGE THUMBNAIL CONTROL ANCHOR FAILED: " + original)
+    game = game.replace(original, replacement, 1)
+
 # Tidy original Sigil collection panel spacing for phone-scale readability.
 # Do not alter assets or costs, only where the existing Godot controls render.
 replacements = (
