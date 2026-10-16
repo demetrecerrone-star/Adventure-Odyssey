@@ -30,6 +30,16 @@ func _run()->void:
         if not _ok(game.data["home_styles"][slot]==game.HOME_STARTER[slot],"preserved original sprite: "+slot):return
     game._open_cottage_collections("noble","feminine")
     if not _ok(game.popup.name=="CottageDecorMenu" and game.popup.get_node_or_null("OdysseySigilCoin")!=null,"AO coin opens decorated menu"):return
+    # UI regression: furniture thumbnails and Sigil coin must stay inside compact
+    # phone-scale rectangles, not expand to full imported SVG dimensions.
+    var previews:int=0
+    for node in game.popup.find_children("*","TextureRect",true,false):
+        var image:=node as TextureRect
+        if image==null:continue
+        if not _ok(image.size.x<=150.0 and image.size.y<=150.0,"art/coin remains inside its menu slot: "+image.name):return
+        if image.name!="OdysseySigilCoin":previews+=1
+    if not _ok(previews>=7,"four tiers plus three matching furniture previews render"):return
+    if not _ok(_has_button(game.popup,"GOLD FURNITURE"),"Sigil store links to independent earned-gold store"):return
     for key in ["noble","castle","royal"]:
         if not _ok(game._cottage_tier_art_ready(key),"all 9 real transparent illustrated sprites present in "+key):return
     if not _ok(game.COTTAGE_COLLECTION_TIERS["noble"]["price"]==30 and game.COTTAGE_COLLECTION_TIERS["castle"]["price"]==60 and game.COTTAGE_COLLECTION_TIERS["royal"]["price"]==120,"three progressively priced whole-set bundles"):return

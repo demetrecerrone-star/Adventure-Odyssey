@@ -44,10 +44,13 @@ and equipped on new characters. Existing saves receive the same starter set.
 The new bedroom picture is intentionally empty underneath the furniture, so
 recoloring, swapping and placing furniture can be built without repainting it.
 Chest item storage, bed rest and mirror appearance editing continue to work.
-The player can preview their current starter selections using ROOM STYLE in
-the chest screen. Different bed colors, mirror shapes and chest styles are
-reserved for a later in-game gold cosmetic shop; purchasing and unlock screens
-are **not yet implemented**. No real-money purchases are used.
+The player opens the finished cottage styling UI through ROOM STYLE in
+the chest screen or the bedroom DECOR control. The shop now includes 27
+transparent illustrations across Noble Court, Castle Grandeur and Royal Legacy
+Sigil collections (30/60/120 Sigils per whole three-style tier), plus individual
+Riverside Blue bed, Copper Leaf mirror and Ironwood chest upgrades purchased
+once with earned gold (25/18/20). Owned items can be re-equipped freely; all
+state is save-compatible. No real-money purchases are used.
 
 CI applies `tools/apply_home_furniture.py` after the dialogue tutorial patch
 and tests the modular room using `tests/home_furniture_test.gd`.
@@ -58,7 +61,7 @@ sprites should replace the small previews before final art lock.
 
 - The approved painted foyer is stored at `assets/home/approved_cottage_foyer.jpg` and rendered by `scripts/house_room_scene.gd` without changing its aspect ratio.
 - The exact approved painted living room/kitchen is now committed at `assets/home/living_room_kitchen.png` and loads directly through `house_room_scene.gd` (no procedural fallback needed).
-- The bedroom remains a single room with three functional, independently rendered starter-furniture sprites; alternate furniture remains future earned-in-game-currency cosmetics.
+- The bedroom remains a single room with three functional, independently rendered starter-furniture sprites; completed paid cosmetic collections and individual gold upgrades now replace the previous placeholders without modifying the free originals.
 - The foyer and living room/kitchen connect through the same talk/use interaction as other game objects; players can leave for Elmwatch and return via the cottage entrance in the southern-western area of the town map.
 - The kitchen pantry grants exactly one Health Potion per save and does not replenish on subsequent visits.
 - `tests/starter_house_test.gd` checks paintings, round-trip navigation, furniture separation and pantry persistence. `tests/starter_house_screenshot.gd` captures rendered foyer and living room previews into the visual QA artifact without exporting an APK.
