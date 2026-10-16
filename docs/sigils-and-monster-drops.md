@@ -21,6 +21,20 @@ Both balances can be seen in the game's HUD/backpack/decor interface. Sigils use
 | Fungus | 5 (forest) / 9 (ruins) | 0–2 | Herb, plus inherited Enchanted Thread | Enchanted Thread 45%; Health Potion 9% |
 | Oldstone guardian | 65 + 100 fixed boss bonus | 8–16 | Guardian Relic and Ember Shard, first victory only | None |
 
+### Independent RNG and extremely rare rewards
+
+Each kill rolls each possible item **independently**, including rare items. A 0.25% drop has a real one-in-400 chance on *any* eligible kill, including the first. There is no minimum kill count, level gate, streak requirement, guaranteed pity drop, or progressive boost. The 0.25% is a probability per kill, **not** a promise of an item exactly once every 400 kills.
+
+| Monster | Rare equipment (real catalog item) | Independent chance per kill | Bonus Sigil roll |
+|---|---|---:|---:|
+| Green slime | Slime Core Charm | 0.25% | 0.5% for 1 Sigil |
+| Wolf | Forest Fang | 0.35% | 0.75% for 1 Sigil |
+| Goblin | Guard Sigil | 0.25% | 0.75% for 1 Sigil |
+| Fungus | Wisdom Bead | 0.3% | 0.6% for 1 Sigil |
+| Oldstone guardian (one-time) | Ember Pendant | 3% | No separate repeatable Sigil roll; first victory still awards 25 Sigils |
+
+Regular gold and the existing progression-friendly material cadence remain in place. Higher rarity is exciting but does not restrict class equipment access. The drop tables and tiny percentages are tuning values that can be adjusted after emulator/playtesting.
+
 Enemy drops are rolled only on death; already dead enemies and claimed boss rewards cannot be repeatedly collected. Existing quest-kill counters, XP, 18 starting skills and 6 mentor techniques are not changed. Collected materials are added to the current backpack and persist using existing character saves. Materials can be sold from the backpack for gold: Slime Gel 2, Wolf Pelt 4, Beast Hide 5, Iron Ore 7, Herb 3, Enchanted Thread 6, Ember Shard 24.
 
 ## Cottage cosmetic guardrails
@@ -31,7 +45,7 @@ Future Sigil cosmetics can include furniture color schemes, wallpapers, clothing
 
 ## QA, packaging and review
 
-- `tests/monster_loot_test.gd`: enemy loot, bonus coins, material selling, persistence, boss uniqueness.
+- `tests/monster_loot_test.gd`: enemy loot, bonus coins, rare first-kill chances, no guaranteed rare pity, single-claim protection, Sigil rolls, material selling, persistence, boss uniqueness.
 - `tests/sigils_currency_test.gd`: coin resource/HUD, earning/spending, older-save migration, zero-cost original furniture and art-gated purchases.
 - `tests/guild_training_test.gd`, `tests/world_expansion_test.gd`: one-time Sigil quest/boss rewards.
 - CI validates the reconstructed Godot source and game tests on pushes. **Do not build a new APK until emulator verification and user approval.**
