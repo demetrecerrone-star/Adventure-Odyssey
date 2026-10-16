@@ -96,6 +96,75 @@ def separate_sprite(width,height,src):
             layers[1][i:i+4]=bytes((int(72*shade),int(73*shade),int(80*shade),a))
     return base,layers
 
+import math
+
+def polish_underlayers(width, height, original, base, layers, facing):
+    skin=skin_reference(original,width)
+    # Work from original source bytes, not the first-pass recolor: this avoids
+    # leaving seams and shirt lace details behind in underwear-only mode.
+    base[:]=original
+    for layer in layers:layer[:]=bytes(len(layer))
+    cx=(width-1)/2.0
+    shift=3.0 if facing=='left' else (-1.0 if facing=='right' else 0.0)
+    torso_c=cx+shift
+    def stamp(src_offset,y,x,group,rgb,alpha):
+        layers[group][src_offset:src_offset+4]=original[src_offset:src_offset+4]
+        base[src_offset:src_offset+4]=bytes((*rgb,alpha))
+    for y in range(54,min(height,104)):
+        for x in range(width):
+            idx=(y*width+x)*4
+            r,g,b,a=original[idx:idx+4]
+            if a<32:continue
+            d=abs(x-torso_c)
+            distance=math.sqrt((r-skin[0])**2+(g-skin[1])**2+(b-skin[2])**2)
+            # Keep hands and arms. In upper torso, preserve outer silhouette
+            # outlines but replace the already-baked shirt and printed laces.
+            if y<=85:
+                region=27.0 if y<77 else 22.0
+                if d>region or (y>=79 and d>20):continue
+                if distance<42 and d>15:continue
+                if max(r,g,b)<49 and d>19:continue
+                vest_width=12 if y<=72 else 14
+                vest = (y>=61 and y<=87 and d<=vest_width)
+                if vest:
+                    # Ordinary opaque slate undershirt, no anatomy exposed.
+                    shade=1.0-(max(0,d-6)*.018)
+                    rgb=tuple(int(v*shade) for v in (86,99,111))
+                    if y in (62,63) and d<7:rgb=(128,142,149)
+                    if y>=83:rgb=(67,79,93)
+                else:
+                    shade=1.0-(min(15,d)*.006)
+                    rgb=tuple(max(15,min(255,int(v*shade))) for v in skin)
+                stamp(idx,y,x,0,rgb,a)
+            elif y<=101:
+                if d>20:continue
+                if distance<42 and y>96:continue
+                shade=0.95 if d>15 else 1.00
+                rgb=tuple(int(v*shade) for v in (65,76,89))
+                if y in (86,87):rgb=(98,108,117)
+                if d<1.25 and y>93:rgb=(45,55,67)
+                stamp(idx,y,x,1,rgb,a)
+    # Shoe pixels become fitted skin-tone feet. All original shoe pixels are
+    # carried in the removable footwear layer even where base alpha is 0.
+    for y in range(102,min(height,127)):
+        for x in range(width):
+            idx=(y*width+x)*4
+            r,g,b,a=original[idx:idx+4]
+            if a<20:continue
+            layers[2][idx:idx+4]=original[idx:idx+4]
+            if facing in ('left','right'):
+                mid=cx+(-3 if facing=='left' else 3)
+                active=abs(x-mid)<=(11 if y<117 else 13) and y<=123
+            else:
+                active=(abs(x-(cx-12))<=(7 if y<116 else 8) or abs(x-(cx+12))<=(7 if y<116 else 8)) and y<=123
+            if not active:
+                base[idx:idx+4]=b"\0\0\0\0"
+                continue
+            shade=.96 if y<115 else .89
+            rgb=tuple(max(0,min(255,int(v*shade))) for v in skin)
+            if y>=122:rgb=(54,51,49)
+            base[idx:idx+4]=bytes((*rgb,a))
+    return base,layers
 def make(src_root='assets/characters',output_root='assets/character_layers'):
     src_root=Path(src_root);output_root=Path(output_root)
     count=0;manifest={'format':'ao_layered_sprites_v0_1','source':'original body sprites backed up separately, never overwritten','description':'Provisional base underwear and separately removable starter clothing; manual pixel polish needed','layers':list(LAYER_NAMES),'frames':{},'source_count':96}
@@ -105,7 +174,7 @@ def make(src_root='assets/characters',output_root='assets/character_layers'):
             for frame in ANIM_FRAMES:
                 name=f'{face}_{frame:02d}.png';srcfile=src_root/variant/name
                 w,h,src=read_rgba(srcfile)
-                base,layers=separate_sprite(w,h,src)
+                base,layers=polish_underlayers(w,h,src,*separate_sprite(w,h,src),face)
                 dests=[output_root/layer/variant/name for layer in LAYER_NAMES]
                 for dest,data in zip(dests,[base,*layers]):write_rgba(dest,w,h,data)
                 manifest['frames'][f'{variant}/{name}']={'original_sha256':hashlib.sha256(srcfile.read_bytes()).hexdigest(),'size':[w,h],'outputs':[p.as_posix() for p in dests]}

@@ -82,6 +82,7 @@ func _update_worn_equipment_frames()->void:
 		var node:Sprite2D=worn_equipment_sprites[slot]
 		if node==null or not is_instance_valid(node):continue
 		if slot=="cloak":node.z_index=2 if facing=="up" else 0
+		if slot=="weapon":node.z_index=4 if facing=="up" else 6
 		var item:String=_equipped(slot)
 		var path:String=_worn_gear_texture_path(slot,item,facing,anim_frame) if item!="" else ""
 		if path!="" and ResourceLoader.exists(path):
@@ -103,7 +104,7 @@ func _update_worn_equipment_frames()->void:
 	if starter_clothes_sprites.has("starter_shoes"):
 		starter_clothes_sprites["starter_shoes"].visible=not hide_shoes
 	if hair_sprite!=null and is_instance_valid(hair_sprite):
-		hair_sprite.visible=not (worn_equipment_sprites.has("head") and worn_equipment_sprites["head"].visible)
+		hair_sprite.visible=not (worn_equipment_sprites.has("head") and worn_equipment_sprites["head"].visible and facing=="up")
 '''
 p.write_text(s,encoding='utf8')
 print('AO EQUIPMENT VISUAL CONTROLLER: PASS / seven slots / pose-aware asset lookup / modest missing-art fallback')
