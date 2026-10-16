@@ -40,7 +40,7 @@ func _run() -> void:
 	await process_frame
 	scene.data["world_minutes"] = 720.0
 	scene._tick_world_time(0.0)
-	if not _check(scene.npcs.size() == 8, "all eight NPCs present on their midday break"): return
+	if not _check(scene.npcs.size() == 10, "all ten NPCs present on their midday break"): return
 	for npc in scene.npcs:
 		scene._show_npc_chat(npc)
 		await process_frame

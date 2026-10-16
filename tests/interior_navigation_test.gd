@@ -42,7 +42,7 @@ func _run()->void:
         scene.player.position=Vector2(1024,1090)
         scene._interact()
         await process_frame
-        if not _verify(scene.current_map=="town" and scene.npcs.size()==3,"building returns to scheduled town: "+building):return
+        if not _verify(scene.current_map=="town" and scene.npcs.size()==5,"building returns to scheduled town: "+building):return
     scene._enter_world("bedroom",scene.BEDROOM_SPAWN)
     await process_frame
     if not _verify(scene.bedroom_art!=null,"starter bedroom unaffected"):return
