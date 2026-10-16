@@ -98,6 +98,8 @@ func _claim_guardian_quest_reward()->bool:
 \tdata["sigils"]=_sigils_balance()+GUARDIAN_FIRST_QUEST_SIGILS
 \tdata["guardian_quest_weapon"]=weapon
 \tdata["guardian_quest_state"]="claimed"
+\tif not data.has("guardian_last_defeat_unix"):
+\t\tdata["guardian_last_defeat_unix"]=Time.get_unix_time_from_system()
 \t_save()
 \t_refresh_hud()
 \t_show_journal("GUARDIAN'S LEGACY  /  QUEST COMPLETE",[
