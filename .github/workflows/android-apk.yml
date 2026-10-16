@@ -223,6 +223,7 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/worn_gear_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/worn_equipment_icons_screenshot.gd
           test -s screenshots/worn_equipment_previews.png
+          test -s screenshots/equipment_walk_pose_grid.png
           test -s screenshots/worn_equipment_matching_icons.png
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/character_source_atlas.gd
           test -s screenshots/tutorial_dialogue.png
@@ -247,6 +248,7 @@ jobs:
           test -s screenshots/appearance_underlayer_8x4.png
           test -s screenshots/appearance_starter_8x4.png
           test -s screenshots/worn_equipment_previews.png
+          test -s screenshots/equipment_walk_pose_grid.png
           test -s screenshots/ao_original_character_contact_sheet.png
           ls -lh screenshots/character_creator.png
       - name: Upload visual QA screenshot
