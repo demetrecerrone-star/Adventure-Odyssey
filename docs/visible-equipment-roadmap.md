@@ -33,11 +33,13 @@
 
 - [x] Create separate and independently rendered starter top, starter bottoms, and starter shoes layers for all 96 original character frames; existing outfit is reconstructable and Godot tests pass. ✅
 - [ ] Finalize the chosen starter trousers/shoes designs and ensure they sit cleanly over approved underwear bases at every frame.
-- [ ] Define explicit draw order/occlusion by facing: cloak behind body, torso armor above undershirt, gloves above arms, boots above shoes, headgear with hair clipping/masking, and weapon attached to hand.
+- [x] Implement per-facing layered draw order and starter-clothing occlusion in Godot: cloaks behind/front for back-facing, armor over top, gloves/boots on limbs, hood above or masking hair, and weapons/accessories attached to the full-frame sprite. Engineering check passed. ✅
+- [ ] Manually polish any remaining overlapping pixels in every animation; technical z-order is not final visual approval.
 - [ ] Use shared per-frame attachment points / offsets so gear follows walking, attacks, skills, turns and idle animation.
-- [ ] Wire equipment visuals to the existing seven gear slots without class gates; support equip/unequip without restarting scenes.
-- [ ] Preserve hair/helmet compatibility and add fallback visuals when an item lacks a production-ready equipped sprite.
-- [ ] Keep outfit, equipment selection and cosmetic choices persisted across save/load and transitions.
+- [x] Wire all seven equipment visual slots to inventory equip/unequip events without class gates; handle blank slots gracefully and preserve save data. All 34 equippable catalog entries passed Godot visibility regression tests (run 38908862777). ✅
+- [x] Add safe missing-art fallback (starter clothes stay visible, no unclothed sprite) and basic hood/hair occlusion handling. ✅
+- [ ] Inspect each helmet + hairstyle combination and manually refine hair masks as needed.
+- [x] Preserve existing equipment saves, with equipped visual layers resynchronized after saving/loading and map transitions; cosmetic style additions remain future scope. ✅
 
 **Acceptance:** On an in-game test character, equipping and removing a hood, chest piece, cloak, gloves, boots and weapon produces correct visible changes with no obvious gaps or clipping while moving.
 
@@ -45,11 +47,12 @@
 
 - [ ] Agree a production visual standard matching Adventure Odyssey's modern anime-influenced top-down pixel art: readable shapes at game scale, consistent lighting, pixel grid and restrained effects.
 - [ ] Preserve all 39 original equipment/material designs as references and backups; do not silently replace them with unrelated generated art.
+- [x] Generate provisional, pose-aligned **wearable art previews** for 34 currently equippable items across 8 body variants × 4 directions × 3 frames (3,264 PNGs) from approved original item icon data, preserving names and item IDs. Godot tests passed. ✅
 - [ ] Build paired **inventory icon + worn/held animation sprites** for all **12 weapons**, keeping weapon silhouette/design consistent between them.
 - [ ] Build paired **inventory icon + worn sprite layers** for the **12 existing armor/clothing pieces**, covering torso, hood, cloak, gloves and boots according to item.
 - [ ] Build matching icons for **10 accessories** and tasteful on-character wear points or subtle readable visual cues where tiny pixel-scale details would otherwise disappear.
 - [ ] Finish/retain **5 material icons** (materials do not need worn sprites).
-- [ ] Add metadata linking each item ID to the same art family for HUD, shop, backpack, equipment menu and character renderer.
+- [x] Link equipment visuals using the same catalog ID and approved icon-derived colors; production sprites can override prototypes per item without changing saves. ✅
 - [ ] Preserve ability to add leg armor, shields/off-hand items, dye variants and cosmetic outfits in later milestones without breaking existing saves. These are future additions, **not** among the current seven slots.
 
 **Acceptance:** Visual inspection confirms each illustrated worn item matches its icon's color, silhouette and motifs. All item IDs resolve without broken textures; the original recovered artwork remains untouched.
