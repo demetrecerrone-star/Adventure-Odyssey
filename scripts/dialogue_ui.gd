@@ -11,6 +11,7 @@ var npc_name: String = ""
 var npc_role: String = ""
 var npc_portrait_path: String = ""
 var npc_advice: String = ""
+var quest_accept_callback: Callable
 var showing_advice: bool = false
 var reveal_clock: float = 0.0
 var body_label: Label
@@ -43,6 +44,16 @@ func configure_npc(who: String, role: String, portrait_path: String, opening: St
 	page_index = 0
 	showing_advice = false
 	_render()
+
+func offer_quest_accept(handler: Callable) -> void:
+    # Keep the accept option available even after toggling ASK FOR ADVICE.
+    quest_accept_callback = handler
+    if mode == "npc":
+        _render()
+
+func _accept_quest_pressed() -> void:
+    if quest_accept_callback.is_valid():
+        quest_accept_callback.call()
 
 func _label(text_value: String, rect: Rect2, font_size: int, color: Color, centered: bool = false) -> Label:
 	var item = Label.new()
@@ -133,6 +144,8 @@ func _render_npc() -> void:
 	_label("ELMWATCH  /  LOCAL CHAT", Rect2(295, 641, 293, 30), 15, Color("#94b2b7"))
 	secondary_button = _button("GOODBYE", Rect2(785, 637, 166, 55), _on_secondary, true)
 	primary_button = _button("BACK" if showing_advice else "ASK FOR ADVICE", Rect2(966, 637, 206, 55), _on_primary)
+	if quest_accept_callback.is_valid():
+		_button("ACCEPT QUEST", Rect2(558, 637, 213, 55), _accept_quest_pressed)
 
 func _draw() -> void:
 	# Transparent vignette retains the player's sense of place.
