@@ -185,8 +185,8 @@ rep('''	if who=="Mara Fenwick":
 	if who=="Mara Fenwick":
 		_show_npc_chat(n,''')
 
-rep('''		_label(popup,"Discover additional requests as Elmwatch and Thornbrook expand.",186,488,900,40,20)''',
-'''		_label(popup,_expedition_quest_hint(),186,488,900,40,20)''')
+rep('''	_label(popup,"Discover additional requests as Elmwatch and Thornbrook expand.",186,488,900,40,20)''',
+'''	_label(popup,_expedition_quest_hint(),186,488,900,40,20)''')
 rep('''	elif current_map=="forest":
 		var target=_nearest_attackable_slime()''',
 '''	elif _is_adventure_combat_zone():
