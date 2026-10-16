@@ -55,6 +55,8 @@ jobs:
           python3 tools/apply_world_expansion.py
           python3 tools/generate_gear_art.py
           python3 tools/apply_item_art.py
+          python3 tools/generate_character_layers.py
+          python3 tools/apply_character_layers.py
           python3 tools/apply_app_icon.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
@@ -147,6 +149,8 @@ jobs:
           python3 tools/apply_world_expansion.py
           python3 tools/generate_gear_art.py
           python3 tools/apply_item_art.py
+          python3 tools/generate_character_layers.py
+          python3 tools/apply_character_layers.py
           python3 tools/apply_app_icon.py
           python3 tools/audit_character_sprites.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
@@ -181,6 +185,7 @@ jobs:
           run_scene_test res://tests/skillbook_vfx_test.gd 'ADVENTURE ODYSSEY SKILLBOOK VFX TEST: PASS'
           run_scene_test res://tests/economy_test.gd 'ADVENTURE ODYSSEY ECONOMY TEST: PASS'
           run_scene_test res://tests/item_art_test.gd 'ADVENTURE ODYSSEY ITEM ART TEST: PASS'
+          run_scene_test res://tests/character_layers_test.gd 'ADVENTURE ODYSSEY CHARACTER LAYERS TEST: PASS'
           run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
           run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
@@ -295,6 +300,8 @@ jobs:
           python3 tools/apply_world_expansion.py
           python3 tools/generate_gear_art.py
           python3 tools/apply_item_art.py
+          python3 tools/generate_character_layers.py
+          python3 tools/apply_character_layers.py
           python3 tools/apply_app_icon.py
           test -f project.godot
           test -f export_presets.cfg
@@ -359,6 +366,7 @@ jobs:
           run_scene_test res://tests/skillbook_vfx_test.gd 'ADVENTURE ODYSSEY SKILLBOOK VFX TEST: PASS'
           run_scene_test res://tests/economy_test.gd 'ADVENTURE ODYSSEY ECONOMY TEST: PASS'
           run_scene_test res://tests/item_art_test.gd 'ADVENTURE ODYSSEY ITEM ART TEST: PASS'
+          run_scene_test res://tests/character_layers_test.gd 'ADVENTURE ODYSSEY CHARACTER LAYERS TEST: PASS'
           run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
           run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
