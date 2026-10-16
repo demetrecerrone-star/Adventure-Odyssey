@@ -82,7 +82,7 @@ func _update_worn_equipment_frames()->void:
 		var node:Sprite2D=worn_equipment_sprites[slot]
 		if node==null or not is_instance_valid(node):continue
 		if slot=="cloak":node.z_index=2 if facing=="up" else 0
-		if slot=="weapon":node.z_index=4 if facing=="up" else 6
+		if slot=="weapon":node.z_index=0 if facing=="up" else 6
 		var item:String=_equipped(slot)
 		var path:String=_worn_gear_texture_path(slot,item,facing,anim_frame) if item!="" else ""
 		if path!="" and ResourceLoader.exists(path):
