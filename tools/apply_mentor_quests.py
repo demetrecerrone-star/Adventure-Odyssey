@@ -195,7 +195,7 @@ func _interact_skill_mentor(n:Dictionary)->bool:
 	if int(data.get("level",1))<2:
 		_show_npc_chat(n,"You've learned the basics, but first reach level 2 through exploration and combat. Then come back for personal instruction.")
 		return true
-	if _mentor_ready():
+	if _mentor_quest_state()=="ready":
 		_grant_mentor_skill(n)
 		return true
 	if _mentor_quest_state()=="active":
@@ -248,7 +248,7 @@ func _mentor_update_ready()->void:
 	_refresh_hud()
 
 func _grant_mentor_skill(n:Dictionary)->void:
-	if not _mentor_ready():return
+	if _mentor_quest_state()!="ready":return
 	var state:Dictionary=_mentor_quest()
 	state["state"]="complete"
 	data["mentor_training"]=state
