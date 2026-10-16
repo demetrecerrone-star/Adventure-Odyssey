@@ -112,3 +112,36 @@ The source sprite and first-pass equipment art system is functional, not yet fin
 ### Second-pass pixel cleanup (awaiting Godot CI and visual approval)
 
 Refined opaque original-variant underwear bases: paint out the starter shirt's engraved emblem and bulky boot silhouettes; retain a sleeveless slate undershirt, modest charcoal boxer shorts, and smaller bare feet beneath independently removable starter clothes. Keep eight body variants × four facings × three original frames registered to exact original sizes, with first-pass output still requiring manual pixel review. In the equipment renderer, show front/side hair beneath the hood silhouette while hiding it for rear-facing hoods, and depth-order held weapons behind the body while facing up. `tests/character_polish_test.gd` runs new body/undergarment and existing class/equipment validation; no APK on push.
+
+
+## Development handoff: parallel gameplay track (preserved)
+
+**Keep this in the Adventure Odyssey roadmap while equipment is polished.**
+This is a sequence of work areas, not a separate game, replacement class system, or excuse to reopen completed milestones.
+
+### Track A — current focus: character and visible gear
+
+- [x] Layer source-derived modest underwear, removable starter clothes, all seven visible equipment slots, and matching first-pass icon/worn sprite pairs.
+- [x] Preserve eight appearance variants, six unrestricted-equipment classes, 34 equippable item IDs, their saves, and the existing creator/home/town systems.
+- [x] Implement pixel cleanup for shirt/boots and directional hood/hair layering; engineering changes confirmed in build run [38912129559](https://github.com/demetrecerrone-star/Adventure-Odyssey/actions/runs/38912129559). **Art approval still open.**
+- [ ] Validate rear-facing weapon placement, hood/hair visibility, front/back cloak depth and restored starter garments for every 8-body × 4-facing × 3-walk-frame combination (new regression checks).
+- [ ] Review actual updated Godot screen captures at native gameplay size; clean remaining clothing seams, silhouettes, helmets and weapon grip placement.
+- [ ] Add and validate equipped attack, casting and skill-animation attachment frames; current walk/idle sprite previews must not be mistaken for complete combat animation.
+- [ ] Validate visually on Android emulator; only export signed test APK after explicit approval.
+
+### Track B — resume broader RPG progression once Track A's visuals are approved
+
+**Existing playable/prototype baseline to retain (not rebuild):**
+- [x] Elmwatch NPC presence, schedules, dialogue and starter-home/town connections.
+- [x] Slime wander → pursue → attack/telegraph → retreat/leash logic, plus later forest enemy types and Oldstone guardian prototype.
+- [x] All 18 class-specific starter skills available at level one, with matching HUD skill icons; no class equipment restrictions.
+- [x] Six mentor questlines that teach *additional* advanced abilities; skillbook and quest journal.
+- [x] Weapon-type proficiency, unrestricted gear, earned currency, and free level-up stat points.
+
+**Unfinished gameplay milestones after visual-equipment review:**
+- [ ] Extend enemy state-machine QA and combat animations beyond slime prototypes, including wolves, goblins, Thorncaps and Guardian encounter at gameplay scale.
+- [ ] Visually refine all starting and mentor skill effects; keep original eighteen starting skills and distinguish advanced mentor rewards.
+- [ ] Expand mentor skill quests and enemy encounters without duplicating existing skill/quest content; test persistence and rewards.
+- [ ] Improve map/town/world assets and combat UX, then run a cross-system regression suite before emulator validation.
+
+**Priority order:** complete Track A's art and animation compatibility; then resume Track B's enemy, skill, and mentor-quest enhancements. Existing Track B mechanics continue to be regression-tested during Track A.
