@@ -147,5 +147,33 @@ func _run() -> void:
 		push_error("LIVE EIGHT-BODY FIT GRID CAPTURE FAILED")
 		quit(1)
 		return
-	print("ADVENTURE ODYSSEY LIVE EQUIPMENT PREVIEWS: PASS / two loadouts, twelve walking poses, thirty-two fit poses")
+	fit["overlay"].queue_free()
+	await process_frame
+	for hooded in [false,true]:
+		var label:String="ON" if hooded else "OFF"
+		var headgear=_canvas("ADVENTURE ODYSSEY / HEADGEAR "+label+" / HAIRSTYLE FIT", "Real character layers • each hairstyle in all four directions • original hair tint preserved")
+		var head_canvas:Control=headgear["canvas"]
+		_loadout(game,{"head":"Leather Hood"} if hooded else {},0,0)
+		var hairstyle_count:int=game.HAIR.size()
+		var step:float=1140.0/float(maxi(1,hairstyle_count))
+		for row in range(4):
+			_label(head_canvas,str(facings[row]).to_upper(),Vector2(18,129+row*146),13)
+			for hair in range(hairstyle_count):
+				game.data["hair"]=hair
+				game.data["hair_tint"]=hair%game.HAIR_TINTS.size()
+				game.facing=facings[row]
+				game.anim_frame=0
+				game._set_player_frame()
+				var center:Vector2=Vector2(82+step*(hair+0.5),167+row*145)
+				if row==0:
+					_label(head_canvas,str(game.HAIR[hair]).replace("_"," ").capitalize().substr(0,15),Vector2(center.x-48,86),11)
+				_player_cell(game,head_canvas,center,minf(1.0,step/125.0))
+		var shot:String="equipment_headgear_"+("on" if hooded else "off")+"_hairstyles.png"
+		if not await _capture(shot):
+			push_error("LIVE HAIRSTYLE AND HOOD FIT CAPTURE FAILED: "+shot)
+			quit(1)
+			return
+		headgear["overlay"].queue_free()
+		await process_frame
+	print("ADVENTURE ODYSSEY LIVE EQUIPMENT PREVIEWS: PASS / two loadouts, twelve walking poses, thirty-two fit poses, all hairstyles with and without headgear")
 	quit(0)
