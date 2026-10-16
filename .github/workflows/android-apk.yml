@@ -52,6 +52,7 @@ jobs:
           python3 tools/apply_skillbook_vfx.py
           python3 tools/apply_economy.py
           python3 tools/apply_mentor_art.py
+          python3 tools/apply_world_expansion.py
           python3 tools/apply_app_icon.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
@@ -141,6 +142,7 @@ jobs:
           python3 tools/apply_skillbook_vfx.py
           python3 tools/apply_economy.py
           python3 tools/apply_mentor_art.py
+          python3 tools/apply_world_expansion.py
           python3 tools/apply_app_icon.py
           sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
       - name: Validate Godot import and game smoke test (no APK)
@@ -174,6 +176,7 @@ jobs:
           run_scene_test res://tests/skillbook_vfx_test.gd 'ADVENTURE ODYSSEY SKILLBOOK VFX TEST: PASS'
           run_scene_test res://tests/economy_test.gd 'ADVENTURE ODYSSEY ECONOMY TEST: PASS'
           run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
+          run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
@@ -268,6 +271,7 @@ jobs:
           python3 tools/apply_skillbook_vfx.py
           python3 tools/apply_economy.py
           python3 tools/apply_mentor_art.py
+          python3 tools/apply_world_expansion.py
           python3 tools/apply_app_icon.py
           test -f project.godot
           test -f export_presets.cfg
@@ -332,6 +336,7 @@ jobs:
           run_scene_test res://tests/skillbook_vfx_test.gd 'ADVENTURE ODYSSEY SKILLBOOK VFX TEST: PASS'
           run_scene_test res://tests/economy_test.gd 'ADVENTURE ODYSSEY ECONOMY TEST: PASS'
           run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
+          run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
