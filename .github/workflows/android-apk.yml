@@ -277,6 +277,16 @@ jobs:
           path: screenshots/*.png
           if-no-files-found: error
           retention-days: 15
+      - name: Upload Oldstone pixel art review
+        uses: actions/upload-artifact@v4
+        with:
+          name: Adventure-Odyssey-Oldstone-Sprites
+          path: |
+            assets/guardian_weapon_sheets/**
+            assets/equipment_item_icons/oldstone_*.png
+            assets/equipment_worn/weapon/oldstone_*/**
+          if-no-files-found: error
+          retention-days: 15
       - name: Upload unchanged player sprite baseline backup and audit
         uses: actions/upload-artifact@v4
         with:
