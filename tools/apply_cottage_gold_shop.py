@@ -144,8 +144,8 @@ old_active='''    if not COTTAGE_COLLECTION_TIERS.has(active) or not data["cotta
 new_active='''    if active!="custom" and (not COTTAGE_COLLECTION_TIERS.has(active) or not data["cottage_tiers_owned"].has(active)):
         active="starter"'''
 # Previous patch normalizes indentation to tabs.
-old_active=old_active.replace("    ","\\t")
-new_active=new_active.replace("    ","\\t")
+old_active=old_active.replace("    ","\t")
+new_active=new_active.replace("    ","\t")
 if game.count(old_active)!=1:
     raise SystemExit("COTTAGE GOLD SHOP: collection save migration anchor changed")
 game=game.replace(old,new,1).replace(old_active,new_active,1)
