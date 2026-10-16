@@ -60,6 +60,7 @@ jobs:
           python3 tools/apply_character_layers.py
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_sigils_currency.py
+          python3 tools/apply_cottage_collections.py
           python3 tools/apply_ui_lifecycle_guard.py
           python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_app_icon.py
@@ -159,6 +160,7 @@ jobs:
           python3 tools/apply_character_layers.py
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_sigils_currency.py
+          python3 tools/apply_cottage_collections.py
           python3 tools/apply_ui_lifecycle_guard.py
           python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_app_icon.py
@@ -210,6 +212,7 @@ jobs:
           run_scene_test res://tests/monster_loot_test.gd 'ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS'
           run_scene_test res://tests/guardian_weapons_test.gd 'ADVENTURE ODYSSEY GUARDIAN WEAPONS TEST: PASS'
           run_scene_test res://tests/sigils_currency_test.gd 'ADVENTURE ODYSSEY SIGILS CURRENCY TEST: PASS'
+          run_scene_test res://tests/cottage_collections_test.gd 'ADVENTURE ODYSSEY COTTAGE COLLECTIONS TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
@@ -353,6 +356,7 @@ jobs:
           python3 tools/apply_character_layers.py
           python3 tools/apply_equipment_visuals.py
           python3 tools/apply_sigils_currency.py
+          python3 tools/apply_cottage_collections.py
           python3 tools/apply_ui_lifecycle_guard.py
           python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_app_icon.py
@@ -434,6 +438,7 @@ jobs:
           run_scene_test res://tests/monster_loot_test.gd 'ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS'
           run_scene_test res://tests/guardian_weapons_test.gd 'ADVENTURE ODYSSEY GUARDIAN WEAPONS TEST: PASS'
           run_scene_test res://tests/sigils_currency_test.gd 'ADVENTURE ODYSSEY SIGILS CURRENCY TEST: PASS'
+          run_scene_test res://tests/cottage_collections_test.gd 'ADVENTURE ODYSSEY COTTAGE COLLECTIONS TEST: PASS'
           run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
           run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
           run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
