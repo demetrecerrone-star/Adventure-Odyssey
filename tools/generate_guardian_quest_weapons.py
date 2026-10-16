@@ -151,14 +151,15 @@ def generate(root="assets/characters",dest="assets/equipment_worn",
     sheets.mkdir(parents=True,exist_ok=True)
     # Six genuine pixel overlays from body-05, front-facing mid-walk pose.
     # This transparent overview is useful to review the shared design family.
-    preview=bytearray(77*6*128*4)
+    width,height,_=read_rgba(root/"base_variant_05"/"down_01.png")
+    preview=bytearray(width*6*height*4)
     for col,klass in enumerate(WEAPONS):
         item=WEAPONS[klass][0]
         slug=item.lower().replace(" ","_")
         w,h,frame=read_rgba(dest/"weapon"/slug/"base_variant_05"/"down_01.png")
-        if (w,h)!=(77,128):raise ValueError("Guardian overlay preview size mismatch")
-        put_frame(preview,frame,77,128,col,0,6)
-    write_rgba(sheets/"all_six_weapon_overview.png",77*6,128,preview)
+        if (w,h)!=(width,height):raise ValueError("Guardian overlay preview size mismatch")
+        put_frame(preview,frame,width,height,col,0,6)
+    write_rgba(sheets/"all_six_weapon_overview.png",width*6,height,preview)
     (sheets/"guardian_weapon_manifest.json").write_text(json.dumps({
         "format":"3-column walk poses x 4-row facings down/left/up/right",
         "pixel_grid":"exact original body pixel dimensions; alpha-transparent overlays",
