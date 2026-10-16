@@ -23,10 +23,10 @@ rep('''	skill_cooldowns[slot]=float(skill["cd"])
 	_mentor_record_cast(slot)''')
 
 rep('''	mentor_skill_cooldown=float(info["cooldown"])
-	match hero_class:''',
+	var palette=''',
 '''	mentor_skill_cooldown=float(info["cooldown"])
 	_play_ability_fx(str(info["name"]),"advanced")
-	match hero_class:''')
+	var palette=''')
 
 rep('''		var mission:String="Guild: DONE"''','''		var mission:String="Guild: DONE"''') if False else None
 
