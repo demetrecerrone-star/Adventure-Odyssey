@@ -48,10 +48,12 @@ func _run()->void:
 	scene.player.position=boss["node"].position+Vector2(50,0)
 	scene._apply_slime_damage(boss,500,true)
 	if not _check(bool(scene.data.get("guardian_defeated",false)),"boss defeated flag stored"):return
+	if not _check(scene._sigils_balance()==25,"first guardian victory awards twenty-five Sigils"):return
 	if not _check(int(scene.data["inventory"].get("Guardian Relic",0))==1,"boss unique relic dropped once"):return
 	scene._enter_world("ruins",Vector2(1900,655))
 	scene._enter_world("sanctum",Vector2(175,650))
 	if not _check(scene.mobs.is_empty(),"guardian cannot be farmed by re-entry"):return
+	if not _check(scene._sigils_balance()==25,"guardian Sigils cannot be farmed on re-entry"):return
 	if not _check(scene._save() and scene._load_save() and bool(scene.data["guardian_defeated"]),"boss progress saved"):return
 	print("ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS")
 	quit(0)
