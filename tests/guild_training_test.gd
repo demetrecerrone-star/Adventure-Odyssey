@@ -81,14 +81,14 @@ func _run()->void:
     game._interact_resident(mentor)
     await process_frame
     if not _ok(bool(game.data.get("guild_training_completed",false)),"Guild captain awards completion"):return
-    if not _ok(game._sigils_balance()==5,"one-time Guild completion grants five Sigils"):return
+    if not _ok(game._sigils_balance()==0,"Guild quest does not issue boss-only Sigils"):return
     if not _ok(int(game.data["gold"])==gold_earned_from_slimes+20,"guild pays exactly 20 gold beyond all monster coins"):return
     if not _ok(int(game.data["inventory"].get("Health Potion",0))==potions_after_slimes+1,"one quest potion beyond potential monster drops"):return
     if not _ok(game.popup.mode=="npc" and game.popup.body_label.text.contains("training assignment is complete"),"completion uses established NPC dialogue"):return
     game._dismiss_message()
     game._interact_resident(mentor)
     if not _ok(int(game.data["gold"])==gold_earned_from_slimes+20 and int(game.data["inventory"].get("Health Potion",0))==potions_after_slimes+1,"repeated Captain conversation cannot duplicate rewards"):return
-    if not _ok(game._sigils_balance()==5,"repeated Guild dialogue cannot repeat Sigil reward"):return
+    if not _ok(game._sigils_balance()==0,"repeated Guild dialogue cannot award Sigils"):return
     if not _ok(game.hp_label.text.contains("Guild: DONE"),"completed mission visible on HUD"):return
     game._dismiss_message()
     game._save()
