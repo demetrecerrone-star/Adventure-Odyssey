@@ -30,15 +30,25 @@ func _run()->void:
         if not _ok(game.data["home_styles"][slot]==game.HOME_STARTER[slot],"preserved original sprite: "+slot):return
     game._open_cottage_collections("noble","feminine")
     if not _ok(game.popup.name=="CottageDecorMenu" and game.popup.get_node_or_null("OdysseySigilCoin")!=null,"AO coin opens decorated menu"):return
-    # UI regression: furniture thumbnails and Sigil coin must stay inside compact
-    # phone-scale rectangles, not expand to full imported SVG dimensions.
+    # Sprite2D is forced to fit the requested UI cell, independent of SVG
+    # native dimensions. This prevents the tier buttons / Sigil balance overlap.
     var previews:int=0
-    for node in game.popup.find_children("*","TextureRect",true,false):
-        var image:=node as TextureRect
-        if image==null:continue
-        if not _ok(image.size.x<=150.0 and image.size.y<=150.0,"art/coin remains inside its menu slot: "+image.name):return
-        if image.name!="OdysseySigilCoin":previews+=1
-    if not _ok(previews>=7,"four tiers plus three matching furniture previews render"):return
+    var coin_size:Vector2=Vector2.ZERO
+    for node in game.popup.find_children("*","Sprite2D",true,false):
+        var sprite:=node as Sprite2D
+        if sprite==null or sprite.texture==null:continue
+        var on_screen:Vector2=sprite.texture.get_size()*sprite.scale
+        if sprite.name=="OdysseySigilCoin":
+            coin_size=on_screen
+            if not _ok(on_screen.x<=22.0 and on_screen.y<=22.0,"Sigil coin fits its header slot"):return
+        elif sprite.name=="CottagePreviewSprite":
+            previews+=1
+            if sprite.position.x<650.0:
+                if not _ok(on_screen.x<=51.0 and on_screen.y<=46.0,"small tier thumbnail stays beside label"):return
+            else:
+                if not _ok(on_screen.x<=135.0 and on_screen.y<=115.0,"suite image fits preview grid"):return
+    if not _ok(previews==7,"four tier thumbnails and three furniture pieces displayed"):return
+    if not _ok(coin_size.x>0.0,"Sigil coin sprite loaded"):return
     if not _ok(_has_button(game.popup,"GOLD FURNITURE"),"Sigil store links to independent earned-gold store"):return
     for key in ["noble","castle","royal"]:
         if not _ok(game._cottage_tier_art_ready(key),"all 9 real transparent illustrated sprites present in "+key):return

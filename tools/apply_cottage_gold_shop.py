@@ -149,31 +149,55 @@ new_active=new_active.replace("    ","\t")
 if game.count(old_active)!=1:
     raise SystemExit("COTTAGE GOLD SHOP: collection save migration anchor changed")
 game=game.replace(old,new,1).replace(old_active,new_active,1)
-# Godot TextureRect has intrinsic dimensions until IGNORE_SIZE is assigned.
-# Establish stretch/expand rules BEFORE calling .size, so each thumbnail
-# stays within its requested slot rather than covering neighboring labels.
-scale_fixups = (
-    ("""\tpicture.position=rect.position
-\tpicture.size=rect.size
-\tpicture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
-\tpicture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED""",
-     """\tpicture.position=rect.position
-\tpicture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
-\tpicture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-\tpicture.size=rect.size"""),
-    ("""\ticon.position=where
-\ticon.size=Vector2(size,size)
-\ticon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
-\ticon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED""",
-     """\ticon.position=where
-\ticon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
-\ticon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-\ticon.size=Vector2(size,size)"""),
-)
-for original, replacement in scale_fixups:
-    if game.count(original) != 1:
-        raise SystemExit("COTTAGE THUMBNAIL CONTROL ANCHOR FAILED: " + original)
-    game = game.replace(original, replacement, 1)
+# Sprite2D is deliberately used for UI thumbnails; its native-size scale is
+# predictable after add_child, unlike TextureRect minimum-size negotiations.
+# This changes only how already-approved image resources are drawn.
+def replace_function(head: str, next_head: str, replacement: str) -> None:
+    global game
+    anchor = "\n" + head
+    end_anchor = "\n" + next_head
+    if game.count(anchor) != 1 or game.count(end_anchor) != 1:
+        raise SystemExit("COTTAGE SPRITE HELPER ANCHOR FAILED: " + head)
+    first = game.index(anchor)
+    last = game.index(end_anchor, first)
+    game = game[:first] + "\n" + replacement.rstrip("\n") + "\n" + game[last:]
+
+replace_function(
+    "func _cottage_image(parent:Control,path:String,rect:Rect2)->void:",
+    "func _open_cottage_collections(tier:String=\"starter\",style:String=\"unisex\")->void:",
+    """func _cottage_image(parent:Control,path:String,rect:Rect2)->void:
+\tif not ResourceLoader.exists(path):return
+\tvar texture:Texture2D=load(path)
+\tif texture==null:return
+\tvar native_size:Vector2=texture.get_size()
+\tif native_size.x<=0.0 or native_size.y<=0.0:return
+\tvar picture=Sprite2D.new()
+\tpicture.texture=texture
+\tpicture.name="CottagePreviewSprite"
+\tpicture.centered=true
+\tpicture.position=rect.position+rect.size*0.5
+\tpicture.scale=Vector2.ONE*minf(rect.size.x/native_size.x,rect.size.y/native_size.y)
+\tpicture.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+\tparent.add_child(picture)
+""")
+
+replace_function(
+    "func _draw_sigil_coin(parent:Control,where:Vector2,size:int)->void:",
+    "func _buy_sigil_cottage_style(slot:String,variant:String)->bool:",
+    """func _draw_sigil_coin(parent:Control,where:Vector2,size:int)->void:
+\tvar path:String="res://assets/ui/odyssey_sigil.svg"
+\tif not ResourceLoader.exists(path):return
+\tvar texture:Texture2D=load(path)
+\tif texture==null or texture.get_width()<=0:return
+\tvar icon=Sprite2D.new()
+\ticon.name="OdysseySigilCoin"
+\ticon.texture=texture
+\ticon.centered=true
+\ticon.position=where+Vector2.ONE*float(size)*0.5
+\ticon.scale=Vector2.ONE*float(size)/float(texture.get_width())
+\ticon.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+\tparent.add_child(icon)
+""")
 
 # Tidy original Sigil collection panel spacing for phone-scale readability.
 # Do not alter assets or costs, only where the existing Godot controls render.
