@@ -33,7 +33,7 @@ func _grid(use_clothes:bool)->Node2D:
 			var variant=index+1
 			var rel="base_variant_%02d/%s_00.png" % [variant,directions[row]]
 			var center=Vector2(109+index*144,122+row*145)
-			var texture=load("res://assets/appearance/base/"+rel)
+			var texture=load("res://assets/character_layers/underwear_base/"+rel)
 			var body=Sprite2D.new()
 			body.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
 			body.texture=texture
@@ -41,12 +41,12 @@ func _grid(use_clothes:bool)->Node2D:
 			body.scale=Vector2(1.03,1.03)
 			canvas.add_child(body)
 			if use_clothes:
-				for type in ["shirt","pants","shoes"]:
+				for type in ["starter_top","starter_pants","starter_shoes"]:
 					var s=Sprite2D.new()
 					s.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
 					s.position=center
 					s.scale=body.scale
-					s.texture=load("res://assets/appearance/starter/%s/%s" % [type,rel])
+					s.texture=load("res://assets/character_layers/%s/%s" % [type,rel])
 					canvas.add_child(s)
 			if row==0:
 				_label(canvas,"BODY "+str(variant),center.x-28,76,12)
