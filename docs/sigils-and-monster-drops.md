@@ -5,11 +5,11 @@
 ## Two balances, different purposes
 
 - **Gold:** ordinary monster drops, equipment, potions, crafting/blacksmith services, inn rest, and routine furniture purchases when released. Existing equipment, NPC merchants and gold save data are preserved.
-- **Sigils:** earned special currency for rare cosmetic furnishings, character appearance options and other *non-stat-changing* novelty items. This is not a cash-sales feature. Players start with **0 Sigils**; old save files gain a backward-compatible 0 balance.
-- **Guild field training (one-time):** +5 Sigils in addition to its existing 20 gold and potion.
-- **Oldstone guardian (one-time):** +25 Sigils in addition to existing 65 base gold, 100 bonus gold, experience, relic and Ember Shard. Guardian remains permanently cleared in the existing save flag.
+- **Sigils:** rare boss-only chance rewards for future cosmetic furniture, appearance options, and non-stat-changing novelty items. Real-money Sigil packs are a **future** feature, not implemented or for sale yet. New characters start with **0 Sigils** and old saves safely default to 0.
+- **Guild field training (one-time):** grants its existing 20 gold and potion, **no Sigils**. Normal enemies and ordinary quests do not issue this cosmetic currency.
+- **Oldstone guardian (one-time):** **10% independent chance to drop 5 Sigils**, not a guaranteed payout. Existing gold, XP, relic and Ember Shard remain. Guardian remains permanently cleared on that save; repeatable Sigil-eligible boss encounters can be designed in future content, but are not yet in this build.
 
-Both balances can be seen in the game's HUD/backpack/decor interface. Sigils use a separate saved `sigils` integer; spending/earning never converts ordinary gold or changes free stat allocation, class skills, unrestricted equipment or progression gates.
+Both balances can be seen in the game's HUD/backpack/decor interface. Sigils use a separate saved `sigils` integer; spending/earning never converts ordinary gold or changes free stat allocation, class skills, unrestricted equipment or progression gates. Sigil boss RNG is independent of any rare gear roll, including on a boss's first victory.
 
 ## Monster loot profiles (early balancing values)
 
@@ -27,11 +27,11 @@ Each kill rolls each possible item **independently**, including rare items. A 0.
 
 | Monster | Rare equipment (real catalog item) | Independent chance per kill | Bonus Sigil roll |
 |---|---|---:|---:|
-| Green slime | Slime Core Charm | 0.25% | 0.5% for 1 Sigil |
-| Wolf | Forest Fang | 0.35% | 0.75% for 1 Sigil |
-| Goblin | Guard Sigil | 0.25% | 0.75% for 1 Sigil |
-| Fungus | Wisdom Bead | 0.3% | 0.6% for 1 Sigil |
-| Oldstone guardian (one-time) | Ember Pendant | 3% | No separate repeatable Sigil roll; first victory still awards 25 Sigils |
+| Green slime | Slime Core Charm | 0.25% | None |
+| Wolf | Forest Fang | 0.35% | None |
+| Goblin | Guard Sigil | 0.25% | None |
+| Fungus | Wisdom Bead | 0.3% | None |
+| Oldstone guardian (one-time) | Ember Pendant | 3% | **10% for 5 Sigils**; once per clear |
 
 Regular gold and the existing progression-friendly material cadence remain in place. Higher rarity is exciting but does not restrict class equipment access. The drop tables and tiny percentages are tuning values that can be adjusted after emulator/playtesting.
 
@@ -43,10 +43,14 @@ The original free **green oak bed, tall oak mirror and plain wooden chest** must
 
 Future Sigil cosmetics can include furniture color schemes, wallpapers, clothing dyes, pets and profile effects, subject to later design approval. They should be visible/customizable without combat power requirements. Price examples in code are balancing placeholders, not final prices.
 
+## Future purchase design — deliberately not live
+
+When the game is ready to sell Sigils for real money, use a proper store purchase flow: direct, transparent fixed-price Sigil packs; a clearly stated cosmetic catalog; no random paid item outcomes. Google Play's current Payments policy requires Google Play Billing for in-app virtual-currency purchases unless an applicable approved alternative-billing program applies: https://support.google.com/googleplay/android-developer/answer/9858738 . Actual product IDs, pricing, tax, refund handling and receipt validation require a separate reviewed launch. A local `sigils` save field is not secure enough to trust as proof of a real-money purchase; use authenticated, idempotent receipt-based fulfillment and reconciled balances when online support launches. **No actual billing, charging, or fake purchase buttons in the present prototype.**
+
 ## QA, packaging and review
 
-- `tests/monster_loot_test.gd`: enemy loot, bonus coins, rare first-kill chances, no guaranteed rare pity, single-claim protection, Sigil rolls, material selling, persistence, boss uniqueness.
+- `tests/monster_loot_test.gd`: ordinary monsters cannot yield Sigils even with a perfect roll, rare gear can drop on the first kill, boss Sigil success and failure branches, single-claim protection, material selling, persistence and boss uniqueness.
 - `tests/sigils_currency_test.gd`: coin resource/HUD, earning/spending, older-save migration, zero-cost original furniture and art-gated purchases.
-- `tests/guild_training_test.gd`, `tests/world_expansion_test.gd`: one-time Sigil quest/boss rewards.
+- `tests/guild_training_test.gd`, `tests/world_expansion_test.gd`: Guild grants no Sigils, guardian's rare Sigil reward is not repeatable after first victory.
 - CI validates the reconstructed Godot source and game tests on pushes. **Do not build a new APK until emulator verification and user approval.**
 - The currency icon is a *first-pass in-game vector interpretation* of the user-approved gold-and-blue AO coin concept, not a replacement for the original app icon. Review game-scale legibility before final art approval.
