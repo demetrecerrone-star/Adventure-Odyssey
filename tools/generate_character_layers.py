@@ -82,6 +82,18 @@ def separate_sprite(width,height,src):
                 color=tuple(int(c*.78) for c in skin) if y<113 else (115,123,132)
             layers[layer][i:i+4]=src[i:i+4]
             base[i:i+3]=bytes(color)
+    # Add close-fitting starter-trouser cuffs on the original uncovered shins.
+    # These pixels are transparent when trousers are removed; the underwear
+    # base retains the original skintone and keeps every character covered.
+    for y in range(96,min(height,111)):
+        for x in range(width):
+            if abs(x-cx)>width*.28:continue
+            i=(y*width+x)*4
+            r,g,b,a=src[i:i+4]
+            if a<120:continue
+            if math.sqrt(sum((v-t)**2 for v,t in zip((r,g,b),skin)))>=49:continue
+            shade=.81 if (x+y)%9<4 else .95
+            layers[1][i:i+4]=bytes((int(72*shade),int(73*shade),int(80*shade),a))
     return base,layers
 
 def make(src_root='assets/characters',output_root='assets/character_layers'):
