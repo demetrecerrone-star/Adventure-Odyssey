@@ -62,6 +62,7 @@ jobs:
           python3 tools/apply_sigils_currency.py
           python3 tools/apply_cottage_cosmetic_shop.py
           python3 tools/apply_cottage_collections.py
+          python3 tools/apply_cottage_piece_navigation.py
           python3 tools/apply_ui_lifecycle_guard.py
           python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_oldstone_dungeon.py
@@ -164,6 +165,7 @@ jobs:
           python3 tools/apply_sigils_currency.py
           python3 tools/apply_cottage_cosmetic_shop.py
           python3 tools/apply_cottage_collections.py
+          python3 tools/apply_cottage_piece_navigation.py
           python3 tools/apply_ui_lifecycle_guard.py
           python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_oldstone_dungeon.py
@@ -375,6 +377,7 @@ jobs:
           python3 tools/apply_sigils_currency.py
           python3 tools/apply_cottage_cosmetic_shop.py
           python3 tools/apply_cottage_collections.py
+          python3 tools/apply_cottage_piece_navigation.py
           python3 tools/apply_ui_lifecycle_guard.py
           python3 tools/apply_guardian_weapon_quest.py
           python3 tools/apply_oldstone_dungeon.py
