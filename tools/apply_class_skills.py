@@ -32,7 +32,7 @@ rep('''	_button(hud,"ATTACK",1022,558,218,60,_attack)''',
 rep('''	if who=="Captain Elara Voss" and not bool(data.get("slime_training_accepted",false))''',
 '''	if bool(data.get("guild_training_completed",false)) and who==_skill_mentor() and not bool(data.get("skill_unlocked",false)):
 		if not bool(data.get("skill_trial_accepted",false)):
-			_show_npc_chat(n,"You've passed your first Guild trial. I can teach you %s, a signature technique for your %s class. First, prove your control by landing four ordinary attacks on slimes in Thornbrook. Return to me when you're ready." % [str(_class_skill()["name"]),str(data.get("class","Warrior"))])
+			_show_npc_chat(n,"Ready to learn %s? Land four basic hits on slimes in Thornbrook, then return to me. Your class skill will be yours." % str(_class_skill()["name"]))
 			popup.offer_quest_accept(_accept_skill_trial)
 		elif int(data.get("skill_trial_hits",0))>=4:
 			_complete_skill_trial()

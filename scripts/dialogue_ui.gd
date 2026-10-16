@@ -126,7 +126,7 @@ func _render_tutorial() -> void:
 
 func _render_npc() -> void:
 	title_label = _label(npc_name, Rect2(301, 443, 533, 51), 30, Color("#f5dcae"))
-	_label(npc_role.to_upper(), Rect2(828, 453, 314, 30), 18, Color("#acd5d8"), true)
+	_label(npc_role.to_upper(), Rect2(785, 453, 360, 30), 16, Color("#acd5d8"), true)
 	_label("CONVERSATION", Rect2(124, 453, 139, 29), 14, Color("#e7c68d"), true)
 	var portrait = TextureRect.new()
 	portrait.position = Vector2(119, 498)

@@ -30,6 +30,8 @@ func _run()->void:
 		return
 	scene._interact_resident(mentor)
 	await _frames()
+	scene.popup._reveal_remaining()
+	await process_frame
 	if not _snap("skill_quest_offer.png"):
 		push_error("CLASS SKILL SCREENSHOT FAILED: mentor offer")
 		quit(1)
@@ -40,6 +42,8 @@ func _run()->void:
 	scene.data["skill_trial_hits"]=4
 	scene._interact_resident(mentor)
 	await _frames()
+	scene.popup._reveal_remaining()
+	await process_frame
 	if not _snap("skill_unlock_journal.png"):
 		push_error("CLASS SKILL SCREENSHOT FAILED: unlock journal")
 		quit(1)
