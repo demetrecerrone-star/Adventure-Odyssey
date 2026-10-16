@@ -60,7 +60,7 @@ func _run()->void:
     game._open_home_chest()
     if not _ok(game.popup!=null,"storage chest remains operational"):return
     game._dismiss_message()
-    game._open_appearance_mirror()
+    game._open_home_mirror()
     if not _ok(game.popup!=null,"mirror appearance editor remains operational"):return
     for slot in ["Bed","Mirror","Chest"]:
         if not _ok(game.data["home_owned"][slot].has(game.HOME_STARTER[slot]),"permanent free starter "+slot):return
