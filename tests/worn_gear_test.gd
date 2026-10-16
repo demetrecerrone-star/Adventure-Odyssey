@@ -34,7 +34,7 @@ func _run()->void:
 		game._unequip_slot(slot)
 		if not _ok(not sprite.visible,"remove item clears visual: "+name):return
 		count+=1
-	if not _ok(count==34,"12 weapons + 12 armor/clothes + 10 accessories"):return
+	if not _ok(count==40,"18 weapons + 12 armor/clothes + 10 accessories"):return
 	for body in range(8):
 		game.data["body"]=body
 		for face in ["down","left","up","right"]:
