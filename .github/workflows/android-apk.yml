@@ -558,6 +558,12 @@ jobs:
           fi
           APK="$(find build -type f -name '*.apk' -print -quit)"
           test -n "$APK" && test -s "$APK"
+          # Preserve the permanent signing identity verified on 2026-10-15.
+          signer="$(find /usr/lib/android-sdk/build-tools -maxdepth 3 -type f -name apksigner | sort -V | tail -n 1)"
+          test -x "$signer"
+          "$signer" verify --verbose --print-certs "$APK" | tee build/Release-APK-Signature.txt
+          grep -Fq 'Verified using v2 scheme (APK Signature Scheme v2): true' build/Release-APK-Signature.txt
+          grep -Fq 'Signer #1 certificate SHA-256 digest: 3b6f1540ba3394421489ca28fda428aebf58b163d8af7435c19a3ddfab663fb1' build/Release-APK-Signature.txt
           ls -lh "$APK"
           sha256sum "$APK" | tee build/SHA256SUMS.txt
 
@@ -568,5 +574,6 @@ jobs:
           path: |
             build/*.apk
             build/SHA256SUMS.txt
+            build/Release-APK-Signature.txt
           if-no-files-found: error
           retention-days: 30
