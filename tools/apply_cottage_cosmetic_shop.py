@@ -9,11 +9,11 @@ from pathlib import Path
 
 p=Path("scripts/game.gd")
 s=p.read_text(encoding="utf8")
-start=s.index("func _open_home_decor()->void:")
-end=s.index("\n# -- Starter cottage:",start)
-old=s[start:end]
-assert '_draw_sigil_coin(popup' in old and 'BACK TO CHEST' in old, "Unexpected cosmetic menu baseline"
-new='''func _open_home_decor()->void:
+# The original ROOM STYLE menu is redirected to the existing three-tier
+# collections shop by apply_cottage_collections.py. Add a separate sub-shop
+# rather than shadowing or replacing that already-finished feature.
+new='''func _open_cottage_piece_boutique()->void:
+\tif current_map!="bedroom":return
 \t_ensure_home_styles()
 \tif popup!=null and is_instance_valid(popup):popup.queue_free()
 \tpopup=Control.new()
@@ -70,10 +70,12 @@ func _cottage_boutique_buy(slot:String,variant:String)->void:
 \tif not SIGIL_COTTAGE_ART[slot].has(variant):return
 \tvar owned_before:bool=data["home_owned"][slot].has(variant)
 \tif _buy_sigil_cottage_style(slot,variant):
+\t\tdata["cottage_active_tier"]="custom"
+\t\t_save()
 \t\tcottage_cosmetic_notice=("%s equipped." if owned_before else "%s purchased and equipped!") % variant.replace("_"," ").capitalize()
 \telse:
 \t\tcottage_cosmetic_notice="Not enough Sigils, or cosmetic art is unavailable."
-\t_open_home_decor()
+\t_open_cottage_piece_boutique()
 
 func _cottage_boutique_starter(slot:String)->void:
 \t_ensure_home_styles()
@@ -81,13 +83,16 @@ func _cottage_boutique_starter(slot:String)->void:
 \tvar variant:String=HOME_STARTER[slot]
 \tif not data["home_owned"][slot].has(variant):return
 \tdata["home_styles"][slot]=variant
+\tdata["cottage_active_tier"]="custom"
 \tif bedroom_art!=null and is_instance_valid(bedroom_art):
 \t\tbedroom_art.call("apply_styles",data["home_styles"])
+\tif data["home_styles"]["Bed"]==HOME_STARTER["Bed"] and data["home_styles"]["Mirror"]==HOME_STARTER["Mirror"] and data["home_styles"]["Chest"]==HOME_STARTER["Chest"]:
+\t\tdata["cottage_active_tier"]="starter"
 \tcottage_cosmetic_notice="%s starter style equipped." % slot
 \t_save()
-\t_open_home_decor()
+\t_open_cottage_piece_boutique()
 '''
-s=s[:start]+new+s[end:]
+s += '\n'+new
 needle='var sigils_hud_label:Label'
 assert s.count(needle)==1
 s=s.replace(needle,needle+'\nvar cottage_cosmetic_notice:String=""',1)
