@@ -135,7 +135,7 @@ room_file.write_text(room.replace(old,new,1),encoding="utf-8")
 game = game_file.read_text(encoding="utf-8")
 old='\t_label(popup,"Each tier unlocks Queen, King and Unisex sets in ONE purchase.",101,120,1090,38,17,Color("#d5e6ed"))'
 new='''\t_label(popup,"Each tier unlocks Queen, King and Unisex sets in ONE purchase.",101,120,810,38,17,Color("#d5e6ed"))
-\t_button(popup,"GOLD FURNITURE",964,122,224,40,_open_cottage_gold_shop)'''
+\t_button(popup,"GOLD FURNITURE",729,616,224,48,_open_cottage_gold_shop)'''
 if game.count(old)!=1:
     raise SystemExit("COTTAGE GOLD SHOP: Sigil shop menu anchor changed")
 # Custom gold furnishings must not be reset as an invalid paid tier on reload.

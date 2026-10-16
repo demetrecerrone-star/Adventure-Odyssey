@@ -25,6 +25,8 @@ func _run()->void:
 	await process_frame
 	game._random_default()
 	game._enter_world("bedroom",game.BEDROOM_SPAWN)
+	# Hide ONLY the overlay in these render-review captures; gameplay HUD stays unchanged.
+	game.hud.hide()
 	if not await _capture("cottage_free_starter.png"):
 		quit(1)
 		return
@@ -59,6 +61,7 @@ func _run()->void:
 	if not await _capture("cottage_gold_furniture_room.png"):
 		quit(1)
 		return
+	game.hud.show()
 	game._open_cottage_gold_shop()
 	if not await _capture("cottage_gold_shop_menu.png"):
 		quit(1)
