@@ -203,6 +203,7 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/guild_training_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/class_skills_screenshot.gd
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/dialogue_screenshot.gd
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/item_art_screenshot.gd
           test -s screenshots/tutorial_dialogue.png
           test -s screenshots/npc_dialogue.png
           test -s screenshots/starter_bedroom.png
@@ -219,6 +220,9 @@ jobs:
           test -s screenshots/starter_skills_mage.png
           test -s screenshots/starter_skills_necromancer.png
           test -s screenshots/character_creator.png
+          test -s screenshots/equipment_original_art.png
+          test -s screenshots/market_original_art.png
+          test -s screenshots/backpack_original_art.png
           ls -lh screenshots/character_creator.png
       - name: Upload visual QA screenshot
         uses: actions/upload-artifact@v4
