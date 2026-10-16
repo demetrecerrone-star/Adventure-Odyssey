@@ -3,7 +3,7 @@ extends Node2D
 # Original painted room files can be placed at the paths below without
 # changing this scene or replacing the bedroom's independent furniture.
 const ROOM_IMAGES = {
-    "foyer": "res://assets/home/foyer.png",
+    "foyer": "res://assets/home/approved_cottage_foyer.jpg",
     "living": "res://assets/home/living_room_kitchen.png"
 }
 var room_kind: String = "foyer"
@@ -22,7 +22,11 @@ func _ready() -> void:
             background.texture = texture
             background.centered = false
             background.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-            background.scale = Vector2(2048.0 / texture.get_width(), 1280.0 / texture.get_height())
+            var full_size := Vector2(2048,1280)
+            var image_size := texture.get_size()
+            var factor:float = minf(full_size.x/image_size.x, full_size.y/image_size.y)
+            background.scale = Vector2.ONE * factor
+            background.position = (full_size-image_size*factor)*0.5
             add_child(background)
             return
     # Until the exact approved painting is imported, display a navigable
