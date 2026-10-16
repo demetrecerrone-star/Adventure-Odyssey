@@ -58,7 +58,6 @@ jobs:
           python3 tools/generate_character_layers.py
           python3 tools/apply_character_layers.py
           python3 tools/apply_equipment_visuals.py
-          python3 tools/apply_headgear_hair_masks.py
           python3 tools/apply_app_icon.py
           echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
           python3 - <<'PY'
@@ -154,7 +153,6 @@ jobs:
           python3 tools/generate_character_layers.py
           python3 tools/apply_character_layers.py
           python3 tools/apply_equipment_visuals.py
-          python3 tools/apply_headgear_hair_masks.py
           python3 tools/apply_app_icon.py
           python3 tools/audit_character_sprites.py
           # Generate only the pose-aligned equipment art; legacy oversized-icon previews remain archived in tools/.
@@ -331,7 +329,6 @@ jobs:
           python3 tools/generate_character_layers.py
           python3 tools/apply_character_layers.py
           python3 tools/apply_equipment_visuals.py
-          python3 tools/apply_headgear_hair_masks.py
           python3 tools/apply_app_icon.py
           # Generate only the pose-aligned equipment art; legacy oversized-icon previews remain archived in tools/.
           python3 tools/generate_worn_equipment_art.py
