@@ -41,23 +41,23 @@ rep('''	if who=="Captain Elara Voss" and not bool(data.get("slime_training_accep
 		return
 	if who=="Captain Elara Voss" and not bool(data.get("slime_training_accepted",false))''')
 
-rep('''		if bool(data.get("guild_training_completed",false)):
-			return "Guild training complete! Explore Elmwatch or prepare for your next journey."''',
-'''		if bool(data.get("guild_training_completed",false)):
-			if bool(data.get("skill_unlocked",false)):
-				return "%s learned! Try your SKILL button in Thornbrook." % str(_class_skill()["name"])
-			if bool(data.get("skill_trial_accepted",false)):
-				return "Skill training: %d/4 basic hits. Return to %s." % [mini(4,int(data.get("skill_trial_hits",0))),_skill_mentor()]
-			return "Ask %s about your first class skill." % _skill_mentor()''')
+rep('''			if bool(data.get("guild_training_completed",false)):
+				return "Guild training complete! Explore Elmwatch or prepare for your next journey."''',
+'''			if bool(data.get("guild_training_completed",false)):
+				if bool(data.get("skill_unlocked",false)):
+					return "%s learned! Try your SKILL button in Thornbrook." % str(_class_skill()["name"])
+				if bool(data.get("skill_trial_accepted",false)):
+					return "Skill training: %d/4 basic hits. Return to %s." % [mini(4,int(data.get("skill_trial_hits",0))),_skill_mentor()]
+				return "Ask %s about your first class skill." % _skill_mentor()''')
 
-rep('''		if bool(data.get("guild_training_completed",false)):
-			return "Your first Guild assignment is complete. Safe travels!"''',
-'''		if bool(data.get("guild_training_completed",false)):
-			if bool(data.get("skill_unlocked",false)):
-				return "Your signature class skill is ready; use SKILL in combat."
-			if bool(data.get("skill_trial_accepted",false)):
-				return "Skill training: %d/4 basic hits. Visit your mentor to finish." % mini(4,int(data.get("skill_trial_hits",0)))
-			return "Guild training is complete. Seek %s for skill training." % _skill_mentor()''')
+rep('''			if bool(data.get("guild_training_completed",false)):
+				return "Your first Guild assignment is complete. Safe travels!"''',
+'''			if bool(data.get("guild_training_completed",false)):
+				if bool(data.get("skill_unlocked",false)):
+					return "Your signature class skill is ready; use SKILL in combat."
+				if bool(data.get("skill_trial_accepted",false)):
+					return "Skill training: %d/4 basic hits. Visit your mentor to finish." % mini(4,int(data.get("skill_trial_hits",0)))
+				return "Guild training is complete. Seek %s for skill training." % _skill_mentor()''')
 
 rep('''		"forest":
 			if int(data.get("quest_kills",0))>=3:''',
