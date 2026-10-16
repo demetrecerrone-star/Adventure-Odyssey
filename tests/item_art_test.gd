@@ -21,10 +21,11 @@ func _run()->void:
 	game._ensure_gear()
 	var unique={}
 	var all_names:Array=game.ITEM_CATALOG.keys()+game.GEAR_MATERIAL_NAMES
-	if not _ok(all_names.size()==39,"12 weapons, 12 armor, 10 accessories and 5 materials"):return
+	if not _ok(all_names.size()==45,"18 weapons, 12 armor, 10 accessories and 5 materials"):return
 	for entry in all_names:
 		var name:String=str(entry)
-		var icon:String="res://assets/items/%s.svg" % name.to_lower().replace("'","").replace(" ","_")
+		var slug:String=name.to_lower().replace("'","").replace(" ","_")
+		var icon:String="res://assets/equipment_item_icons/%s.png" % slug if bool(game._gear_def(name).get("quest_reward",false)) else "res://assets/items/%s.svg" % slug
 		if not _ok(ResourceLoader.exists(icon),"icon exists: "+name):return
 		var tex:Texture2D=load(icon)
 		if not _ok(tex!=null and tex.get_width()==96 and tex.get_height()==96,"valid sprite: "+name):return
