@@ -123,5 +123,25 @@ func _run() -> void:
 		push_error("LIVE WALK POSE GRID CAPTURE FAILED")
 		quit(1)
 		return
-	print("ADVENTURE ODYSSEY LIVE EQUIPMENT PREVIEWS: PASS / two loadouts and twelve walking poses")
+	walk["overlay"].queue_free()
+	await process_frame
+	var fit=_canvas("ADVENTURE ODYSSEY / EQUIPMENT FIT CHECK", "Live renderer • 8 appearances × 4 directions • armor, hood, cloak, boots, weapon")
+	var fit_canvas:Control=fit["canvas"]
+	_loadout(game,warrior,0,2)
+	for row in range(4):
+		_label(fit_canvas,str(facings[row]).to_upper(),Vector2(18,135+row*147),14)
+		for body in range(8):
+			game.data["body"]=body
+			game.facing=facings[row]
+			game.anim_frame=0
+			game._set_player_frame()
+			var center=Vector2(116+body*145,164+row*147)
+			if row==0:
+				_label(fit_canvas,"BODY "+str(body+1),Vector2(center.x-27,83),12)
+			_player_cell(game,fit_canvas,center,0.99)
+	if not await _capture("equipment_fit_8x4.png"):
+		push_error("LIVE EIGHT-BODY FIT GRID CAPTURE FAILED")
+		quit(1)
+		return
+	print("ADVENTURE ODYSSEY LIVE EQUIPMENT PREVIEWS: PASS / two loadouts, twelve walking poses, thirty-two fit poses")
 	quit(0)
