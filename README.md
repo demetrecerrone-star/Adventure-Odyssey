@@ -7,7 +7,7 @@ Landscape dusk kingdom painting, separate title and original byDABSKY artwork, a
 
 ## Validate
 Run `godot --headless --path . --editor --quit`, then `godot --headless --path . --script res://tests/title_test.gd`.
-Native captures use `godot --path . --script res://tests/title_screenshot.gd` in a supported desktop/Xvfb environment. CI uploads title, sign-in, create-account and wide-screen captures. Pushes validate only. Manual workflow dispatch builds the signed Android preview after validation.
+Native captures use `godot --path . --script res://tests/title_screenshot.gd` in a supported desktop/Xvfb environment. CI uploads title, sign-in, create-account and wide-screen captures. Pushes validate only. Manual workflow dispatch or an explicitly requested commit containing `[build-title-apk]` builds the signed Android preview after validation. Ordinary commits never build an APK.
 
 ## Android
 Package: `com.demetrecerrone.adventureodyssey`. Version code 4, version name `0.4-title-preview`. Permanent release signing is retained via existing repository secrets; no keystores belong in the source tree. ARM64 phones, landscape orientation.
