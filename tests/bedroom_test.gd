@@ -113,14 +113,14 @@ func run() -> void:
 	pad.set_position_input(pad.size * 0.5 + Vector2(60, 0))
 	pad._notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
 	check(room.touch_direction == Vector2.ZERO, "Focus loss resets joystick")
-	check(is_equal_approx(room.movement_speed, 135.0), "Player speed is another 50 percent above the previous 90 px/s")
+	check(is_equal_approx(room.movement_speed, 155.0), "Player travel speed is 155 px/s with animation cadence preserved")
 	var save_before_movement := FileAccess.get_file_as_string(path)
 	room.player = Vector2(800, 650)
 	room.touch_direction = Vector2.RIGHT
 	room.actor.advance(2, false, 0)
 	room._process(0.05)
-	check(is_equal_approx(room.player.x, 806.75), "Full stick moves at 135 logical pixels per second")
-	check(is_equal_approx(room.actor.elapsed, 0.1125), "Full speed gait follows the 135 px/s distance")
+	check(is_equal_approx(room.player.x, 807.75), "Full stick moves at 155 logical pixels per second")
+	check(is_equal_approx(room.actor.elapsed, 0.1125), "Full speed gait follows the approved prior cadence despite faster travel")
 	check(room.actor.body.frame == 1 and room.actor.armor.frame == 1, "Paired gait advances at effective 36 fps")
 	room.actor.advance(2, false, 0)
 	room.player = Vector2(800, 650)
@@ -136,13 +136,13 @@ func run() -> void:
 	room.touch_direction = Vector2.RIGHT
 	room.actor.advance(2, false, 0)
 	room._process(0.5)
-	check(is_equal_approx(room.player.x, 806.75) and is_equal_approx(room.actor.elapsed, 0.1125), "Slow frame caps movement and gait together")
+	check(is_equal_approx(room.player.x, 807.75) and is_equal_approx(room.actor.elapsed, 0.1125), "Slow frame caps movement and gait together")
 	room.touch_direction = Vector2.ZERO
 	room.player = Vector2(800, 650)
 	room.target = Vector2(900, 650)
 	room.moving_to_target = true
 	room._process(0.05)
-	check(is_equal_approx(room.player.x, 806.75), "Floor-tap movement uses the same faster speed")
+	check(is_equal_approx(room.player.x, 807.75), "Floor-tap movement uses the same faster speed")
 	check(FileAccess.get_file_as_string(path) == save_before_movement, "Movement tuning leaves persisted save untouched")
 	room._reset_movement()
 	# Exercise Godot's real viewport routing, not only the joystick methods.
@@ -270,7 +270,7 @@ func run() -> void:
 			class_room.state = slot
 			root.add_child(class_room)
 			await process_frame
-			check(is_equal_approx(class_room.movement_speed, 135.0), "Every base and class receives 135 px/s movement")
+			check(is_equal_approx(class_room.movement_speed, 155.0), "Every base and class receives 155 px/s movement")
 			check(class_room.actor.visible and class_room.actor.artwork_ready and class_room.actor.armor.texture != null and not class_room.sleeping, "Both bases and every class spawn visibly dressed")
 			class_room.queue_free()
 			await process_frame

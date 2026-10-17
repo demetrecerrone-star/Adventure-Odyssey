@@ -8,7 +8,7 @@
     "appearance_mask": "res://assets/painted-walk-pilot/walk-left-mask.png",
     "frames": 6,
     "fps": 9,
-    "movement_speed": 135
+    "movement_speed": 155
   },
   "hair_offsets": [
     [

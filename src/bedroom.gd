@@ -3,7 +3,7 @@ signal exited
 const Save = preload("res://src/bedroom_save.gd")
 const Creator = preload("res://src/creator/creator_panel.gd")
 const ROOM_SIZE = Vector2(1536, 1024)
-const PLAYER_SPEED_MULTIPLIER := 2.25
+const PLAYER_SPEED_MULTIPLIER := 155.0 / 60.0
 var state = Save.new()
 var stage: Node2D
 var actor: Node2D
@@ -208,8 +208,8 @@ func _process(delta: float) -> void:
 	if direction.length() > 0:
 		facing = (2 if direction.x > 0 else 1) if absf(direction.x) > absf(direction.y) else (0 if direction.y > 0 else 3)
 		move_player(direction.limit_length(1.0) * movement_speed * minf(delta, 0.05))
-	# Keep the original stride distance at the faster speed, including analog
-	# input, blocked movement and the frame-time cap used by movement above.
+	# Keep the approved cadence while increasing travel speed. Actual distance
+	# still scales analog input, blocked movement and the movement frame-time cap.
 	var distance_moved := player.distance_to(previous_position)
 	actor.advance(facing, distance_moved > 0, distance_moved / actor.cadence_speed(facing))
 	var id := nearest_prop()

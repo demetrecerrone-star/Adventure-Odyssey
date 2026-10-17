@@ -153,7 +153,7 @@ func advance(direction: int, moving: bool, delta: float) -> void:
 func uses_painted_pilot() -> bool:
 	return not painted_pilot.is_empty() and current_animation == "walk_left"
 func cadence_speed(direction: int) -> float:
-	return 135.0 if not painted_pilot.is_empty() and direction == 1 else suggested_speed
+	return 155.0 if not painted_pilot.is_empty() and direction == 1 else suggested_speed * (155.0 / 135.0)
 func _pilot_offset(key: String) -> Vector2:
 	var offsets: Array = painted_pilot.get(key, [])
 	if body.frame < offsets.size():
