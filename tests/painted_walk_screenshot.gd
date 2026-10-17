@@ -8,7 +8,7 @@ func run() -> void:
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	root.size = Vector2i(1536,1024)
 	DirAccess.make_dir_recursive_absolute("res://screenshots")
-	for direction in [0,1,3]:
+	for direction in range(4):
 		var canvas := Control.new()
 		root.add_child(canvas)
 		var bg := ColorRect.new()
@@ -49,4 +49,11 @@ func run() -> void:
 	for frame in range(72):
 		room._process(1.0/36.0)
 		await snap("res://screenshots/painted_walk_motion_%02d.png" % frame)
+	for direction in [0,2,3]:
+		room.player=Vector2(820,650)
+		room.actor.advance(direction,false,0)
+		room.touch_direction=[Vector2.DOWN,Vector2.LEFT,Vector2.RIGHT,Vector2.UP][direction]
+		for frame in range(24):
+			room._process(1.0/36.0)
+			await snap("res://screenshots/painted_%s_motion_%02d.png" % [["down","left","right","up"][direction],frame])
 	quit()

@@ -14,8 +14,8 @@ func run()->void:
 			a.set_equipped_weapon(cls.to_lower()+"_01_weapon")
 			for facing in range(4):
 				a.advance(facing,true,0)
-				var pilot:bool=base=="male" and cls=="Warrior" and facing in [0,1,3]
-				check(a.uses_painted_pilot()==pilot,"Pilot strictly male Warrior down/left/up only")
+				var pilot:bool=base=="male" and cls=="Warrior"
+				check(a.uses_painted_pilot()==pilot,"Pilot strictly male Warrior four directions only")
 				check(a.body.hframes==(6 if pilot else 8),"Real drawing count follows scope")
 				check(is_equal_approx(a.cadence_speed(facing),155.0 if pilot else 60.0 * 155.0 / 135.0),"Actual-distance cadence calibration")
 				check(a.palette_ready and a.hair_renderer.ready and a.weapon_back.visible,"All customization and equipment retained")
@@ -29,9 +29,9 @@ func run()->void:
 							check(a.weapon_back.position==a._pilot_offset("weapon_offsets"),"Sword grip follows far hand")
 						else:
 							var h=a.hair_renderer.front
-							var target:=Vector2(128,42+[0,2,-1,0,2,-1][phase])-Vector2(128,232)
+							var target:=Vector2(124 if facing==2 else 128,42+[0,2,-1,0,2,-1][phase])-Vector2(128,232)
 							check((h.position+(Vector2(128,42)+h.offset)*h.scale).is_equal_approx(target),"Affine hair crown exactly follows drawing")
-							check(h.scale==Vector2.ONE*0.84 and h.frame==facing,"Hair uses fitted directional idle source")
+							check(h.scale==Vector2.ONE*(1.0 if facing==2 else 0.84) and h.frame==facing,"Hair uses fitted directional idle source")
 							check(a.weapon_front.frame==phase and a.weapon_front.hframes==6 and a.weapon_front.position==Vector2.ZERO,"Dedicated occlusion-masked sword follows pose")
 					a.elapsed=0
 					a.advance(facing,true,(155.0 / 9.0)/a.cadence_speed(facing))

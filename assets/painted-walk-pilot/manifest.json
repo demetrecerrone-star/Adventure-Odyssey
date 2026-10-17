@@ -1,5 +1,5 @@
 {
-  "status": "six-drawing male Warrior left/down/up; right remains previous artwork pending review",
+  "status": "six-drawing male Warrior four-direction pilot; other bases/classes unchanged",
   "base": "male",
   "class": "Warrior",
   "walk_left": {
@@ -650,6 +650,121 @@
       "appearance_mask": "res://assets/painted-walk-pilot/walk-up-mask.png",
       "weapon_front": "res://assets/painted-walk-pilot/walk-up-weapon-front.png",
       "weapon_back": "res://assets/painted-walk-pilot/walk-up-weapon-back.png"
+    },
+    "right": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 2,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            131,
+            42
+          ],
+          "target_anchor": [
+            127,
+            42
+          ],
+          "translation": [
+            -4,
+            0
+          ],
+          "rotation_rad": 0,
+          "scale": 1.0,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            131,
+            42
+          ],
+          "target_anchor": [
+            127,
+            44
+          ],
+          "translation": [
+            -4,
+            2
+          ],
+          "rotation_rad": 0,
+          "scale": 1.0,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            131,
+            42
+          ],
+          "target_anchor": [
+            127,
+            41
+          ],
+          "translation": [
+            -4,
+            -1
+          ],
+          "rotation_rad": 0,
+          "scale": 1.0,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            131,
+            42
+          ],
+          "target_anchor": [
+            127,
+            42
+          ],
+          "translation": [
+            -4,
+            0
+          ],
+          "rotation_rad": 0,
+          "scale": 1.0,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            131,
+            42
+          ],
+          "target_anchor": [
+            127,
+            44
+          ],
+          "translation": [
+            -4,
+            2
+          ],
+          "rotation_rad": 0,
+          "scale": 1.0,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            131,
+            42
+          ],
+          "target_anchor": [
+            127,
+            41
+          ],
+          "translation": [
+            -4,
+            -1
+          ],
+          "rotation_rad": 0,
+          "scale": 1.0,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walk-pilot/walk-right-body.png",
+      "armor": "res://assets/painted-walk-pilot/walk-right-armor.png",
+      "appearance_mask": "res://assets/painted-walk-pilot/walk-right-mask.png",
+      "weapon_front": "res://assets/painted-walk-pilot/walk-right-weapon-front.png",
+      "weapon_back": "res://assets/painted-walk-pilot/walk-right-weapon-back.png"
     }
   }
 }
