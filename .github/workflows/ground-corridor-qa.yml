@@ -1,0 +1,39 @@
+# Isolated QA harness; no Android/export/release steps.
+name: Ground corridor renderer QA only
+on:
+  push:
+    branches: [main]
+    paths: ['qa/**', '.github/workflows/ground-corridor-qa.yml']
+permissions:
+  contents: read
+jobs:
+  corridor-qa:
+    runs-on: ubuntu-24.04
+    container:
+      image: barichello/godot-ci:4.7.2
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: apt-get update && apt-get install -y xvfb libgl1-mesa-dri python3-pil python3-numpy
+      - name: Validate assets and headless physics
+        working-directory: qa/ground-corridor
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 verify_assets.py
+          godot --headless --path . --script res://src/test.gd 2>&1 | tee results/headless.log
+          ! grep -Eq 'SCRIPT ERROR|Parse Error|Failed to load script' results/headless.log
+          python3 -c 'import json; assert not json.load(open("results/headless.json"))["failures"]'
+      - name: Capture real renderer output using Mesa software rasterization
+        working-directory: qa/ground-corridor
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 180 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://src/capture.gd 2>&1 | tee results/capture.log
+          ! grep -Eq 'SCRIPT ERROR|Parse Error|Failed to load script' results/capture.log
+          python3 -c 'import json; r=json.load(open("results/render-comparison.json")); assert len(r["comparisons"])==6; assert all(c["pixels_diff_gt_2"]==0 for c in r["comparisons"]),r'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ground-corridor-qa
+          path: qa/ground-corridor/results/

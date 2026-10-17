@@ -1,0 +1,742 @@
+{
+  "schema_version": 1,
+  "status": "continuous native ground corridor; not full region or engine scene",
+  "local_size": [
+    2880,
+    1023
+  ],
+  "world_origin": [
+    1344,
+    768
+  ],
+  "provisional_full_region_size": [
+    4608,
+    3072
+  ],
+  "world_pixels_per_texture_pixel": 1,
+  "coordinates": "Route, lot and collision coordinates are LOCAL; add world_origin for region coordinates. Chunk world_rect already includes origin.",
+  "movement_speed": 135,
+  "character_visible_height": 96,
+  "chunks": [
+    {
+      "file": "terrain/corridor_0_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "local_rect": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "world_rect": [
+        1344,
+        768,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "terrain/corridor_1_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "local_rect": [
+        512,
+        0,
+        512,
+        512
+      ],
+      "world_rect": [
+        1856,
+        768,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "terrain/corridor_2_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "local_rect": [
+        1024,
+        0,
+        512,
+        512
+      ],
+      "world_rect": [
+        2368,
+        768,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "terrain/corridor_3_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "local_rect": [
+        1536,
+        0,
+        512,
+        512
+      ],
+      "world_rect": [
+        2880,
+        768,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "terrain/corridor_4_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "local_rect": [
+        2048,
+        0,
+        512,
+        512
+      ],
+      "world_rect": [
+        3392,
+        768,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "terrain/corridor_5_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        320,
+        512
+      ],
+      "local_rect": [
+        2560,
+        0,
+        320,
+        512
+      ],
+      "world_rect": [
+        3904,
+        768,
+        320,
+        512
+      ]
+    },
+    {
+      "file": "terrain/corridor_0_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        511
+      ],
+      "local_rect": [
+        0,
+        512,
+        512,
+        511
+      ],
+      "world_rect": [
+        1344,
+        1280,
+        512,
+        511
+      ]
+    },
+    {
+      "file": "terrain/corridor_1_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        511
+      ],
+      "local_rect": [
+        512,
+        512,
+        512,
+        511
+      ],
+      "world_rect": [
+        1856,
+        1280,
+        512,
+        511
+      ]
+    },
+    {
+      "file": "terrain/corridor_2_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        511
+      ],
+      "local_rect": [
+        1024,
+        512,
+        512,
+        511
+      ],
+      "world_rect": [
+        2368,
+        1280,
+        512,
+        511
+      ]
+    },
+    {
+      "file": "terrain/corridor_3_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        511
+      ],
+      "local_rect": [
+        1536,
+        512,
+        512,
+        511
+      ],
+      "world_rect": [
+        2880,
+        1280,
+        512,
+        511
+      ]
+    },
+    {
+      "file": "terrain/corridor_4_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        511
+      ],
+      "local_rect": [
+        2048,
+        512,
+        512,
+        511
+      ],
+      "world_rect": [
+        3392,
+        1280,
+        512,
+        511
+      ]
+    },
+    {
+      "file": "terrain/corridor_5_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        320,
+        511
+      ],
+      "local_rect": [
+        2560,
+        512,
+        320,
+        511
+      ],
+      "world_rect": [
+        3904,
+        1280,
+        320,
+        511
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "id": "home_to_plaza",
+      "clear_width": 72,
+      "points": [
+        [
+          300,
+          550
+        ],
+        [
+          340,
+          625
+        ],
+        [
+          600,
+          600
+        ],
+        [
+          840,
+          515
+        ],
+        [
+          1000,
+          550
+        ],
+        [
+          1120,
+          530
+        ],
+        [
+          1270,
+          490
+        ],
+        [
+          1530,
+          500
+        ],
+        [
+          1800,
+          500
+        ]
+      ],
+      "length_world": 1571.7,
+      "seconds_at_135": 11.6
+    },
+    {
+      "id": "town_entry_to_guild",
+      "clear_width": 72,
+      "points": [
+        [
+          1000,
+          550
+        ],
+        [
+          985,
+          445
+        ],
+        [
+          1080,
+          360
+        ]
+      ],
+      "length_world": 233.5,
+      "seconds_at_135": 1.7
+    }
+  ],
+  "reserved_lots": [
+    {
+      "id": "starter_home",
+      "polygon": [
+        [
+          130,
+          260
+        ],
+        [
+          430,
+          260
+        ],
+        [
+          440,
+          500
+        ],
+        [
+          150,
+          520
+        ]
+      ],
+      "entrance": [
+        300,
+        550
+      ]
+    },
+    {
+      "id": "guild",
+      "polygon": [
+        [
+          890,
+          100
+        ],
+        [
+          1130,
+          40
+        ],
+        [
+          1300,
+          220
+        ],
+        [
+          1020,
+          325
+        ]
+      ],
+      "entrance": [
+        1080,
+        360
+      ]
+    },
+    {
+      "id": "shop_west",
+      "polygon": [
+        [
+          1130,
+          370
+        ],
+        [
+          1160,
+          360
+        ],
+        [
+          1220,
+          440
+        ],
+        [
+          1130,
+          475
+        ]
+      ],
+      "entrance": [
+        1155,
+        518
+      ]
+    },
+    {
+      "id": "shop_southwest",
+      "polygon": [
+        [
+          1120,
+          610
+        ],
+        [
+          1440,
+          590
+        ],
+        [
+          1480,
+          705
+        ],
+        [
+          1280,
+          800
+        ],
+        [
+          1090,
+          735
+        ]
+      ],
+      "entrance": [
+        1280,
+        560
+      ]
+    },
+    {
+      "id": "home_north_plaza",
+      "polygon": [
+        [
+          1370,
+          170
+        ],
+        [
+          1610,
+          100
+        ],
+        [
+          1720,
+          245
+        ],
+        [
+          1560,
+          350
+        ]
+      ],
+      "entrance": [
+        1620,
+        377
+      ]
+    },
+    {
+      "id": "shop_south_plaza",
+      "polygon": [
+        [
+          1580,
+          725
+        ],
+        [
+          1840,
+          735
+        ],
+        [
+          1990,
+          880
+        ],
+        [
+          1830,
+          970
+        ],
+        [
+          1520,
+          880
+        ]
+      ],
+      "entrance": [
+        1740,
+        700
+      ]
+    },
+    {
+      "id": "blacksmith_workyard",
+      "polygon": [
+        [
+          2150,
+          850
+        ],
+        [
+          2460,
+          790
+        ],
+        [
+          2720,
+          890
+        ],
+        [
+          2690,
+          980
+        ],
+        [
+          2220,
+          980
+        ]
+      ],
+      "entrance": [
+        2420,
+        764
+      ]
+    }
+  ],
+  "blocked_polygons": [
+    {
+      "id": "upper_stream_and_bank",
+      "kind": "water_bank",
+      "polygon": [
+        [
+          665,
+          0
+        ],
+        [
+          1010,
+          0
+        ],
+        [
+          925,
+          64
+        ],
+        [
+          872,
+          150
+        ],
+        [
+          801,
+          186
+        ],
+        [
+          865,
+          265
+        ],
+        [
+          887,
+          332
+        ],
+        [
+          942,
+          399
+        ],
+        [
+          913,
+          443
+        ],
+        [
+          842,
+          437
+        ],
+        [
+          775,
+          385
+        ],
+        [
+          751,
+          322
+        ],
+        [
+          680,
+          276
+        ],
+        [
+          620,
+          204
+        ],
+        [
+          606,
+          141
+        ],
+        [
+          642,
+          87
+        ]
+      ]
+    },
+    {
+      "id": "lower_stream_and_bank",
+      "kind": "water_bank",
+      "polygon": [
+        [
+          836,
+          615
+        ],
+        [
+          908,
+          592
+        ],
+        [
+          965,
+          627
+        ],
+        [
+          971,
+          693
+        ],
+        [
+          1008,
+          741
+        ],
+        [
+          1080,
+          796
+        ],
+        [
+          1190,
+          864
+        ],
+        [
+          1300,
+          897
+        ],
+        [
+          1392,
+          930
+        ],
+        [
+          1480,
+          1023
+        ],
+        [
+          1230,
+          1023
+        ],
+        [
+          1110,
+          961
+        ],
+        [
+          1010,
+          925
+        ],
+        [
+          925,
+          858
+        ],
+        [
+          856,
+          786
+        ],
+        [
+          817,
+          715
+        ]
+      ]
+    },
+    {
+      "id": "forest_cliff",
+      "kind": "cliff",
+      "polygon": [
+        [
+          0,
+          82
+        ],
+        [
+          91,
+          79
+        ],
+        [
+          143,
+          130
+        ],
+        [
+          154,
+          183
+        ],
+        [
+          101,
+          197
+        ],
+        [
+          0,
+          166
+        ]
+      ]
+    }
+  ],
+  "collision_status": "Conservative hand-traced visual polygons; 72 px route masks verified clear. No engine collision or navmesh testing.",
+  "boundaries": "Corridor is a cropped milestone, not a complete level. Outside edges are unfinished continuation boundaries; no world transitions are implemented.",
+  "layering": "All buildings/trees/props and review actors separate; roads currently painted into ground. No scenery objects or actors baked into runtime chunks.",
+  "seam_repair": {
+    "original_pilot_join_local_x": 1344,
+    "generated_repair_native_px": [
+      1254,
+      1254
+    ],
+    "repair_context_world_px": [
+      1024,
+      1024
+    ],
+    "resampling": "downsample only, Lanczos",
+    "applied_strip_local_x": [
+      1312,
+      1376
+    ],
+    "feather_width_px": 12,
+    "color_match": "low-frequency color alignment to neighboring approved paint",
+    "qa": "Whole corridor overview and seam strip visually inspected at actual scale; chunk reassembly pixel-exact. GPU/filtering/camera device validation remains."
+  },
+  "memory": {
+    "all_chunks_rgba_mib": 11.42,
+    "nine_full_chunk_window_mib": 9.14,
+    "sixteen_full_chunk_cache_mib": 16.25,
+    "import": "512 core + 2px gutter, linear sampling of core, no mipmaps without per-level padding; camera-bounds culling and bounded texture cache"
+  },
+  "validation": {
+    "pixel_exact_reassembly": true,
+    "route_clearance_checks": {
+      "home_to_plaza": {
+        "blocked_overlap_pixels": 0,
+        "bbox": null
+      },
+      "town_entry_to_guild": {
+        "blocked_overlap_pixels": 0,
+        "bbox": null
+      }
+    }
+  }
+}
