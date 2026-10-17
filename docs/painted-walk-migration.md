@@ -15,3 +15,7 @@ Male Paladin batch: all four directions, using final down-v2 skin masks and regi
 Ranger batch: male and female, all four directions, six drawings at9fps/155px/s. Each uses its own original directional idle hair and actual ranger_01_weapon bow, with per-pose front/back occlusion and grip registration. Both sets passed source-layer recomposition and palette isolation review. Female up extraction uses a documented safe source-row split to preserve crowns; no pose warping. Native review is required before visual completion. The remaining Mage, Necromancer and Assassin sets retain their previous eight-frame artwork.
 
 Male Paladin native QA #329 passed all four palette sheets (96 cells), independently reviewed for knee skin, hair and sword attachment. Ranger local full regression passes25,552 checks; native Ranger review follows this QA-only publication.
+
+Assassin batch: both bases, all four directions at9fps/155px/s. Two actual class daggers are registered independently to the two fists and baked into dedicated front/back layers; equipped-state validation remains authoritative. Each base retains its own original idle-direction hair. All48 composites,192 palette combinations,720 hair fits and96 hand contacts were source-reviewed. Similar early poses and uneven gait spacing remain disclosed; native fit review is required. Mage and Necromancer are still on their own previous artwork.
+
+Assassin local full regression:25,736 checks pass. Ranger QA #330 completed successfully; eight native sheets are available for final independent fit review.
