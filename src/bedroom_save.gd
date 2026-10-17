@@ -162,13 +162,14 @@ func unequip() -> bool:
 	return true
 
 func valid_location(value) -> bool:
-	if not value is Dictionary or value.get("scene", "") not in ["bedroom", "starter_region"]:
+	if not value is Dictionary or value.get("scene", "") not in ["bedroom", "starter_region", "guild_interior", "blacksmith_interior", "apothecary_interior", "general_store_interior"]:
 		return false
 	var point = value.get("position")
 	if not point is Array or point.size() != 2: return false
 	for number in point:
 		if not (number is float or number is int) or not is_finite(float(number)): return false
-	return point[0] >= 0 and point[0] <= 4608 and point[1] >= 0 and point[1] <= 3072
+	var bounds := Vector2(4608,3072) if value.scene == "starter_region" else Vector2(1536,1024)
+	return point[0] >= 0 and point[0] <= bounds.x and point[1] >= 0 and point[1] <= bounds.y
 func set_location(scene: String, point: Vector2) -> bool:
 	var previous := location.duplicate(true)
 	var next := {"scene":scene, "position":[point.x, point.y]}

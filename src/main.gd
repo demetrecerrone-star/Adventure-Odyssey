@@ -484,6 +484,8 @@ func _open_bedroom() -> void:
 	_install_adventure(preload("res://src/bedroom.gd").new())
 	if bedroom.state.location.scene == "starter_region" and not bedroom.state.character.is_empty():
 		_open_world.call_deferred()
+	elif bedroom.state.location.scene.ends_with("_interior") and not bedroom.state.character.is_empty():
+		_open_interior.call_deferred(bedroom.state.location.scene)
 
 func _install_adventure(next: Control) -> void:
 	if is_instance_valid(bedroom):
@@ -507,6 +509,7 @@ func _open_world() -> void:
 	var world = preload("res://src/starter_world.gd").new()
 	world.state = bedroom.state
 	world.returned.connect(_return_bedroom)
+	world.interior_requested.connect(_open_interior)
 	_install_adventure(world)
 
 func _return_bedroom() -> void:
@@ -515,3 +518,13 @@ func _return_bedroom() -> void:
 	_install_adventure(room)
 	room.player = Vector2(780,440)
 	room._update_actor()
+
+func _open_interior(scene_id:String) -> void:
+	if not is_instance_valid(bedroom): return
+	var room = preload("res://src/town_interior.gd").new()
+	if not room.available(scene_id):
+		room.free()
+		return
+	room.room_id = scene_id
+	room.state = bedroom.state
+	_install_adventure(room)

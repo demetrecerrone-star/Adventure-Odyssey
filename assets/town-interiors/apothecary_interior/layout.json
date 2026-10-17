@@ -1,0 +1,110 @@
+{
+  "status": "Generated review art, integration/native visual QA pending",
+  "scene_id": "apothecary_interior",
+  "canvas": [
+    1536,
+    1024
+  ],
+  "plate": "room.png",
+  "floor_polygon": [
+    [
+      215,
+      405
+    ],
+    [
+      1325,
+      405
+    ],
+    [
+      1450,
+      930
+    ],
+    [
+      85,
+      930
+    ]
+  ],
+  "entry_spawn": [
+    780,
+    470
+  ],
+  "exit_anchor": [
+    780,
+    435
+  ],
+  "door_threshold": [
+    780,
+    375
+  ],
+  "player_visible_height_reference": 199.5,
+  "props": [
+    {
+      "id": "counter",
+      "file": "counter.png",
+      "source_anchor": [
+        768,
+        829
+      ],
+      "position": [
+        1120,
+        740
+      ],
+      "scale": 0.3,
+      "depth_y": 740,
+      "collision_rect": [
+        900,
+        640,
+        440,
+        100
+      ]
+    },
+    {
+      "id": "shelf",
+      "file": "shelf.png",
+      "source_anchor": [
+        597,
+        1173
+      ],
+      "position": [
+        1160,
+        435
+      ],
+      "scale": 0.25,
+      "depth_y": 435,
+      "collision_rect": [
+        1045,
+        400,
+        230,
+        35
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "apothecary",
+      "asset_file": "apothecary.png",
+      "source_anchor": [
+        638,
+        1176
+      ],
+      "position": [
+        1120,
+        600
+      ],
+      "scale": 0.1736,
+      "depth_y": 600,
+      "interaction_anchor": [
+        1120,
+        800
+      ],
+      "interaction_radius": 75,
+      "collision_rect": [
+        1092,
+        575,
+        56,
+        25
+      ],
+      "note": "New unnamed static down-facing review art; not a four-direction animation. Scale adjusted to engineer-confirmed200px."
+    }
+  ]
+}

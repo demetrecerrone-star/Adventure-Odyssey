@@ -1,6 +1,8 @@
 extends "res://src/bedroom.gd"
 # Playable exterior checkpoint: imported terrain, scenery, buildings and persisted home return.
 signal returned
+signal interior_requested(scene_id:String)
+const Interior = preload("res://src/town_interior.gd")
 const WORLD_SIZE := Vector2(4608,3072)
 const HOME := Vector2(1644,1333)
 const FOOT_RADIUS := 16.0
@@ -20,7 +22,7 @@ var building_nodes := {}
 var building_data: Array = []
 var fortification_nodes := {}
 var fortification_data: Array = []
-var entrance_labels := {"home":"Home", "guild":"Guild", "shop_southwest":"General store", "shop_south_plaza":"Apothecary", "blacksmith_workyard":"Blacksmith"}
+var entrance_labels := {"home":"Home", "guild":"Adventurer Guild", "shop_southwest":"General store", "shop_south_plaza":"Apothecary", "blacksmith_workyard":"Blacksmith"}
 func _ready() -> void:
 	world_layout = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/layout.json"))
 	for block in world_layout.blocked_polygons:
@@ -42,7 +44,7 @@ func _ready() -> void:
 	_load_fortifications()
 	if not can_stand(player): player = HOME
 	_update_actor()
-	message.text = "Explore the paths. Return home here with [E]. Shop and guild interiors are not open yet."
+	message.text = "Explore the paths. Return home here with [E]. Enter the guild and shops from their doors."
 func _load_layout() -> void:
 	prop_rects = {}
 	anchors = {"home":HOME}
@@ -234,6 +236,12 @@ func interact() -> void:
 		if state.set_location("bedroom",Vector2(780,440)): returned.emit()
 		else: message.text = state.error
 	elif not nearest_prop().is_empty():
+		for scene_id in Interior.ROOMS:
+			if Interior.ROOMS[scene_id].entrance == nearest_prop() and Interior.available(scene_id):
+				_reset_movement()
+				if state.set_location(scene_id,Interior.entry_point(scene_id)): interior_requested.emit(scene_id)
+				else: message.text = state.error
+				return
 		_reset_movement()
 		message.text = entrance_labels.get(nearest_prop(),"This building")+" exterior. Its interior is not available yet."
 func _exit() -> void:

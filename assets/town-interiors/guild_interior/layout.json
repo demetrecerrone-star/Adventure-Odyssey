@@ -1,0 +1,105 @@
+{
+  "status": "Proposed art layout, engine integration and native QA pending",
+  "scene_id": "guild_interior",
+  "canvas": [
+    1536,
+    1024
+  ],
+  "plate": "room-v2.png",
+  "floor_polygon": [
+    [
+      215,
+      405
+    ],
+    [
+      1325,
+      405
+    ],
+    [
+      1450,
+      930
+    ],
+    [
+      85,
+      930
+    ]
+  ],
+  "entry_spawn": [
+    780,
+    470
+  ],
+  "exit_anchor": [
+    780,
+    435
+  ],
+  "door_threshold": [
+    780,
+    375
+  ],
+  "player_visible_height_reference": 199.5,
+  "props": [
+    {
+      "id": "counter",
+      "file": "counter.png",
+      "scale": 0.26346950858496154,
+      "source_anchor": [
+        887.5,
+        792
+      ],
+      "position": [
+        437.5,
+        760
+      ],
+      "collision_rect": [
+        220,
+        665,
+        435,
+        90
+      ],
+      "depth_y": 760
+    },
+    {
+      "id": "noticeboard",
+      "file": "noticeboard.png",
+      "scale": 0.20350877192982456,
+      "source_anchor": [
+        769.5,
+        946
+      ],
+      "position": [
+        1165,
+        310
+      ],
+      "depth_y": 2,
+      "collision_rect": null
+    }
+  ],
+  "npcs": [
+    {
+      "id": "guild_receptionist",
+      "asset_file": "guild_receptionist.png",
+      "source_anchor": [
+        128,
+        240
+      ],
+      "scale": 0.95,
+      "position": [
+        438,
+        630
+      ],
+      "depth_y": 630,
+      "interaction_anchor": [
+        438,
+        810
+      ],
+      "interaction_radius": 75,
+      "collision_rect": [
+        410,
+        605,
+        56,
+        25
+      ],
+      "note": "Counter in front occludes lower legs; interact anchor is walkable player stand, not clerk foot."
+    }
+  ]
+}

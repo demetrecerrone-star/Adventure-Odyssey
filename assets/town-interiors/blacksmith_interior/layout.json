@@ -1,0 +1,133 @@
+{
+  "status": "Proposed art layout; engine integration and native QA pending",
+  "scene_id": "blacksmith_interior",
+  "canvas": [
+    1536,
+    1024
+  ],
+  "plate": "room.png",
+  "floor_polygon": [
+    [
+      215,
+      405
+    ],
+    [
+      1325,
+      405
+    ],
+    [
+      1450,
+      930
+    ],
+    [
+      85,
+      930
+    ]
+  ],
+  "entry_spawn": [
+    780,
+    470
+  ],
+  "exit_anchor": [
+    780,
+    435
+  ],
+  "door_threshold": [
+    780,
+    375
+  ],
+  "player_visible_height_reference": 199.5,
+  "props": [
+    {
+      "id": "forge",
+      "file": "forge.png",
+      "scale": 0.32,
+      "source_anchor": [
+        650,
+        1124
+      ],
+      "position": [
+        445,
+        575
+      ],
+      "collision_rect": [
+        275,
+        520,
+        335,
+        55
+      ],
+      "depth_y": 575,
+      "note": "Entire freestanding hearth and bellows; visual width353px and height322px."
+    },
+    {
+      "id": "anvil",
+      "file": "anvil.png",
+      "scale": 0.205,
+      "source_anchor": [
+        675,
+        1093
+      ],
+      "position": [
+        460,
+        805
+      ],
+      "collision_rect": [
+        396,
+        770,
+        128,
+        35
+      ],
+      "depth_y": 805,
+      "note": "Stump base collider, horn overhang stays visual; visible width210px and height175px."
+    },
+    {
+      "id": "workbench",
+      "file": "workbench.png",
+      "scale": 0.3,
+      "source_anchor": [
+        620,
+        1010
+      ],
+      "position": [
+        1100,
+        755
+      ],
+      "collision_rect": [
+        940,
+        680,
+        320,
+        75
+      ],
+      "depth_y": 755,
+      "note": "Visible width352px,height224px; bench in front of smith."
+    }
+  ],
+  "npcs": [
+    {
+      "id": "blacksmith",
+      "asset_file": "blacksmith.png",
+      "source_anchor": [
+        128,
+        240
+      ],
+      "scale": 0.94,
+      "position": [
+        1100,
+        625
+      ],
+      "depth_y": 625,
+      "interaction_anchor": [
+        1100,
+        810
+      ],
+      "interaction_radius": 75,
+      "collision_rect": [
+        1072,
+        600,
+        56,
+        25
+      ],
+      "note": "Proposed existing NPC anchor; engineer verifies role feet against source."
+    }
+  ]
+}
