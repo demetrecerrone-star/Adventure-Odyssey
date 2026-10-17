@@ -34,7 +34,7 @@ func _ready() -> void:
 	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(backdrop)
 	stage = Node2D.new()
-	stage.z_index = -2000
+	stage.z_index = 0
 	add_child(stage)
 	var plate := Sprite2D.new()
 	plate.name = "PaintedRoomPlate"
@@ -70,6 +70,7 @@ func _ready() -> void:
 	actor.scale = Vector2.ONE * 0.72
 	stage.add_child(actor)
 	var top := HBoxContainer.new()
+	top.z_index = 2000
 	top.position = Vector2(18, 14)
 	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(top)
@@ -82,9 +83,11 @@ func _ready() -> void:
 	)
 	status = label("Local guest adventure • Bedroom", top)
 	message = label("", self)
+	message.z_index = 2000
 	message.position = Vector2(24, 76)
 	message.add_theme_color_override("font_color", Color("fff0c7"))
 	var bottom := HBoxContainer.new()
+	bottom.z_index = 2000
 	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
 	bottom.position = Vector2(-430, -78)
 	bottom.size = Vector2(410, 60)
@@ -94,6 +97,7 @@ func _ready() -> void:
 	interact_button = button("Interact [E]", bottom)
 	interact_button.pressed.connect(interact)
 	var pad := HBoxContainer.new()
+	pad.z_index = 2000
 	pad.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
 	pad.position = Vector2(18, -78)
 	add_child(pad)
@@ -255,6 +259,7 @@ func open_creator(mirror: bool) -> void:
 		else:
 			_start_character()
 	)
+	creator.z_index = 2100
 	overlay = creator
 	add_child(creator)
 	creator.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -268,6 +273,7 @@ func _close_overlay() -> void:
 func open_chest(show_storage: bool = true) -> void:
 	_close_overlay()
 	overlay = Control.new()
+	overlay.z_index = 2100
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(overlay)
 	var dim := ColorRect.new()

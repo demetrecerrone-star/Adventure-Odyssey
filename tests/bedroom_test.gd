@@ -111,7 +111,7 @@ func run() -> void:
 	var final_reload = Save.new()
 	final_reload.path = path
 	check(final_reload.load_saved() and final_reload.awake, "Wake flag survives reload")
-	check(room.stage.z_index + room.actor.z_index < 0, "World stays behind modal UI")
+	check(room.stage.z_index >= 0 and room.stage.z_index + room.actor.z_index < room.message.z_index, "World stays behind modal UI")
 	var failed = Save.new()
 	failed.character = state.character.duplicate(true)
 	failed.chest.healing_potion = 5
