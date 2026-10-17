@@ -29,6 +29,21 @@ func run() -> void:
 	scene.close_modal()
 	scene.open_modal("create")
 	await capture("res://screenshots/title_create.png")
+	scene.fields[0].text = "hero@example.com"
+	scene.fields[1].text = "preview-only"
+	scene.fields[2].text = "different-preview"
+	scene._submit_preview()
+	await capture("res://screenshots/title_create_validation.png")
+	scene.close_modal()
+	root.size = Vector2i(800,450)
+	await process_frame
+	scene.open_modal("create")
+	await capture("res://screenshots/title_create_narrow.png")
+	# Exercise scrolling with a simulated keyboard/cutout region. This is not
+	# a device screenshot or evidence of an actual Android keyboard session.
+	scene._layout_modal(Rect2(44, 24, 712, 244))
+	scene.fields[2].grab_focus()
+	await capture("res://screenshots/title_create_keyboard_region.png")
 	scene.close_modal()
 	root.size = Vector2i(1600,720)
 	await process_frame

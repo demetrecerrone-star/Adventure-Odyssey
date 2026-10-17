@@ -13,6 +13,10 @@ var modal: Control
 var modal_panel: Panel
 var modal_box: VBoxContainer
 var notice: Label
+var modal_scroll: ScrollContainer
+var password_toggles: Array[Button] = []
+var legal_controls: Array[Button] = []
+var modal_close: Button
 var fields: Array[LineEdit] = []
 var buttons: Array[Button] = []
 var previous_focus: Control
@@ -139,8 +143,19 @@ func _layout() -> void:
 	brand.position = Vector2(safe.end.x - brand.size.x, safe.position.y)
 	if is_instance_valid(modal):
 		modal.size = size
-		modal_panel.size = Vector2(minf(530, safe.size.x), minf(620, safe.size.y))
-		modal_panel.position = safe.get_center() - modal_panel.size * 0.5
+		_layout_modal(_keyboard_safe_rect(safe))
+
+func _keyboard_safe_rect(safe: Rect2) -> Rect2:
+	if OS.has_feature("android"):
+		var screen := Vector2(DisplayServer.screen_get_size())
+		var keyboard_height := DisplayServer.virtual_keyboard_get_height()
+		if screen.y > 0 and keyboard_height > 0:
+			safe = safe.intersection(Rect2(Vector2.ZERO, Vector2(size.x, size.y - keyboard_height * size.y / screen.y)))
+	return safe
+
+func _layout_modal(safe: Rect2) -> void:
+	modal_panel.size = Vector2(minf(510, safe.size.x), minf(650 if modal_kind == "create" else 560, safe.size.y))
+	modal_panel.position = safe.get_center() - modal_panel.size * 0.5
 
 func open_modal(kind: String) -> void:
 	if is_instance_valid(modal):
@@ -161,39 +176,59 @@ func open_modal(kind: String) -> void:
 	modal_panel.set_script(TEXTURED_PANEL)
 	modal_panel.add_theme_stylebox_override("panel", _style(INK, BRASS))
 	modal.add_child(modal_panel)
-	var scroll := ScrollContainer.new()
-	scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	scroll.offset_left = 28
-	scroll.offset_top = 24
-	scroll.offset_right = -28
-	scroll.offset_bottom = -24
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	modal_panel.add_child(scroll)
+	var headings := {"signin": "Sign In", "create": "Create Account", "google": "Sign in with Google", "guest": "Title Preview"}
+	var heading := _label(headings[kind], 27, Color("ffe1a5"), TITLE)
+	heading.position = Vector2(24, 22)
+	modal_panel.add_child(heading)
+	modal_close = _button("×")
+	modal_close.tooltip_text = "Close and return to title"
+	modal_close.custom_minimum_size = Vector2(48, 48)
+	modal_close.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	modal_close.offset_left = -66
+	modal_close.offset_right = -18
+	modal_close.offset_top = 14
+	modal_close.offset_bottom = 62
+	modal_close.pressed.connect(close_modal)
+	modal_panel.add_child(modal_close)
+	modal_scroll = ScrollContainer.new()
+	modal_scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	modal_scroll.offset_left = 24
+	modal_scroll.offset_top = 78
+	modal_scroll.offset_right = -24
+	modal_scroll.offset_bottom = -20
+	modal_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	modal_scroll.follow_focus = true
+	modal_panel.add_child(modal_scroll)
 	modal_box = VBoxContainer.new()
 	modal_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	modal_box.add_theme_constant_override("separation", 13)
-	scroll.add_child(modal_box)
-	var headings := {"signin": "Sign In", "create": "Create Account", "google": "Sign in with Google", "guest": "Title Preview"}
-	modal_box.add_child(_label(headings[kind], 29, Color("ffe1a5"), TITLE))
-	notice = _label("", 17, Color("e6decd"))
+	modal_box.add_theme_constant_override("separation", 10)
+	modal_scroll.add_child(modal_box)
+	notice = _label("", 15, Color("e6decd"))
 	notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	modal_box.add_child(notice)
 	if kind == "signin" or kind == "create":
-		notice.text = "Account services aren't connected in this preview. These fields demonstrate the screen only. Please use dummy details."
+		notice.text = "Preview only • Use dummy details. Account services are not connected."
 		_add_field("Email", false)
 		_add_field("Password", true)
 		if kind == "create":
 			_add_field("Confirm password", true)
-		var submit := _button("Create Account" if kind == "create" else "Sign In")
-		submit.pressed.connect(_submit_preview)
-		modal_box.add_child(submit)
+			_add_legal_preview()
 	elif kind == "google":
 		notice.text = "Google sign-in isn't connected yet. This title-screen preview doesn't open an account or send any data."
 	else:
 		notice.text = "You're viewing the first title-screen milestone. The new adventure is still being built.\n\nEnjoy the kingdom view and the chase!"
-	var close := _button("Back to Title")
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 10)
+	modal_box.add_child(actions)
+	var close := _button("Back")
+	close.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	close.pressed.connect(close_modal)
-	modal_box.add_child(close)
+	actions.add_child(close)
+	if kind == "signin" or kind == "create":
+		var submit := _button("Create Account" if kind == "create" else "Sign In")
+		submit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		submit.pressed.connect(_submit_preview)
+		actions.add_child(submit)
 	_layout()
 	if fields.size() > 0:
 		fields[0].grab_focus()
@@ -201,24 +236,94 @@ func open_modal(kind: String) -> void:
 		close.grab_focus()
 
 func _add_field(caption: String, secret: bool) -> void:
-	modal_box.add_child(_label(caption, 15, Color("cfbb98")))
+	var group := VBoxContainer.new()
+	group.add_theme_constant_override("separation", 4)
+	modal_box.add_child(group)
+	group.add_child(_label(caption, 15, Color("cfbb98")))
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	group.add_child(row)
 	var field := LineEdit.new()
 	field.placeholder_text = caption
+	field.tooltip_text = caption
 	field.secret = secret
-	field.custom_minimum_size.y = 46
+	field.custom_minimum_size = Vector2(0, 48)
+	field.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	field.max_length = 254
 	field.virtual_keyboard_type = LineEdit.KEYBOARD_TYPE_PASSWORD if secret else LineEdit.KEYBOARD_TYPE_EMAIL_ADDRESS
+	field.add_theme_color_override("font_color", Color("f4ead8"))
 	field.add_theme_stylebox_override("normal", _style(Color("0e1520"), Color("695b47"), 1))
 	field.add_theme_stylebox_override("focus", _style(Color("121b2a"), BRASS))
-	field.text_submitted.connect(func(_text): _submit_preview())
-	modal_box.add_child(field)
+	var index := fields.size()
+	field.text_submitted.connect(func(_text):
+		if index + 1 < fields.size():
+			fields[index + 1].grab_focus()
+		else:
+			_submit_preview()
+	)
+	row.add_child(field)
 	fields.append(field)
+	if secret:
+		var toggle := _button("Show")
+		toggle.custom_minimum_size = Vector2(80, 48)
+		toggle.add_theme_font_size_override("font_size", 15)
+		toggle.toggle_mode = true
+		toggle.tooltip_text = "Show " + caption.to_lower()
+		toggle.toggled.connect(func(visible_password: bool):
+			field.secret = not visible_password
+			toggle.text = "Hide" if visible_password else "Show"
+			toggle.tooltip_text = ("Hide " if visible_password else "Show ") + caption.to_lower()
+		)
+		row.add_child(toggle)
+		password_toggles.append(toggle)
+
+func _add_legal_preview() -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	modal_box.add_child(row)
+	for caption in ["Privacy Policy", "Terms of Service"]:
+		var link := _button(caption)
+		link.custom_minimum_size.y = 48
+		link.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		link.add_theme_font_size_override("font_size", 14)
+		link.add_theme_stylebox_override("disabled", _style(Color("161d28"), Color("695b47"), 1))
+		link.add_theme_color_override("font_disabled_color", Color("b6ac98"))
+		link.disabled = true
+		link.tooltip_text = "Unavailable in this preview: approved document not supplied"
+		row.add_child(link)
+		legal_controls.append(link)
+	var explanation := _label("Policies unavailable in this preview. No account is created.", 13, Color("cfbb98"))
+	explanation.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	modal_box.add_child(explanation)
+
+func _validation_error(message: String, index: int) -> void:
+	notice.text = message
+	notice.add_theme_color_override("font_color", Color("ffcbac"))
+	fields[index].grab_focus()
+	modal_scroll.scroll_vertical = 0
 
 func _submit_preview() -> void:
-	# No network calls, account creation, authentication, password logging or persistence.
-	notice.text = "Preview only: account services aren't available yet. No details have been sent or saved."
+	# UI validation only. No network calls, account creation, logging or persistence.
+	var email := fields[0].text.strip_edges()
+	var email_pattern := RegEx.new()
+	email_pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
+	if email_pattern.search(email) == null:
+		_validation_error("Enter a valid email address, such as hero@example.com.", 0)
+		return
+	if fields[1].text.length() < 8:
+		_validation_error("Use at least 8 characters for this preview password.", 1)
+		return
+	if modal_kind == "create" and fields[1].text != fields[2].text:
+		_validation_error("Your passwords don't match. Try again.", 2)
+		return
+	notice.add_theme_color_override("font_color", Color("e6decd"))
+	notice.text = "Fields checked. Account services aren't available yet. No account was created and no details were sent or saved."
 	for field in fields:
 		field.clear()
+	for toggle in password_toggles:
+		toggle.button_pressed = false
+	fields[0].grab_focus()
+	modal_scroll.scroll_vertical = 0
 
 func close_modal() -> void:
 	if not is_instance_valid(modal):
@@ -226,6 +331,9 @@ func close_modal() -> void:
 	for field in fields:
 		field.clear()
 	fields.clear()
+	password_toggles.clear()
+	legal_controls.clear()
+	DisplayServer.virtual_keyboard_hide()
 	remove_child(modal)
 	modal.queue_free()
 	modal = null
@@ -271,6 +379,8 @@ func _setup_runners() -> void:
 		runners.append(sprite)
 
 func _process(delta: float) -> void:
+	if is_instance_valid(modal) and OS.has_feature("android"):
+		_layout()
 	elapsed += delta
 	for i in range(runners.size()):
 		var x := fmod(elapsed * 112 + size.x * 0.55, size.x + 420) - 200 + i * 150

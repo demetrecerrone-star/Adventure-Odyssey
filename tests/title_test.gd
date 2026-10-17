@@ -25,8 +25,9 @@ func run() -> void:
 		if kind == "signin" or kind == "create":
 			check(scene.fields.size() == (3 if kind == "create" else 2), "correct fields")
 			check(scene.fields[1].secret, "password masked")
-			for field in scene.fields:
-				field.text = "dummy-preview"
+			scene.fields[0].text = "hero@example.com"
+			for index in range(1, scene.fields.size()):
+				scene.fields[index].text = "dummy-preview"
 			scene._submit_preview()
 			for field in scene.fields:
 				check(field.text.is_empty(), "dummy credentials cleared")
@@ -36,6 +37,51 @@ func run() -> void:
 		check(scene.modal == null and scene.fields.is_empty(), "modal removed and fields discarded")
 		check(not scene.buttons[0].disabled, "menu restored")
 		check(root.gui_get_focus_owner() != null, "keyboard focus restored")
+	scene.open_modal("create")
+	await process_frame
+	await process_frame
+	check(scene.password_toggles.size() == 2, "independent password visibility controls")
+	check(scene.legal_controls.size() == 2, "privacy and terms previews present")
+	for link in scene.legal_controls:
+		check(link.disabled, "unapproved policy never opens or claims consent")
+		check(link.size.y >= 48, "policy touch target")
+	check(scene.modal_close.size.x >= 48 and scene.modal_close.size.y >= 48, "close touch target")
+	check(scene.modal_scroll.follow_focus, "scroll follows keyboard focus")
+	check(scene.modal_box.size.y <= scene.modal_scroll.size.y, "compact panel fits standard landscape without scrolling")
+	scene._submit_preview()
+	check("valid email" in scene.notice.text, "empty email validation")
+	scene.fields[0].text = "bad email@example.com"
+	scene._submit_preview()
+	check("valid email" in scene.notice.text, "email whitespace rejected")
+	scene.fields[0].text = "hero@example.com"
+	scene.fields[1].text = "short"
+	scene._submit_preview()
+	check("8 characters" in scene.notice.text, "short password validation")
+	scene.fields[1].text = "dummy-password"
+	scene.fields[2].text = "other-password"
+	scene._submit_preview()
+	check("don't match" in scene.notice.text, "confirmation mismatch")
+	scene.password_toggles[0].button_pressed = true
+	check(not scene.fields[1].secret and scene.fields[2].secret, "show affects only chosen field")
+	scene.password_toggles[0].button_pressed = false
+	check(scene.fields[1].secret, "hide restores mask")
+	scene.fields[0].text_submitted.emit(scene.fields[0].text)
+	check(root.gui_get_focus_owner() == scene.fields[1], "keyboard next advances field")
+	var retained_password = scene.fields[1]
+	scene.close_modal()
+	check(retained_password.text.is_empty(), "dismissal clears password before freeing")
+	await process_frame
+	scene.open_modal("create")
+	check(scene.fields[1].secret and scene.fields[1].text.is_empty(), "reopen masked and empty")
+	for safe in [Rect2(44, 24, 720, 312), Rect2(80, 28, 640, 220)]:
+		scene._layout_modal(safe)
+		await process_frame
+		await process_frame
+		check(safe.encloses(scene.modal_panel.get_rect()), "panel fits simulated cutout and keyboard safe region")
+		check(scene.modal_scroll.size.y > 0, "scroll remains usable with keyboard")
+		check(scene.modal_scroll.get_v_scroll_bar().max_value > scene.modal_scroll.size.y, "short landscape content scrolls")
+		check(scene.modal_panel.get_global_rect().encloses(scene.modal_close.get_global_rect()), "close stays reachable without scrolling")
+	scene.close_modal()
 	scene.open_modal("signin")
 	scene._notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
 	check(scene.modal == null, "Android back dismisses")
