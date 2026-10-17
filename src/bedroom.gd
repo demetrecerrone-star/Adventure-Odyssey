@@ -237,7 +237,7 @@ func interact() -> void:
 		"bed": message.text = "Your own bed. You are rested and ready for the day."
 		"door":
 			_reset_movement()
-			if state.set_location("starter_region", Vector2(1644,1318)):
+			if state.set_location("starter_region", Vector2(1644,1333)):
 				world_requested.emit()
 			else: message.text = state.error
 func open_creator(mirror: bool) -> void:

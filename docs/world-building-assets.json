@@ -1,0 +1,74 @@
+{
+  "starter_home": {
+    "source_sha256": "8804a375fa440caf2e20110261245eb4fb10cb267c45ecd6aa0fd09cf03fe175",
+    "runtime_sha256": "b9747a9b512c9c158d4f7e67d7e6bb28409afc2e50a10285043017994f3311d2",
+    "source_dimensions": [
+      1254,
+      1254
+    ],
+    "runtime_dimensions": [
+      1024,
+      1024
+    ]
+  },
+  "guild": {
+    "source_sha256": "0700a96403267207c5b1c8d25b58f3c55162f4966a40dad1aa6b707b233b4a67",
+    "runtime_sha256": "a615f6fe3adecd949e0e9e2756a89ff91777f6c8afcbfb1f4d094030b2fbec68",
+    "source_dimensions": [
+      1341,
+      1173
+    ],
+    "runtime_dimensions": [
+      1024,
+      896
+    ]
+  },
+  "general_store": {
+    "source_sha256": "3fa726372a9bff7f267cb7b18fc0cbb0409bc54b24e957f3119cd477b174cf0e",
+    "runtime_sha256": "d5d5f3c211954b4320b524cc4a83b0c154b4a0b299f811ec2368fa85cf53d7c8",
+    "source_dimensions": [
+      1254,
+      1254
+    ],
+    "runtime_dimensions": [
+      1024,
+      1024
+    ]
+  },
+  "apothecary": {
+    "source_sha256": "cfb736d2affef33d2482eb423648608f42d3c26eaca42c09741eb7744c2db119",
+    "runtime_sha256": "36573622c311f72e8253bf4647ffd24e7e2ef2c6cd09d5f68740b97001190482",
+    "source_dimensions": [
+      1254,
+      1254
+    ],
+    "runtime_dimensions": [
+      1024,
+      1024
+    ]
+  },
+  "town_home": {
+    "source_sha256": "c3e4ab62a0ca10251baf652cc7d439ea3da38027f49b80e214759cbef5c2538d",
+    "runtime_sha256": "8557e7e283f3b26bf4ffa290eab40725a222466a5fa48ce47e5f7418d544bec2",
+    "source_dimensions": [
+      1254,
+      1254
+    ],
+    "runtime_dimensions": [
+      1024,
+      1024
+    ]
+  },
+  "blacksmith": {
+    "source_sha256": "3b9c9f021c63cb8afeab2456027e2b3b980a69300322b46809f54b2692fbff30",
+    "runtime_sha256": "b07752a071302a83962480d16377b4adfbdb8c7a64576eac8ceafd960eb873ca",
+    "source_dimensions": [
+      1536,
+      1024
+    ],
+    "runtime_dimensions": [
+      1024,
+      683
+    ]
+  }
+}

@@ -1,8 +1,8 @@
 extends "res://src/bedroom.gd"
-# Playable ground/scenery checkpoint. Building lots remain reserved until artwork exists.
+# Playable exterior checkpoint: imported terrain, scenery, buildings and persisted home return.
 signal returned
 const WORLD_SIZE := Vector2(4608,3072)
-const HOME := Vector2(1644,1318)
+const HOME := Vector2(1644,1333)
 const FOOT_RADIUS := 16.0
 var world_layout: Dictionary = {}
 var blocked: Array[PackedVector2Array] = []
@@ -16,6 +16,9 @@ var chunk_evictions := 0
 var autosave_elapsed := 0.0
 var world_ready := false
 var scenery_nodes := {}
+var building_nodes := {}
+var building_data: Array = []
+var entrance_labels := {"home":"Home", "guild":"Guild", "shop_southwest":"General store", "shop_south_plaza":"Apothecary", "blacksmith_workyard":"Blacksmith"}
 func _ready() -> void:
 	world_layout = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/layout.json"))
 	for block in world_layout.blocked_polygons:
@@ -33,9 +36,10 @@ func _ready() -> void:
 	actor.scale = Vector2.ONE * (96.0 / 190.0)
 	world_ready = true
 	_load_scenery()
+	_load_buildings()
 	if not can_stand(player): player = HOME
 	_update_actor()
-	message.text = "Explore the paths. Return home here with [E]. Buildings are still being painted."
+	message.text = "Explore the paths. Return home here with [E]. Shop and guild interiors are not open yet."
 func _load_layout() -> void:
 	prop_rects = {}
 	anchors = {"home":HOME}
@@ -81,6 +85,7 @@ func _update_actor() -> void:
 	if not is_instance_valid(actor): return
 	super._update_actor()
 	actor.z_index = int(player.y * 0.4)
+	_update_building_depth()
 	_layout()
 	if is_instance_valid(status) and not state.character.is_empty():
 		status.text = "%s • Starter region • %d, %d" % [state.character.username,player.x,player.y]
@@ -127,8 +132,54 @@ func _load_scenery() -> void:
 		if item.has("collision"):
 			var r: Array = item.collision
 			prop_rects[item.id] = Rect2(r[0],r[1],r[2],r[3])
+func _load_buildings() -> void:
+	var path := "res://assets/starter-region/buildings.json"
+	if not FileAccess.file_exists(path): return
+	var data:Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))
+	building_data = data.placements
+	for item in building_data:
+		var sprite := Sprite2D.new()
+		sprite.texture = load("res://assets/starter-region/"+item.file)
+		sprite.centered = false
+		var display := Vector2(item.display_size[0],item.display_size[1])
+		sprite.scale = display / sprite.texture.get_size()
+		sprite.position = Vector2(item.position[0],item.position[1])-Vector2(item.anchor[0],item.anchor[1])*display
+		sprite.z_index = int(item.depth_anchor_world[1]*0.4)
+		stage.add_child(sprite)
+		building_nodes[item.id] = sprite
+		var key:String = "home" if item.id == "starter_home" else item.id
+		anchors[key] = Vector2(item.door_approach[0],item.door_approach[1])
+		if not entrance_labels.has(key): entrance_labels[key] = "Town home"
+func building_front_y(item:Dictionary, x:float) -> float:
+	var crossings:Array[float] = []
+	var polygon:Array = item.collision_polygon
+	for i in polygon.size():
+		var a:Array = polygon[i]
+		var b:Array = polygon[(i+1)%polygon.size()]
+		if x < minf(a[0],b[0]) or x > maxf(a[0],b[0]): continue
+		if is_equal_approx(a[0],b[0]): crossings.append(maxf(a[1],b[1]))
+		else: crossings.append(float(a[1])+(x-float(a[0]))*(float(b[1])-float(a[1]))/(float(b[0])-float(a[0])))
+	if not crossings.is_empty(): return crossings.max()
+	var nearest:Array = polygon[0]
+	for vertex in polygon:
+		if absf(vertex[0]-x) < absf(nearest[0]-x): nearest = vertex
+	return float(nearest[1])
+func _update_building_depth() -> void:
+	var actor_rect := Rect2(player-Vector2(128,232)*actor.scale,Vector2(256,256)*actor.scale)
+	for item in building_data:
+		var sprite:Sprite2D = building_nodes[item.id]
+		var depth := int(item.depth_anchor_world[1]*0.4)
+		var visual := Rect2(sprite.position,Vector2(item.display_size[0],item.display_size[1]))
+		if visual.intersects(actor_rect):
+			# A diagonal foundation has different foreground Y at each X. Keep
+			# the player in front at every accessible facade, not only the door.
+			if player.y >= building_front_y(item,player.x): depth = mini(depth,actor.z_index-2)
+			else: depth = maxi(depth,actor.z_index+2)
+		sprite.z_index = depth
 func _process(delta: float) -> void:
 	super._process(delta)
+	var nearby := nearest_prop()
+	if is_instance_valid(interact_button) and not nearby.is_empty(): interact_button.text = entrance_labels.get(nearby,nearby.capitalize())+" [E]"
 	if not world_ready or state.character.is_empty() or is_instance_valid(overlay): return
 	autosave_elapsed += delta
 	if autosave_elapsed >= 10.0:
@@ -140,6 +191,9 @@ func interact() -> void:
 		_reset_movement()
 		if state.set_location("bedroom",Vector2(780,440)): returned.emit()
 		else: message.text = state.error
+	elif not nearest_prop().is_empty():
+		_reset_movement()
+		message.text = entrance_labels.get(nearest_prop(),"This building")+" exterior. Its interior is not available yet."
 func _exit() -> void:
 	_reset_movement()
 	if state.set_location("starter_region",player): exited.emit()

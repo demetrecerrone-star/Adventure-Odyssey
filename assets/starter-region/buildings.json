@@ -1,0 +1,848 @@
+{
+  "status": "Reviewed external placement plan; ready for native integration and runtime occlusion QA",
+  "world_size": [
+    4608,
+    3072
+  ],
+  "actor_visible_height": 96,
+  "placements": [
+    {
+      "id": "starter_home",
+      "asset_id": "starter_home",
+      "file": "buildings/starter_home.png",
+      "position": [
+        1644,
+        1288
+      ],
+      "display_size": [
+        539.22,
+        539.22
+      ],
+      "anchor": [
+        0.4043062200956938,
+        0.8293460925039873
+      ],
+      "uniform_scale": 0.43,
+      "door_threshold": [
+        1644,
+        1288
+      ],
+      "door_approach": [
+        1644,
+        1333
+      ],
+      "collision_polygon": [
+        [
+          1486.62,
+          1240.27
+        ],
+        [
+          1787.19,
+          1335.3
+        ],
+        [
+          1907.59,
+          1227.8
+        ],
+        [
+          1610.89,
+          1137.5
+        ]
+      ],
+      "door_opening_height": 105.35,
+      "depth_sort": true,
+      "depth_anchor_world": [
+        1644,
+        1288
+      ],
+      "depth_anchor_kind": "door threshold; never max footprint Y",
+      "front_face_edge_world": [
+        [
+          1486.62,
+          1240.27
+        ],
+        [
+          1787.19,
+          1335.3
+        ]
+      ],
+      "qa": {
+        "terrain_blocked_overlap_px": 0,
+        "protected_72px_route_overlap_px": 0,
+        "other_building_overlap_px": 0,
+        "scenery_collision_overlap_px": 0,
+        "scenery_conflicts": [],
+        "approach_clearance_px": 41.11,
+        "approach_reachable_radius36": true
+      }
+    },
+    {
+      "id": "guild",
+      "asset_id": "guild",
+      "file": "buildings/guild.png",
+      "position": [
+        2445,
+        942
+      ],
+      "display_size": [
+        522.99,
+        457.47
+      ],
+      "anchor": [
+        0.4981357196122297,
+        0.8482523444160273
+      ],
+      "uniform_scale": 0.39,
+      "door_threshold": [
+        2445,
+        942
+      ],
+      "door_approach": [
+        2433.3,
+        1002.45
+      ],
+      "collision_polygon": [
+        [
+          2280.81,
+          922.11
+        ],
+        [
+          2588.91,
+          990.75
+        ],
+        [
+          2634.93,
+          953.7
+        ],
+        [
+          2324.1,
+          883.89
+        ]
+      ],
+      "door_opening_height": 132.6,
+      "depth_sort": true,
+      "depth_anchor_world": [
+        2445,
+        942
+      ],
+      "depth_anchor_kind": "door threshold; never max footprint Y",
+      "front_face_edge_world": [
+        [
+          2280.81,
+          922.11
+        ],
+        [
+          2588.91,
+          990.75
+        ]
+      ],
+      "qa": {
+        "terrain_blocked_overlap_px": 0,
+        "protected_72px_route_overlap_px": 0,
+        "other_building_overlap_px": 0,
+        "scenery_collision_overlap_px": 0,
+        "scenery_conflicts": [],
+        "approach_clearance_px": 45.12,
+        "approach_reachable_radius36": true
+      }
+    },
+    {
+      "id": "shop_southwest",
+      "asset_id": "general_store",
+      "file": "buildings/general_store.png",
+      "position": [
+        2510,
+        1475
+      ],
+      "display_size": [
+        401.28,
+        401.28
+      ],
+      "anchor": [
+        0.30303030303030304,
+        0.773524720893142
+      ],
+      "uniform_scale": 0.32,
+      "door_threshold": [
+        2510,
+        1475
+      ],
+      "door_approach": [
+        2502.0,
+        1519.8
+      ],
+      "collision_polygon": [
+        [
+          2450.8,
+          1462.2
+        ],
+        [
+          2679.6,
+          1532.6
+        ],
+        [
+          2762.8,
+          1452.6
+        ],
+        [
+          2534.0,
+          1382.2
+        ]
+      ],
+      "door_opening_height": 112.0,
+      "depth_sort": true,
+      "depth_anchor_world": [
+        2510,
+        1475
+      ],
+      "depth_anchor_kind": "door threshold; never max footprint Y",
+      "front_face_edge_world": [
+        [
+          2450.8,
+          1462.2
+        ],
+        [
+          2679.6,
+          1532.6
+        ]
+      ],
+      "qa": {
+        "terrain_blocked_overlap_px": 0,
+        "protected_72px_route_overlap_px": 0,
+        "other_building_overlap_px": 0,
+        "scenery_collision_overlap_px": 0,
+        "scenery_conflicts": [],
+        "approach_clearance_px": 40.16,
+        "approach_reachable_radius36": true
+      }
+    },
+    {
+      "id": "shop_south_plaza",
+      "asset_id": "apothecary",
+      "file": "buildings/apothecary.png",
+      "position": [
+        3000,
+        1638
+      ],
+      "display_size": [
+        413.82,
+        413.82
+      ],
+      "anchor": [
+        0.3827751196172249,
+        0.8532695374800638
+      ],
+      "uniform_scale": 0.33,
+      "door_threshold": [
+        3000,
+        1638
+      ],
+      "door_approach": [
+        2990.1,
+        1684.2
+      ],
+      "collision_polygon": [
+        [
+          2889.45,
+          1608.3
+        ],
+        [
+          3135.3,
+          1684.2
+        ],
+        [
+          3227.7,
+          1588.5
+        ],
+        [
+          2981.85,
+          1512.6
+        ]
+      ],
+      "door_opening_height": 110.55,
+      "depth_sort": true,
+      "depth_anchor_world": [
+        3000,
+        1638
+      ],
+      "depth_anchor_kind": "door threshold; never max footprint Y",
+      "front_face_edge_world": [
+        [
+          2889.45,
+          1608.3
+        ],
+        [
+          3135.3,
+          1684.2
+        ]
+      ],
+      "qa": {
+        "terrain_blocked_overlap_px": 0,
+        "protected_72px_route_overlap_px": 0,
+        "other_building_overlap_px": 0,
+        "scenery_collision_overlap_px": 0,
+        "scenery_conflicts": [],
+        "approach_clearance_px": 42.72,
+        "approach_reachable_radius36": true
+      }
+    },
+    {
+      "id": "home_north_plaza",
+      "asset_id": "town_home",
+      "file": "buildings/town_home.png",
+      "position": [
+        3130,
+        990
+      ],
+      "display_size": [
+        401.28,
+        401.28
+      ],
+      "anchor": [
+        0.39872408293460926,
+        0.861244019138756
+      ],
+      "uniform_scale": 0.32,
+      "door_threshold": [
+        3130,
+        990
+      ],
+      "door_approach": [
+        3122.0,
+        1031.6
+      ],
+      "collision_polygon": [
+        [
+          3003.6,
+          958.0
+        ],
+        [
+          3253.2,
+          1031.6
+        ],
+        [
+          3347.6,
+          940.4
+        ],
+        [
+          3098.0,
+          866.8
+        ]
+      ],
+      "door_opening_height": 112.0,
+      "depth_sort": true,
+      "depth_anchor_world": [
+        3130,
+        990
+      ],
+      "depth_anchor_kind": "door threshold; never max footprint Y",
+      "front_face_edge_world": [
+        [
+          3003.6,
+          958.0
+        ],
+        [
+          3253.2,
+          1031.6
+        ]
+      ],
+      "qa": {
+        "terrain_blocked_overlap_px": 0,
+        "protected_72px_route_overlap_px": 0,
+        "other_building_overlap_px": 0,
+        "scenery_collision_overlap_px": 0,
+        "scenery_conflicts": [],
+        "approach_clearance_px": 37.64,
+        "approach_reachable_radius36": true
+      }
+    },
+    {
+      "id": "north_home_a",
+      "asset_id": "town_home",
+      "file": "buildings/town_home.png",
+      "position": [
+        3070,
+        685
+      ],
+      "display_size": [
+        401.28,
+        401.28
+      ],
+      "anchor": [
+        0.39872408293460926,
+        0.861244019138756
+      ],
+      "uniform_scale": 0.32,
+      "door_threshold": [
+        3070,
+        685
+      ],
+      "door_approach": [
+        3062.0,
+        726.6
+      ],
+      "collision_polygon": [
+        [
+          2943.6,
+          653.0
+        ],
+        [
+          3193.2,
+          726.6
+        ],
+        [
+          3287.6,
+          635.4
+        ],
+        [
+          3038.0,
+          561.8
+        ]
+      ],
+      "door_opening_height": 112.0,
+      "depth_sort": true,
+      "depth_anchor_world": [
+        3070,
+        685
+      ],
+      "depth_anchor_kind": "door threshold; never max footprint Y",
+      "front_face_edge_world": [
+        [
+          2943.6,
+          653.0
+        ],
+        [
+          3193.2,
+          726.6
+        ]
+      ],
+      "qa": {
+        "terrain_blocked_overlap_px": 0,
+        "protected_72px_route_overlap_px": 0,
+        "other_building_overlap_px": 0,
+        "scenery_collision_overlap_px": 0,
+        "scenery_conflicts": [],
+        "approach_clearance_px": 37.64,
+        "approach_reachable_radius36": true
+      }
+    },
+    {
+      "id": "north_home_c",
+      "asset_id": "town_home",
+      "file": "buildings/town_home.png",
+      "position": [
+        3400,
+        735
+      ],
+      "display_size": [
+        401.28,
+        401.28
+      ],
+      "anchor": [
+        0.39872408293460926,
+        0.861244019138756
+      ],
+      "uniform_scale": 0.32,
+      "door_threshold": [
+        3400,
+        735
+      ],
+      "door_approach": [
+        3392.0,
+        776.6
+      ],
+      "collision_polygon": [
+        [
+          3273.6,
+          703.0
+        ],
+        [
+          3523.2,
+          776.6
+        ],
+        [
+          3617.6,
+          685.4
+        ],
+        [
+          3368.0,
+          611.8
+        ]
+      ],
+      "door_opening_height": 112.0,
+      "depth_sort": true,
+      "depth_anchor_world": [
+        3400,
+        735
+      ],
+      "depth_anchor_kind": "door threshold; never max footprint Y",
+      "front_face_edge_world": [
+        [
+          3273.6,
+          703.0
+        ],
+        [
+          3523.2,
+          776.6
+        ]
+      ],
+      "qa": {
+        "terrain_blocked_overlap_px": 0,
+        "protected_72px_route_overlap_px": 0,
+        "other_building_overlap_px": 0,
+        "scenery_collision_overlap_px": 0,
+        "scenery_conflicts": [],
+        "approach_clearance_px": 37.64,
+        "approach_reachable_radius36": true
+      }
+    },
+    {
+      "id": "blacksmith_workyard",
+      "asset_id": "blacksmith",
+      "file": "buildings/blacksmith.png",
+      "position": [
+        3690,
+        1685
+      ],
+      "display_size": [
+        537.6,
+        358.4
+      ],
+      "anchor": [
+        0.2962239583333333,
+        0.83984375
+      ],
+      "uniform_scale": 0.35,
+      "door_threshold": [
+        3690,
+        1685
+      ],
+      "door_approach": [
+        3681.25,
+        1737.5
+      ],
+      "collision_polygon": [
+        [
+          3579.75,
+          1665.75
+        ],
+        [
+          3791.5,
+          1725.25
+        ],
+        [
+          3985.75,
+          1728.75
+        ],
+        [
+          4031.25,
+          1665.75
+        ],
+        [
+          3821.25,
+          1601.0
+        ],
+        [
+          3611.25,
+          1622.0
+        ]
+      ],
+      "door_opening_height": 108.5,
+      "depth_sort": true,
+      "depth_anchor_world": [
+        3690,
+        1685
+      ],
+      "depth_anchor_kind": "door threshold; never max footprint Y",
+      "front_face_edge_world": [
+        [
+          3579.75,
+          1665.75
+        ],
+        [
+          3791.5,
+          1725.25
+        ]
+      ],
+      "qa": {
+        "terrain_blocked_overlap_px": 0,
+        "protected_72px_route_overlap_px": 0,
+        "other_building_overlap_px": 0,
+        "scenery_collision_overlap_px": 0,
+        "scenery_conflicts": [],
+        "approach_clearance_px": 42.45,
+        "approach_reachable_radius36": true
+      }
+    }
+  ],
+  "routes": [
+    {
+      "id": "home_to_plaza",
+      "clear_width": 72,
+      "points": [
+        [
+          1644,
+          1333
+        ],
+        [
+          1684,
+          1393
+        ],
+        [
+          1944,
+          1368
+        ],
+        [
+          2184,
+          1283
+        ],
+        [
+          2344,
+          1318
+        ],
+        [
+          2464,
+          1298
+        ],
+        [
+          2614,
+          1258
+        ],
+        [
+          2874,
+          1268
+        ],
+        [
+          3144,
+          1268
+        ]
+      ],
+      "length_world_px": 1558.79,
+      "seconds_at_155": 10.06
+    },
+    {
+      "id": "town_entry_to_guild",
+      "clear_width": 72,
+      "points": [
+        [
+          2344,
+          1318
+        ],
+        [
+          2329,
+          1213
+        ],
+        [
+          2424,
+          1128
+        ],
+        [
+          2433.3,
+          1002.45
+        ]
+      ],
+      "length_world_px": 359.44,
+      "seconds_at_155": 2.32
+    },
+    {
+      "id": "forest_to_home",
+      "clear_width": 72,
+      "points": [
+        [
+          245,
+          144
+        ],
+        [
+          250,
+          150
+        ],
+        [
+          330,
+          330
+        ],
+        [
+          425,
+          500
+        ],
+        [
+          445,
+          750
+        ],
+        [
+          530,
+          960
+        ],
+        [
+          650,
+          1130
+        ],
+        [
+          850,
+          1230
+        ],
+        [
+          1100,
+          1300
+        ],
+        [
+          1344,
+          1340
+        ],
+        [
+          1684,
+          1393
+        ]
+      ],
+      "length_world_px": 2159.55,
+      "seconds_at_155": 13.93
+    },
+    {
+      "id": "meadow_to_home",
+      "clear_width": 72,
+      "points": [
+        [
+          72,
+          2955
+        ],
+        [
+          240,
+          2870
+        ],
+        [
+          420,
+          2750
+        ],
+        [
+          430,
+          2540
+        ],
+        [
+          500,
+          2350
+        ],
+        [
+          690,
+          2150
+        ],
+        [
+          880,
+          1990
+        ],
+        [
+          1110,
+          1870
+        ],
+        [
+          1410,
+          1780
+        ],
+        [
+          1620,
+          1680
+        ],
+        [
+          1680,
+          1540
+        ],
+        [
+          1684,
+          1393
+        ]
+      ],
+      "length_world_px": 2446.19,
+      "seconds_at_155": 15.78
+    },
+    {
+      "id": "plaza_to_foothills",
+      "clear_width": 72,
+      "points": [
+        [
+          3144,
+          1268
+        ],
+        [
+          3500,
+          1280
+        ],
+        [
+          3850,
+          1280
+        ],
+        [
+          4025,
+          1150
+        ],
+        [
+          4060,
+          1010
+        ],
+        [
+          4210,
+          910
+        ],
+        [
+          4310,
+          740
+        ],
+        [
+          4420,
+          480
+        ],
+        [
+          4450,
+          320
+        ],
+        [
+          4400,
+          160
+        ],
+        [
+          4350,
+          144
+        ]
+      ],
+      "length_world_px": 2111.25,
+      "seconds_at_155": 13.62
+    }
+  ],
+  "scenery_changes": [
+    {
+      "id": "rounded-granite-boulder__02",
+      "old_position": [
+        3384,
+        710
+      ],
+      "new_position": [
+        3550,
+        300
+      ],
+      "new_collision": [
+        3516.0,
+        286.5,
+        68,
+        27
+      ],
+      "asset_scale_anchor_unchanged": true,
+      "reason": "Clear north-home C footprint; relocate to adjacent rocky-side grass."
+    }
+  ],
+  "omitted_optional_reservations": [
+    "north_home_b"
+  ],
+  "qa_actor_references_only": true,
+  "runtime_actor_count": 1,
+  "notes": [
+    "External planning only: production files unchanged.",
+    "All repeated actors are 96px dressed scale references only; create no NPCs.",
+    "Guild scale0.39 is a uniform placement override for landmark presence;0.43\u20130.45 intruded perimeter street in slab-fit test.",
+    "North-plaza house shifted into actual large grass lot; original reservation crossed diagonal street. Upper A/C shifted into grass loop; optional B omitted to preserve streets.",
+    "Door approaches are interaction stands outside solid floor; do not pathfind into threshold collision.",
+    "Replace old reserved lot collisions with transformed building floor polygons; do not keep both.",
+    "Scales are metadata recommendations, not fitted by shrinking doors."
+  ],
+  "guild_connector_min_clearance_px": 45.12,
+  "review": {
+    "painted_minor_streets": "Floor-only overlay visually checked; no foundations across minor painted streets. Roof projections may occlude street pixels behind structures, but walkable ground remains clear.",
+    "runtime_status": "Not tested here. Parent owns runtime physics, interaction and native depth tests."
+  }
+}

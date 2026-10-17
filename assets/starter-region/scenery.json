@@ -708,13 +708,13 @@
       "asset_id": "rounded-granite-boulder",
       "region": "rocky_northeast",
       "position": [
-        3384,
-        710
+        3550,
+        300
       ],
       "depth_sort": true,
       "collision": [
-        3350.0,
-        696.5,
+        3516.0,
+        286.5,
         68,
         27
       ],

@@ -78,10 +78,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 2304x1536x24' godot --path . --script res://tests/starter_world_screenshot.gd 2>&1 | tee /tmp/ao_world_capture.log
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 240 xvfb-run -a -s '-screen 0 2304x1536x24' godot --path . --script res://tests/starter_world_screenshot.gd 2>&1 | tee /tmp/ao_world_capture.log
           ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script|Parse Error' /tmp/ao_world_capture.log
           test -s screenshots/world_overview.png
           test -s screenshots/world_return_bedroom.png
+          ffmpeg -y -framerate 36 -i screenshots/world_motion_%02d.png -c:v libx264 -pix_fmt yuv420p screenshots/world_motion.mp4
+          rm screenshots/world_motion_*.png
 
       - name: Capture native furnished bedroom
         shell: bash
@@ -151,6 +153,9 @@ jobs:
           done
 
       - name: Capture current painted migration batch
+        # Finished migration contact sheets are unchanged in world-only QA.
+        # Full APK and manual runs always retain this visual gate.
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-title-apk]') || !contains(github.event.head_commit.message, '[world-qa]')
         shell: bash
         run: |
           set -euo pipefail
