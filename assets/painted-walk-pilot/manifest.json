@@ -1,5 +1,5 @@
 {
-  "status": "approved six-drawing male Warrior left pilot; other coverage unchanged",
+  "status": "six-drawing male Warrior left/down/up; right remains previous artwork pending review",
   "base": "male",
   "class": "Warrior",
   "walk_left": {
@@ -358,5 +358,298 @@
       "Weapon grip estimated from closed hand; blade should remain behind hand",
       "No reliable footplant anchors in source drawings"
     ]
+  },
+  "directions": {
+    "left": {
+      "body": "res://assets/painted-walk-pilot/walk-left-body.png",
+      "armor": "res://assets/painted-walk-pilot/walk-left-armor.png",
+      "appearance_mask": "res://assets/painted-walk-pilot/walk-left-mask.png",
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "hair_offsets": [
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          3,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          5,
+          -1
+        ]
+      ],
+      "weapon_offsets": [
+        [
+          -6,
+          17
+        ],
+        [
+          -7,
+          13
+        ],
+        [
+          -5,
+          9
+        ],
+        [
+          -9,
+          16
+        ],
+        [
+          -5,
+          12
+        ],
+        [
+          -3,
+          7
+        ]
+      ],
+      "source_idle_cell": 1
+    },
+    "down": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 0,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            20.480000000000004,
+            6.719999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.84,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            20.480000000000004,
+            8.719999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.84,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            20.480000000000004,
+            5.719999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.84,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            20.480000000000004,
+            6.719999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.84,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            20.480000000000004,
+            8.719999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.84,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            20.480000000000004,
+            5.719999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.84,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walk-pilot/walk-down-body.png",
+      "armor": "res://assets/painted-walk-pilot/walk-down-armor.png",
+      "appearance_mask": "res://assets/painted-walk-pilot/walk-down-mask.png",
+      "weapon_front": "res://assets/painted-walk-pilot/walk-down-weapon-front.png",
+      "weapon_back": "res://assets/painted-walk-pilot/walk-down-weapon-back.png"
+    },
+    "up": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 3,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            20.480000000000004,
+            6.719999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.84,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            20.480000000000004,
+            8.719999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.84,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            20.480000000000004,
+            5.719999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.84,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            20.480000000000004,
+            6.719999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.84,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            20.480000000000004,
+            8.719999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.84,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            20.480000000000004,
+            5.719999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.84,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walk-pilot/walk-up-body.png",
+      "armor": "res://assets/painted-walk-pilot/walk-up-armor.png",
+      "appearance_mask": "res://assets/painted-walk-pilot/walk-up-mask.png",
+      "weapon_front": "res://assets/painted-walk-pilot/walk-up-weapon-front.png",
+      "weapon_back": "res://assets/painted-walk-pilot/walk-up-weapon-back.png"
+    }
   }
 }

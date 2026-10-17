@@ -14,29 +14,36 @@ func run()->void:
 			a.set_equipped_weapon(cls.to_lower()+"_01_weapon")
 			for facing in range(4):
 				a.advance(facing,true,0)
-				var pilot:bool=base=="male" and cls=="Warrior" and facing==1
-				check(a.uses_painted_pilot()==pilot,"Pilot strictly male Warrior left only")
+				var pilot:bool=base=="male" and cls=="Warrior" and facing in [0,1,3]
+				check(a.uses_painted_pilot()==pilot,"Pilot strictly male Warrior down/left/up only")
 				check(a.body.hframes==(6 if pilot else 8),"Real drawing count follows scope")
 				check(is_equal_approx(a.cadence_speed(facing),155.0 if pilot else 60.0 * 155.0 / 135.0),"Actual-distance cadence calibration")
 				check(a.palette_ready and a.hair_renderer.ready and a.weapon_back.visible,"All customization and equipment retained")
 				if pilot:
 					for phase in range(6):
 						a.elapsed=(phase+0.01)/9.0
-						a.advance(1,true,0)
+						a.advance(facing,true,0)
 						check(a.body.frame==phase,"Literal6 drawings, no duplicate phases")
-						check(a.hair_renderer.front.position==a._pilot_offset("hair_offsets"),"Head registration follows pose")
-						check(a.weapon_back.position==a._pilot_offset("weapon_offsets"),"Sword grip follows far hand")
+						if facing==1:
+							check(a.hair_renderer.front.position==a._pilot_offset("hair_offsets"),"Head registration follows pose")
+							check(a.weapon_back.position==a._pilot_offset("weapon_offsets"),"Sword grip follows far hand")
+						else:
+							var h=a.hair_renderer.front
+							var target:=Vector2(128,42+[0,2,-1,0,2,-1][phase])-Vector2(128,232)
+							check((h.position+(Vector2(128,42)+h.offset)*h.scale).is_equal_approx(target),"Affine hair crown exactly follows drawing")
+							check(h.scale==Vector2.ONE*0.84 and h.frame==facing,"Hair uses fitted directional idle source")
+							check(a.weapon_front.frame==phase and a.weapon_front.hframes==6 and a.weapon_front.position==Vector2.ZERO,"Dedicated occlusion-masked sword follows pose")
 					a.elapsed=0
-					a.advance(1,true,(155.0 / 9.0)/a.cadence_speed(1))
+					a.advance(facing,true,(155.0 / 9.0)/a.cadence_speed(facing))
 					check(a.body.frame==1,"155/9 px actual travel advances one drawing")
 					var before:int=a.body.frame
-					a.advance(1,true,0)
+					a.advance(facing,true,0)
 					check(a.body.frame==before,"Collision-stopped movement never advances")
 					a.set_equipped_weapon("")
 					check(not a.weapon_back.visible and not a.weapon_front.visible,"Unequip hides pilot sword")
 					a.set_equipped_weapon("warrior_01_weapon")
 				a.advance(facing,false,0)
-				check(a.hair_renderer.front.position==Vector2.ZERO and a.weapon_back.position==Vector2.ZERO,"Idle clears pilot transforms")
+				check(a.hair_renderer.front.position==Vector2.ZERO and a.hair_renderer.front.scale==Vector2.ONE and a.weapon_back.position==Vector2.ZERO,"Idle clears pilot transforms")
 				check(a.body.hframes==4,"Idle artwork unchanged")
 			a.queue_free()
 			await process_frame

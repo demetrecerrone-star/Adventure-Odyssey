@@ -24,7 +24,7 @@ func run() -> void:
 				var pair: Dictionary = avatar.outfit.walk[["down", "left", "right", "up"][direction]]
 				var frame_count := int(pair.frames)
 				var fps := float(pair.fps)
-				check((frame_count == 6 and fps == 9) if base == "male" and selected_class == "Warrior" and direction == 1 else (frame_count == 8 and fps == 16), "Approved bounded pilot or existing eight-phase manifest")
+				check((frame_count == 6 and fps == 9) if base == "male" and selected_class == "Warrior" and direction in [0,1,3] else (frame_count == 8 and fps == 16), "Approved bounded pilot or existing eight-phase manifest")
 				avatar.advance(direction, true, 0)
 				for phase in range(frame_count):
 					check(avatar.body.frame == phase and avatar.armor.frame == phase, "Manifest phase shared by body and outfit")
