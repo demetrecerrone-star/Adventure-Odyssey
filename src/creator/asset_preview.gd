@@ -71,7 +71,12 @@ func _starter_preview(draft) -> bool:
 		avatar.queue_free()
 		return false
 	_fit_starter_preview()
-	status.text = "Skin and eye colors are shown. Hairstyles and hair colors await fitted directional artwork." if avatar.palette_ready else "Dressed starter preview. Appearance masks are unavailable; selected colors are not shown."
+	if avatar.palette_ready and avatar.hair_renderer.ready:
+		status.text = "Selected hairstyle, hair color, skin and eye colors are shown."
+	elif avatar.palette_ready:
+		status.text = "Skin and eye colors are shown. This hairstyle has no fitted directional artwork."
+	else:
+		status.text = "Dressed starter preview. Appearance masks are unavailable; selected colors are not shown."
 	return true
 
 func _fit_starter_preview() -> void:

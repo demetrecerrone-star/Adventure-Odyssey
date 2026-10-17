@@ -29,3 +29,13 @@ static func empty_manifest() -> Dictionary:
 		"male":{"status":"missing", "label":"Male", "layers":{}},
 		"female":{"status":"missing", "label":"Female", "layers":{}}
 	}}
+
+static func hair_label(base: String, number: int) -> String:
+	var path := "res://assets/character-hair/manifest.json"
+	if FileAccess.file_exists(path):
+		var manifest = JSON.parse_string(FileAccess.get_file_as_string(path))
+		if manifest is Dictionary:
+			var entry: Dictionary = manifest.get("bases", {}).get(base, {}).get("%s_hair_%02d" % [base, number], {})
+			if not str(entry.get("name", "")).is_empty():
+				return str(entry.name)
+	return "%s hair %02d (unavailable)" % [base.capitalize(), number]

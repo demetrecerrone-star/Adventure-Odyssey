@@ -1,5 +1,6 @@
 extends Node2D
 # Body and armor always switch as a validated pair. Missing outfits never expose underwear.
+var hair_renderer = preload("res://src/character_hair.gd").new()
 var weapon_back: Sprite2D
 var weapon_front: Sprite2D
 var weapon_outfit: Dictionary = {}
@@ -32,6 +33,7 @@ func _ready() -> void:
 	body = get_node("Body")
 	armor = get_node("Armor")
 	hair = get_node("Hair")
+	hair_renderer.attach(self, body, armor)
 func configure(base: String, selected_class: String, selected_appearance: Dictionary = {}) -> bool:
 	character_class = selected_class
 	weapon_outfit = {}
@@ -41,6 +43,7 @@ func configure(base: String, selected_class: String, selected_appearance: Dictio
 		if weapons is Dictionary:
 			weapon_outfit = weapons.get("bases", {}).get(base, {})
 	appearance = selected_appearance.duplicate()
+	hair_renderer.configure(base, appearance)
 	palette_material = ShaderMaterial.new()
 	palette_material.shader = preload("res://src/appearance_palette.gdshader")
 	var skin_id := str(appearance.get("skin", "warm"))
@@ -120,6 +123,7 @@ func advance(direction: int, moving: bool, delta: float) -> void:
 		sprite.frame = frame
 	hair.texture = _texture(str(pair.get("hair", "")))
 	hair.visible = false
+	hair_renderer.advance(current_animation, body.hframes, body.frame)
 	_update_weapon()
 
 func set_equipped_weapon(item: String) -> void:

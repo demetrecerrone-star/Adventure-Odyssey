@@ -38,7 +38,7 @@ func run() -> void:
 	preview.update_preview(draft)
 	var shown = preview.stage.get_child(0)
 	check(shown.appearance.skin == "teal" and shown.appearance.eyes == "Amber", "Creator uses same selected appearance contract")
-	check(preview.status.text.contains("Hairstyles") and preview.status.text.contains("await"), "Missing hair art remains explicit")
+	check(shown.hair_renderer.ready and preview.status.text.contains("hairstyle"), "Selected fitted hair is rendered in creator")
 	preview.queue_free()
 	await process_frame
 	print("APPEARANCE: %d checks; failures: %d" % [checks, failures])

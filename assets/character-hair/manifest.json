@@ -1,0 +1,1737 @@
+{
+  "schema_version": 1,
+  "status": "complete_directional_catalog",
+  "cell_size": [
+    256,
+    256
+  ],
+  "pivot": [
+    128,
+    232
+  ],
+  "directions": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "walk_fps": 16,
+  "walk_frames": 8,
+  "sources": "Original image-generated four-facing neutral hair, separately registered to unchanged body heads. No generated bodies or outfits.",
+  "bases": {
+    "male": {
+      "male_hair_01": {
+        "name": "Swept Quiff",
+        "source": "male_hair_01.png",
+        "registration": [
+          [
+            102,
+            35,
+            54,
+            49
+          ],
+          [
+            95,
+            35,
+            59,
+            51
+          ],
+          [
+            103,
+            35,
+            59,
+            51
+          ],
+          [
+            101,
+            35,
+            55,
+            59
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_01/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_01/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_01/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_01/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_01/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_01/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_01/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_01/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_01/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_01/walk_up-front.png"
+        },
+        "source_sha256": "c5b1bc373bcd7cb43a1754ea1d1e93607ce2cc6ebe15b1875ecb7feed8c36c8e"
+      },
+      "male_hair_02": {
+        "name": "Close Crew Cut",
+        "source": "male_hair_02.png",
+        "registration": [
+          [
+            105,
+            41,
+            48,
+            44
+          ],
+          [
+            99,
+            41,
+            55,
+            45
+          ],
+          [
+            104,
+            41,
+            55,
+            45
+          ],
+          [
+            104,
+            40,
+            49,
+            50
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_02/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_02/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_02/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_02/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_02/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_02/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_02/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_02/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_02/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_02/walk_up-front.png"
+        },
+        "source_sha256": "43f154040950916324b3b31eb71e03d4b6cb473a79f090ec9132a7ed304acadf"
+      },
+      "male_hair_03": {
+        "name": "Short Tight Curls",
+        "source": "male_hair_03.png",
+        "registration": [
+          [
+            99,
+            33,
+            59,
+            55
+          ],
+          [
+            94,
+            33,
+            63,
+            55
+          ],
+          [
+            101,
+            33,
+            63,
+            55
+          ],
+          [
+            100,
+            33,
+            58,
+            60
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_03/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_03/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_03/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_03/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_03/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_03/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_03/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_03/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_03/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_03/walk_up-front.png"
+        },
+        "source_sha256": "cc4d178a6995f409afe7939ae36815b91c88790ad070cab09efc42d0a6d087dd"
+      },
+      "male_hair_04": {
+        "name": "Rounded Afro",
+        "source": "male_hair_04.png",
+        "registration": [
+          [
+            94,
+            28,
+            69,
+            64
+          ],
+          [
+            89,
+            28,
+            73,
+            64
+          ],
+          [
+            97,
+            28,
+            73,
+            64
+          ],
+          [
+            95,
+            28,
+            68,
+            66
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_04/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_04/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_04/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_04/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_04/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_04/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_04/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_04/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_04/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_04/walk_up-front.png"
+        },
+        "source_sha256": "eb3f343393c2e9d80d30183be11b0d8e3fa046f918e072e924ffcb3fecbf52be"
+      },
+      "male_hair_05": {
+        "name": "Jagged Spiky Crop",
+        "source": "male_hair_05.png",
+        "registration": [
+          [
+            94,
+            23,
+            69,
+            68
+          ],
+          [
+            89,
+            23,
+            74,
+            68
+          ],
+          [
+            97,
+            23,
+            74,
+            68
+          ],
+          [
+            95,
+            23,
+            68,
+            70
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_05/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_05/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_05/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_05/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_05/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_05/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_05/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_05/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_05/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_05/walk_up-front.png"
+        },
+        "source_sha256": "a65a03ca34443b6e45f079ccbcb906d408c27ee9669613064767e09717d8f4cf"
+      },
+      "male_hair_06": {
+        "name": "Center Parted Curtains",
+        "source": "male_hair_06.png",
+        "registration": [
+          [
+            96,
+            34,
+            65,
+            61
+          ],
+          [
+            93,
+            34,
+            67,
+            61
+          ],
+          [
+            99,
+            34,
+            67,
+            61
+          ],
+          [
+            97,
+            34,
+            64,
+            63
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_06/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_06/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_06/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_06/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_06/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_06/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_06/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_06/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_06/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_06/walk_up-front.png"
+        },
+        "source_sha256": "7b9c25cf2137b64b5bdff42cd3f76ff07c76684d1ec08bfe2e92f53f31de1d7a"
+      },
+      "male_hair_07": {
+        "name": "Layered Shag",
+        "source": "male_hair_07.png",
+        "registration": [
+          [
+            94,
+            29,
+            69,
+            70
+          ],
+          [
+            91,
+            29,
+            72,
+            70
+          ],
+          [
+            97,
+            29,
+            72,
+            70
+          ],
+          [
+            95,
+            29,
+            68,
+            72
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_07/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_07/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_07/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_07/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_07/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_07/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_07/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_07/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_07/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_07/walk_up-front.png"
+        },
+        "source_sha256": "08d321e2d3e8c0eeb05d0eaff62e5fe8ce165b2c9c0e00c1b8926730e9a95cd2"
+      },
+      "male_hair_08": {
+        "name": "Blunt Chin Length Bob",
+        "source": "male_hair_08.png",
+        "registration": [
+          [
+            97,
+            35,
+            63,
+            61
+          ],
+          [
+            94,
+            35,
+            65,
+            61
+          ],
+          [
+            99,
+            35,
+            65,
+            61
+          ],
+          [
+            98,
+            35,
+            61,
+            63
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_08/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_08/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_08/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_08/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_08/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_08/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_08/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_08/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_08/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_08/walk_up-front.png"
+        },
+        "source_sha256": "550ba4a5563b3068fa4597b049ae32d635855363a7912686aa0631313fccd538"
+      },
+      "male_hair_09": {
+        "name": "High Flat Top",
+        "source": "male_hair_09.png",
+        "registration": [
+          [
+            102,
+            29,
+            54,
+            56
+          ],
+          [
+            97,
+            29,
+            59,
+            58
+          ],
+          [
+            103,
+            29,
+            59,
+            58
+          ],
+          [
+            102,
+            29,
+            54,
+            61
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_09/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_09/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_09/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_09/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_09/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_09/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_09/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_09/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_09/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_09/walk_up-front.png"
+        },
+        "source_sha256": "f02090929a78440009843d7491c87d0a2b4bc30c6851e8e3c27c721ea2aa7ef7"
+      },
+      "male_hair_10": {
+        "name": "Cornrows And Back Braids",
+        "source": "male_hair_10.png",
+        "registration": [
+          [
+            103,
+            38,
+            51,
+            69
+          ],
+          [
+            96,
+            37,
+            62,
+            72
+          ],
+          [
+            102,
+            37,
+            62,
+            72
+          ],
+          [
+            103,
+            37,
+            51,
+            73
+          ]
+        ],
+        "occlusion": "tail",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_10/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_10/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_10/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_10/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_10/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_10/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_10/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_10/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_10/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_10/walk_up-front.png"
+        },
+        "source_sha256": "db646e6db8547511d26ad039f2658326d15cc15165934f6e9ff1c20eeded7ac0"
+      },
+      "male_hair_11": {
+        "name": "Shoulder Length Dreadlocks",
+        "source": "male_hair_11.png",
+        "registration": [
+          [
+            94,
+            32,
+            69,
+            85
+          ],
+          [
+            91,
+            32,
+            72,
+            85
+          ],
+          [
+            98,
+            32,
+            72,
+            85
+          ],
+          [
+            96,
+            32,
+            65,
+            88
+          ]
+        ],
+        "occlusion": "loose",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_11/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_11/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_11/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_11/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_11/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_11/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_11/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_11/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_11/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_11/walk_up-front.png"
+        },
+        "source_sha256": "3aab4392a181bc22e183c51e50b94ee6e936cf256a1f3a37836467bddc6f37a3"
+      },
+      "male_hair_12": {
+        "name": "Low Long Ponytail",
+        "source": "male_hair_12.png",
+        "registration": [
+          [
+            101,
+            35,
+            55,
+            104
+          ],
+          [
+            95,
+            35,
+            70,
+            104
+          ],
+          [
+            93,
+            35,
+            70,
+            104
+          ],
+          [
+            102,
+            35,
+            53,
+            106
+          ]
+        ],
+        "occlusion": "tail",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_12/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_12/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_12/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_12/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_12/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_12/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_12/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_12/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_12/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_12/walk_up-front.png"
+        },
+        "source_sha256": "1b8cfdfedf8503c66ba6d740c6e7a138d59d61af764c66d68cadc50aa138f402"
+      },
+      "male_hair_13": {
+        "name": "High Topknot",
+        "source": "male_hair_13.png",
+        "registration": [
+          [
+            101,
+            21,
+            55,
+            65
+          ],
+          [
+            94,
+            21,
+            64,
+            65
+          ],
+          [
+            101,
+            21,
+            64,
+            65
+          ],
+          [
+            102,
+            27,
+            53,
+            66
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_13/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_13/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_13/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_13/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_13/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_13/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_13/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_13/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_13/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_13/walk_up-front.png"
+        },
+        "source_sha256": "d6395c763438f7b054cedf4bc6316eed118eabac2b39bf37ad3d471e6e84523a"
+      },
+      "male_hair_14": {
+        "name": "Long Wavy Mane",
+        "source": "male_hair_14.png",
+        "registration": [
+          [
+            90,
+            32,
+            77,
+            95
+          ],
+          [
+            90,
+            32,
+            77,
+            95
+          ],
+          [
+            96,
+            32,
+            77,
+            95
+          ],
+          [
+            93,
+            32,
+            71,
+            97
+          ]
+        ],
+        "occlusion": "loose",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_14/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_14/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_14/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_14/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_14/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_14/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_14/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_14/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_14/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_14/walk_up-front.png"
+        },
+        "source_sha256": "eacc676619851b3249de74e9133b3be5a48caa64f577d7360c6489a847655397"
+      },
+      "male_hair_15": {
+        "name": "Tall Mohawk",
+        "source": "male_hair_15.png",
+        "registration": [
+          [
+            102,
+            6,
+            54,
+            80
+          ],
+          [
+            92,
+            9,
+            71,
+            84
+          ],
+          [
+            100,
+            9,
+            71,
+            84
+          ],
+          [
+            113,
+            8,
+            32,
+            90
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/male/male_hair_15/idle-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_15/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_15/walk_down-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_15/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_15/walk_left-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_15/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_15/walk_right-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_15/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/male/male_hair_15/walk_up-rear.png",
+          "front": "res://assets/character-hair/male/male_hair_15/walk_up-front.png"
+        },
+        "source_sha256": "4549dd08ae5a1199d99cdb2214956cc987dc2040648c9b44bdf4fa55b099c6af"
+      }
+    },
+    "female": {
+      "female_hair_01": {
+        "name": "Feathered Pixie",
+        "source": "female_hair_01.png",
+        "registration": [
+          [
+            102,
+            35,
+            54,
+            54
+          ],
+          [
+            94,
+            35,
+            63,
+            52
+          ],
+          [
+            101,
+            35,
+            63,
+            52
+          ],
+          [
+            101,
+            35,
+            55,
+            55
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_01/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_01/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_01/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_01/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_01/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_01/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_01/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_01/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_01/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_01/walk_up-front.png"
+        },
+        "source_sha256": "0c6b95fda23f74eda978a6cb91fd61d83250936c58da6bc640c6487959f53b9a"
+      },
+      "female_hair_02": {
+        "name": "Blunt Jaw Bob",
+        "source": "female_hair_02.png",
+        "registration": [
+          [
+            98,
+            36,
+            62,
+            56
+          ],
+          [
+            94,
+            36,
+            65,
+            58
+          ],
+          [
+            100,
+            36,
+            65,
+            58
+          ],
+          [
+            99,
+            36,
+            59,
+            62
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_02/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_02/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_02/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_02/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_02/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_02/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_02/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_02/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_02/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_02/walk_up-front.png"
+        },
+        "source_sha256": "387ed9c341a1d298c3e8be363383960544fa180c5842fbe731f8e789b49ea0b9"
+      },
+      "female_hair_03": {
+        "name": "Wavy Shoulder Lob",
+        "source": "female_hair_03.png",
+        "registration": [
+          [
+            89,
+            34,
+            79,
+            95
+          ],
+          [
+            93,
+            34,
+            75,
+            98
+          ],
+          [
+            89,
+            34,
+            75,
+            98
+          ],
+          [
+            91,
+            34,
+            75,
+            98
+          ]
+        ],
+        "occlusion": "loose",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_03/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_03/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_03/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_03/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_03/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_03/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_03/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_03/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_03/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_03/walk_up-front.png"
+        },
+        "source_sha256": "98e2636e1afb35e60f90d8555ac4f3fed0cfd982f88310b9de8ff91bef1d6ddb"
+      },
+      "female_hair_04": {
+        "name": "Long Straight Curtain",
+        "source": "female_hair_04.png",
+        "registration": [
+          [
+            96,
+            35,
+            65,
+            140
+          ],
+          [
+            95,
+            35,
+            73,
+            140
+          ],
+          [
+            88,
+            35,
+            77,
+            140
+          ],
+          [
+            99,
+            35,
+            59,
+            141
+          ]
+        ],
+        "occlusion": "loose",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_04/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_04/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_04/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_04/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_04/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_04/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_04/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_04/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_04/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_04/walk_up-front.png"
+        },
+        "source_sha256": "1893f3da20ecf777dde5bda9d844e43c02d606dd8db1e35a3ac90cf850e1bc1f"
+      },
+      "female_hair_05": {
+        "name": "High Warrior Ponytail",
+        "source": "female_hair_05.png",
+        "registration": [
+          [
+            99,
+            13,
+            60,
+            100
+          ],
+          [
+            94,
+            17,
+            90,
+            116
+          ],
+          [
+            77,
+            17,
+            90,
+            116
+          ],
+          [
+            100,
+            34,
+            58,
+            112
+          ]
+        ],
+        "occlusion": "tail",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_05/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_05/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_05/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_05/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_05/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_05/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_05/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_05/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_05/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_05/walk_up-front.png"
+        },
+        "source_sha256": "cf8db2b5a1f82ce10c7292c3ed471908e44a0a4ca388bfc58812de1fbe44d051"
+      },
+      "female_hair_06": {
+        "name": "Single Rope Braid",
+        "source": "female_hair_06.png",
+        "registration": [
+          [
+            99,
+            35,
+            60,
+            116
+          ],
+          [
+            94,
+            35,
+            67,
+            116
+          ],
+          [
+            99,
+            35,
+            67,
+            116
+          ],
+          [
+            100,
+            35,
+            57,
+            116
+          ]
+        ],
+        "occlusion": "tail",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_06/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_06/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_06/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_06/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_06/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_06/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_06/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_06/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_06/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_06/walk_up-front.png"
+        },
+        "source_sha256": "5624e82beb72763c6e45731217e4d2f2e776dbebe92c55ac204b70e020a6faf9"
+      },
+      "female_hair_07": {
+        "name": "Twin Braids",
+        "source": "female_hair_07.png",
+        "registration": [
+          [
+            97,
+            35,
+            64,
+            116
+          ],
+          [
+            94,
+            35,
+            65,
+            116
+          ],
+          [
+            99,
+            35,
+            65,
+            116
+          ],
+          [
+            98,
+            35,
+            61,
+            116
+          ]
+        ],
+        "occlusion": "loose",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_07/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_07/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_07/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_07/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_07/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_07/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_07/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_07/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_07/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_07/walk_up-front.png"
+        },
+        "source_sha256": "13151c93d2138efe9c3b89cd962868d52ab45e15a3e2fe20100b23de96d01fa3"
+      },
+      "female_hair_08": {
+        "name": "Braided Crown",
+        "source": "female_hair_08.png",
+        "registration": [
+          [
+            99,
+            34,
+            60,
+            56
+          ],
+          [
+            95,
+            34,
+            64,
+            57
+          ],
+          [
+            101,
+            34,
+            64,
+            57
+          ],
+          [
+            99,
+            34,
+            59,
+            60
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_08/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_08/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_08/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_08/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_08/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_08/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_08/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_08/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_08/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_08/walk_up-front.png"
+        },
+        "source_sha256": "c9fb3684192687b92c530f45d3bad14319cf2e20fdeb20d97017c072e7f15d2d"
+      },
+      "female_hair_09": {
+        "name": "Low Chignon",
+        "source": "female_hair_09.png",
+        "registration": [
+          [
+            101,
+            35,
+            57,
+            66
+          ],
+          [
+            94,
+            35,
+            68,
+            64
+          ],
+          [
+            97,
+            35,
+            72,
+            64
+          ],
+          [
+            102,
+            35,
+            54,
+            68
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_09/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_09/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_09/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_09/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_09/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_09/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_09/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_09/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_09/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_09/walk_up-front.png"
+        },
+        "source_sha256": "598a0b40633312c228e04ff92a8361d341e99a1eafd6a583d405f0ec2c40e2b1"
+      },
+      "female_hair_10": {
+        "name": "Twin Round Buns",
+        "source": "female_hair_10.png",
+        "registration": [
+          [
+            92,
+            26,
+            73,
+            62
+          ],
+          [
+            91,
+            26,
+            73,
+            62
+          ],
+          [
+            97,
+            26,
+            76,
+            62
+          ],
+          [
+            92,
+            27,
+            73,
+            60
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_10/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_10/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_10/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_10/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_10/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_10/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_10/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_10/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_10/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_10/walk_up-front.png"
+        },
+        "source_sha256": "0b95386dc08afc1027ff7e59de4f7326cafc937781d95873e40ae8aabf970aa8"
+      },
+      "female_hair_11": {
+        "name": "Rounded Natural Curls",
+        "source": "female_hair_11.png",
+        "registration": [
+          [
+            91,
+            28,
+            75,
+            72
+          ],
+          [
+            88,
+            28,
+            78,
+            72
+          ],
+          [
+            96,
+            28,
+            78,
+            72
+          ],
+          [
+            93,
+            28,
+            71,
+            74
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_11/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_11/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_11/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_11/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_11/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_11/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_11/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_11/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_11/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_11/walk_up-front.png"
+        },
+        "source_sha256": "2cfc8efa87f0ed00f9b0727cbf8a206b46db4006dc7dc5762ffd3b96809a6bf6"
+      },
+      "female_hair_12": {
+        "name": "Asymmetric Undercut",
+        "source": "female_hair_12.png",
+        "registration": [
+          [
+            99,
+            34,
+            60,
+            72
+          ],
+          [
+            93,
+            34,
+            67,
+            72
+          ],
+          [
+            101,
+            34,
+            67,
+            72
+          ],
+          [
+            100,
+            34,
+            58,
+            69
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_12/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_12/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_12/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_12/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_12/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_12/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_12/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_12/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_12/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_12/walk_up-front.png"
+        },
+        "source_sha256": "9a1ab053cce7eff93fa1a84cd73af732ed2293ed5ff23133a225d53cd47ae888"
+      },
+      "female_hair_13": {
+        "name": "Long Cascading Curls",
+        "source": "female_hair_13.png",
+        "registration": [
+          [
+            86,
+            33,
+            85,
+            127
+          ],
+          [
+            89,
+            33,
+            84,
+            127
+          ],
+          [
+            88,
+            33,
+            84,
+            127
+          ],
+          [
+            88,
+            33,
+            82,
+            127
+          ]
+        ],
+        "occlusion": "loose",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_13/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_13/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_13/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_13/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_13/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_13/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_13/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_13/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_13/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_13/walk_up-front.png"
+        },
+        "source_sha256": "7884cc29dd836871dd9825800a46b51eabdde04d82fd7cd742e5546ffe9243e7"
+      },
+      "female_hair_14": {
+        "name": "Side Swept Ponytail",
+        "source": "female_hair_14.png",
+        "registration": [
+          [
+            86,
+            35,
+            75,
+            104
+          ],
+          [
+            93,
+            35,
+            78,
+            104
+          ],
+          [
+            102,
+            35,
+            61,
+            66
+          ],
+          [
+            100,
+            35,
+            66,
+            104
+          ]
+        ],
+        "occlusion": "loose",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_14/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_14/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_14/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_14/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_14/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_14/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_14/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_14/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_14/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_14/walk_up-front.png"
+        },
+        "source_sha256": "464486423b2a2279453280e3f1bcd425c6587eb5ec585e32c3b5b7cd313b96e0"
+      },
+      "female_hair_15": {
+        "name": "Braided Fauxhawk",
+        "source": "female_hair_15.png",
+        "registration": [
+          [
+            100,
+            26,
+            58,
+            64
+          ],
+          [
+            94,
+            26,
+            66,
+            68
+          ],
+          [
+            100,
+            26,
+            66,
+            68
+          ],
+          [
+            102,
+            27,
+            54,
+            74
+          ]
+        ],
+        "occlusion": "compact",
+        "idle": {
+          "frames": 4,
+          "rear": "res://assets/character-hair/female/female_hair_15/idle-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_15/idle-front.png"
+        },
+        "walk_down": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_15/walk_down-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_15/walk_down-front.png"
+        },
+        "walk_left": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_15/walk_left-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_15/walk_left-front.png"
+        },
+        "walk_right": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_15/walk_right-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_15/walk_right-front.png"
+        },
+        "walk_up": {
+          "frames": 8,
+          "rear": "res://assets/character-hair/female/female_hair_15/walk_up-rear.png",
+          "front": "res://assets/character-hair/female/female_hair_15/walk_up-front.png"
+        },
+        "source_sha256": "d314d64b82986f20ecbd3299e027e702b56d887ff297c641a10d8425303b1d39"
+      }
+    }
+  }
+}

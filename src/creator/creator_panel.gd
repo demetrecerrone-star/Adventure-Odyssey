@@ -99,7 +99,7 @@ func _ready() -> void:
 	var random_button := _button("Random appearance")
 	random_button.pressed.connect(func(): draft.randomize_appearance(rng); _sync())
 	left_options.add_child(random_button)
-	hair_option = _choice(right_options, "Hair style (art pending)", [])
+	hair_option = _choice(right_options, "Hair style", [])
 	hair_option.item_selected.connect(func(index): draft.hair = Catalog.hair_ids(draft.base)[index]; _refresh())
 	color_option = _choice(right_options, "Hair color (art pending)", Catalog.HAIR_COLORS)
 	color_option.item_selected.connect(func(index): draft.hair_color = Catalog.HAIR_COLORS[index]; _refresh())
@@ -206,7 +206,7 @@ func _sync() -> void:
 	base_option.select(0 if draft.base == "male" else 1)
 	hair_option.clear()
 	for i in range(15):
-		hair_option.add_item("%s hair %02d" % [draft.base.capitalize(), i + 1])
+		hair_option.add_item(Catalog.hair_label(draft.base, i + 1))
 	hair_option.select(Catalog.hair_ids(draft.base).find(draft.hair))
 	color_option.select(Catalog.HAIR_COLORS.find(draft.hair_color))
 	eye_option.select(Catalog.EYES.find(draft.eyes))
