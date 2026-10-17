@@ -51,9 +51,11 @@ func run() -> void:
 		# height must not silently defeat the keyboard-safe requested rectangle.
 		for font_size in [20, 16]:
 			screen.theme.default_font_size = font_size
+			screen.notice.text = "A deliberately long validation explanation must not force the keyboard layout beyond its safe rectangle. Please choose another username."
 			await settle()
-			check(screen.panel.get_global_rect().end.y <= 238, "keyboard-safe bounds survive taller font metrics")
-			check(screen.panel.get_combined_minimum_size().y <= 223, "compact content minimum fits available keyboard region")
+			var diagnostic := "font=%d mirror=%s panel=%s min=%s available=(660,223) center=%s center_min=%s heading_min=%s footer_min=%s" % [font_size, mirror, screen.panel.get_global_rect(), screen.panel.get_combined_minimum_size(), screen.center.size, screen.center.get_combined_minimum_size(), screen.content.get_child(0).get_combined_minimum_size(), screen.notice.get_parent().get_combined_minimum_size()]
+			check(screen.panel.get_global_rect().end.y <= 238, "keyboard-safe bounds survive taller font metrics: " + diagnostic)
+			check(screen.panel.get_combined_minimum_size().y <= 223, "compact content minimum fits available keyboard region: " + diagnostic)
 			check(screen.panel.get_global_rect().encloses(screen.name_field.get_global_rect()), "name stays visible with taller text metrics")
 			check(screen.panel.get_global_rect().encloses(screen.submit.get_global_rect()), "submit stays visible with taller text metrics")
 			check(screen.preview.stage.size.y >= 24, "keyboard retains preview rather than hiding character")

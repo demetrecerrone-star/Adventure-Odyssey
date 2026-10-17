@@ -58,6 +58,9 @@ func _ready() -> void:
 	content.add_child(heading)
 	var title := _label("CHANGE YOUR APPEARANCE" if mirror_mode else "CREATE YOUR CHARACTER")
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title.autowrap_mode = TextServer.AUTOWRAP_OFF
+	title.clip_text = true
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	heading.add_child(title)
 	var close := _button("Back")
 	close.pressed.connect(_dismiss)
@@ -108,7 +111,13 @@ func _ready() -> void:
 	eye_option.item_selected.connect(func(index): draft.eyes = Catalog.EYES[index]; _refresh())
 	preview.status.reparent(right_options)
 	preview.status.show()
-	center.add_child(_label("Username (locked)" if mirror_mode else "Username"))
+	var name_caption := _label("Username (locked)" if mirror_mode else "Username")
+	# Field labels must not add vertical rows when side controls claim width.
+	name_caption.autowrap_mode = TextServer.AUTOWRAP_OFF
+	name_caption.clip_text = true
+	name_caption.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	name_caption.tooltip_text = name_caption.text
+	center.add_child(name_caption)
 	name_field = LineEdit.new()
 	name_field.custom_minimum_size.y = 40
 	name_field.max_length = 20
@@ -256,7 +265,11 @@ func _layout() -> void:
 		center.get_parent().get_theme_stylebox("panel").set_content_margin_all(4 if compact else 8)
 		content.add_theme_constant_override("separation", 4 if compact else 8)
 		center.add_theme_constant_override("separation", 2 if compact else 4)
-		notice.max_lines_visible = 2 if compact else -1
+		# max_lines_visible alone does not bound wrapped minimum size equally
+		# across Godot versions. Compact chrome has one line; full text is retained.
+		notice.autowrap_mode = TextServer.AUTOWRAP_OFF if compact else TextServer.AUTOWRAP_WORD_SMART
+		notice.clip_text = compact
+		notice.max_lines_visible = 1 if compact else -1
 		notice.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS if compact else TextServer.OVERRUN_NO_TRIMMING
 	notice.tooltip_text = notice.text if compact else ""
 	panel.position = available.position
