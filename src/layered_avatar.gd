@@ -35,8 +35,8 @@ func _ready() -> void:
 func configure(base: String, selected_class: String, selected_appearance: Dictionary = {}) -> bool:
 	character_class = selected_class
 	weapon_outfit = {}
-	var weapon_path := "res://assets/held-weapons/warrior.json"
-	if selected_class == "Warrior" and FileAccess.file_exists(weapon_path):
+	var weapon_path := "res://assets/held-weapons/" + selected_class.to_lower() + ".json"
+	if FileAccess.file_exists(weapon_path):
 		var weapons = JSON.parse_string(FileAccess.get_file_as_string(weapon_path))
 		if weapons is Dictionary:
 			weapon_outfit = weapons.get("bases", {}).get(base, {})
@@ -119,7 +119,7 @@ func advance(direction: int, moving: bool, delta: float) -> void:
 		sprite.hframes = frames
 		sprite.frame = frame
 	hair.texture = _texture(str(pair.get("hair", "")))
-	hair.visible = hair.texture != null and hair.texture.get_size() == Vector2(256 * frames, 256)
+	hair.visible = false
 	_update_weapon()
 
 func set_equipped_weapon(item: String) -> void:
@@ -128,7 +128,7 @@ func set_equipped_weapon(item: String) -> void:
 func _update_weapon() -> void:
 	for sprite in [weapon_back, weapon_front]:
 		sprite.visible = false
-	if equipped_weapon != "warrior_01_weapon" or character_class != "Warrior" or not artwork_ready:
+	if not preload("res://src/inventory_catalog.gd").can_equip(equipped_weapon, character_class) or not artwork_ready:
 		return
 	var key := current_animation.replace("walk_", "walk-")
 	var entry: Dictionary = weapon_outfit.get(key, {})

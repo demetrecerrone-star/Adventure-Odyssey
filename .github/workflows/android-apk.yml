@@ -109,7 +109,7 @@ jobs:
           set -euo pipefail
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x1000x24' godot --path . --script res://tests/held_weapon_screenshot.gd 2>&1 | tee /tmp/ao_weapon_capture.log
           ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script|Parse Error' /tmp/ao_weapon_capture.log
-          test -s screenshots/held_weapon_poses.png
+          test -s screenshots/held_weapon_warrior.png
           test -s screenshots/held_weapon_behind_chest.png
           test -s screenshots/held_weapon_front_chest.png
 

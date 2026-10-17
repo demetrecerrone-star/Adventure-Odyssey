@@ -28,9 +28,24 @@ func run() -> void:
 		check(not avatar.weapon_front.visible, "Wrong class weapon hidden")
 		avatar.configure(base, "Mage")
 		avatar.set_equipped_weapon("mage_01_weapon")
-		check(not avatar.weapon_front.visible, "Unavailable art hidden")
+		check(avatar.weapon_front.visible, "Mage registered art available")
 		avatar.queue_free()
 		await process_frame
+	for base in ["male", "female"]:
+		for cls in preload("res://src/creator/catalog.gd").CLASSES:
+			var avatar = preload("res://src/layered_avatar.gd").new()
+			root.add_child(avatar)
+			avatar.configure(base, cls)
+			avatar.set_equipped_weapon(cls.to_lower() + "_01_weapon")
+			for direction in range(4):
+				for frame in range(8):
+					avatar.advance(direction, true, 0)
+					avatar.elapsed = float(frame) / 16
+					avatar.advance(direction, true, 0)
+					check(avatar.weapon_front.visible and avatar.weapon_back.visible, "Every class/both bases has paired weapon layers")
+					check(avatar.weapon_front.frame == avatar.body.frame and avatar.weapon_back.frame == avatar.body.frame, "Every weapon follows gait")
+			avatar.queue_free()
+			await process_frame
 	var room = preload("res://src/bedroom.gd").new()
 	var draft = preload("res://src/creator/character_draft.gd").new()
 	draft.username = "WeaponTest"

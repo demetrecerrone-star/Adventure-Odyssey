@@ -295,7 +295,7 @@ func open_chest(show_storage: bool = true) -> void:
 	label(("STORAGE CHEST" if show_storage else "BAG") + " • Saved on this device", box)
 	label("Armor: " + state.character["class"] + " starting outfit", box)
 	label("Equipped: " + (Save.ITEMS[state.equipped_weapon] if not state.equipped_weapon.is_empty() else "None"), box)
-	if not state.equipped_weapon.is_empty() and state.equipped_weapon != "warrior_01_weapon":
+	if not state.equipped_weapon.is_empty() and actor.weapon_outfit.is_empty():
 		label("Held artwork for this weapon is not available yet.", box)
 	if not state.equipped_weapon.is_empty():
 		var unequip := button("Unequip weapon", box)

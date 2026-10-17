@@ -1,0 +1,1741 @@
+{
+  "item_id": "paladin_01_weapon",
+  "class": "Paladin",
+  "status": "candidate_pending_native_review",
+  "cell_size": [
+    256,
+    256
+  ],
+  "pivot": [
+    128,
+    232
+  ],
+  "directions": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "layer_order": [
+    "back",
+    "body",
+    "armor",
+    "front"
+  ],
+  "source": {
+    "item_id": "paladin_01_weapon",
+    "set_id": "paladin_01",
+    "allowed_class": "Paladin",
+    "slot_art_group": "weapon",
+    "icon_path": "icons-128/paladin_01_weapon.png",
+    "source_path": "source-sheets/paladin_01.png",
+    "source_crop_box": [
+      892,
+      445,
+      1317,
+      873
+    ],
+    "sha256": "e5a283f3f70e8ae45656c527cebe0523475054deee3f2ae73b12691200c506e2",
+    "status": "recovered_inventory_review",
+    "body_overlay": false
+  },
+  "source_grip_crop": [
+    353,
+    82
+  ],
+  "bases": {
+    "male": {
+      "idle": {
+        "frames": 4,
+        "fps": 0,
+        "layers": {
+          "back": "res://assets/held-weapons/paladin/male/idle-back.png",
+          "front": "res://assets/held-weapons/paladin/male/idle-front.png"
+        },
+        "registration": [
+          {
+            "direction": "down",
+            "phase": null,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  71.0,
+                  157.0
+                ],
+                "weapon_bounds": [
+                  34,
+                  144,
+                  89,
+                  219
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": null,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  91.0,
+                  121.0
+                ],
+                "weapon_bounds": [
+                  39,
+                  111,
+                  101,
+                  165
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": null,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  105.0,
+                  177.0
+                ],
+                "weapon_bounds": [
+                  95,
+                  167,
+                  149,
+                  227
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": null,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  181.0,
+                  156.0
+                ],
+                "weapon_bounds": [
+                  170,
+                  144,
+                  219,
+                  218
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          }
+        ]
+      },
+      "walk-down": {
+        "frames": 8,
+        "fps": 16,
+        "layers": {
+          "back": "res://assets/held-weapons/paladin/male/walk-down-back.png",
+          "front": "res://assets/held-weapons/paladin/male/walk-down-front.png"
+        },
+        "registration": [
+          {
+            "direction": "down",
+            "phase": 0,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  71.0409,
+                  153.8507
+                ],
+                "weapon_bounds": [
+                  34,
+                  141,
+                  90,
+                  216
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 1,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  71.0487,
+                  155.8428
+                ],
+                "weapon_bounds": [
+                  34,
+                  143,
+                  90,
+                  218
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 2,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  71.0,
+                  157.0
+                ],
+                "weapon_bounds": [
+                  34,
+                  144,
+                  89,
+                  219
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 3,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  70.9294,
+                  157.8628
+                ],
+                "weapon_bounds": [
+                  34,
+                  145,
+                  79,
+                  220
+                ],
+                "depth": "front",
+                "mapping_residual_px": 2.842170943040401e-14,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 4,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  70.88,
+                  159.1037
+                ],
+                "weapon_bounds": [
+                  34,
+                  146,
+                  89,
+                  221
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 5,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  70.9127,
+                  159.3176
+                ],
+                "weapon_bounds": [
+                  34,
+                  146,
+                  89,
+                  221
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 6,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  71.0,
+                  156.9849
+                ],
+                "weapon_bounds": [
+                  34,
+                  144,
+                  89,
+                  219
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 7,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  71.0291,
+                  153.8724
+                ],
+                "weapon_bounds": [
+                  34,
+                  141,
+                  90,
+                  216
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          }
+        ]
+      },
+      "walk-left": {
+        "frames": 8,
+        "fps": 16,
+        "layers": {
+          "back": "res://assets/held-weapons/paladin/male/walk-left-back.png",
+          "front": "res://assets/held-weapons/paladin/male/walk-left-front.png"
+        },
+        "registration": [
+          {
+            "direction": "left",
+            "phase": 0,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  92.3765,
+                  121.0
+                ],
+                "weapon_bounds": [
+                  41,
+                  111,
+                  102,
+                  165
+                ],
+                "depth": "back",
+                "mapping_residual_px": 1.4210854715202004e-14,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 1,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  92.0358,
+                  121.9
+                ],
+                "weapon_bounds": [
+                  41,
+                  112,
+                  102,
+                  166
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 2,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  91.0,
+                  121.0
+                ],
+                "weapon_bounds": [
+                  39,
+                  111,
+                  101,
+                  165
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 3,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  89.8393,
+                  120.1
+                ],
+                "weapon_bounds": [
+                  38,
+                  110,
+                  100,
+                  164
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 4,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  89.2263,
+                  121.0
+                ],
+                "weapon_bounds": [
+                  38,
+                  111,
+                  99,
+                  165
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 5,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  89.7543,
+                  121.9
+                ],
+                "weapon_bounds": [
+                  38,
+                  112,
+                  99,
+                  165
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 6,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  91.0,
+                  121.0
+                ],
+                "weapon_bounds": [
+                  39,
+                  111,
+                  101,
+                  165
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 7,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  91.9763,
+                  120.1
+                ],
+                "weapon_bounds": [
+                  41,
+                  110,
+                  102,
+                  164
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          }
+        ]
+      },
+      "walk-right": {
+        "frames": 8,
+        "fps": 16,
+        "layers": {
+          "back": "res://assets/held-weapons/paladin/male/walk-right-back.png",
+          "front": "res://assets/held-weapons/paladin/male/walk-right-front.png"
+        },
+        "registration": [
+          {
+            "direction": "right",
+            "phase": 0,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  100.0293,
+                  176.3331
+                ],
+                "weapon_bounds": [
+                  90,
+                  167,
+                  144,
+                  226
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 1,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  101.4185,
+                  176.8978
+                ],
+                "weapon_bounds": [
+                  92,
+                  167,
+                  145,
+                  226
+                ],
+                "depth": "front",
+                "mapping_residual_px": 2.842170943040401e-14,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 2,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  105.0,
+                  176.2909
+                ],
+                "weapon_bounds": [
+                  95,
+                  167,
+                  149,
+                  226
+                ],
+                "depth": "front",
+                "mapping_residual_px": 2.842170943040401e-14,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 3,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  108.3839,
+                  176.0623
+                ],
+                "weapon_bounds": [
+                  99,
+                  166,
+                  152,
+                  226
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 4,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  109.9642,
+                  177.6619
+                ],
+                "weapon_bounds": [
+                  100,
+                  168,
+                  154,
+                  227
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 5,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  108.6208,
+                  178.3828
+                ],
+                "weapon_bounds": [
+                  99,
+                  169,
+                  152,
+                  228
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 6,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  105.0,
+                  177.0
+                ],
+                "weapon_bounds": [
+                  95,
+                  167,
+                  149,
+                  227
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 7,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  101.5836,
+                  175.6404
+                ],
+                "weapon_bounds": [
+                  92,
+                  166,
+                  145,
+                  225
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          }
+        ]
+      },
+      "walk-up": {
+        "frames": 8,
+        "fps": 16,
+        "layers": {
+          "back": "res://assets/held-weapons/paladin/male/walk-up-back.png",
+          "front": "res://assets/held-weapons/paladin/male/walk-up-front.png"
+        },
+        "registration": [
+          {
+            "direction": "up",
+            "phase": 0,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  180.8924,
+                  158.343
+                ],
+                "weapon_bounds": [
+                  170,
+                  146,
+                  219,
+                  220
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 1,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  180.9219,
+                  158.518
+                ],
+                "weapon_bounds": [
+                  170,
+                  146,
+                  219,
+                  220
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 2,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  181.0,
+                  156.0
+                ],
+                "weapon_bounds": [
+                  170,
+                  144,
+                  219,
+                  218
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 3,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  181.0193,
+                  152.791
+                ],
+                "weapon_bounds": [
+                  170,
+                  141,
+                  219,
+                  215
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 4,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  181.0266,
+                  152.7279
+                ],
+                "weapon_bounds": [
+                  170,
+                  141,
+                  219,
+                  215
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 5,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  181.0375,
+                  154.7428
+                ],
+                "weapon_bounds": [
+                  170,
+                  143,
+                  219,
+                  217
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 6,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  181.0,
+                  155.9897
+                ],
+                "weapon_bounds": [
+                  170,
+                  144,
+                  219,
+                  218
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 7,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  180.9386,
+                  157.0333
+                ],
+                "weapon_bounds": [
+                  170,
+                  145,
+                  219,
+                  218
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "female": {
+      "idle": {
+        "frames": 4,
+        "fps": 0,
+        "layers": {
+          "back": "res://assets/held-weapons/paladin/female/idle-back.png",
+          "front": "res://assets/held-weapons/paladin/female/idle-front.png"
+        },
+        "registration": [
+          {
+            "direction": "down",
+            "phase": null,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  75.0,
+                  151.0
+                ],
+                "weapon_bounds": [
+                  38,
+                  138,
+                  93,
+                  213
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": null,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  89.0,
+                  122.0
+                ],
+                "weapon_bounds": [
+                  37,
+                  112,
+                  99,
+                  166
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": null,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  91.0,
+                  176.0
+                ],
+                "weapon_bounds": [
+                  81,
+                  166,
+                  135,
+                  226
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": null,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  182.0,
+                  156.0
+                ],
+                "weapon_bounds": [
+                  171,
+                  144,
+                  220,
+                  218
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          }
+        ]
+      },
+      "walk-down": {
+        "frames": 8,
+        "fps": 16,
+        "layers": {
+          "back": "res://assets/held-weapons/paladin/female/walk-down-back.png",
+          "front": "res://assets/held-weapons/paladin/female/walk-down-front.png"
+        },
+        "registration": [
+          {
+            "direction": "down",
+            "phase": 0,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  75.0,
+                  147.5
+                ],
+                "weapon_bounds": [
+                  39,
+                  134,
+                  93,
+                  209
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 1,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  75.0,
+                  149.4251
+                ],
+                "weapon_bounds": [
+                  38,
+                  136,
+                  93,
+                  211
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 2,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  75.0,
+                  151.0
+                ],
+                "weapon_bounds": [
+                  38,
+                  138,
+                  93,
+                  213
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 3,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  74.9837,
+                  152.435
+                ],
+                "weapon_bounds": [
+                  38,
+                  139,
+                  93,
+                  214
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 4,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  74.9555,
+                  154.1185
+                ],
+                "weapon_bounds": [
+                  26,
+                  141,
+                  93,
+                  216
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 5,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  74.9687,
+                  154.1035
+                ],
+                "weapon_bounds": [
+                  38,
+                  141,
+                  93,
+                  216
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 6,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  75.0,
+                  150.9999
+                ],
+                "weapon_bounds": [
+                  38,
+                  138,
+                  93,
+                  213
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "down",
+            "phase": 7,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  75.0,
+                  147.6251
+                ],
+                "weapon_bounds": [
+                  38,
+                  135,
+                  93,
+                  210
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          }
+        ]
+      },
+      "walk-left": {
+        "frames": 8,
+        "fps": 16,
+        "layers": {
+          "back": "res://assets/held-weapons/paladin/female/walk-left-back.png",
+          "front": "res://assets/held-weapons/paladin/female/walk-left-front.png"
+        },
+        "registration": [
+          {
+            "direction": "left",
+            "phase": 0,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  90.6504,
+                  122.0
+                ],
+                "weapon_bounds": [
+                  39,
+                  112,
+                  101,
+                  166
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 1,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  90.2421,
+                  122.9
+                ],
+                "weapon_bounds": [
+                  39,
+                  113,
+                  100,
+                  166
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 2,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  89.0,
+                  122.0
+                ],
+                "weapon_bounds": [
+                  37,
+                  112,
+                  99,
+                  166
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 3,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  87.5941,
+                  121.1
+                ],
+                "weapon_bounds": [
+                  36,
+                  111,
+                  98,
+                  165
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 4,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  86.868,
+                  122.0
+                ],
+                "weapon_bounds": [
+                  36,
+                  112,
+                  97,
+                  165
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 5,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  87.4945,
+                  122.9
+                ],
+                "weapon_bounds": [
+                  36,
+                  113,
+                  98,
+                  167
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 6,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  89.0,
+                  122.0
+                ],
+                "weapon_bounds": [
+                  37,
+                  112,
+                  99,
+                  166
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "left",
+            "phase": 7,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  90.1735,
+                  121.1
+                ],
+                "weapon_bounds": [
+                  39,
+                  111,
+                  100,
+                  165
+                ],
+                "depth": "back",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          }
+        ]
+      },
+      "walk-right": {
+        "frames": 8,
+        "fps": 16,
+        "layers": {
+          "back": "res://assets/held-weapons/paladin/female/walk-right-back.png",
+          "front": "res://assets/held-weapons/paladin/female/walk-right-front.png"
+        },
+        "registration": [
+          {
+            "direction": "right",
+            "phase": 0,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  86.3486,
+                  175.3414
+                ],
+                "weapon_bounds": [
+                  77,
+                  166,
+                  130,
+                  225
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 1,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  87.5735,
+                  175.9258
+                ],
+                "weapon_bounds": [
+                  78,
+                  166,
+                  131,
+                  225
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 2,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  91.0,
+                  175.3196
+                ],
+                "weapon_bounds": [
+                  81,
+                  166,
+                  135,
+                  225
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 3,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  94.3017,
+                  175.0856
+                ],
+                "weapon_bounds": [
+                  84,
+                  165,
+                  138,
+                  224
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 4,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  96.0695,
+                  176.6796
+                ],
+                "weapon_bounds": [
+                  87,
+                  167,
+                  140,
+                  226
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 5,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  94.6895,
+                  177.3919
+                ],
+                "weapon_bounds": [
+                  85,
+                  168,
+                  139,
+                  227
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 6,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  91.0,
+                  176.0
+                ],
+                "weapon_bounds": [
+                  81,
+                  166,
+                  135,
+                  226
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "right",
+            "phase": 7,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  87.8615,
+                  174.6449
+                ],
+                "weapon_bounds": [
+                  78,
+                  165,
+                  131,
+                  224
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          }
+        ]
+      },
+      "walk-up": {
+        "frames": 8,
+        "fps": 16,
+        "layers": {
+          "back": "res://assets/held-weapons/paladin/female/walk-up-back.png",
+          "front": "res://assets/held-weapons/paladin/female/walk-up-front.png"
+        },
+        "registration": [
+          {
+            "direction": "up",
+            "phase": 0,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  181.8924,
+                  158.343
+                ],
+                "weapon_bounds": [
+                  171,
+                  146,
+                  220,
+                  220
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 1,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  181.9219,
+                  158.518
+                ],
+                "weapon_bounds": [
+                  171,
+                  146,
+                  220,
+                  220
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 2,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  182.0,
+                  156.0
+                ],
+                "weapon_bounds": [
+                  171,
+                  144,
+                  220,
+                  218
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 3,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  182.0193,
+                  152.791
+                ],
+                "weapon_bounds": [
+                  171,
+                  141,
+                  220,
+                  215
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 4,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  182.0266,
+                  152.7279
+                ],
+                "weapon_bounds": [
+                  171,
+                  141,
+                  220,
+                  215
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 5,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  182.0375,
+                  154.7428
+                ],
+                "weapon_bounds": [
+                  171,
+                  143,
+                  220,
+                  217
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 6,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  182.0,
+                  155.9897
+                ],
+                "weapon_bounds": [
+                  171,
+                  144,
+                  220,
+                  218
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          },
+          {
+            "direction": "up",
+            "phase": 7,
+            "hands": [
+              {
+                "hand": "right",
+                "grip": [
+                  181.9386,
+                  157.0333
+                ],
+                "weapon_bounds": [
+                  171,
+                  145,
+                  220,
+                  218
+                ],
+                "depth": "front",
+                "mapping_residual_px": 0.0,
+                "grip_on_opaque_hand": true
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "limits": [
+    "Existing cupped/open hands preserved; no newly painted gripping poses.",
+    "Original flat art projected for a resting carry pose; depth perspective remains approximate.",
+    "No combat or new aiming poses."
+  ]
+}

@@ -13,20 +13,24 @@ func run() -> void:
 	bg.size = Vector2(1280, 1000)
 	bg.color = Color("eee5d2")
 	canvas.add_child(bg)
-	for row in range(4):
-		for direction in range(4):
-			var avatar = preload("res://src/layered_avatar.gd").new()
-			canvas.add_child(avatar)
-			avatar.configure("male" if row < 2 else "female", "Warrior", {"skin":"blue" if row == 3 else "warm", "eyes":"Green"})
-			avatar.set_equipped_weapon("warrior_01_weapon")
-			avatar.advance(direction, row % 2 == 1, 0.1875)
-			avatar.position = Vector2(direction * 320 + 160, row * 250 + 244)
-			var title := Label.new()
-			title.text = ("male" if row < 2 else "female") + (" walk " if row % 2 else " idle ") + ["down", "left", "right", "up"][direction]
-			title.position = Vector2(direction * 320 + 12, row * 250 + 4)
-			title.add_theme_color_override("font_color", Color("30291e"))
-			canvas.add_child(title)
-	await capture("res://screenshots/held_weapon_poses.png")
+	for selected_class in preload("res://src/creator/catalog.gd").CLASSES:
+		for row in range(4):
+			for direction in range(4):
+				var avatar = preload("res://src/layered_avatar.gd").new()
+				canvas.add_child(avatar)
+				avatar.configure("male" if row < 2 else "female", selected_class, {"skin":"blue" if row == 3 else "warm", "eyes":"Green"})
+				avatar.set_equipped_weapon(selected_class.to_lower() + "_01_weapon")
+				avatar.advance(direction, row % 2 == 1, 0.1875)
+				avatar.position = Vector2(direction * 320 + 160, row * 250 + 244)
+				var title := Label.new()
+				title.text = ("male" if row < 2 else "female") + (" walk " if row % 2 else " idle ") + ["down", "left", "right", "up"][direction]
+				title.position = Vector2(direction * 320 + 12, row * 250 + 4)
+				title.add_theme_color_override("font_color", Color("30291e"))
+				canvas.add_child(title)
+		await capture("res://screenshots/held_weapon_" + selected_class.to_lower() + ".png")
+		for child in canvas.get_children():
+			if child != bg: child.queue_free()
+		await process_frame
 	canvas.queue_free()
 	await process_frame
 	root.size = Vector2i(1280, 720)
