@@ -40,6 +40,13 @@ func run()->void:
 		assert(world.can_stand(world.player))
 		world._update_actor()
 		await snap("world_behind_"+item.id+".png")
+	var fortifications:Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/fortifications.json"))
+	for gate in fortifications.gates:
+		for side in ["outside_point","center","inside_point"]:
+			world.player = Vector2(gate[side][0],gate[side][1])
+			assert(world.can_stand(world.player))
+			world._update_actor()
+			await snap("world_gate_"+gate.id+"_"+side+".png")
 	world.player = Vector2(247,1220)
 	assert(world.can_stand(world.player) and not world.can_stand(Vector2(247,1148)))
 	world._update_actor()

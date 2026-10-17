@@ -59,7 +59,7 @@ func run()->void:
 	check(not world.can_stand(Vector2(1287,764)),"Cliff face forest_middle_face_extension")
 	check(world.can_stand(Vector2(1307,714)),"Clear cliff neighbor forest_middle_face_extension")
 	check(not world.can_stand(Vector2(3008,345)),"Cliff face foothill_southwest_terrace_face")
-	check(world.can_stand(Vector2(2978,405)),"Clear cliff neighbor foothill_southwest_terrace_face")
+	check(world.can_stand(Vector2(2950,470)),"Clear cliff neighbor foothill_southwest_terrace_face")
 	check(not world.can_stand(Vector2(3223,117)),"Cliff face foothill_upper_terrace_face")
 	check(world.can_stand(Vector2(3193,157)),"Clear cliff neighbor foothill_upper_terrace_face")
 	check(not world.can_stand(Vector2(4324,358)),"Cliff face foothill_east_road_shelf")

@@ -18,6 +18,8 @@ var world_ready := false
 var scenery_nodes := {}
 var building_nodes := {}
 var building_data: Array = []
+var fortification_nodes := {}
+var fortification_data: Array = []
 var entrance_labels := {"home":"Home", "guild":"Guild", "shop_southwest":"General store", "shop_south_plaza":"Apothecary", "blacksmith_workyard":"Blacksmith"}
 func _ready() -> void:
 	world_layout = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/layout.json"))
@@ -37,6 +39,7 @@ func _ready() -> void:
 	world_ready = true
 	_load_scenery()
 	_load_buildings()
+	_load_fortifications()
 	if not can_stand(player): player = HOME
 	_update_actor()
 	message.text = "Explore the paths. Return home here with [E]. Shop and guild interiors are not open yet."
@@ -86,6 +89,7 @@ func _update_actor() -> void:
 	super._update_actor()
 	actor.z_index = int(player.y * 0.4)
 	_update_building_depth()
+	_update_fortification_depth()
 	_layout()
 	if is_instance_valid(status) and not state.character.is_empty():
 		status.text = "%s • Starter region • %d, %d" % [state.character.username,player.x,player.y]
@@ -150,6 +154,44 @@ func _load_buildings() -> void:
 		var key:String = "home" if item.id == "starter_home" else item.id
 		anchors[key] = Vector2(item.door_approach[0],item.door_approach[1])
 		if not entrance_labels.has(key): entrance_labels[key] = "Town home"
+func _load_fortifications() -> void:
+	var path := "res://assets/starter-region/fortifications.json"
+	if not FileAccess.file_exists(path): return
+	var data:Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))
+	fortification_data = data.get("placements",[])
+	for item in fortification_data:
+		var sprite := Sprite2D.new()
+		sprite.texture = load("res://assets/starter-region/"+item.file)
+		sprite.centered = false
+		var display := Vector2(item.display_size[0],item.display_size[1])
+		sprite.scale = display / sprite.texture.get_size()
+		sprite.position = Vector2(item.position[0],item.position[1])-Vector2(item.anchor[0],item.anchor[1])*display
+		sprite.z_index = int(item.depth_anchor_world[1]*0.4)
+		stage.add_child(sprite)
+		fortification_nodes[item.id] = sprite
+		# The same measured ground footprint controls depth and collision.
+		var polygon := PackedVector2Array()
+		for point in item.collision_polygon: polygon.append(Vector2(point[0],point[1]))
+		blocked.append(polygon)
+		var bounds := Rect2(polygon[0],Vector2.ZERO)
+		for point in polygon: bounds = bounds.expand(point)
+		blocked_bounds.append(bounds.grow(FOOT_RADIUS))
+func _update_fortification_depth() -> void:
+	var actor_rect := Rect2(player-Vector2(128,232)*actor.scale,Vector2(256,256)*actor.scale)
+	for item in fortification_data:
+		var sprite:Sprite2D = fortification_nodes[item.id]
+		var depth := int(item.depth_anchor_world[1]*0.4)
+		var visual := Rect2(sprite.position,Vector2(item.display_size[0],item.display_size[1]))
+		var obscures_player := false
+		if visual.intersects(actor_rect):
+			if player.y >= building_front_y(item,player.x): depth = mini(depth,actor.z_index-2)
+			else:
+				depth = maxi(depth,actor.z_index+2)
+				obscures_player = true
+		sprite.z_index = depth
+		# Foreground fortifications must not hide the controlled character or
+		# a nearby shop entrance. Only the overlapping module fades locally.
+		sprite.self_modulate.a = 0.38 if obscures_player else 1.0
 func building_front_y(item:Dictionary, x:float) -> float:
 	var crossings:Array[float] = []
 	var polygon:Array = item.collision_polygon
