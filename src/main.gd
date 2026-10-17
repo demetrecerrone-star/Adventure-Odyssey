@@ -478,21 +478,40 @@ func _process(delta: float) -> void:
 		runners[i].position = Vector2(x, road_y)
 
 func _open_bedroom() -> void:
-	if is_instance_valid(bedroom):
-		return
+	if is_instance_valid(bedroom): return
 	close_modal()
-	for button in buttons:
-		button.disabled = true
-	bedroom = preload("res://src/bedroom.gd").new()
+	for button in buttons: button.disabled = true
+	_install_adventure(preload("res://src/bedroom.gd").new())
+	if bedroom.state.location.scene == "starter_region" and not bedroom.state.character.is_empty():
+		_open_world.call_deferred()
+
+func _install_adventure(next: Control) -> void:
+	if is_instance_valid(bedroom):
+		remove_child(bedroom)
+		bedroom.queue_free()
+	bedroom = next
 	bedroom.exited.connect(func():
-		if not is_instance_valid(bedroom):
-			return
+		if not is_instance_valid(bedroom): return
 		remove_child(bedroom)
 		bedroom.queue_free()
 		bedroom = null
-		for button in buttons:
-			button.disabled = false
+		for button in buttons: button.disabled = false
 		buttons[1].grab_focus()
 	)
+	bedroom.world_requested.connect(_open_world)
 	add_child(bedroom)
 	bedroom.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+func _open_world() -> void:
+	if not is_instance_valid(bedroom): return
+	var world = preload("res://src/starter_world.gd").new()
+	world.state = bedroom.state
+	world.returned.connect(_return_bedroom)
+	_install_adventure(world)
+
+func _return_bedroom() -> void:
+	var room = preload("res://src/bedroom.gd").new()
+	room.state = bedroom.state
+	_install_adventure(room)
+	room.player = Vector2(780,440)
+	room._update_actor()

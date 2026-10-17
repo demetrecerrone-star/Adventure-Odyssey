@@ -54,7 +54,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for test in creator_test creator_layout_test bedroom_test avatar_playback_test outfit_assets_test appearance_test held_weapon_test hair_test painted_walk_test; do
+          for test in creator_test creator_layout_test bedroom_test avatar_playback_test outfit_assets_test appearance_test held_weapon_test hair_test painted_walk_test starter_world_test; do
             timeout 100 godot --headless --path . --script "res://tests/${test}.gd" 2>&1 | tee "/tmp/ao_${test}.log"
             grep -Eq 'failures: 0|0 failures' "/tmp/ao_${test}.log"
             ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script|Parse Error' "/tmp/ao_${test}.log"
@@ -73,6 +73,15 @@ jobs:
           test -s screenshots/title_signin.png
           test -s screenshots/title_create.png
           test -s screenshots/title_wide.png
+
+      - name: Capture native playable starter world
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 2304x1536x24' godot --path . --script res://tests/starter_world_screenshot.gd 2>&1 | tee /tmp/ao_world_capture.log
+          ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script|Parse Error' /tmp/ao_world_capture.log
+          test -s screenshots/world_overview.png
+          test -s screenshots/world_return_bedroom.png
 
       - name: Capture native furnished bedroom
         shell: bash
@@ -274,7 +283,7 @@ jobs:
           timeout 80 godot --headless --path /tmp/ao-packaged-title --script "$GITHUB_WORKSPACE/tests/title_test.gd" 2>&1 | tee /tmp/ao_packaged_test.log
           grep -Fq 'ADVENTURE ODYSSEY TITLE TEST: PASS' /tmp/ao_packaged_test.log
           ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load|Parse Error|Error loading' /tmp/ao_packaged_test.log
-          for test in bedroom_test avatar_playback_test outfit_assets_test appearance_test held_weapon_test hair_test painted_walk_test; do
+          for test in bedroom_test avatar_playback_test outfit_assets_test appearance_test held_weapon_test hair_test painted_walk_test starter_world_test; do
             timeout 100 godot --headless --path /tmp/ao-packaged-title --script "$GITHUB_WORKSPACE/tests/${test}.gd" 2>&1 | tee "/tmp/ao_packaged_${test}.log"
             grep -Eq 'failures: 0|0 failures' "/tmp/ao_packaged_${test}.log"
             ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load|Parse Error|Error loading' "/tmp/ao_packaged_${test}.log"

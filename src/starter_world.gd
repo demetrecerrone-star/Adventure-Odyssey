@@ -1,0 +1,146 @@
+extends "res://src/bedroom.gd"
+# Playable ground/scenery checkpoint. Building lots remain reserved until artwork exists.
+signal returned
+const WORLD_SIZE := Vector2(4608,3072)
+const HOME := Vector2(1644,1318)
+const FOOT_RADIUS := 16.0
+var world_layout: Dictionary = {}
+var blocked: Array[PackedVector2Array] = []
+var blocked_bounds: Array[Rect2] = []
+var chunks := {}
+var camera_position := HOME
+var camera_zoom := 1.0 # Diagnostic overview only; normal play stays at native 1:1 scale.
+var peak_chunks := 0
+var chunk_loads := 0
+var chunk_evictions := 0
+var autosave_elapsed := 0.0
+var world_ready := false
+var scenery_nodes := {}
+func _ready() -> void:
+	world_layout = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/layout.json"))
+	for block in world_layout.blocked_polygons:
+		var points := PackedVector2Array()
+		for p in block.polygon: points.append(Vector2(p[0],p[1]))
+		blocked.append(points)
+		var bounds := Rect2(points[0],Vector2.ZERO)
+		for point in points: bounds = bounds.expand(point)
+		blocked_bounds.append(bounds.grow(FOOT_RADIUS))
+	super._ready()
+	# Reuse the established inventory, input and modal controls, without room artwork.
+	for child in stage.get_children():
+		if child != actor: child.free()
+	stage.z_index = 0
+	actor.scale = Vector2.ONE * (96.0 / 190.0)
+	world_ready = true
+	_load_scenery()
+	if not can_stand(player): player = HOME
+	_update_actor()
+	message.text = "Explore the paths. Return home here with [E]. Buildings are still being painted."
+func _load_layout() -> void:
+	prop_rects = {}
+	anchors = {"home":HOME}
+	wake_spawn = HOME
+func _start_character() -> void:
+	super._start_character()
+	if state.location.scene == "starter_region":
+		var p: Array = state.location.position
+		var candidate := Vector2(p[0],p[1])
+		if can_stand(candidate): player = candidate
+	movement_speed = 155.0
+func _layout() -> void:
+	if not is_instance_valid(stage): return
+	stage.scale = Vector2.ONE * camera_zoom
+	var half := size / camera_zoom * 0.5
+	camera_position = Vector2(clampf(player.x,ceilf(half.x),floorf(WORLD_SIZE.x-half.x)),clampf(player.y,ceilf(half.y),floorf(WORLD_SIZE.y-half.y)))
+	stage.position = size * 0.5 - camera_position * camera_zoom
+	if is_instance_valid(overlay): overlay.size = size
+	if world_ready: update_chunks()
+func can_stand(point: Vector2) -> bool:
+	if point.x < 48 or point.x > 4560 or point.y < 112 or point.y > 3024: return false
+	for index in blocked.size():
+		if not blocked_bounds[index].has_point(point): continue
+		var polygon := blocked[index]
+		if _contains_point(point,polygon): return false
+		for i in polygon.size():
+			if point.distance_to(Geometry2D.get_closest_point_to_segment(point,polygon[i],polygon[(i+1)%polygon.size()])) < FOOT_RADIUS: return false
+	for rect in prop_rects.values():
+		if rect.grow(FOOT_RADIUS).has_point(point): return false
+	return true
+func _contains_point(point: Vector2, polygon: PackedVector2Array) -> bool:
+	# Half-open horizontal ray avoids rare false-positive ray/vertex hits in the
+	# engine helper on the large traced river polygon. Scalar math is float64.
+	var inside := false
+	var previous := polygon[polygon.size()-1]
+	for current in polygon:
+		if (float(current.y) > float(point.y)) != (float(previous.y) > float(point.y)):
+			var crossing: float = float(current.x) + (float(point.y)-float(current.y)) * (float(previous.x)-float(current.x)) / (float(previous.y)-float(current.y))
+			if float(point.x) < crossing: inside = not inside
+		previous = current
+	return inside
+func _update_actor() -> void:
+	if not is_instance_valid(actor): return
+	super._update_actor()
+	actor.z_index = int(player.y * 0.4)
+	_layout()
+	if is_instance_valid(status) and not state.character.is_empty():
+		status.text = "%s • Starter region • %d, %d" % [state.character.username,player.x,player.y]
+func update_chunks() -> void:
+	var needed := Rect2(camera_position-size/camera_zoom/2,size/camera_zoom).grow(128)
+	for i in world_layout.chunks.size():
+		var data: Dictionary = world_layout.chunks[i]
+		var r: Array = data.world_rect
+		var rect := Rect2(r[0],r[1],r[2],r[3])
+		if needed.intersects(rect):
+			if not chunks.has(i):
+				var sprite := Sprite2D.new()
+				sprite.texture = ResourceLoader.load("res://assets/starter-region/"+data.file,"Texture2D",ResourceLoader.CACHE_MODE_IGNORE)
+				sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+				sprite.centered = false
+				sprite.region_enabled = true
+				sprite.region_rect = Rect2(2,2,r[2],r[3])
+				sprite.region_filter_clip_enabled = false
+				sprite.position = rect.position
+				sprite.z_index = 0
+				stage.add_child(sprite)
+				chunks[i] = sprite
+				chunk_loads += 1
+		elif chunks.has(i):
+			chunks[i].free()
+			chunks.erase(i)
+			chunk_evictions += 1
+	peak_chunks = maxi(peak_chunks,chunks.size())
+func _load_scenery() -> void:
+	var path := "res://assets/starter-region/scenery.json"
+	if not FileAccess.file_exists(path): return
+	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))
+	for item in data.get("placements",[]):
+		var sprite := Sprite2D.new()
+		sprite.texture = load("res://assets/starter-region/"+item.file)
+		sprite.centered = false
+		var display := Vector2(item.display_size[0],item.display_size[1])
+		var anchor := Vector2(item.anchor[0],item.anchor[1])
+		sprite.scale = display / sprite.texture.get_size()
+		sprite.position = Vector2(item.position[0],item.position[1]) - anchor * display
+		sprite.z_index = int(item.position[1] * 0.4) if item.get("depth_sort",true) else 1
+		stage.add_child(sprite)
+		scenery_nodes[item.id] = sprite
+		if item.has("collision"):
+			var r: Array = item.collision
+			prop_rects[item.id] = Rect2(r[0],r[1],r[2],r[3])
+func _process(delta: float) -> void:
+	super._process(delta)
+	if not world_ready or state.character.is_empty() or is_instance_valid(overlay): return
+	autosave_elapsed += delta
+	if autosave_elapsed >= 10.0:
+		autosave_elapsed = 0
+		if not state.set_location("starter_region",player): message.text = state.error
+func interact() -> void:
+	if is_instance_valid(overlay) or sleeping: return
+	if nearest_prop() == "home":
+		_reset_movement()
+		if state.set_location("bedroom",Vector2(780,440)): returned.emit()
+		else: message.text = state.error
+func _exit() -> void:
+	_reset_movement()
+	if state.set_location("starter_region",player): exited.emit()
+	else: message.text = state.error

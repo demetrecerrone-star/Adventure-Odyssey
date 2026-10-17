@@ -1,0 +1,3405 @@
+{
+  "schema_version": 1,
+  "world_size": [
+    4608,
+    3072
+  ],
+  "world_origin": [
+    0,
+    0
+  ],
+  "character_visible_height": 96,
+  "placements": [
+    {
+      "file": "scenery/oak_mature.png",
+      "display_size": [
+        324.58,
+        300.537
+      ],
+      "anchor": [
+        0.5096450617283951,
+        0.9024333333333332
+      ],
+      "id": "oak_mature__01",
+      "asset_id": "oak_mature",
+      "region": "forest_northwest",
+      "position": [
+        247,
+        1100
+      ],
+      "depth_sort": true,
+      "collision": [
+        231.0,
+        1091.0,
+        32,
+        18
+      ],
+      "source_sha256": "b76e594857aec804c5b34e83e4f6b04c6a71d20b2c22349ede3ee84572d32215"
+    },
+    {
+      "file": "scenery/oak_young.png",
+      "display_size": [
+        218.709,
+        196.438
+      ],
+      "anchor": [
+        0.5023866348448688,
+        0.936651904340124
+      ],
+      "id": "oak_young__01",
+      "asset_id": "oak_young",
+      "region": "forest_northwest",
+      "position": [
+        222,
+        784
+      ],
+      "depth_sort": true,
+      "collision": [
+        206.0,
+        775.0,
+        32,
+        18
+      ],
+      "source_sha256": "d8af5236edc4e4202174248f9812806e589dc5c8bbf668446010781f7b471d77"
+    },
+    {
+      "file": "scenery/birch.png",
+      "display_size": [
+        172.984,
+        261.716
+      ],
+      "anchor": [
+        0.521414342629482,
+        0.910427913100724
+      ],
+      "id": "birch__01",
+      "asset_id": "birch",
+      "region": "forest_northwest",
+      "position": [
+        159,
+        1480
+      ],
+      "depth_sort": true,
+      "collision": [
+        143.0,
+        1471.0,
+        32,
+        18
+      ],
+      "source_sha256": "64dac6df2e4f82cbd566170d4cb10da179695b4b928fffe4ce9c9b7500eafc99"
+    },
+    {
+      "file": "scenery/pine_tall.png",
+      "display_size": [
+        208.108,
+        308.732
+      ],
+      "anchor": [
+        0.5054945054945055,
+        0.9248619528619527
+      ],
+      "id": "pine_tall__01",
+      "asset_id": "pine_tall",
+      "region": "forest_northwest",
+      "position": [
+        1177,
+        549
+      ],
+      "depth_sort": true,
+      "collision": [
+        1161.0,
+        540.0,
+        32,
+        18
+      ],
+      "source_sha256": "714524f42b9a8845f47c76f453d5685345a1d46081a0f6b7e91df4ab3d73459f"
+    },
+    {
+      "file": "scenery/spruce.png",
+      "display_size": [
+        211.984,
+        253.074
+      ],
+      "anchor": [
+        0.5277533039647577,
+        0.9061992619926198
+      ],
+      "id": "spruce__01",
+      "asset_id": "spruce",
+      "region": "forest_northwest",
+      "position": [
+        935,
+        468
+      ],
+      "depth_sort": true,
+      "collision": [
+        919.0,
+        459.0,
+        32,
+        18
+      ],
+      "source_sha256": "f62266cb0d3d6009c77f73e337948b4b97d818ea1c94ef55194575088746b8e4"
+    },
+    {
+      "file": "scenery/willow_tree.png",
+      "display_size": [
+        288.444,
+        266.444
+      ],
+      "anchor": [
+        0.5104006163328197,
+        0.9297748123436197
+      ],
+      "id": "willow_tree__01",
+      "asset_id": "willow_tree",
+      "region": "forest_northwest",
+      "position": [
+        1454,
+        484
+      ],
+      "depth_sort": true,
+      "collision": [
+        1438.0,
+        475.0,
+        32,
+        18
+      ],
+      "source_sha256": "e6afafd0737e499f57045c1cfec5cd2d7f200d4de2e3ea3f20b5f1ea2965eb06"
+    },
+    {
+      "file": "scenery/dead_tree.png",
+      "display_size": [
+        255.08,
+        233.111
+      ],
+      "anchor": [
+        0.49885670731707316,
+        0.9341284403669725
+      ],
+      "id": "dead_tree__01",
+      "asset_id": "dead_tree",
+      "region": "forest_northwest",
+      "position": [
+        1760,
+        420
+      ],
+      "depth_sort": true,
+      "collision": [
+        1744.0,
+        411.0,
+        32,
+        18
+      ],
+      "source_sha256": "7e7c6d7882a2110709448d9b3d455fd5faf3a27edffdd781158622a0122642ed"
+    },
+    {
+      "file": "scenery/oak_mature.png",
+      "display_size": [
+        324.58,
+        300.537
+      ],
+      "anchor": [
+        0.5096450617283951,
+        0.9024333333333332
+      ],
+      "id": "oak_mature__02",
+      "asset_id": "oak_mature",
+      "region": "forest_northwest",
+      "position": [
+        712,
+        1579
+      ],
+      "depth_sort": true,
+      "collision": [
+        696.0,
+        1570.0,
+        32,
+        18
+      ],
+      "source_sha256": "b76e594857aec804c5b34e83e4f6b04c6a71d20b2c22349ede3ee84572d32215"
+    },
+    {
+      "file": "scenery/oak_young.png",
+      "display_size": [
+        218.709,
+        196.438
+      ],
+      "anchor": [
+        0.5023866348448688,
+        0.936651904340124
+      ],
+      "id": "oak_young__02",
+      "asset_id": "oak_young",
+      "region": "forest_northwest",
+      "position": [
+        830,
+        1049
+      ],
+      "depth_sort": true,
+      "collision": [
+        814.0,
+        1040.0,
+        32,
+        18
+      ],
+      "source_sha256": "d8af5236edc4e4202174248f9812806e589dc5c8bbf668446010781f7b471d77"
+    },
+    {
+      "file": "scenery/birch.png",
+      "display_size": [
+        172.984,
+        261.716
+      ],
+      "anchor": [
+        0.521414342629482,
+        0.910427913100724
+      ],
+      "id": "birch__02",
+      "asset_id": "birch",
+      "region": "forest_northwest",
+      "position": [
+        1450,
+        797
+      ],
+      "depth_sort": true,
+      "collision": [
+        1434.0,
+        788.0,
+        32,
+        18
+      ],
+      "source_sha256": "64dac6df2e4f82cbd566170d4cb10da179695b4b928fffe4ce9c9b7500eafc99"
+    },
+    {
+      "file": "scenery/pine_tall.png",
+      "display_size": [
+        208.108,
+        308.732
+      ],
+      "anchor": [
+        0.5054945054945055,
+        0.9248619528619527
+      ],
+      "id": "pine_tall__02",
+      "asset_id": "pine_tall",
+      "region": "forest_northwest",
+      "position": [
+        1770,
+        850
+      ],
+      "depth_sort": true,
+      "collision": [
+        1754.0,
+        841.0,
+        32,
+        18
+      ],
+      "source_sha256": "714524f42b9a8845f47c76f453d5685345a1d46081a0f6b7e91df4ab3d73459f"
+    },
+    {
+      "file": "scenery/spruce.png",
+      "display_size": [
+        211.984,
+        253.074
+      ],
+      "anchor": [
+        0.5277533039647577,
+        0.9061992619926198
+      ],
+      "id": "spruce__02",
+      "asset_id": "spruce",
+      "region": "forest_northwest",
+      "position": [
+        1329,
+        1216
+      ],
+      "depth_sort": true,
+      "collision": [
+        1313.0,
+        1207.0,
+        32,
+        18
+      ],
+      "source_sha256": "f62266cb0d3d6009c77f73e337948b4b97d818ea1c94ef55194575088746b8e4"
+    },
+    {
+      "file": "scenery/willow_tree.png",
+      "display_size": [
+        288.444,
+        266.444
+      ],
+      "anchor": [
+        0.5104006163328197,
+        0.9297748123436197
+      ],
+      "id": "willow_tree__02",
+      "asset_id": "willow_tree",
+      "region": "forest_northwest",
+      "position": [
+        626,
+        361
+      ],
+      "depth_sort": true,
+      "collision": [
+        610.0,
+        352.0,
+        32,
+        18
+      ],
+      "source_sha256": "e6afafd0737e499f57045c1cfec5cd2d7f200d4de2e3ea3f20b5f1ea2965eb06"
+    },
+    {
+      "file": "scenery/dead_tree.png",
+      "display_size": [
+        255.08,
+        233.111
+      ],
+      "anchor": [
+        0.49885670731707316,
+        0.9341284403669725
+      ],
+      "id": "dead_tree__02",
+      "asset_id": "dead_tree",
+      "region": "forest_northwest",
+      "position": [
+        388,
+        1551
+      ],
+      "depth_sort": true,
+      "collision": [
+        372.0,
+        1542.0,
+        32,
+        18
+      ],
+      "source_sha256": "7e7c6d7882a2110709448d9b3d455fd5faf3a27edffdd781158622a0122642ed"
+    },
+    {
+      "file": "scenery/apple_tree.png",
+      "display_size": [
+        242.783,
+        221.053
+      ],
+      "anchor": [
+        0.5158179012345679,
+        0.9031694915254237
+      ],
+      "id": "apple_tree__01",
+      "asset_id": "apple_tree",
+      "region": "meadow_southwest",
+      "position": [
+        1920,
+        1720
+      ],
+      "depth_sort": true,
+      "collision": [
+        1904.0,
+        1711.0,
+        32,
+        18
+      ],
+      "source_sha256": "87535bccc74269842628d623d1d4d3b6da0d5d45de8a27409021e7eea2971462"
+    },
+    {
+      "file": "scenery/apple_tree.png",
+      "display_size": [
+        242.783,
+        221.053
+      ],
+      "anchor": [
+        0.5158179012345679,
+        0.9031694915254237
+      ],
+      "id": "apple_tree__02",
+      "asset_id": "apple_tree",
+      "region": "meadow_southwest",
+      "position": [
+        2204,
+        1986
+      ],
+      "depth_sort": true,
+      "collision": [
+        2188.0,
+        1977.0,
+        32,
+        18
+      ],
+      "source_sha256": "87535bccc74269842628d623d1d4d3b6da0d5d45de8a27409021e7eea2971462"
+    },
+    {
+      "file": "scenery/sapling.png",
+      "display_size": [
+        107.799,
+        115.227
+      ],
+      "anchor": [
+        0.5353143841515935,
+        0.8222240128928283
+      ],
+      "id": "sapling__01",
+      "asset_id": "sapling",
+      "region": "meadow_southwest",
+      "position": [
+        1420,
+        2200
+      ],
+      "depth_sort": true,
+      "collision": [
+        1414.0,
+        2196.0,
+        12,
+        8
+      ],
+      "source_sha256": "4d802fef498a54afc85196766231bef17b90d262ed5d5401e79ec22f423f26ab"
+    },
+    {
+      "file": "scenery/sapling.png",
+      "display_size": [
+        107.799,
+        115.227
+      ],
+      "anchor": [
+        0.5353143841515935,
+        0.8222240128928283
+      ],
+      "id": "sapling__02",
+      "asset_id": "sapling",
+      "region": "meadow_southwest",
+      "position": [
+        1750,
+        2100
+      ],
+      "depth_sort": true,
+      "collision": [
+        1744.0,
+        2096.0,
+        12,
+        8
+      ],
+      "source_sha256": "4d802fef498a54afc85196766231bef17b90d262ed5d5401e79ec22f423f26ab"
+    },
+    {
+      "file": "scenery/willow_tree.png",
+      "display_size": [
+        288.444,
+        266.444
+      ],
+      "anchor": [
+        0.5104006163328197,
+        0.9297748123436197
+      ],
+      "id": "willow_tree__03",
+      "asset_id": "willow_tree",
+      "region": "meadow_southwest",
+      "position": [
+        2050,
+        2400
+      ],
+      "depth_sort": true,
+      "collision": [
+        2034.0,
+        2391.0,
+        32,
+        18
+      ],
+      "source_sha256": "e6afafd0737e499f57045c1cfec5cd2d7f200d4de2e3ea3f20b5f1ea2965eb06"
+    },
+    {
+      "file": "scenery/rounded-granite-boulder.png",
+      "display_size": [
+        112.85,
+        113.41
+      ],
+      "anchor": [
+        0.512728,
+        0.744399
+      ],
+      "id": "rounded-granite-boulder__01",
+      "asset_id": "rounded-granite-boulder",
+      "region": "rocky_northeast",
+      "position": [
+        3320,
+        340
+      ],
+      "depth_sort": true,
+      "collision": [
+        3286.0,
+        326.5,
+        68,
+        27
+      ],
+      "source_sha256": "1836ddb216dd423fce0de631a53bc0262638416fc75651d87790634c11e9169f"
+    },
+    {
+      "file": "scenery/angular-gray-boulder.png",
+      "display_size": [
+        119.38,
+        120.07
+      ],
+      "anchor": [
+        0.550608,
+        0.744882
+      ],
+      "id": "angular-gray-boulder__01",
+      "asset_id": "angular-gray-boulder",
+      "region": "rocky_northeast",
+      "position": [
+        3671,
+        425
+      ],
+      "depth_sort": true,
+      "collision": [
+        3640.0,
+        412.0,
+        62,
+        26
+      ],
+      "source_sha256": "cf7e4f83ce60b70260646f194677bf9c7f9d8aab71af401998cc0f09b752b34a"
+    },
+    {
+      "file": "scenery/small-rock-cluster.png",
+      "display_size": [
+        99.18,
+        97.69
+      ],
+      "anchor": [
+        0.495004,
+        0.657566
+      ],
+      "id": "small-rock-cluster__01",
+      "asset_id": "small-rock-cluster",
+      "region": "rocky_northeast",
+      "position": [
+        3780,
+        590
+      ],
+      "depth_sort": true,
+      "collision": [
+        3753.5,
+        577.5,
+        53,
+        25
+      ],
+      "source_sha256": "e2a807caa270eaad777aa7f6600d48a5a26ff5ca1801442fa84ee787b3e61a3e"
+    },
+    {
+      "file": "scenery/tall-jagged-foothill-rock.png",
+      "display_size": [
+        156.74,
+        153.7
+      ],
+      "anchor": [
+        0.529661,
+        0.836903
+      ],
+      "id": "tall-jagged-foothill-rock__01",
+      "asset_id": "tall-jagged-foothill-rock",
+      "region": "rocky_northeast",
+      "position": [
+        4110,
+        600
+      ],
+      "depth_sort": true,
+      "collision": [
+        4071.5,
+        584.5,
+        77,
+        31
+      ],
+      "source_sha256": "e95d085da40c460efe3761d99b5bbb7e5686e5d02a387067c2d446028b5c0590"
+    },
+    {
+      "file": "scenery/low-flat-slab.png",
+      "display_size": [
+        110.22,
+        108.89
+      ],
+      "anchor": [
+        0.511694,
+        0.580931
+      ],
+      "id": "low-flat-slab__01",
+      "asset_id": "low-flat-slab",
+      "region": "rocky_northeast",
+      "position": [
+        3940,
+        840
+      ],
+      "depth_sort": false,
+      "source_sha256": "a8a87a740c4115af70b2d22fce4356fecb4da6fd6799cf7125f021077be322a9"
+    },
+    {
+      "file": "scenery/split-boulder.png",
+      "display_size": [
+        115.09,
+        115.09
+      ],
+      "anchor": [
+        0.502392,
+        0.728469
+      ],
+      "id": "split-boulder__01",
+      "asset_id": "split-boulder",
+      "region": "rocky_northeast",
+      "position": [
+        3459,
+        228
+      ],
+      "depth_sort": true,
+      "collision": [
+        3421.0,
+        213.0,
+        76,
+        30
+      ],
+      "source_sha256": "eb2e18704475f703afc3ebb1116e2d21f6152e44c404799ce580bb60a4eec22f"
+    },
+    {
+      "file": "scenery/scree-pebble-cluster.png",
+      "display_size": [
+        73.32,
+        64.57
+      ],
+      "anchor": [
+        0.499577,
+        0.633192
+      ],
+      "id": "scree-pebble-cluster__01",
+      "asset_id": "scree-pebble-cluster",
+      "region": "rocky_northeast",
+      "position": [
+        4253,
+        451
+      ],
+      "depth_sort": false,
+      "source_sha256": "a6360afba5459faf562aa3e4c60d4fa22d4aed7bed801d8ca28b5824323612cd"
+    },
+    {
+      "file": "scenery/grass_dry.png",
+      "display_size": [
+        51.644,
+        34.486
+      ],
+      "anchor": [
+        0.5135941644562334,
+        0.7835948361469711
+      ],
+      "id": "grass_dry__01",
+      "asset_id": "grass_dry",
+      "region": "rocky_northeast",
+      "position": [
+        3152,
+        257
+      ],
+      "depth_sort": false,
+      "source_sha256": "7a69e9ffe94a289f18c181bd77cd1d8ddb81fe4498926180e038a99ef45a39f5"
+    },
+    {
+      "file": "scenery/rounded-granite-boulder.png",
+      "display_size": [
+        112.85,
+        113.41
+      ],
+      "anchor": [
+        0.512728,
+        0.744399
+      ],
+      "id": "rounded-granite-boulder__02",
+      "asset_id": "rounded-granite-boulder",
+      "region": "rocky_northeast",
+      "position": [
+        3384,
+        710
+      ],
+      "depth_sort": true,
+      "collision": [
+        3350.0,
+        696.5,
+        68,
+        27
+      ],
+      "source_sha256": "1836ddb216dd423fce0de631a53bc0262638416fc75651d87790634c11e9169f"
+    },
+    {
+      "file": "scenery/angular-gray-boulder.png",
+      "display_size": [
+        119.38,
+        120.07
+      ],
+      "anchor": [
+        0.550608,
+        0.744882
+      ],
+      "id": "angular-gray-boulder__02",
+      "asset_id": "angular-gray-boulder",
+      "region": "rocky_northeast",
+      "position": [
+        3918,
+        505
+      ],
+      "depth_sort": true,
+      "collision": [
+        3887.0,
+        492.0,
+        62,
+        26
+      ],
+      "source_sha256": "cf7e4f83ce60b70260646f194677bf9c7f9d8aab71af401998cc0f09b752b34a"
+    },
+    {
+      "file": "scenery/small-rock-cluster.png",
+      "display_size": [
+        99.18,
+        97.69
+      ],
+      "anchor": [
+        0.495004,
+        0.657566
+      ],
+      "id": "small-rock-cluster__02",
+      "asset_id": "small-rock-cluster",
+      "region": "rocky_northeast",
+      "position": [
+        4152,
+        717
+      ],
+      "depth_sort": true,
+      "collision": [
+        4125.5,
+        704.5,
+        53,
+        25
+      ],
+      "source_sha256": "e2a807caa270eaad777aa7f6600d48a5a26ff5ca1801442fa84ee787b3e61a3e"
+    },
+    {
+      "file": "scenery/tall-jagged-foothill-rock.png",
+      "display_size": [
+        156.74,
+        153.7
+      ],
+      "anchor": [
+        0.529661,
+        0.836903
+      ],
+      "id": "tall-jagged-foothill-rock__02",
+      "asset_id": "tall-jagged-foothill-rock",
+      "region": "rocky_northeast",
+      "position": [
+        3744,
+        963
+      ],
+      "depth_sort": true,
+      "collision": [
+        3705.5,
+        947.5,
+        77,
+        31
+      ],
+      "source_sha256": "e95d085da40c460efe3761d99b5bbb7e5686e5d02a387067c2d446028b5c0590"
+    },
+    {
+      "file": "scenery/low-flat-slab.png",
+      "display_size": [
+        110.22,
+        108.89
+      ],
+      "anchor": [
+        0.511694,
+        0.580931
+      ],
+      "id": "low-flat-slab__02",
+      "asset_id": "low-flat-slab",
+      "region": "rocky_northeast",
+      "position": [
+        3504,
+        385
+      ],
+      "depth_sort": false,
+      "source_sha256": "a8a87a740c4115af70b2d22fce4356fecb4da6fd6799cf7125f021077be322a9"
+    },
+    {
+      "file": "scenery/split-boulder.png",
+      "display_size": [
+        115.09,
+        115.09
+      ],
+      "anchor": [
+        0.502392,
+        0.728469
+      ],
+      "id": "split-boulder__02",
+      "asset_id": "split-boulder",
+      "region": "rocky_northeast",
+      "position": [
+        4191,
+        206
+      ],
+      "depth_sort": true,
+      "collision": [
+        4153.0,
+        191.0,
+        76,
+        30
+      ],
+      "source_sha256": "eb2e18704475f703afc3ebb1116e2d21f6152e44c404799ce580bb60a4eec22f"
+    },
+    {
+      "file": "scenery/scree-pebble-cluster.png",
+      "display_size": [
+        73.32,
+        64.57
+      ],
+      "anchor": [
+        0.499577,
+        0.633192
+      ],
+      "id": "scree-pebble-cluster__02",
+      "asset_id": "scree-pebble-cluster",
+      "region": "rocky_northeast",
+      "position": [
+        3073,
+        270
+      ],
+      "depth_sort": false,
+      "source_sha256": "a6360afba5459faf562aa3e4c60d4fa22d4aed7bed801d8ca28b5824323612cd"
+    },
+    {
+      "file": "scenery/grass_dry.png",
+      "display_size": [
+        51.644,
+        34.486
+      ],
+      "anchor": [
+        0.5135941644562334,
+        0.7835948361469711
+      ],
+      "id": "grass_dry__02",
+      "asset_id": "grass_dry",
+      "region": "rocky_northeast",
+      "position": [
+        3587,
+        506
+      ],
+      "depth_sort": false,
+      "source_sha256": "7a69e9ffe94a289f18c181bd77cd1d8ddb81fe4498926180e038a99ef45a39f5"
+    },
+    {
+      "file": "scenery/rounded-granite-boulder.png",
+      "display_size": [
+        112.85,
+        113.41
+      ],
+      "anchor": [
+        0.512728,
+        0.744399
+      ],
+      "id": "rounded-granite-boulder__03",
+      "asset_id": "rounded-granite-boulder",
+      "region": "rocky_northeast",
+      "position": [
+        3931,
+        727
+      ],
+      "depth_sort": true,
+      "collision": [
+        3897.0,
+        713.5,
+        68,
+        27
+      ],
+      "source_sha256": "1836ddb216dd423fce0de631a53bc0262638416fc75651d87790634c11e9169f"
+    },
+    {
+      "file": "scenery/angular-gray-boulder.png",
+      "display_size": [
+        119.38,
+        120.07
+      ],
+      "anchor": [
+        0.550608,
+        0.744882
+      ],
+      "id": "angular-gray-boulder__03",
+      "asset_id": "angular-gray-boulder",
+      "region": "rocky_northeast",
+      "position": [
+        4075,
+        861
+      ],
+      "depth_sort": true,
+      "collision": [
+        4044.0,
+        848.0,
+        62,
+        26
+      ],
+      "source_sha256": "cf7e4f83ce60b70260646f194677bf9c7f9d8aab71af401998cc0f09b752b34a"
+    },
+    {
+      "file": "scenery/small-rock-cluster.png",
+      "display_size": [
+        99.18,
+        97.69
+      ],
+      "anchor": [
+        0.495004,
+        0.657566
+      ],
+      "id": "small-rock-cluster__03",
+      "asset_id": "small-rock-cluster",
+      "region": "rocky_northeast",
+      "position": [
+        3909,
+        967
+      ],
+      "depth_sort": true,
+      "collision": [
+        3882.5,
+        954.5,
+        53,
+        25
+      ],
+      "source_sha256": "e2a807caa270eaad777aa7f6600d48a5a26ff5ca1801442fa84ee787b3e61a3e"
+    },
+    {
+      "file": "scenery/tall-jagged-foothill-rock.png",
+      "display_size": [
+        156.74,
+        153.7
+      ],
+      "anchor": [
+        0.529661,
+        0.836903
+      ],
+      "id": "tall-jagged-foothill-rock__03",
+      "asset_id": "tall-jagged-foothill-rock",
+      "region": "rocky_northeast",
+      "position": [
+        3031,
+        452
+      ],
+      "depth_sort": true,
+      "collision": [
+        2992.5,
+        436.5,
+        77,
+        31
+      ],
+      "source_sha256": "e95d085da40c460efe3761d99b5bbb7e5686e5d02a387067c2d446028b5c0590"
+    },
+    {
+      "file": "scenery/low-flat-slab.png",
+      "display_size": [
+        110.22,
+        108.89
+      ],
+      "anchor": [
+        0.511694,
+        0.580931
+      ],
+      "id": "low-flat-slab__03",
+      "asset_id": "low-flat-slab",
+      "region": "rocky_northeast",
+      "position": [
+        4044,
+        175
+      ],
+      "depth_sort": false,
+      "source_sha256": "a8a87a740c4115af70b2d22fce4356fecb4da6fd6799cf7125f021077be322a9"
+    },
+    {
+      "file": "scenery/split-boulder.png",
+      "display_size": [
+        115.09,
+        115.09
+      ],
+      "anchor": [
+        0.502392,
+        0.728469
+      ],
+      "id": "split-boulder__03",
+      "asset_id": "split-boulder",
+      "region": "rocky_northeast",
+      "position": [
+        3296,
+        194
+      ],
+      "depth_sort": true,
+      "collision": [
+        3258.0,
+        179.0,
+        76,
+        30
+      ],
+      "source_sha256": "eb2e18704475f703afc3ebb1116e2d21f6152e44c404799ce580bb60a4eec22f"
+    },
+    {
+      "file": "scenery/mossy-boulder.png",
+      "display_size": [
+        112.8,
+        112.71
+      ],
+      "anchor": [
+        0.526485,
+        0.753671
+      ],
+      "id": "mossy-boulder__01",
+      "asset_id": "mossy-boulder",
+      "region": "forest_northwest",
+      "position": [
+        254,
+        488
+      ],
+      "depth_sort": true,
+      "collision": [
+        221.0,
+        474.0,
+        66,
+        28
+      ],
+      "source_sha256": "0f839ca3a46e8e3d6d4f75610f6766ace15651a559941bee69f959a74757ba52"
+    },
+    {
+      "file": "scenery/fresh-stump.png",
+      "display_size": [
+        78.83,
+        78.83
+      ],
+      "anchor": [
+        0.5,
+        0.723381
+      ],
+      "id": "fresh-stump__01",
+      "asset_id": "fresh-stump",
+      "region": "forest_northwest",
+      "position": [
+        1276,
+        643
+      ],
+      "depth_sort": true,
+      "collision": [
+        1257.0,
+        633.0,
+        38,
+        20
+      ],
+      "source_sha256": "7f4d8041b1a6b99123a4fa25cfb0b3cd57dfc9ad0d21913548e63cf4cbbefd8c"
+    },
+    {
+      "file": "scenery/old-mossy-stump.png",
+      "display_size": [
+        82.85,
+        82.52
+      ],
+      "anchor": [
+        0.502,
+        0.73494
+      ],
+      "id": "old-mossy-stump__01",
+      "asset_id": "old-mossy-stump",
+      "region": "forest_northwest",
+      "position": [
+        1593,
+        861
+      ],
+      "depth_sort": true,
+      "collision": [
+        1572.5,
+        849.5,
+        41,
+        23
+      ],
+      "source_sha256": "472deddc9d3e5fd6b807d00a32a51fa18103619dbbcd318441b83e8f30323aca"
+    },
+    {
+      "file": "scenery/fallen-log-ew.png",
+      "display_size": [
+        160.24,
+        161.03
+      ],
+      "anchor": [
+        0.518946,
+        0.600402
+      ],
+      "id": "fallen-log-ew__01",
+      "asset_id": "fallen-log-ew",
+      "region": "forest_northwest",
+      "position": [
+        1327,
+        1586
+      ],
+      "depth_sort": true,
+      "collision": [
+        1256,
+        1576,
+        142,
+        20
+      ],
+      "source_sha256": "d4f19eb416556c69341e77836c636edac2cb261b9d1617429d3dd6e5472fe93c"
+    },
+    {
+      "file": "scenery/fallen-log-diagonal.png",
+      "display_size": [
+        135.81,
+        144.67
+      ],
+      "anchor": [
+        0.515021,
+        0.586285
+      ],
+      "id": "fallen-log-diagonal__01",
+      "asset_id": "fallen-log-diagonal",
+      "region": "forest_northwest",
+      "position": [
+        1068,
+        1038
+      ],
+      "depth_sort": true,
+      "collision": [
+        1015,
+        1002,
+        106,
+        72
+      ],
+      "source_sha256": "dba17a314f999d1bca8f1f120c0ecb5f5139f6fe4cdc152c62f0ecd6ce7e6038"
+    },
+    {
+      "file": "scenery/twig-pile.png",
+      "display_size": [
+        71.65,
+        69.8
+      ],
+      "anchor": [
+        0.498386,
+        0.567125
+      ],
+      "id": "twig-pile__01",
+      "asset_id": "twig-pile",
+      "region": "forest_northwest",
+      "position": [
+        614,
+        883
+      ],
+      "depth_sort": false,
+      "source_sha256": "ec6b488636e411c25f019133c75771687f5d43d1157073096354b75517d2baa6"
+    },
+    {
+      "file": "scenery/mushroom-cluster.png",
+      "display_size": [
+        54.22,
+        53.25
+      ],
+      "anchor": [
+        0.537344,
+        0.73962
+      ],
+      "id": "mushroom-cluster__01",
+      "asset_id": "mushroom-cluster",
+      "region": "forest_northwest",
+      "position": [
+        991,
+        906
+      ],
+      "depth_sort": false,
+      "source_sha256": "410689b558c4c3d9305e540a4fa445bd1321c4aa299a41d47e1975a9202f52dd"
+    },
+    {
+      "file": "scenery/knotted-tree-roots.png",
+      "display_size": [
+        109.25,
+        107.84
+      ],
+      "anchor": [
+        0.492701,
+        0.587724
+      ],
+      "id": "knotted-tree-roots__01",
+      "asset_id": "knotted-tree-roots",
+      "region": "forest_northwest",
+      "position": [
+        1943,
+        670
+      ],
+      "depth_sort": false,
+      "source_sha256": "5dc3e1dd2b4083191acd92141619cf63da4a3e91a31d44ac5c2172e166186885"
+    },
+    {
+      "file": "scenery/hollow-fallen-log.png",
+      "display_size": [
+        166.47,
+        166.6
+      ],
+      "anchor": [
+        0.504019,
+        0.599855
+      ],
+      "id": "hollow-fallen-log__01",
+      "asset_id": "hollow-fallen-log",
+      "region": "forest_northwest",
+      "position": [
+        1058,
+        1462
+      ],
+      "depth_sort": true,
+      "collision": [
+        1004,
+        1414,
+        108,
+        96
+      ],
+      "source_sha256": "75e68fce3069b0f4a734fd8dc4cd2c56b908e1a56f9f8aeef92dab5e8469ea3b"
+    },
+    {
+      "file": "scenery/fern.png",
+      "display_size": [
+        79.937,
+        52.784
+      ],
+      "anchor": [
+        0.48981603153745074,
+        0.7981691542288557
+      ],
+      "id": "fern__01",
+      "asset_id": "fern",
+      "region": "forest_northwest",
+      "position": [
+        140,
+        570
+      ],
+      "depth_sort": false,
+      "source_sha256": "fa4c8f9f60dc01408d71792d2fa878259b738ce9b9ae0beb277366d43b914dc7"
+    },
+    {
+      "file": "scenery/bush_round.png",
+      "display_size": [
+        101.538,
+        67.826
+      ],
+      "anchor": [
+        0.5062582345191041,
+        0.784526627218935
+      ],
+      "id": "bush_round__01",
+      "asset_id": "bush_round",
+      "region": "forest_northwest",
+      "position": [
+        394,
+        1230
+      ],
+      "depth_sort": true,
+      "collision": [
+        371.5,
+        1218.0,
+        45,
+        24
+      ],
+      "source_sha256": "80db39eefbfdd0b62cca92e88330da04b130d75401a168247dd590ccf7a6dac6"
+    },
+    {
+      "file": "scenery/bush_berry.png",
+      "display_size": [
+        112.489,
+        73.978
+      ],
+      "anchor": [
+        0.5171503957783641,
+        0.7934603811434302
+      ],
+      "id": "bush_berry__01",
+      "asset_id": "bush_berry",
+      "region": "forest_northwest",
+      "position": [
+        564,
+        1708
+      ],
+      "depth_sort": true,
+      "collision": [
+        541.5,
+        1696.0,
+        45,
+        24
+      ],
+      "source_sha256": "0782694277c614ac804a58d68153fdac4e65eb753ca5dd52a0b8a8610335e2e9"
+    },
+    {
+      "file": "scenery/mossy-boulder.png",
+      "display_size": [
+        112.8,
+        112.71
+      ],
+      "anchor": [
+        0.526485,
+        0.753671
+      ],
+      "id": "mossy-boulder__02",
+      "asset_id": "mossy-boulder",
+      "region": "forest_northwest",
+      "position": [
+        154,
+        276
+      ],
+      "depth_sort": true,
+      "collision": [
+        121.0,
+        262.0,
+        66,
+        28
+      ],
+      "source_sha256": "0f839ca3a46e8e3d6d4f75610f6766ace15651a559941bee69f959a74757ba52"
+    },
+    {
+      "file": "scenery/fresh-stump.png",
+      "display_size": [
+        78.83,
+        78.83
+      ],
+      "anchor": [
+        0.5,
+        0.723381
+      ],
+      "id": "fresh-stump__02",
+      "asset_id": "fresh-stump",
+      "region": "forest_northwest",
+      "position": [
+        697,
+        788
+      ],
+      "depth_sort": true,
+      "collision": [
+        678.0,
+        778.0,
+        38,
+        20
+      ],
+      "source_sha256": "7f4d8041b1a6b99123a4fa25cfb0b3cd57dfc9ad0d21913548e63cf4cbbefd8c"
+    },
+    {
+      "file": "scenery/old-mossy-stump.png",
+      "display_size": [
+        82.85,
+        82.52
+      ],
+      "anchor": [
+        0.502,
+        0.73494
+      ],
+      "id": "old-mossy-stump__02",
+      "asset_id": "old-mossy-stump",
+      "region": "forest_northwest",
+      "position": [
+        1099,
+        204
+      ],
+      "depth_sort": true,
+      "collision": [
+        1078.5,
+        192.5,
+        41,
+        23
+      ],
+      "source_sha256": "472deddc9d3e5fd6b807d00a32a51fa18103619dbbcd318441b83e8f30323aca"
+    },
+    {
+      "file": "scenery/fallen-log-ew.png",
+      "display_size": [
+        160.24,
+        161.03
+      ],
+      "anchor": [
+        0.518946,
+        0.600402
+      ],
+      "id": "fallen-log-ew__02",
+      "asset_id": "fallen-log-ew",
+      "region": "forest_northwest",
+      "position": [
+        1910,
+        1164
+      ],
+      "depth_sort": true,
+      "collision": [
+        1839,
+        1154,
+        142,
+        20
+      ],
+      "source_sha256": "d4f19eb416556c69341e77836c636edac2cb261b9d1617429d3dd6e5472fe93c"
+    },
+    {
+      "file": "scenery/fallen-log-diagonal.png",
+      "display_size": [
+        135.81,
+        144.67
+      ],
+      "anchor": [
+        0.515021,
+        0.586285
+      ],
+      "id": "fallen-log-diagonal__02",
+      "asset_id": "fallen-log-diagonal",
+      "region": "forest_northwest",
+      "position": [
+        1086,
+        1741
+      ],
+      "depth_sort": true,
+      "collision": [
+        1033,
+        1705,
+        106,
+        72
+      ],
+      "source_sha256": "dba17a314f999d1bca8f1f120c0ecb5f5139f6fe4cdc152c62f0ecd6ce7e6038"
+    },
+    {
+      "file": "scenery/twig-pile.png",
+      "display_size": [
+        71.65,
+        69.8
+      ],
+      "anchor": [
+        0.498386,
+        0.567125
+      ],
+      "id": "twig-pile__02",
+      "asset_id": "twig-pile",
+      "region": "forest_northwest",
+      "position": [
+        1157,
+        1226
+      ],
+      "depth_sort": false,
+      "source_sha256": "ec6b488636e411c25f019133c75771687f5d43d1157073096354b75517d2baa6"
+    },
+    {
+      "file": "scenery/mushroom-cluster.png",
+      "display_size": [
+        54.22,
+        53.25
+      ],
+      "anchor": [
+        0.537344,
+        0.73962
+      ],
+      "id": "mushroom-cluster__02",
+      "asset_id": "mushroom-cluster",
+      "region": "forest_northwest",
+      "position": [
+        1741,
+        929
+      ],
+      "depth_sort": false,
+      "source_sha256": "410689b558c4c3d9305e540a4fa445bd1321c4aa299a41d47e1975a9202f52dd"
+    },
+    {
+      "file": "scenery/knotted-tree-roots.png",
+      "display_size": [
+        109.25,
+        107.84
+      ],
+      "anchor": [
+        0.492701,
+        0.587724
+      ],
+      "id": "knotted-tree-roots__02",
+      "asset_id": "knotted-tree-roots",
+      "region": "forest_northwest",
+      "position": [
+        1592,
+        965
+      ],
+      "depth_sort": false,
+      "source_sha256": "5dc3e1dd2b4083191acd92141619cf63da4a3e91a31d44ac5c2172e166186885"
+    },
+    {
+      "file": "scenery/grass_tuft.png",
+      "display_size": [
+        54.761,
+        36.52
+      ],
+      "anchor": [
+        0.497153024911032,
+        0.8338740661686231
+      ],
+      "id": "grass_tuft__01",
+      "asset_id": "grass_tuft",
+      "region": "meadow_southwest",
+      "position": [
+        300,
+        1900
+      ],
+      "depth_sort": false,
+      "source_sha256": "0842d81cfaa9c8e371ef147f9afbf4f62f4ec6cfb8a6f9c475a8c8c6852730ec"
+    },
+    {
+      "file": "scenery/flowers_white.png",
+      "display_size": [
+        83.611,
+        56.401
+      ],
+      "anchor": [
+        0.5171277997364954,
+        0.778427734375
+      ],
+      "id": "flowers_white__01",
+      "asset_id": "flowers_white",
+      "region": "meadow_southwest",
+      "position": [
+        813,
+        1855
+      ],
+      "depth_sort": false,
+      "source_sha256": "5cfcf258ab39afb8803f923bd610694ab57401137f77165ccb0df005a1a0b3cc"
+    },
+    {
+      "file": "scenery/flowers_blue.png",
+      "display_size": [
+        70.446,
+        58.036
+      ],
+      "anchor": [
+        0.5051813471502591,
+        0.7307187780772686
+      ],
+      "id": "flowers_blue__01",
+      "asset_id": "flowers_blue",
+      "region": "meadow_southwest",
+      "position": [
+        980,
+        2200
+      ],
+      "depth_sort": false,
+      "source_sha256": "756a98c466b0c116d2f27556b71557578aaae853b3c1ab9b14446102be907099"
+    },
+    {
+      "file": "scenery/flowers_yellow.png",
+      "display_size": [
+        59.846,
+        49.461
+      ],
+      "anchor": [
+        0.5110294117647058,
+        0.7459697508896797
+      ],
+      "id": "flowers_yellow__01",
+      "asset_id": "flowers_yellow",
+      "region": "meadow_southwest",
+      "position": [
+        1260,
+        2040
+      ],
+      "depth_sort": false,
+      "source_sha256": "99f780fa1889a7396fc288d65c0beab63a137afc576aa4fcdad2b6d881cd6fc6"
+    },
+    {
+      "file": "scenery/flowering_shrub.png",
+      "display_size": [
+        123.032,
+        81.08
+      ],
+      "anchor": [
+        0.49662390276839974,
+        0.8209938524590163
+      ],
+      "id": "flowering_shrub__01",
+      "asset_id": "flowering_shrub",
+      "region": "meadow_southwest",
+      "position": [
+        1450,
+        2400
+      ],
+      "depth_sort": true,
+      "collision": [
+        1427.5,
+        2388.0,
+        45,
+        24
+      ],
+      "source_sha256": "c0e38e2bc8b793307b28862c2a43b8f265fdfdb2050053ed5e170dcba0457b55"
+    },
+    {
+      "file": "scenery/bush_round.png",
+      "display_size": [
+        101.538,
+        67.826
+      ],
+      "anchor": [
+        0.5062582345191041,
+        0.784526627218935
+      ],
+      "id": "bush_round__02",
+      "asset_id": "bush_round",
+      "region": "meadow_southwest",
+      "position": [
+        850,
+        2650
+      ],
+      "depth_sort": true,
+      "collision": [
+        827.5,
+        2638.0,
+        45,
+        24
+      ],
+      "source_sha256": "80db39eefbfdd0b62cca92e88330da04b130d75401a168247dd590ccf7a6dac6"
+    },
+    {
+      "file": "scenery/bush_berry.png",
+      "display_size": [
+        112.489,
+        73.978
+      ],
+      "anchor": [
+        0.5171503957783641,
+        0.7934603811434302
+      ],
+      "id": "bush_berry__02",
+      "asset_id": "bush_berry",
+      "region": "meadow_southwest",
+      "position": [
+        1180,
+        2860
+      ],
+      "depth_sort": true,
+      "collision": [
+        1157.5,
+        2848.0,
+        45,
+        24
+      ],
+      "source_sha256": "0782694277c614ac804a58d68153fdac4e65eb753ca5dd52a0b8a8610335e2e9"
+    },
+    {
+      "file": "scenery/sapling.png",
+      "display_size": [
+        107.799,
+        115.227
+      ],
+      "anchor": [
+        0.5353143841515935,
+        0.8222240128928283
+      ],
+      "id": "sapling__03",
+      "asset_id": "sapling",
+      "region": "meadow_southwest",
+      "position": [
+        1800,
+        2780
+      ],
+      "depth_sort": true,
+      "collision": [
+        1794.0,
+        2776.0,
+        12,
+        8
+      ],
+      "source_sha256": "4d802fef498a54afc85196766231bef17b90d262ed5d5401e79ec22f423f26ab"
+    },
+    {
+      "file": "scenery/grass_tuft.png",
+      "display_size": [
+        54.761,
+        36.52
+      ],
+      "anchor": [
+        0.497153024911032,
+        0.8338740661686231
+      ],
+      "id": "grass_tuft__02",
+      "asset_id": "grass_tuft",
+      "region": "meadow_southwest",
+      "position": [
+        2100,
+        2900
+      ],
+      "depth_sort": false,
+      "source_sha256": "0842d81cfaa9c8e371ef147f9afbf4f62f4ec6cfb8a6f9c475a8c8c6852730ec"
+    },
+    {
+      "file": "scenery/flowers_white.png",
+      "display_size": [
+        83.611,
+        56.401
+      ],
+      "anchor": [
+        0.5171277997364954,
+        0.778427734375
+      ],
+      "id": "flowers_white__02",
+      "asset_id": "flowers_white",
+      "region": "meadow_southwest",
+      "position": [
+        270,
+        2550
+      ],
+      "depth_sort": false,
+      "source_sha256": "5cfcf258ab39afb8803f923bd610694ab57401137f77165ccb0df005a1a0b3cc"
+    },
+    {
+      "file": "scenery/flowers_blue.png",
+      "display_size": [
+        70.446,
+        58.036
+      ],
+      "anchor": [
+        0.5051813471502591,
+        0.7307187780772686
+      ],
+      "id": "flowers_blue__02",
+      "asset_id": "flowers_blue",
+      "region": "meadow_southwest",
+      "position": [
+        438,
+        1732
+      ],
+      "depth_sort": false,
+      "source_sha256": "756a98c466b0c116d2f27556b71557578aaae853b3c1ab9b14446102be907099"
+    },
+    {
+      "file": "scenery/flowers_yellow.png",
+      "display_size": [
+        59.846,
+        49.461
+      ],
+      "anchor": [
+        0.5110294117647058,
+        0.7459697508896797
+      ],
+      "id": "flowers_yellow__02",
+      "asset_id": "flowers_yellow",
+      "region": "meadow_southwest",
+      "position": [
+        895,
+        1689
+      ],
+      "depth_sort": false,
+      "source_sha256": "99f780fa1889a7396fc288d65c0beab63a137afc576aa4fcdad2b6d881cd6fc6"
+    },
+    {
+      "file": "scenery/flowering_shrub.png",
+      "display_size": [
+        123.032,
+        81.08
+      ],
+      "anchor": [
+        0.49662390276839974,
+        0.8209938524590163
+      ],
+      "id": "flowering_shrub__02",
+      "asset_id": "flowering_shrub",
+      "region": "meadow_southwest",
+      "position": [
+        1053,
+        2296
+      ],
+      "depth_sort": true,
+      "collision": [
+        1030.5,
+        2284.0,
+        45,
+        24
+      ],
+      "source_sha256": "c0e38e2bc8b793307b28862c2a43b8f265fdfdb2050053ed5e170dcba0457b55"
+    },
+    {
+      "file": "scenery/bush_round.png",
+      "display_size": [
+        101.538,
+        67.826
+      ],
+      "anchor": [
+        0.5062582345191041,
+        0.784526627218935
+      ],
+      "id": "bush_round__03",
+      "asset_id": "bush_round",
+      "region": "meadow_southwest",
+      "position": [
+        1252,
+        2329
+      ],
+      "depth_sort": true,
+      "collision": [
+        1229.5,
+        2317.0,
+        45,
+        24
+      ],
+      "source_sha256": "80db39eefbfdd0b62cca92e88330da04b130d75401a168247dd590ccf7a6dac6"
+    },
+    {
+      "file": "scenery/bush_berry.png",
+      "display_size": [
+        112.489,
+        73.978
+      ],
+      "anchor": [
+        0.5171503957783641,
+        0.7934603811434302
+      ],
+      "id": "bush_berry__03",
+      "asset_id": "bush_berry",
+      "region": "meadow_southwest",
+      "position": [
+        1442,
+        2538
+      ],
+      "depth_sort": true,
+      "collision": [
+        1419.5,
+        2526.0,
+        45,
+        24
+      ],
+      "source_sha256": "0782694277c614ac804a58d68153fdac4e65eb753ca5dd52a0b8a8610335e2e9"
+    },
+    {
+      "file": "scenery/sapling.png",
+      "display_size": [
+        107.799,
+        115.227
+      ],
+      "anchor": [
+        0.5353143841515935,
+        0.8222240128928283
+      ],
+      "id": "sapling__04",
+      "asset_id": "sapling",
+      "region": "meadow_southwest",
+      "position": [
+        729,
+        2807
+      ],
+      "depth_sort": true,
+      "collision": [
+        723.0,
+        2803.0,
+        12,
+        8
+      ],
+      "source_sha256": "4d802fef498a54afc85196766231bef17b90d262ed5d5401e79ec22f423f26ab"
+    },
+    {
+      "file": "scenery/grass_tuft.png",
+      "display_size": [
+        54.761,
+        36.52
+      ],
+      "anchor": [
+        0.497153024911032,
+        0.8338740661686231
+      ],
+      "id": "grass_tuft__03",
+      "asset_id": "grass_tuft",
+      "region": "meadow_southwest",
+      "position": [
+        1252,
+        2975
+      ],
+      "depth_sort": false,
+      "source_sha256": "0842d81cfaa9c8e371ef147f9afbf4f62f4ec6cfb8a6f9c475a8c8c6852730ec"
+    },
+    {
+      "file": "scenery/flowers_white.png",
+      "display_size": [
+        83.611,
+        56.401
+      ],
+      "anchor": [
+        0.5171277997364954,
+        0.778427734375
+      ],
+      "id": "flowers_white__03",
+      "asset_id": "flowers_white",
+      "region": "meadow_southwest",
+      "position": [
+        1625,
+        2616
+      ],
+      "depth_sort": false,
+      "source_sha256": "5cfcf258ab39afb8803f923bd610694ab57401137f77165ccb0df005a1a0b3cc"
+    },
+    {
+      "file": "scenery/flowers_blue.png",
+      "display_size": [
+        70.446,
+        58.036
+      ],
+      "anchor": [
+        0.5051813471502591,
+        0.7307187780772686
+      ],
+      "id": "flowers_blue__03",
+      "asset_id": "flowers_blue",
+      "region": "meadow_southwest",
+      "position": [
+        2225,
+        2837
+      ],
+      "depth_sort": false,
+      "source_sha256": "756a98c466b0c116d2f27556b71557578aaae853b3c1ab9b14446102be907099"
+    },
+    {
+      "file": "scenery/flowers_yellow.png",
+      "display_size": [
+        59.846,
+        49.461
+      ],
+      "anchor": [
+        0.5110294117647058,
+        0.7459697508896797
+      ],
+      "id": "flowers_yellow__03",
+      "asset_id": "flowers_yellow",
+      "region": "meadow_southwest",
+      "position": [
+        239,
+        2704
+      ],
+      "depth_sort": false,
+      "source_sha256": "99f780fa1889a7396fc288d65c0beab63a137afc576aa4fcdad2b6d881cd6fc6"
+    },
+    {
+      "file": "scenery/flowering_shrub.png",
+      "display_size": [
+        123.032,
+        81.08
+      ],
+      "anchor": [
+        0.49662390276839974,
+        0.8209938524590163
+      ],
+      "id": "flowering_shrub__03",
+      "asset_id": "flowering_shrub",
+      "region": "meadow_southwest",
+      "position": [
+        198,
+        2256
+      ],
+      "depth_sort": true,
+      "collision": [
+        175.5,
+        2244.0,
+        45,
+        24
+      ],
+      "source_sha256": "c0e38e2bc8b793307b28862c2a43b8f265fdfdb2050053ed5e170dcba0457b55"
+    },
+    {
+      "file": "scenery/bush_round.png",
+      "display_size": [
+        101.538,
+        67.826
+      ],
+      "anchor": [
+        0.5062582345191041,
+        0.784526627218935
+      ],
+      "id": "bush_round__04",
+      "asset_id": "bush_round",
+      "region": "meadow_southwest",
+      "position": [
+        518,
+        1862
+      ],
+      "depth_sort": true,
+      "collision": [
+        495.5,
+        1850.0,
+        45,
+        24
+      ],
+      "source_sha256": "80db39eefbfdd0b62cca92e88330da04b130d75401a168247dd590ccf7a6dac6"
+    },
+    {
+      "file": "scenery/bush_berry.png",
+      "display_size": [
+        112.489,
+        73.978
+      ],
+      "anchor": [
+        0.5171503957783641,
+        0.7934603811434302
+      ],
+      "id": "bush_berry__04",
+      "asset_id": "bush_berry",
+      "region": "meadow_southwest",
+      "position": [
+        779,
+        2318
+      ],
+      "depth_sort": true,
+      "collision": [
+        756.5,
+        2306.0,
+        45,
+        24
+      ],
+      "source_sha256": "0782694277c614ac804a58d68153fdac4e65eb753ca5dd52a0b8a8610335e2e9"
+    },
+    {
+      "file": "scenery/sapling.png",
+      "display_size": [
+        107.799,
+        115.227
+      ],
+      "anchor": [
+        0.5353143841515935,
+        0.8222240128928283
+      ],
+      "id": "sapling__05",
+      "asset_id": "sapling",
+      "region": "meadow_southwest",
+      "position": [
+        1542,
+        2023
+      ],
+      "depth_sort": true,
+      "collision": [
+        1536.0,
+        2019.0,
+        12,
+        8
+      ],
+      "source_sha256": "4d802fef498a54afc85196766231bef17b90d262ed5d5401e79ec22f423f26ab"
+    },
+    {
+      "file": "scenery/grass_tuft.png",
+      "display_size": [
+        54.761,
+        36.52
+      ],
+      "anchor": [
+        0.497153024911032,
+        0.8338740661686231
+      ],
+      "id": "grass_tuft__04",
+      "asset_id": "grass_tuft",
+      "region": "meadow_southwest",
+      "position": [
+        1465,
+        2287
+      ],
+      "depth_sort": false,
+      "source_sha256": "0842d81cfaa9c8e371ef147f9afbf4f62f4ec6cfb8a6f9c475a8c8c6852730ec"
+    },
+    {
+      "file": "scenery/flowers_white.png",
+      "display_size": [
+        83.611,
+        56.401
+      ],
+      "anchor": [
+        0.5171277997364954,
+        0.778427734375
+      ],
+      "id": "flowers_white__04",
+      "asset_id": "flowers_white",
+      "region": "meadow_southwest",
+      "position": [
+        668,
+        2601
+      ],
+      "depth_sort": false,
+      "source_sha256": "5cfcf258ab39afb8803f923bd610694ab57401137f77165ccb0df005a1a0b3cc"
+    },
+    {
+      "file": "scenery/flowers_blue.png",
+      "display_size": [
+        70.446,
+        58.036
+      ],
+      "anchor": [
+        0.5051813471502591,
+        0.7307187780772686
+      ],
+      "id": "flowers_blue__04",
+      "asset_id": "flowers_blue",
+      "region": "meadow_southwest",
+      "position": [
+        1178,
+        2694
+      ],
+      "depth_sort": false,
+      "source_sha256": "756a98c466b0c116d2f27556b71557578aaae853b3c1ab9b14446102be907099"
+    },
+    {
+      "file": "scenery/flowers_yellow.png",
+      "display_size": [
+        59.846,
+        49.461
+      ],
+      "anchor": [
+        0.5110294117647058,
+        0.7459697508896797
+      ],
+      "id": "flowers_yellow__04",
+      "asset_id": "flowers_yellow",
+      "region": "meadow_southwest",
+      "position": [
+        1623,
+        2748
+      ],
+      "depth_sort": false,
+      "source_sha256": "99f780fa1889a7396fc288d65c0beab63a137afc576aa4fcdad2b6d881cd6fc6"
+    },
+    {
+      "file": "scenery/flowering_shrub.png",
+      "display_size": [
+        123.032,
+        81.08
+      ],
+      "anchor": [
+        0.49662390276839974,
+        0.8209938524590163
+      ],
+      "id": "flowering_shrub__04",
+      "asset_id": "flowering_shrub",
+      "region": "meadow_southwest",
+      "position": [
+        2016,
+        2834
+      ],
+      "depth_sort": true,
+      "collision": [
+        1993.5,
+        2822.0,
+        45,
+        24
+      ],
+      "source_sha256": "c0e38e2bc8b793307b28862c2a43b8f265fdfdb2050053ed5e170dcba0457b55"
+    },
+    {
+      "file": "scenery/bush_round.png",
+      "display_size": [
+        101.538,
+        67.826
+      ],
+      "anchor": [
+        0.5062582345191041,
+        0.784526627218935
+      ],
+      "id": "bush_round__05",
+      "asset_id": "bush_round",
+      "region": "meadow_southwest",
+      "position": [
+        460,
+        2228
+      ],
+      "depth_sort": true,
+      "collision": [
+        437.5,
+        2216.0,
+        45,
+        24
+      ],
+      "source_sha256": "80db39eefbfdd0b62cca92e88330da04b130d75401a168247dd590ccf7a6dac6"
+    },
+    {
+      "file": "scenery/bush_berry.png",
+      "display_size": [
+        112.489,
+        73.978
+      ],
+      "anchor": [
+        0.5171503957783641,
+        0.7934603811434302
+      ],
+      "id": "bush_berry__05",
+      "asset_id": "bush_berry",
+      "region": "meadow_southwest",
+      "position": [
+        143,
+        1631
+      ],
+      "depth_sort": true,
+      "collision": [
+        120.5,
+        1619.0,
+        45,
+        24
+      ],
+      "source_sha256": "0782694277c614ac804a58d68153fdac4e65eb753ca5dd52a0b8a8610335e2e9"
+    },
+    {
+      "file": "scenery/sapling.png",
+      "display_size": [
+        107.799,
+        115.227
+      ],
+      "anchor": [
+        0.5353143841515935,
+        0.8222240128928283
+      ],
+      "id": "sapling__06",
+      "asset_id": "sapling",
+      "region": "meadow_southwest",
+      "position": [
+        539,
+        1989
+      ],
+      "depth_sort": true,
+      "collision": [
+        533.0,
+        1985.0,
+        12,
+        8
+      ],
+      "source_sha256": "4d802fef498a54afc85196766231bef17b90d262ed5d5401e79ec22f423f26ab"
+    },
+    {
+      "file": "scenery/grass_tuft.png",
+      "display_size": [
+        54.761,
+        36.52
+      ],
+      "anchor": [
+        0.497153024911032,
+        0.8338740661686231
+      ],
+      "id": "grass_tuft__05",
+      "asset_id": "grass_tuft",
+      "region": "meadow_southwest",
+      "position": [
+        810,
+        2222
+      ],
+      "depth_sort": false,
+      "source_sha256": "0842d81cfaa9c8e371ef147f9afbf4f62f4ec6cfb8a6f9c475a8c8c6852730ec"
+    },
+    {
+      "file": "scenery/flowers_white.png",
+      "display_size": [
+        83.611,
+        56.401
+      ],
+      "anchor": [
+        0.5171277997364954,
+        0.778427734375
+      ],
+      "id": "flowers_white__05",
+      "asset_id": "flowers_white",
+      "region": "meadow_southwest",
+      "position": [
+        1428,
+        1909
+      ],
+      "depth_sort": false,
+      "source_sha256": "5cfcf258ab39afb8803f923bd610694ab57401137f77165ccb0df005a1a0b3cc"
+    },
+    {
+      "file": "scenery/flowers_blue.png",
+      "display_size": [
+        70.446,
+        58.036
+      ],
+      "anchor": [
+        0.5051813471502591,
+        0.7307187780772686
+      ],
+      "id": "flowers_blue__05",
+      "asset_id": "flowers_blue",
+      "region": "meadow_southwest",
+      "position": [
+        1573,
+        2500
+      ],
+      "depth_sort": false,
+      "source_sha256": "756a98c466b0c116d2f27556b71557578aaae853b3c1ab9b14446102be907099"
+    },
+    {
+      "file": "scenery/flowers_yellow.png",
+      "display_size": [
+        59.846,
+        49.461
+      ],
+      "anchor": [
+        0.5110294117647058,
+        0.7459697508896797
+      ],
+      "id": "flowers_yellow__05",
+      "asset_id": "flowers_yellow",
+      "region": "meadow_southwest",
+      "position": [
+        973,
+        2544
+      ],
+      "depth_sort": false,
+      "source_sha256": "99f780fa1889a7396fc288d65c0beab63a137afc576aa4fcdad2b6d881cd6fc6"
+    },
+    {
+      "file": "scenery/flowering_shrub.png",
+      "display_size": [
+        123.032,
+        81.08
+      ],
+      "anchor": [
+        0.49662390276839974,
+        0.8209938524590163
+      ],
+      "id": "flowering_shrub__05",
+      "asset_id": "flowering_shrub",
+      "region": "meadow_southwest",
+      "position": [
+        1067,
+        2724
+      ],
+      "depth_sort": true,
+      "collision": [
+        1044.5,
+        2712.0,
+        45,
+        24
+      ],
+      "source_sha256": "c0e38e2bc8b793307b28862c2a43b8f265fdfdb2050053ed5e170dcba0457b55"
+    },
+    {
+      "file": "scenery/bush_round.png",
+      "display_size": [
+        101.538,
+        67.826
+      ],
+      "anchor": [
+        0.5062582345191041,
+        0.784526627218935
+      ],
+      "id": "bush_round__06",
+      "asset_id": "bush_round",
+      "region": "meadow_southwest",
+      "position": [
+        1899,
+        2659
+      ],
+      "depth_sort": true,
+      "collision": [
+        1876.5,
+        2647.0,
+        45,
+        24
+      ],
+      "source_sha256": "80db39eefbfdd0b62cca92e88330da04b130d75401a168247dd590ccf7a6dac6"
+    },
+    {
+      "file": "scenery/bush_berry.png",
+      "display_size": [
+        112.489,
+        73.978
+      ],
+      "anchor": [
+        0.5171503957783641,
+        0.7934603811434302
+      ],
+      "id": "bush_berry__06",
+      "asset_id": "bush_berry",
+      "region": "meadow_southwest",
+      "position": [
+        2026,
+        2592
+      ],
+      "depth_sort": true,
+      "collision": [
+        2003.5,
+        2580.0,
+        45,
+        24
+      ],
+      "source_sha256": "0782694277c614ac804a58d68153fdac4e65eb753ca5dd52a0b8a8610335e2e9"
+    },
+    {
+      "file": "scenery/sapling.png",
+      "display_size": [
+        107.799,
+        115.227
+      ],
+      "anchor": [
+        0.5353143841515935,
+        0.8222240128928283
+      ],
+      "id": "sapling__07",
+      "asset_id": "sapling",
+      "region": "meadow_southwest",
+      "position": [
+        151,
+        2622
+      ],
+      "depth_sort": true,
+      "collision": [
+        145.0,
+        2618.0,
+        12,
+        8
+      ],
+      "source_sha256": "4d802fef498a54afc85196766231bef17b90d262ed5d5401e79ec22f423f26ab"
+    },
+    {
+      "file": "scenery/grass_tuft.png",
+      "display_size": [
+        54.761,
+        36.52
+      ],
+      "anchor": [
+        0.497153024911032,
+        0.8338740661686231
+      ],
+      "id": "grass_tuft__06",
+      "asset_id": "grass_tuft",
+      "region": "meadow_southwest",
+      "position": [
+        300,
+        1783
+      ],
+      "depth_sort": false,
+      "source_sha256": "0842d81cfaa9c8e371ef147f9afbf4f62f4ec6cfb8a6f9c475a8c8c6852730ec"
+    },
+    {
+      "file": "scenery/flowers_white.png",
+      "display_size": [
+        83.611,
+        56.401
+      ],
+      "anchor": [
+        0.5171277997364954,
+        0.778427734375
+      ],
+      "id": "flowers_white__06",
+      "asset_id": "flowers_white",
+      "region": "meadow_southwest",
+      "position": [
+        655,
+        1947
+      ],
+      "depth_sort": false,
+      "source_sha256": "5cfcf258ab39afb8803f923bd610694ab57401137f77165ccb0df005a1a0b3cc"
+    },
+    {
+      "file": "scenery/flowers_blue.png",
+      "display_size": [
+        70.446,
+        58.036
+      ],
+      "anchor": [
+        0.5051813471502591,
+        0.7307187780772686
+      ],
+      "id": "flowers_blue__06",
+      "asset_id": "flowers_blue",
+      "region": "meadow_southwest",
+      "position": [
+        1059,
+        2103
+      ],
+      "depth_sort": false,
+      "source_sha256": "756a98c466b0c116d2f27556b71557578aaae853b3c1ab9b14446102be907099"
+    },
+    {
+      "file": "scenery/flowers_yellow.png",
+      "display_size": [
+        59.846,
+        49.461
+      ],
+      "anchor": [
+        0.5110294117647058,
+        0.7459697508896797
+      ],
+      "id": "flowers_yellow__06",
+      "asset_id": "flowers_yellow",
+      "region": "meadow_southwest",
+      "position": [
+        1256,
+        2218
+      ],
+      "depth_sort": false,
+      "source_sha256": "99f780fa1889a7396fc288d65c0beab63a137afc576aa4fcdad2b6d881cd6fc6"
+    },
+    {
+      "file": "scenery/flowering_shrub.png",
+      "display_size": [
+        123.032,
+        81.08
+      ],
+      "anchor": [
+        0.49662390276839974,
+        0.8209938524590163
+      ],
+      "id": "flowering_shrub__06",
+      "asset_id": "flowering_shrub",
+      "region": "meadow_southwest",
+      "position": [
+        1308,
+        2473
+      ],
+      "depth_sort": true,
+      "collision": [
+        1285.5,
+        2461.0,
+        45,
+        24
+      ],
+      "source_sha256": "c0e38e2bc8b793307b28862c2a43b8f265fdfdb2050053ed5e170dcba0457b55"
+    },
+    {
+      "file": "scenery/bush_round.png",
+      "display_size": [
+        101.538,
+        67.826
+      ],
+      "anchor": [
+        0.5062582345191041,
+        0.784526627218935
+      ],
+      "id": "bush_round__07",
+      "asset_id": "bush_round",
+      "region": "meadow_southwest",
+      "position": [
+        547,
+        2602
+      ],
+      "depth_sort": true,
+      "collision": [
+        524.5,
+        2590.0,
+        45,
+        24
+      ],
+      "source_sha256": "80db39eefbfdd0b62cca92e88330da04b130d75401a168247dd590ccf7a6dac6"
+    },
+    {
+      "file": "scenery/bush_berry.png",
+      "display_size": [
+        112.489,
+        73.978
+      ],
+      "anchor": [
+        0.5171503957783641,
+        0.7934603811434302
+      ],
+      "id": "bush_berry__07",
+      "asset_id": "bush_berry",
+      "region": "meadow_southwest",
+      "position": [
+        988,
+        2859
+      ],
+      "depth_sort": true,
+      "collision": [
+        965.5,
+        2847.0,
+        45,
+        24
+      ],
+      "source_sha256": "0782694277c614ac804a58d68153fdac4e65eb753ca5dd52a0b8a8610335e2e9"
+    },
+    {
+      "file": "scenery/sapling.png",
+      "display_size": [
+        107.799,
+        115.227
+      ],
+      "anchor": [
+        0.5353143841515935,
+        0.8222240128928283
+      ],
+      "id": "sapling__08",
+      "asset_id": "sapling",
+      "region": "meadow_southwest",
+      "position": [
+        1611,
+        2352
+      ],
+      "depth_sort": true,
+      "collision": [
+        1605.0,
+        2348.0,
+        12,
+        8
+      ],
+      "source_sha256": "4d802fef498a54afc85196766231bef17b90d262ed5d5401e79ec22f423f26ab"
+    },
+    {
+      "file": "scenery/grass_tuft.png",
+      "display_size": [
+        54.761,
+        36.52
+      ],
+      "anchor": [
+        0.497153024911032,
+        0.8338740661686231
+      ],
+      "id": "grass_tuft__07",
+      "asset_id": "grass_tuft",
+      "region": "meadow_southwest",
+      "position": [
+        2088,
+        2650
+      ],
+      "depth_sort": false,
+      "source_sha256": "0842d81cfaa9c8e371ef147f9afbf4f62f4ec6cfb8a6f9c475a8c8c6852730ec"
+    },
+    {
+      "file": "scenery/flowers_white.png",
+      "display_size": [
+        83.611,
+        56.401
+      ],
+      "anchor": [
+        0.5171277997364954,
+        0.778427734375
+      ],
+      "id": "flowers_white__07",
+      "asset_id": "flowers_white",
+      "region": "meadow_southwest",
+      "position": [
+        269,
+        2379
+      ],
+      "depth_sort": false,
+      "source_sha256": "5cfcf258ab39afb8803f923bd610694ab57401137f77165ccb0df005a1a0b3cc"
+    },
+    {
+      "file": "scenery/reeds.png",
+      "display_size": [
+        149.909,
+        102.003
+      ],
+      "anchor": [
+        0.522342586323629,
+        0.7869452736318407
+      ],
+      "id": "reeds__01",
+      "asset_id": "reeds",
+      "region": "west_river_margin",
+      "position": [
+        1979,
+        1861
+      ],
+      "depth_sort": false,
+      "source_sha256": "2d9cf9e39a9675c22608d6f5c8203d0eb500fa4edeee3c5cbeef1316eddd682a"
+    },
+    {
+      "file": "scenery/smooth-river-stones.png",
+      "display_size": [
+        81.53,
+        84.81
+      ],
+      "anchor": [
+        0.497485,
+        0.577881
+      ],
+      "id": "smooth-river-stones__01",
+      "asset_id": "smooth-river-stones",
+      "region": "west_river_margin",
+      "position": [
+        2230,
+        2100
+      ],
+      "depth_sort": false,
+      "source_sha256": "ab1cfc148a619a377da12b67727ac6246ecc57d9936da4e131c0fcf0c35138ab"
+    },
+    {
+      "file": "scenery/reeds.png",
+      "display_size": [
+        149.909,
+        102.003
+      ],
+      "anchor": [
+        0.522342586323629,
+        0.7869452736318407
+      ],
+      "id": "reeds__02",
+      "asset_id": "reeds",
+      "region": "west_river_margin",
+      "position": [
+        2062,
+        2110
+      ],
+      "depth_sort": false,
+      "source_sha256": "2d9cf9e39a9675c22608d6f5c8203d0eb500fa4edeee3c5cbeef1316eddd682a"
+    },
+    {
+      "file": "scenery/smooth-river-stones.png",
+      "display_size": [
+        81.53,
+        84.81
+      ],
+      "anchor": [
+        0.497485,
+        0.577881
+      ],
+      "id": "smooth-river-stones__02",
+      "asset_id": "smooth-river-stones",
+      "region": "west_river_margin",
+      "position": [
+        2280,
+        2271
+      ],
+      "depth_sort": false,
+      "source_sha256": "ab1cfc148a619a377da12b67727ac6246ecc57d9936da4e131c0fcf0c35138ab"
+    },
+    {
+      "file": "scenery/reeds.png",
+      "display_size": [
+        149.909,
+        102.003
+      ],
+      "anchor": [
+        0.522342586323629,
+        0.7869452736318407
+      ],
+      "id": "reeds__03",
+      "asset_id": "reeds",
+      "region": "west_river_margin",
+      "position": [
+        2395,
+        2423
+      ],
+      "depth_sort": false,
+      "source_sha256": "2d9cf9e39a9675c22608d6f5c8203d0eb500fa4edeee3c5cbeef1316eddd682a"
+    },
+    {
+      "file": "scenery/smooth-river-stones.png",
+      "display_size": [
+        81.53,
+        84.81
+      ],
+      "anchor": [
+        0.497485,
+        0.577881
+      ],
+      "id": "smooth-river-stones__03",
+      "asset_id": "smooth-river-stones",
+      "region": "west_river_margin",
+      "position": [
+        2293,
+        2618
+      ],
+      "depth_sort": false,
+      "source_sha256": "ab1cfc148a619a377da12b67727ac6246ecc57d9936da4e131c0fcf0c35138ab"
+    },
+    {
+      "file": "scenery/reeds.png",
+      "display_size": [
+        149.909,
+        102.003
+      ],
+      "anchor": [
+        0.522342586323629,
+        0.7869452736318407
+      ],
+      "id": "reeds__04",
+      "asset_id": "reeds",
+      "region": "west_river_margin",
+      "position": [
+        2391,
+        2157
+      ],
+      "depth_sort": false,
+      "source_sha256": "2d9cf9e39a9675c22608d6f5c8203d0eb500fa4edeee3c5cbeef1316eddd682a"
+    },
+    {
+      "file": "scenery/smooth-river-stones.png",
+      "display_size": [
+        81.53,
+        84.81
+      ],
+      "anchor": [
+        0.497485,
+        0.577881
+      ],
+      "id": "smooth-river-stones__04",
+      "asset_id": "smooth-river-stones",
+      "region": "west_river_margin",
+      "position": [
+        2255,
+        2371
+      ],
+      "depth_sort": false,
+      "source_sha256": "ab1cfc148a619a377da12b67727ac6246ecc57d9936da4e131c0fcf0c35138ab"
+    },
+    {
+      "file": "scenery/reeds.png",
+      "display_size": [
+        149.909,
+        102.003
+      ],
+      "anchor": [
+        0.522342586323629,
+        0.7869452736318407
+      ],
+      "id": "reeds__05",
+      "asset_id": "reeds",
+      "region": "west_river_margin",
+      "position": [
+        2197,
+        2512
+      ],
+      "depth_sort": false,
+      "source_sha256": "2d9cf9e39a9675c22608d6f5c8203d0eb500fa4edeee3c5cbeef1316eddd682a"
+    },
+    {
+      "file": "scenery/smooth-river-stones.png",
+      "display_size": [
+        81.53,
+        84.81
+      ],
+      "anchor": [
+        0.497485,
+        0.577881
+      ],
+      "id": "smooth-river-stones__05",
+      "asset_id": "smooth-river-stones",
+      "region": "west_river_margin",
+      "position": [
+        2464,
+        2722
+      ],
+      "depth_sort": false,
+      "source_sha256": "ab1cfc148a619a377da12b67727ac6246ecc57d9936da4e131c0fcf0c35138ab"
+    },
+    {
+      "file": "scenery/reeds.png",
+      "display_size": [
+        149.909,
+        102.003
+      ],
+      "anchor": [
+        0.522342586323629,
+        0.7869452736318407
+      ],
+      "id": "reeds__06",
+      "asset_id": "reeds",
+      "region": "west_river_margin",
+      "position": [
+        2431,
+        2588
+      ],
+      "depth_sort": false,
+      "source_sha256": "2d9cf9e39a9675c22608d6f5c8203d0eb500fa4edeee3c5cbeef1316eddd682a"
+    },
+    {
+      "file": "scenery/smooth-river-stones.png",
+      "display_size": [
+        81.53,
+        84.81
+      ],
+      "anchor": [
+        0.497485,
+        0.577881
+      ],
+      "id": "smooth-river-stones__06",
+      "asset_id": "smooth-river-stones",
+      "region": "west_river_margin",
+      "position": [
+        2530,
+        2452
+      ],
+      "depth_sort": false,
+      "source_sha256": "ab1cfc148a619a377da12b67727ac6246ecc57d9936da4e131c0fcf0c35138ab"
+    },
+    {
+      "file": "scenery/fence-straight-ew.png",
+      "display_size": [
+        199.07,
+        99.83
+      ],
+      "anchor": [
+        0.489225,
+        0.744483
+      ],
+      "id": "fence-straight-ew__01",
+      "asset_id": "fence-straight-ew",
+      "region": "town_outer_edge",
+      "position": [
+        3250,
+        2330
+      ],
+      "depth_sort": true,
+      "collision": [
+        3155,
+        2323,
+        190,
+        10
+      ],
+      "source_sha256": "ec14e127b98d0e58833e0a947f0bd122e7f94d802419c527adee3fa240507a9c"
+    },
+    {
+      "file": "scenery/fence-straight-ew.png",
+      "display_size": [
+        199.07,
+        99.83
+      ],
+      "anchor": [
+        0.489225,
+        0.744483
+      ],
+      "id": "fence-straight-ew__02",
+      "asset_id": "fence-straight-ew",
+      "region": "town_outer_edge",
+      "position": [
+        3440,
+        2330
+      ],
+      "depth_sort": true,
+      "collision": [
+        3345,
+        2323,
+        190,
+        10
+      ],
+      "source_sha256": "ec14e127b98d0e58833e0a947f0bd122e7f94d802419c527adee3fa240507a9c"
+    },
+    {
+      "file": "scenery/fence-gate.png",
+      "display_size": [
+        152.97,
+        77.27
+      ],
+      "anchor": [
+        0.505125,
+        0.892897
+      ],
+      "id": "fence-gate__01",
+      "asset_id": "fence-gate",
+      "region": "town_outer_edge",
+      "position": [
+        3605,
+        2330
+      ],
+      "depth_sort": true,
+      "collision": [
+        3535,
+        2323,
+        140,
+        10
+      ],
+      "source_sha256": "a63f0f16f0d5180f5ee64e0ab40050d7e635f671abdd816b4453be13eee837cf"
+    },
+    {
+      "file": "scenery/fence-diagonal-ne-sw.png",
+      "display_size": [
+        216.88,
+        140.22
+      ],
+      "anchor": [
+        0.524536,
+        0.762051
+      ],
+      "id": "fence-diagonal-ne-sw__01",
+      "asset_id": "fence-diagonal-ne-sw",
+      "region": "town_outer_edge",
+      "position": [
+        3757,
+        2348
+      ],
+      "depth_sort": true,
+      "collision": [
+        3670,
+        2314,
+        174,
+        68
+      ],
+      "source_sha256": "8f1b6ce889c21f586acb45811a06ab41de75062d7f1e806bb532fef061d9be4d"
+    },
+    {
+      "file": "scenery/blank-arrow-signpost.png",
+      "display_size": [
+        130.37,
+        136.47
+      ],
+      "anchor": [
+        0.374269,
+        0.888268
+      ],
+      "id": "blank-arrow-signpost__01",
+      "asset_id": "blank-arrow-signpost",
+      "region": "town_outer_edge",
+      "position": [
+        2009,
+        1611
+      ],
+      "depth_sort": true,
+      "collision": [
+        2002,
+        1605,
+        14,
+        8
+      ],
+      "source_sha256": "149bfb96c660f67f98ae669c2adf8d0d2646e9064a92a28963a5fb1edb4ee4bf"
+    },
+    {
+      "file": "scenery/wooden-lamp-post.png",
+      "display_size": [
+        124.99,
+        194.65
+      ],
+      "anchor": [
+        0.392893,
+        0.943937
+      ],
+      "id": "wooden-lamp-post__01",
+      "asset_id": "wooden-lamp-post",
+      "region": "town_outer_edge",
+      "position": [
+        3227,
+        2506
+      ],
+      "depth_sort": true,
+      "collision": [
+        3220,
+        2500,
+        14,
+        8
+      ],
+      "source_sha256": "fcce4490443d8021acef129d9f01b3f65a99e4527f39c2256ad9392aa90e4759"
+    },
+    {
+      "file": "scenery/wooden-lamp-post.png",
+      "display_size": [
+        124.99,
+        194.65
+      ],
+      "anchor": [
+        0.392893,
+        0.943937
+      ],
+      "id": "wooden-lamp-post__02",
+      "asset_id": "wooden-lamp-post",
+      "region": "town_outer_edge",
+      "position": [
+        3570,
+        2510
+      ],
+      "depth_sort": true,
+      "collision": [
+        3563,
+        2504,
+        14,
+        8
+      ],
+      "source_sha256": "fcce4490443d8021acef129d9f01b3f65a99e4527f39c2256ad9392aa90e4759"
+    },
+    {
+      "file": "scenery/wooden-crate.png",
+      "display_size": [
+        65.08,
+        61.55
+      ],
+      "anchor": [
+        0.518341,
+        0.958685
+      ],
+      "id": "wooden-crate__01",
+      "asset_id": "wooden-crate",
+      "region": "town_outer_edge",
+      "position": [
+        3910,
+        2520
+      ],
+      "depth_sort": true,
+      "collision": [
+        3888,
+        2494,
+        44,
+        26
+      ],
+      "source_sha256": "5377c1cbaab7e116e8f85937fd59a6768c8646a8a6c362521e69c495a88f9c31"
+    },
+    {
+      "file": "scenery/wooden-crate.png",
+      "display_size": [
+        65.08,
+        61.55
+      ],
+      "anchor": [
+        0.518341,
+        0.958685
+      ],
+      "id": "wooden-crate__02",
+      "asset_id": "wooden-crate",
+      "region": "town_outer_edge",
+      "position": [
+        3965,
+        2545
+      ],
+      "depth_sort": true,
+      "collision": [
+        3943,
+        2519,
+        44,
+        26
+      ],
+      "source_sha256": "5377c1cbaab7e116e8f85937fd59a6768c8646a8a6c362521e69c495a88f9c31"
+    },
+    {
+      "file": "scenery/barrel.png",
+      "display_size": [
+        65.12,
+        64.72
+      ],
+      "anchor": [
+        0.528285,
+        0.978984
+      ],
+      "id": "barrel__01",
+      "asset_id": "barrel",
+      "region": "town_outer_edge",
+      "position": [
+        4025,
+        2510
+      ],
+      "depth_sort": true,
+      "collision": [
+        4005,
+        2490,
+        40,
+        20
+      ],
+      "source_sha256": "4a008bd034c7628e7dbdb60f76475e9217ab07a3083f97fe91cb77d22aafbbc0"
+    },
+    {
+      "file": "scenery/wooden-bench-ew.png",
+      "display_size": [
+        142.37,
+        93.89
+      ],
+      "anchor": [
+        0.501953,
+        0.901283
+      ],
+      "id": "wooden-bench-ew__01",
+      "asset_id": "wooden-bench-ew",
+      "region": "town_outer_edge",
+      "position": [
+        3400,
+        2540
+      ],
+      "depth_sort": true,
+      "collision": [
+        3344,
+        2514,
+        112,
+        26
+      ],
+      "source_sha256": "62c8cfddbbed27ba66ebc3ab34f1578239d563ae72e88634fe2bbf16ebd713b7"
+    },
+    {
+      "file": "scenery/stone-well.png",
+      "display_size": [
+        170.01,
+        154.65
+      ],
+      "anchor": [
+        0.512251,
+        0.939394
+      ],
+      "id": "stone-well__01",
+      "asset_id": "stone-well",
+      "region": "town_outer_edge",
+      "position": [
+        3360,
+        2440
+      ],
+      "depth_sort": true,
+      "collision": [
+        3306,
+        2382,
+        108,
+        58
+      ],
+      "source_sha256": "9acb3793c49d1b5dadb9df19cce8fae5152d31c9b7b61661e44b0bec2352a503"
+    },
+    {
+      "file": "scenery/flower-planter.png",
+      "display_size": [
+        127.95,
+        84.13
+      ],
+      "anchor": [
+        0.514745,
+        0.716616
+      ],
+      "id": "flower-planter__01",
+      "asset_id": "flower-planter",
+      "region": "town_outer_edge",
+      "position": [
+        3262,
+        2515
+      ],
+      "depth_sort": true,
+      "collision": [
+        3210,
+        2498,
+        104,
+        17
+      ],
+      "source_sha256": "ebfea15a3b7cf46090c9015da762266a5e8b18efb9ca35a848a5c2f2a0e783bf"
+    },
+    {
+      "file": "scenery/flower-planter.png",
+      "display_size": [
+        127.95,
+        84.13
+      ],
+      "anchor": [
+        0.514745,
+        0.716616
+      ],
+      "id": "flower-planter__02",
+      "asset_id": "flower-planter",
+      "region": "town_outer_edge",
+      "position": [
+        3530,
+        2540
+      ],
+      "depth_sort": true,
+      "collision": [
+        3478,
+        2523,
+        104,
+        17
+      ],
+      "source_sha256": "ebfea15a3b7cf46090c9015da762266a5e8b18efb9ca35a848a5c2f2a0e783bf"
+    },
+    {
+      "file": "scenery/low-stone-wall-straight-ew.png",
+      "display_size": [
+        206.27,
+        103.72
+      ],
+      "anchor": [
+        0.502834,
+        0.767756
+      ],
+      "id": "low-stone-wall-straight-ew__01",
+      "asset_id": "low-stone-wall-straight-ew",
+      "region": "town_outer_edge",
+      "position": [
+        3692,
+        2408
+      ],
+      "depth_sort": true,
+      "collision": [
+        3600,
+        2391,
+        184,
+        17
+      ],
+      "source_sha256": "5eeaeac270d6e9463f7af0b32873d3e626ac47ce6ed99ca52a3809cbc2e273aa"
+    },
+    {
+      "file": "scenery/low-stone-wall-l-corner.png",
+      "display_size": [
+        263.66,
+        179.11
+      ],
+      "anchor": [
+        0.666206,
+        0.93591
+      ],
+      "id": "low-stone-wall-l-corner__01",
+      "asset_id": "low-stone-wall-l-corner",
+      "region": "town_outer_edge",
+      "position": [
+        3950,
+        2450
+      ],
+      "depth_sort": true,
+      "collision": [
+        3784,
+        2330,
+        251,
+        120
+      ],
+      "source_sha256": "2834ef4ecb672b9dbeb8c3bd04cfc3f82d8f7123f953c92dc27297b78591dcca"
+    },
+    {
+      "file": "scenery/empty-wooden-handcart.png",
+      "display_size": [
+        201.28,
+        133.01
+      ],
+      "anchor": [
+        0.483073,
+        0.809852
+      ],
+      "id": "empty-wooden-handcart__01",
+      "asset_id": "empty-wooden-handcart",
+      "region": "town_outer_edge",
+      "position": [
+        3835,
+        2610
+      ],
+      "depth_sort": true,
+      "collision": [
+        3773,
+        2566,
+        99,
+        44
+      ],
+      "source_sha256": "508acfaffb3937f855695ad733df915c02d913c4be2ef2ca6db817bb68fbfe06"
+    },
+    {
+      "file": "scenery/stacked-firewood.png",
+      "display_size": [
+        130.97,
+        87.28
+      ],
+      "anchor": [
+        0.621711,
+        0.941757
+      ],
+      "id": "stacked-firewood__01",
+      "asset_id": "stacked-firewood",
+      "region": "town_outer_edge",
+      "position": [
+        3850,
+        2515
+      ],
+      "depth_sort": true,
+      "collision": [
+        3784,
+        2461,
+        103,
+        54
+      ],
+      "source_sha256": "57465baf2d898c1922bd5bca1506b1ee547448a410a50f8e9c08117ce514ed00"
+    },
+    {
+      "file": "scenery/blank-stone-road-milestone.png",
+      "display_size": [
+        78.12,
+        73.86
+      ],
+      "anchor": [
+        0.636293,
+        0.924217
+      ],
+      "id": "blank-stone-road-milestone__01",
+      "asset_id": "blank-stone-road-milestone",
+      "region": "town_outer_edge",
+      "position": [
+        4034,
+        946
+      ],
+      "depth_sort": true,
+      "collision": [
+        4003,
+        923,
+        42,
+        23
+      ],
+      "source_sha256": "4987f942db1e999e00d59e2517f87f4f1935ce020e80d2c6e06768d8e52e875b"
+    }
+  ],
+  "notes": [
+    "Full-canvas display sizes preserve all source margins and use uniform authored scale.",
+    "Collision rectangles bound authored projected base footprints, not whole silhouettes. Tree collision is trunk-only.",
+    "Low ground decorations including grass, flowers, ferns, reeds, roots, scree and river stones are nonblocking and below actors.",
+    "L-corner rectangle conservatively blocks its inside; replace with two wall-arm colliders for precision. Diagonal log capsules similarly use conservative AABBs."
+  ],
+  "runtime_texture_policy": {
+    "long_edge_limit": 512,
+    "decoded_unique_texture_bytes": 44240896,
+    "preserve_fullcanvas_aspect_and_anchors": true
+  }
+}

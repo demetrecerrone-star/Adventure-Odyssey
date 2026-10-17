@@ -11,6 +11,7 @@ var chest := Inventory.empty_inventory()
 var equipped_weapon := ""
 var equipped_armor := ""
 var awake := true
+var location := {"scene":"bedroom", "position":[535.0,670.0]}
 var error := ""
 func draft_from(value: Dictionary):
 	var draft = Draft.new()
@@ -72,7 +73,7 @@ func save() -> bool:
 	if file == null:
 		error = "Couldn't save locally. Your previous save is unchanged."
 		return false
-	file.store_string(JSON.stringify({"version":5, "tutorial_chest_seeded":true, "character":character, "bag":bag, "chest":chest, "equipped_weapon":equipped_weapon, "equipped_armor":equipped_armor, "awake":awake}))
+	file.store_string(JSON.stringify({"version":5, "tutorial_chest_seeded":true, "character":character, "bag":bag, "chest":chest, "equipped_weapon":equipped_weapon, "equipped_armor":equipped_armor, "awake":awake, "location":location}))
 	file.flush()
 	var write_error := file.get_error()
 	file.close()
@@ -117,6 +118,11 @@ func load_saved() -> bool:
 	if not Inventory.armor_allowed(armor, candidate["class"]):
 		error = "Local armor is invalid. It has not been overwritten."
 		return false
+	var saved_location = data.get("location", {"scene":"bedroom", "position":[535.0,670.0]})
+	if not valid_location(saved_location):
+		error = "Local location is invalid. It has not been overwritten."
+		return false
+	location = saved_location.duplicate(true)
 	character = candidate.duplicate(true)
 	bag = Inventory.empty_inventory() if migrating else data.bag.duplicate(true)
 	chest = Inventory.empty_inventory() if migrating else data.chest.duplicate(true)
@@ -152,5 +158,23 @@ func unequip() -> bool:
 	if not save():
 		bag[previous] -= 1
 		equipped_weapon = previous
+		return false
+	return true
+
+func valid_location(value) -> bool:
+	if not value is Dictionary or value.get("scene", "") not in ["bedroom", "starter_region"]:
+		return false
+	var point = value.get("position")
+	if not point is Array or point.size() != 2: return false
+	for number in point:
+		if not (number is float or number is int) or not is_finite(float(number)): return false
+	return point[0] >= 0 and point[0] <= 4608 and point[1] >= 0 and point[1] <= 3072
+func set_location(scene: String, point: Vector2) -> bool:
+	var previous := location.duplicate(true)
+	var next := {"scene":scene, "position":[point.x, point.y]}
+	if not valid_location(next): return false
+	location = next
+	if not save():
+		location = previous
 		return false
 	return true

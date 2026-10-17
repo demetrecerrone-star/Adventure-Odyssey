@@ -1,0 +1,614 @@
+{
+  "scenery/oak_mature.png": {
+    "source_sha256": "b76e594857aec804c5b34e83e4f6b04c6a71d20b2c22349ede3ee84572d32215",
+    "source_dimensions": [
+      1296,
+      1200
+    ],
+    "runtime_dimensions": [
+      512,
+      474
+    ],
+    "runtime_sha256": "82dec5b51d0a055eee543b7d713f7a53fa96433c7aebbaa81797e68be1f4fd17"
+  },
+  "scenery/oak_young.png": {
+    "source_sha256": "d8af5236edc4e4202174248f9812806e589dc5c8bbf668446010781f7b471d77",
+    "source_dimensions": [
+      1257,
+      1129
+    ],
+    "runtime_dimensions": [
+      512,
+      460
+    ],
+    "runtime_sha256": "f5371beb1e1c054f7ec35cafbe4ed935a45bf3df1d86c8ee03b1b022a2288aaf"
+  },
+  "scenery/birch.png": {
+    "source_sha256": "64dac6df2e4f82cbd566170d4cb10da179695b4b928fffe4ce9c9b7500eafc99",
+    "source_dimensions": [
+      1004,
+      1519
+    ],
+    "runtime_dimensions": [
+      338,
+      512
+    ],
+    "runtime_sha256": "5638a386cca5fc668eb996cf5cda42fd05de21a80a7126fe897633c4198ee03d"
+  },
+  "scenery/pine_tall.png": {
+    "source_sha256": "714524f42b9a8845f47c76f453d5685345a1d46081a0f6b7e91df4ab3d73459f",
+    "source_dimensions": [
+      1001,
+      1485
+    ],
+    "runtime_dimensions": [
+      345,
+      512
+    ],
+    "runtime_sha256": "4d8d40402e94f842273983292d916c3fbc1a1bd3faf98959d933135f278754b5"
+  },
+  "scenery/spruce.png": {
+    "source_sha256": "f62266cb0d3d6009c77f73e337948b4b97d818ea1c94ef55194575088746b8e4",
+    "source_dimensions": [
+      1135,
+      1355
+    ],
+    "runtime_dimensions": [
+      429,
+      512
+    ],
+    "runtime_sha256": "d73283c6d129f15ae8ad9ed6b8e5765ce42da2e2b3db8b7ccfc65610c41ae96e"
+  },
+  "scenery/willow_tree.png": {
+    "source_sha256": "e6afafd0737e499f57045c1cfec5cd2d7f200d4de2e3ea3f20b5f1ea2965eb06",
+    "source_dimensions": [
+      1298,
+      1199
+    ],
+    "runtime_dimensions": [
+      512,
+      473
+    ],
+    "runtime_sha256": "0e98dd6266ec0cacfd46bb521e8502ec03f3df87bb3095acec1af65c4dafb241"
+  },
+  "scenery/dead_tree.png": {
+    "source_sha256": "7e7c6d7882a2110709448d9b3d455fd5faf3a27edffdd781158622a0122642ed",
+    "source_dimensions": [
+      1312,
+      1199
+    ],
+    "runtime_dimensions": [
+      512,
+      468
+    ],
+    "runtime_sha256": "0a58f77503097bbbaf69b65a5a6dd4d35d635d95eba791b6476f546e1bcf1237"
+  },
+  "scenery/apple_tree.png": {
+    "source_sha256": "87535bccc74269842628d623d1d4d3b6da0d5d45de8a27409021e7eea2971462",
+    "source_dimensions": [
+      1296,
+      1180
+    ],
+    "runtime_dimensions": [
+      512,
+      466
+    ],
+    "runtime_sha256": "78eeb49f301de7385fcf7b7e50c0a6fe13a5e4c94d5ea62dd5a9e01778bde450"
+  },
+  "scenery/sapling.png": {
+    "source_sha256": "4d802fef498a54afc85196766231bef17b90d262ed5d5401e79ec22f423f26ab",
+    "source_dimensions": [
+      1161,
+      1241
+    ],
+    "runtime_dimensions": [
+      479,
+      512
+    ],
+    "runtime_sha256": "5e53d833f747696ecb39ba429022ea4e44c5f8a4a72079647070fdebefc8d765"
+  },
+  "scenery/rounded-granite-boulder.png": {
+    "source_sha256": "1836ddb216dd423fce0de631a53bc0262638416fc75651d87790634c11e9169f",
+    "source_dimensions": [
+      1217,
+      1223
+    ],
+    "runtime_dimensions": [
+      509,
+      512
+    ],
+    "runtime_sha256": "93ecac5929fdb342f2e3b824ad29f6e9c6cc91d456d9502c980f799b7959a1ca"
+  },
+  "scenery/angular-gray-boulder.png": {
+    "source_sha256": "cf7e4f83ce60b70260646f194677bf9c7f9d8aab71af401998cc0f09b752b34a",
+    "source_dimensions": [
+      1218,
+      1225
+    ],
+    "runtime_dimensions": [
+      509,
+      512
+    ],
+    "runtime_sha256": "f20cbc08d0ce1ec1b1955b99fda58aac7a56247459088e12398487235e8b385b"
+  },
+  "scenery/small-rock-cluster.png": {
+    "source_sha256": "e2a807caa270eaad777aa7f6600d48a5a26ff5ca1801442fa84ee787b3e61a3e",
+    "source_dimensions": [
+      1201,
+      1183
+    ],
+    "runtime_dimensions": [
+      512,
+      504
+    ],
+    "runtime_sha256": "94ef5dc572e3fc8c042df5ab071f06a506afdd4a0fed7bd1045e7a1876fd7acb"
+  },
+  "scenery/tall-jagged-foothill-rock.png": {
+    "source_sha256": "e95d085da40c460efe3761d99b5bbb7e5686e5d02a387067c2d446028b5c0590",
+    "source_dimensions": [
+      1238,
+      1214
+    ],
+    "runtime_dimensions": [
+      512,
+      502
+    ],
+    "runtime_sha256": "60e87dfbec9f9decdb3c0b70f6b469a904b1ca24bbc48fc95bce8ca00b068be5"
+  },
+  "scenery/low-flat-slab.png": {
+    "source_sha256": "a8a87a740c4115af70b2d22fce4356fecb4da6fd6799cf7125f021077be322a9",
+    "source_dimensions": [
+      1240,
+      1225
+    ],
+    "runtime_dimensions": [
+      512,
+      506
+    ],
+    "runtime_sha256": "1041b9969799b162595ff53b860435204431d0c3d4732c09d75eb8e332831584"
+  },
+  "scenery/split-boulder.png": {
+    "source_sha256": "eb2e18704475f703afc3ebb1116e2d21f6152e44c404799ce580bb60a4eec22f",
+    "source_dimensions": [
+      1254,
+      1254
+    ],
+    "runtime_dimensions": [
+      512,
+      512
+    ],
+    "runtime_sha256": "b671398e5b2d147a347d161ab421df6cf252897b556ac89d6ab89645130eb0fb"
+  },
+  "scenery/scree-pebble-cluster.png": {
+    "source_sha256": "a6360afba5459faf562aa3e4c60d4fa22d4aed7bed801d8ca28b5824323612cd",
+    "source_dimensions": [
+      1181,
+      1040
+    ],
+    "runtime_dimensions": [
+      512,
+      451
+    ],
+    "runtime_sha256": "0dfa72ae6d5e9dde587ae70c185146ad9368e3ed27d103b8792d9b4f755ae15a"
+  },
+  "scenery/grass_dry.png": {
+    "source_sha256": "7a69e9ffe94a289f18c181bd77cd1d8ddb81fe4498926180e038a99ef45a39f5",
+    "source_dimensions": [
+      1508,
+      1007
+    ],
+    "runtime_dimensions": [
+      512,
+      342
+    ],
+    "runtime_sha256": "8c8aa720f0da7f77b140723476910cea9c9368b5f4e0d0c16028fb9febfa8212"
+  },
+  "scenery/mossy-boulder.png": {
+    "source_sha256": "0f839ca3a46e8e3d6d4f75610f6766ace15651a559941bee69f959a74757ba52",
+    "source_dimensions": [
+      1246,
+      1245
+    ],
+    "runtime_dimensions": [
+      512,
+      512
+    ],
+    "runtime_sha256": "8859860934a21959cf4866cf58f46012d77510e3bd9b16c55e69cbbe5c58a287"
+  },
+  "scenery/fresh-stump.png": {
+    "source_sha256": "7f4d8041b1a6b99123a4fa25cfb0b3cd57dfc9ad0d21913548e63cf4cbbefd8c",
+    "source_dimensions": [
+      1254,
+      1254
+    ],
+    "runtime_dimensions": [
+      512,
+      512
+    ],
+    "runtime_sha256": "20655692f516ec6880c791210176d36a25ec05813225ddad530325f053cf8670"
+  },
+  "scenery/old-mossy-stump.png": {
+    "source_sha256": "472deddc9d3e5fd6b807d00a32a51fa18103619dbbcd318441b83e8f30323aca",
+    "source_dimensions": [
+      1250,
+      1245
+    ],
+    "runtime_dimensions": [
+      512,
+      510
+    ],
+    "runtime_sha256": "d8e2b907528b06b04f1ec0dfeaac0e5f090a49f54c64809180f34fc591ec00b5"
+  },
+  "scenery/fallen-log-ew.png": {
+    "source_sha256": "d4f19eb416556c69341e77836c636edac2cb261b9d1617429d3dd6e5472fe93c",
+    "source_dimensions": [
+      1214,
+      1220
+    ],
+    "runtime_dimensions": [
+      509,
+      512
+    ],
+    "runtime_sha256": "8cd5394b35c16abc1d5603dd1bc1ed982c95eb4e48a8f3664b328a1daf13d552"
+  },
+  "scenery/fallen-log-diagonal.png": {
+    "source_sha256": "dba17a314f999d1bca8f1f120c0ecb5f5139f6fe4cdc152c62f0ecd6ce7e6038",
+    "source_dimensions": [
+      1165,
+      1241
+    ],
+    "runtime_dimensions": [
+      481,
+      512
+    ],
+    "runtime_sha256": "721bcf691689fa265f30435b2bb03d4f676483f381698622ae815edaf1f078dd"
+  },
+  "scenery/twig-pile.png": {
+    "source_sha256": "ec6b488636e411c25f019133c75771687f5d43d1157073096354b75517d2baa6",
+    "source_dimensions": [
+      1239,
+      1207
+    ],
+    "runtime_dimensions": [
+      512,
+      499
+    ],
+    "runtime_sha256": "4d5a08cbb5529446e4afb7f15410ac4a2955df6d57aa2b40363c79b54af1d9a0"
+  },
+  "scenery/mushroom-cluster.png": {
+    "source_sha256": "410689b558c4c3d9305e540a4fa445bd1321c4aa299a41d47e1975a9202f52dd",
+    "source_dimensions": [
+      1231,
+      1209
+    ],
+    "runtime_dimensions": [
+      512,
+      503
+    ],
+    "runtime_sha256": "efa4965e2680df8efa41793d10eb8b6f16cd68a118d62c778af7b6d9a96a8851"
+  },
+  "scenery/knotted-tree-roots.png": {
+    "source_sha256": "5dc3e1dd2b4083191acd92141619cf63da4a3e91a31d44ac5c2172e166186885",
+    "source_dimensions": [
+      1233,
+      1217
+    ],
+    "runtime_dimensions": [
+      512,
+      505
+    ],
+    "runtime_sha256": "16c605ca57ef1a3671b5ca94e743c3d105bdf139676a2613c76135269c824070"
+  },
+  "scenery/hollow-fallen-log.png": {
+    "source_sha256": "75e68fce3069b0f4a734fd8dc4cd2c56b908e1a56f9f8aeef92dab5e8469ea3b",
+    "source_dimensions": [
+      1244,
+      1245
+    ],
+    "runtime_dimensions": [
+      512,
+      512
+    ],
+    "runtime_sha256": "fc669ca525e5b80345e56764bcc540d4330a08bd857623eaae53971be91ac8a2"
+  },
+  "scenery/fern.png": {
+    "source_sha256": "fa4c8f9f60dc01408d71792d2fa878259b738ce9b9ae0beb277366d43b914dc7",
+    "source_dimensions": [
+      1522,
+      1005
+    ],
+    "runtime_dimensions": [
+      512,
+      338
+    ],
+    "runtime_sha256": "8a7cdd4ba781d377985c962edd546c708b4aeca425f58df09583c2936cf30971"
+  },
+  "scenery/bush_round.png": {
+    "source_sha256": "80db39eefbfdd0b62cca92e88330da04b130d75401a168247dd590ccf7a6dac6",
+    "source_dimensions": [
+      1518,
+      1014
+    ],
+    "runtime_dimensions": [
+      512,
+      342
+    ],
+    "runtime_sha256": "058b5064a10795694f947c4a62cfc57e9f1d435c087ba860a6ee18703a0aff5e"
+  },
+  "scenery/bush_berry.png": {
+    "source_sha256": "0782694277c614ac804a58d68153fdac4e65eb753ca5dd52a0b8a8610335e2e9",
+    "source_dimensions": [
+      1516,
+      997
+    ],
+    "runtime_dimensions": [
+      512,
+      337
+    ],
+    "runtime_sha256": "9ad9f3f33ee8c2ba01a1590371048ee29c03d9be5079d2de40fd9efe3d8909a1"
+  },
+  "scenery/grass_tuft.png": {
+    "source_sha256": "0842d81cfaa9c8e371ef147f9afbf4f62f4ec6cfb8a6f9c475a8c8c6852730ec",
+    "source_dimensions": [
+      1405,
+      937
+    ],
+    "runtime_dimensions": [
+      512,
+      341
+    ],
+    "runtime_sha256": "a4b085ae3e035e4907dcaddbbf671fb329e0d0938a614d45041e97af6b612eca"
+  },
+  "scenery/flowers_white.png": {
+    "source_sha256": "5cfcf258ab39afb8803f923bd610694ab57401137f77165ccb0df005a1a0b3cc",
+    "source_dimensions": [
+      1518,
+      1024
+    ],
+    "runtime_dimensions": [
+      512,
+      345
+    ],
+    "runtime_sha256": "f4d48f6b775197c331ddb1b9410801bd249d5fc8d22c62345f805c9b1ffb3a7c"
+  },
+  "scenery/flowers_blue.png": {
+    "source_sha256": "756a98c466b0c116d2f27556b71557578aaae853b3c1ab9b14446102be907099",
+    "source_dimensions": [
+      1351,
+      1113
+    ],
+    "runtime_dimensions": [
+      512,
+      422
+    ],
+    "runtime_sha256": "65a21dc384b7fde6ed731b1b2dd58f14dc9d0ac99127e3ffc78e6204e5f98740"
+  },
+  "scenery/flowers_yellow.png": {
+    "source_sha256": "99f780fa1889a7396fc288d65c0beab63a137afc576aa4fcdad2b6d881cd6fc6",
+    "source_dimensions": [
+      1360,
+      1124
+    ],
+    "runtime_dimensions": [
+      512,
+      423
+    ],
+    "runtime_sha256": "bb000641ff493ab4073afcd79587cdfe822fbfb37293032c8867439d486c9571"
+  },
+  "scenery/flowering_shrub.png": {
+    "source_sha256": "c0e38e2bc8b793307b28862c2a43b8f265fdfdb2050053ed5e170dcba0457b55",
+    "source_dimensions": [
+      1481,
+      976
+    ],
+    "runtime_dimensions": [
+      512,
+      337
+    ],
+    "runtime_sha256": "a9931f4cf51982133d852ff50654b216772162b26d11de9eeb2ddd573546bc7b"
+  },
+  "scenery/reeds.png": {
+    "source_sha256": "2d9cf9e39a9675c22608d6f5c8203d0eb500fa4edeee3c5cbeef1316eddd682a",
+    "source_dimensions": [
+      1477,
+      1005
+    ],
+    "runtime_dimensions": [
+      512,
+      348
+    ],
+    "runtime_sha256": "3c525b813bb21f7d3d5a4b31e92fff359455c38b88a03d5c9ed93f8457dc2681"
+  },
+  "scenery/smooth-river-stones.png": {
+    "source_sha256": "ab1cfc148a619a377da12b67727ac6246ecc57d9936da4e131c0fcf0c35138ab",
+    "source_dimensions": [
+      1193,
+      1241
+    ],
+    "runtime_dimensions": [
+      492,
+      512
+    ],
+    "runtime_sha256": "c9d7c9fdbeefe27e66c4ca7be5ffe62f95d551ac3119f54ac1b079585f5386cf"
+  },
+  "scenery/fence-straight-ew.png": {
+    "source_sha256": "ec14e127b98d0e58833e0a947f0bd122e7f94d802419c527adee3fa240507a9c",
+    "source_dimensions": [
+      1717,
+      861
+    ],
+    "runtime_dimensions": [
+      512,
+      257
+    ],
+    "runtime_sha256": "64bd8381fe168fffbe07ebddd59150231952136ce2459ebc9b53e642315fe942"
+  },
+  "scenery/fence-gate.png": {
+    "source_sha256": "a63f0f16f0d5180f5ee64e0ab40050d7e635f671abdd816b4453be13eee837cf",
+    "source_dimensions": [
+      1756,
+      887
+    ],
+    "runtime_dimensions": [
+      512,
+      259
+    ],
+    "runtime_sha256": "b7fda4201f335d1c67d25884f5e41aee5ded6e0ce980acfd52727f1e94bb2938"
+  },
+  "scenery/fence-diagonal-ne-sw.png": {
+    "source_sha256": "8f1b6ce889c21f586acb45811a06ab41de75062d7f1e806bb532fef061d9be4d",
+    "source_dimensions": [
+      1508,
+      975
+    ],
+    "runtime_dimensions": [
+      512,
+      331
+    ],
+    "runtime_sha256": "ca3234fe902dc7fcf8820d8def3ed44848623d1af799d86f3c5061886056882f"
+  },
+  "scenery/blank-arrow-signpost.png": {
+    "source_sha256": "149bfb96c660f67f98ae669c2adf8d0d2646e9064a92a28963a5fb1edb4ee4bf",
+    "source_dimensions": [
+      1197,
+      1253
+    ],
+    "runtime_dimensions": [
+      489,
+      512
+    ],
+    "runtime_sha256": "9a019e7b76910c09f331b3a1f6f38ab35dd7fe2f72261669f4ea625311daf155"
+  },
+  "scenery/wooden-lamp-post.png": {
+    "source_sha256": "fcce4490443d8021acef129d9f01b3f65a99e4527f39c2256ad9392aa90e4759",
+    "source_dimensions": [
+      985,
+      1534
+    ],
+    "runtime_dimensions": [
+      329,
+      512
+    ],
+    "runtime_sha256": "4d09e51dd784e10a43e6320aecc5ec18c8fc740998df0e9f2b0f0e8f369e10a5"
+  },
+  "scenery/wooden-crate.png": {
+    "source_sha256": "5377c1cbaab7e116e8f85937fd59a6768c8646a8a6c362521e69c495a88f9c31",
+    "source_dimensions": [
+      1254,
+      1186
+    ],
+    "runtime_dimensions": [
+      512,
+      484
+    ],
+    "runtime_sha256": "05f51de02eae4994090ddee9aa1c93ae27407cfc122ba85e17a505b790e44fee"
+  },
+  "scenery/barrel.png": {
+    "source_sha256": "4a008bd034c7628e7dbdb60f76475e9217ab07a3083f97fe91cb77d22aafbbc0",
+    "source_dimensions": [
+      1149,
+      1142
+    ],
+    "runtime_dimensions": [
+      512,
+      509
+    ],
+    "runtime_sha256": "53f691169d096aa9c6eb962ef1dce0c933529e82297e50a268e357dd5367d4e3"
+  },
+  "scenery/wooden-bench-ew.png": {
+    "source_sha256": "62c8cfddbbed27ba66ebc3ab34f1578239d563ae72e88634fe2bbf16ebd713b7",
+    "source_dimensions": [
+      1536,
+      1013
+    ],
+    "runtime_dimensions": [
+      512,
+      338
+    ],
+    "runtime_sha256": "444d6aa3117c3affb91060beb747b265bdeeb62b12a84ab2edd91b6efc75e0ff"
+  },
+  "scenery/stone-well.png": {
+    "source_sha256": "9acb3793c49d1b5dadb9df19cce8fae5152d31c9b7b61661e44b0bec2352a503",
+    "source_dimensions": [
+      1306,
+      1188
+    ],
+    "runtime_dimensions": [
+      512,
+      466
+    ],
+    "runtime_sha256": "9b5190f0fef62bd91c22b1cedab04003b8fc6c5334f035cf5824538039ed9e84"
+  },
+  "scenery/flower-planter.png": {
+    "source_sha256": "ebfea15a3b7cf46090c9015da762266a5e8b18efb9ca35a848a5c2f2a0e783bf",
+    "source_dimensions": [
+      1492,
+      981
+    ],
+    "runtime_dimensions": [
+      512,
+      337
+    ],
+    "runtime_sha256": "43613b0753aec83425dfe29f93c3a44d40ced929016f1b3860cd4a1eb4845839"
+  },
+  "scenery/low-stone-wall-straight-ew.png": {
+    "source_sha256": "5eeaeac270d6e9463f7af0b32873d3e626ac47ce6ed99ca52a3809cbc2e273aa",
+    "source_dimensions": [
+      1764,
+      887
+    ],
+    "runtime_dimensions": [
+      512,
+      257
+    ],
+    "runtime_sha256": "329915fc87b6c8ff8f9eedd2e22775ccb2e4fcb6effa389a92049e2fb896a1e6"
+  },
+  "scenery/low-stone-wall-l-corner.png": {
+    "source_sha256": "2834ef4ecb672b9dbeb8c3bd04cfc3f82d8f7123f953c92dc27297b78591dcca",
+    "source_dimensions": [
+      1447,
+      983
+    ],
+    "runtime_dimensions": [
+      512,
+      348
+    ],
+    "runtime_sha256": "16608fa8a6bfea25379a98ec00aa1e2bfb14a0d06db1938edb05dc90435dbf14"
+  },
+  "scenery/empty-wooden-handcart.png": {
+    "source_sha256": "508acfaffb3937f855695ad733df915c02d913c4be2ef2ca6db817bb68fbfe06",
+    "source_dimensions": [
+      1536,
+      1015
+    ],
+    "runtime_dimensions": [
+      512,
+      338
+    ],
+    "runtime_sha256": "498026f6f5ee473555d5547ee92dbd75b4f3e83b797b67de90172accfdc09564"
+  },
+  "scenery/stacked-firewood.png": {
+    "source_sha256": "57465baf2d898c1922bd5bca1506b1ee547448a410a50f8e9c08117ce514ed00",
+    "source_dimensions": [
+      1520,
+      1013
+    ],
+    "runtime_dimensions": [
+      512,
+      341
+    ],
+    "runtime_sha256": "11e8a788ff3b70b7a305bc611e8f45f9a81a3400185b955bc5c9e8bef2c293fd"
+  },
+  "scenery/blank-stone-road-milestone.png": {
+    "source_sha256": "4987f942db1e999e00d59e2517f87f4f1935ce020e80d2c6e06768d8e52e875b",
+    "source_dimensions": [
+      1284,
+      1214
+    ],
+    "runtime_dimensions": [
+      512,
+      484
+    ],
+    "runtime_sha256": "8bc76f59d5065402f231cf1d8208201dc90e9744932a7760cbd32e19a687b446"
+  }
+}

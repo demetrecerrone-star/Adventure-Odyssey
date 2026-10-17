@@ -1,5 +1,6 @@
 extends Control
 signal exited
+signal world_requested
 const Save = preload("res://src/bedroom_save.gd")
 const Creator = preload("res://src/creator/creator_panel.gd")
 const ROOM_SIZE = Vector2(1536, 1024)
@@ -234,7 +235,11 @@ func interact() -> void:
 		"mirror": open_creator(true)
 		"chest": open_chest()
 		"bed": message.text = "Your own bed. You are rested and ready for the day."
-		"door": message.text = "The town beyond this door is a future chapter. Your bedroom is ready to explore."
+		"door":
+			_reset_movement()
+			if state.set_location("starter_region", Vector2(1644,1318)):
+				world_requested.emit()
+			else: message.text = state.error
 func open_creator(mirror: bool) -> void:
 	if is_instance_valid(overlay):
 		return

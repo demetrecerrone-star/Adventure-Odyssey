@@ -1,0 +1,282 @@
+{
+  "status": "Provisional placement plan; core building artwork missing; no building substitute placed",
+  "world_origin": [
+    0,
+    0
+  ],
+  "home_entry": [
+    1644,
+    1318
+  ],
+  "guild_entry": [
+    2424,
+    1128
+  ],
+  "lots": [
+    {
+      "id": "starter_home",
+      "proposed_role": "Player home exterior",
+      "footprint": [
+        [
+          1474,
+          1028
+        ],
+        [
+          1774,
+          1028
+        ],
+        [
+          1784,
+          1268
+        ],
+        [
+          1494,
+          1288
+        ]
+      ],
+      "art_ready": false
+    },
+    {
+      "id": "guild",
+      "proposed_role": "Adventurers guild",
+      "footprint": [
+        [
+          2234,
+          868
+        ],
+        [
+          2474,
+          808
+        ],
+        [
+          2644,
+          988
+        ],
+        [
+          2364,
+          1093
+        ]
+      ],
+      "art_ready": false
+    },
+    {
+      "id": "shop_west",
+      "proposed_role": "Future compact kiosk / decoration reservation (too narrow for enterable shop)",
+      "footprint": [
+        [
+          2474,
+          1138
+        ],
+        [
+          2504,
+          1128
+        ],
+        [
+          2564,
+          1208
+        ],
+        [
+          2474,
+          1243
+        ]
+      ],
+      "art_ready": false
+    },
+    {
+      "id": "shop_southwest",
+      "proposed_role": "General store (proposed)",
+      "footprint": [
+        [
+          2464,
+          1378
+        ],
+        [
+          2784,
+          1358
+        ],
+        [
+          2824,
+          1473
+        ],
+        [
+          2624,
+          1568
+        ],
+        [
+          2434,
+          1503
+        ]
+      ],
+      "art_ready": false
+    },
+    {
+      "id": "home_north_plaza",
+      "proposed_role": "Town home",
+      "footprint": [
+        [
+          2714,
+          938
+        ],
+        [
+          2954,
+          868
+        ],
+        [
+          3064,
+          1013
+        ],
+        [
+          2904,
+          1118
+        ]
+      ],
+      "art_ready": false
+    },
+    {
+      "id": "shop_south_plaza",
+      "proposed_role": "Apothecary (proposed)",
+      "footprint": [
+        [
+          2924,
+          1493
+        ],
+        [
+          3184,
+          1503
+        ],
+        [
+          3334,
+          1648
+        ],
+        [
+          3174,
+          1738
+        ],
+        [
+          2864,
+          1648
+        ]
+      ],
+      "art_ready": false
+    },
+    {
+      "id": "blacksmith_workyard",
+      "proposed_role": "Blacksmith and workyard",
+      "footprint": [
+        [
+          3494,
+          1618
+        ],
+        [
+          3804,
+          1558
+        ],
+        [
+          4064,
+          1658
+        ],
+        [
+          4034,
+          1748
+        ],
+        [
+          3564,
+          1748
+        ]
+      ],
+      "art_ready": false
+    },
+    {
+      "id": "north_home_a",
+      "proposed_role": "Town home",
+      "footprint": [
+        [
+          2860,
+          625
+        ],
+        [
+          3070,
+          545
+        ],
+        [
+          3270,
+          660
+        ],
+        [
+          3140,
+          735
+        ]
+      ],
+      "art_ready": false
+    },
+    {
+      "id": "north_home_b",
+      "proposed_role": "Town home",
+      "footprint": [
+        [
+          3160,
+          470
+        ],
+        [
+          3330,
+          390
+        ],
+        [
+          3510,
+          490
+        ],
+        [
+          3400,
+          565
+        ]
+      ],
+      "art_ready": false
+    },
+    {
+      "id": "north_home_c",
+      "proposed_role": "Town home",
+      "footprint": [
+        [
+          3450,
+          650
+        ],
+        [
+          3630,
+          580
+        ],
+        [
+          3830,
+          730
+        ],
+        [
+          3650,
+          800
+        ]
+      ],
+      "art_ready": false
+    },
+    {
+      "id": "southeast_workyard_extension",
+      "proposed_role": "Future workyard expansion",
+      "footprint": [
+        [
+          3410,
+          1880
+        ],
+        [
+          3870,
+          1810
+        ],
+        [
+          4000,
+          2150
+        ],
+        [
+          3560,
+          2230
+        ]
+      ],
+      "art_ready": false
+    }
+  ]
+}
