@@ -82,6 +82,12 @@ func run() -> void:
 		await process_frame
 		await process_frame
 		check(safe.encloses(scene.modal_panel.get_rect()), "panel fits simulated cutout and keyboard safe region")
+		scene.fields[2].grab_focus()
+		scene._keep_focused_field_visible()
+		await process_frame
+		await process_frame
+		await process_frame
+		check(scene.modal_scroll.get_global_rect().encloses(scene.fields[2].get_global_rect()), "focused confirmation visible after keyboard reflow")
 		check(scene.modal_scroll.size.y > 0, "scroll remains usable with keyboard")
 		check(scene.modal_scroll.get_v_scroll_bar().max_value > scene.modal_scroll.size.y, "short landscape content scrolls")
 		check(scene.modal_panel.get_global_rect().encloses(scene.modal_close.get_global_rect()), "close stays reachable without scrolling")
@@ -103,6 +109,57 @@ func run() -> void:
 		check(scene.modal_kind == "create", "document close returns to account panel")
 		scene.close_modal()
 		await process_frame
+	scene.open_modal("create")
+	scene.fields[0].text = "hero@example.com"
+	scene.fields[1].text = "dummy-password"
+	scene.fields[2].text = "dummy-password"
+	scene._submit_preview()
+	check(scene.modal_kind == "create", "valid preview does not fake registration or navigate")
+	scene.fields[1].text = "dummy-password"
+	scene.fields[2].text = "dummy-password"
+	var old_secret = scene.fields[1]
+	scene._on_registration_succeeded("hero@example.com")
+	check(old_secret.text.is_empty(), "real-success callback clears original passwords")
+	check(scene.modal_kind == "signin", "real-success callback returns to sign in")
+	check(scene.fields[0].text == "hero@example.com" and scene.fields[1].text.is_empty(), "only email carried into sign in")
+	check(root.gui_get_focus_owner() == scene.fields[1], "sign-in password focused after real success")
+	scene.close_modal()
+	scene._on_registration_succeeded("late@example.com")
+	check(scene.modal == null, "late callback cannot reopen dismissed modal")
+	scene.open_modal("signin")
+	await process_frame
+	await process_frame
+	check(scene.modal_box.size.y <= scene.modal_scroll.size.y, "sign-in panel compact content fits")
+	scene.fields[0].text = "hero@example.com"
+	scene._submit_preview()
+	check("Enter a dummy password" in scene.notice.text, "sign-in requires password without applying signup length policy")
+	scene.fields[1].text = "dummy"
+	var sign_in_secret = scene.fields[1]
+	scene._switch_account_modal("create")
+	check(sign_in_secret.text.is_empty() and scene.modal_kind == "create", "sign in links to clean create panel")
+	scene.close_modal()
+	for document_kind in ["privacy", "terms"]:
+		scene.open_modal("signin")
+		check(scene.legal_controls.size() == 2, "sign-in includes both document links")
+		scene.fields[1].text = "dummy-secret"
+		var secret_before_doc = scene.fields[1]
+		scene._open_legal_document(document_kind)
+		check(secret_before_doc.text.is_empty(), "sign-in document navigation clears password")
+		scene._back_from_modal()
+		check(scene.modal_kind == "signin" and scene.fields[1].text.is_empty(), "document returns to clean originating sign in")
+		scene.close_modal()
+	scene.open_modal("create")
+	for target_kind in ["signin", "create", "signin", "create"]:
+		scene.fields[0].text = "hero@example.com"
+		scene.fields[1].text = "dummy-secret"
+		scene.password_toggles[0].button_pressed = true
+		var previous_password = scene.fields[1]
+		scene._switch_account_modal(target_kind)
+		check(previous_password.text.is_empty(), "reciprocal switch clears old secret")
+		check(scene.modal_kind == target_kind and scene.fields[0].text == "hero@example.com", "reciprocal switch retains only email")
+		check(scene.fields[1].text.is_empty() and scene.fields[1].secret, "reciprocal switch resets password visibility")
+		await process_frame
+	scene.close_modal()
 	scene.open_modal("signin")
 	scene._notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
 	check(scene.modal == null, "Android back dismisses")

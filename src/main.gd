@@ -22,6 +22,7 @@ var fields: Array[LineEdit] = []
 var buttons: Array[Button] = []
 var previous_focus: Control
 var modal_kind := ""
+var legal_return_kind := "create"
 var elapsed := 0.0
 var runners: Array[AnimatedSprite2D] = []
 
@@ -155,8 +156,23 @@ func _keyboard_safe_rect(safe: Rect2) -> Rect2:
 	return safe
 
 func _layout_modal(safe: Rect2) -> void:
-	modal_panel.size = Vector2(minf(510, safe.size.x), minf(650 if modal_kind in ["create", "privacy", "terms"] else 560, safe.size.y))
+	var target_height := 600 if modal_kind == "create" else (620 if modal_kind == "signin" else (650 if modal_kind in ["privacy", "terms"] else 560))
+	var target_size := Vector2(minf(510, safe.size.x), minf(target_height, safe.size.y))
+	var changed := modal_panel.size != target_size
+	modal_panel.size = target_size
 	modal_panel.position = safe.get_center() - modal_panel.size * 0.5
+	if changed:
+		_keep_focused_field_visible()
+
+func _keep_focused_field_visible() -> void:
+	# Wait for nested containers to finish reflowing after keyboard changes.
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if not is_instance_valid(modal):
+		return
+	var focused := get_viewport().gui_get_focus_owner()
+	if is_instance_valid(focused) and modal_scroll.is_ancestor_of(focused):
+		modal_scroll.ensure_control_visible(focused)
 
 func open_modal(kind: String) -> void:
 	if is_instance_valid(modal):
@@ -182,7 +198,7 @@ func open_modal(kind: String) -> void:
 	heading.position = Vector2(24, 22)
 	modal_panel.add_child(heading)
 	modal_close = _button("×")
-	modal_close.tooltip_text = "Back to Create Account" if kind in ["privacy", "terms"] else "Close and return to title"
+	modal_close.tooltip_text = ("Back to Sign In" if legal_return_kind == "signin" else "Back to Create Account") if kind in ["privacy", "terms"] else "Close and return to title"
 	modal_close.custom_minimum_size = Vector2(48, 48)
 	modal_close.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	modal_close.offset_left = -66
@@ -214,6 +230,19 @@ func open_modal(kind: String) -> void:
 		if kind == "create":
 			_add_field("Confirm password", true)
 			_add_legal_preview()
+			var sign_in_link := _button("Already registered? Sign In")
+			sign_in_link.add_theme_font_size_override("font_size", 15)
+			sign_in_link.pressed.connect(_switch_account_modal.bind("signin"))
+			modal_box.add_child(sign_in_link)
+		else:
+			var recovery := _label("Password reset is unavailable in this preview.", 13, Color("cfbb98"))
+			recovery.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			modal_box.add_child(recovery)
+			var create_link := _button("New here? Create Account")
+			create_link.add_theme_font_size_override("font_size", 15)
+			create_link.pressed.connect(_switch_account_modal.bind("create"))
+			modal_box.add_child(create_link)
+			_add_legal_preview()
 	elif kind in ["privacy", "terms"]:
 		notice.text = "Title preview information • No account or agreement is created."
 		var document := _label(PREVIEW_DOCUMENTS.PRIVACY if kind == "privacy" else PREVIEW_DOCUMENTS.TERMS, 15, Color("f4ead8"))
@@ -226,7 +255,7 @@ func open_modal(kind: String) -> void:
 	var actions := HBoxContainer.new()
 	actions.add_theme_constant_override("separation", 10)
 	modal_box.add_child(actions)
-	var close := _button("Back to Create Account" if kind in ["privacy", "terms"] else "Back")
+	var close := _button(("Back to Sign In" if legal_return_kind == "signin" else "Back to Create Account") if kind in ["privacy", "terms"] else "Back")
 	close.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	close.pressed.connect(_back_from_modal)
 	actions.add_child(close)
@@ -238,6 +267,8 @@ func open_modal(kind: String) -> void:
 	_layout()
 	if fields.size() > 0:
 		fields[0].grab_focus()
+	elif kind in ["privacy", "terms"]:
+		modal_close.grab_focus()
 	else:
 		close.grab_focus()
 
@@ -302,8 +333,17 @@ func _add_legal_preview() -> void:
 	explanation.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	modal_box.add_child(explanation)
 
+func _switch_account_modal(kind: String) -> void:
+	var email := fields[0].text.strip_edges() if not fields.is_empty() else ""
+	close_modal()
+	open_modal(kind)
+	fields[0].text = email
+	if not email.is_empty():
+		fields[1].grab_focus()
+
 func _open_legal_document(kind: String) -> void:
 	# Never retain draft credentials while viewing a document.
+	legal_return_kind = modal_kind if modal_kind in ["signin", "create"] else "create"
 	close_modal()
 	open_modal(kind)
 
@@ -311,7 +351,7 @@ func _back_from_modal() -> void:
 	var was_document := modal_kind in ["privacy", "terms"]
 	close_modal()
 	if was_document:
-		open_modal("create")
+		open_modal(legal_return_kind)
 
 func _validation_error(message: String, index: int) -> void:
 	notice.text = message
@@ -327,7 +367,10 @@ func _submit_preview() -> void:
 	if email_pattern.search(email) == null:
 		_validation_error("Enter a valid email address, such as hero@example.com.", 0)
 		return
-	if fields[1].text.length() < 8:
+	if fields[1].text.is_empty():
+		_validation_error("Enter a dummy password to check this preview form.", 1)
+		return
+	if modal_kind == "create" and fields[1].text.length() < 8:
 		_validation_error("Use at least 8 characters for this preview password.", 1)
 		return
 	if modal_kind == "create" and fields[1].text != fields[2].text:
@@ -341,6 +384,16 @@ func _submit_preview() -> void:
 		toggle.button_pressed = false
 	fields[0].grab_focus()
 	modal_scroll.scroll_vertical = 0
+
+func _on_registration_succeeded(registered_email: String) -> void:
+	# Reserved for a real backend success callback. Local preview validation
+	# must never call this or simulate successful registration.
+	if modal_kind != "create" or not is_instance_valid(modal):
+		return
+	close_modal()
+	open_modal("signin")
+	fields[0].text = registered_email.strip_edges()
+	fields[1].grab_focus()
 
 func close_modal() -> void:
 	if not is_instance_valid(modal):

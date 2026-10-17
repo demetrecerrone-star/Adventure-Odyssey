@@ -47,6 +47,9 @@ func run() -> void:
 	# a device screenshot or evidence of an actual Android keyboard session.
 	scene._layout_modal(Rect2(44, 24, 712, 244))
 	scene.fields[2].grab_focus()
+	scene._keep_focused_field_visible()
+	await process_frame
+	await process_frame
 	await capture("res://screenshots/title_create_keyboard_region.png")
 	scene.close_modal()
 	root.size = Vector2i(1600,720)
