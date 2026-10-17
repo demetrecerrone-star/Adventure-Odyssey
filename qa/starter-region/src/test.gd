@@ -52,11 +52,15 @@ func run() -> void:
 		{"id":"south river","from":Vector2(2900,2500),"to":Vector2(2900,2200)},
 		{"id":"forest shelf","from":Vector2(1050,1100),"to":Vector2(1050,800)},
 		{"id":"home reservation","from":Vector2(1644,1318),"to":Vector2(1644,1100)},
-		{"id":"north boundary","from":Vector2(245,40),"to":Vector2(245,-30)}
+		{"id":"north boundary","from":Vector2(245,144),"to":Vector2(245,80)}
 	]:
 		var probe := PhysicsRayQueryParameters2D.create(pair["from"],pair["to"])
 		probe.exclude=[scene.player.get_rid()]
 		check(not space.intersect_ray(probe).is_empty(),pair.id+" blocks direct crossing")
+	for p in [Vector2(48,112),Vector2(4560,112),Vector2(48,3024),Vector2(4560,3024)]:
+		var c:Vector2=scene.clamped_camera(p)
+		var screen:Vector2=p-c+Vector2(640,360)
+		check(screen.y>=96 and screen.y<=720 and screen.x>=32 and screen.x<=1248,"Whole actor remains visible at physical edge "+str(p))
 	# Exercise all chunks and bounded eviction, including corners at fractional zoom.
 	for zoom in [1.0,1.5,2.0]:
 		scene.camera.zoom=Vector2.ONE*zoom

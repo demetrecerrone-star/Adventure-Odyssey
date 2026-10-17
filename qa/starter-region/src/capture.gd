@@ -27,9 +27,9 @@ func run() -> void:
 	reference.visible=false
 	scene.add_child(reference)
 	var comparisons := []
-	for point in [{"id":"home","p":Vector2(1644,1318),"zoom":1},{"id":"guild","p":Vector2(2424,1128),"zoom":1},{"id":"forest_edge","p":Vector2(245,24),"zoom":1},{"id":"meadow_edge","p":Vector2(24,2955),"zoom":1},{"id":"foothill_edge","p":Vector2(4350,24),"zoom":1},{"id":"river_south","p":Vector2(3200,2670),"zoom":1},{"id":"join_fractional","p":Vector2(1536.375,1535.625),"zoom":1},{"id":"join_zoom150","p":Vector2(1536.375,1535.625),"zoom":1.5},{"id":"join_zoom200","p":Vector2(1536.375,1535.625),"zoom":2},{"id":"corner_southeast","p":Vector2(4608,3072),"zoom":1.5}]:
-		scene.player.position=scene.origin+point.p
-		scene.camera.position=scene.player.position
+	for point in [{"id":"home","p":Vector2(1644,1318),"zoom":1},{"id":"guild","p":Vector2(2424,1128),"zoom":1},{"id":"forest_edge","p":Vector2(245,24),"zoom":1},{"id":"meadow_edge","p":Vector2(24,2955),"zoom":1},{"id":"foothill_edge","p":Vector2(4350,24),"zoom":1},{"id":"river_south","p":Vector2(3400,2450),"zoom":1},{"id":"join_fractional","p":Vector2(1536.375,1535.625),"zoom":1},{"id":"join_zoom150","p":Vector2(1536.375,1535.625),"zoom":1.5},{"id":"join_zoom200","p":Vector2(1536.375,1535.625),"zoom":2},{"id":"corner_southeast","p":Vector2(4608,3072),"zoom":1.5}]:
+		scene.player.position=scene.origin+point.p.clamp(Vector2(72,144),Vector2(4536,3000))
+		scene.camera.position=scene.origin+point.p
 		scene.camera.zoom=Vector2.ONE*point.zoom
 		scene.update_chunks()
 		scene.actor.visible=true
