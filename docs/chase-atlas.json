@@ -1,0 +1,38 @@
+{
+  "goblin": {
+    "atlas": "goblin-run-atlas.png",
+    "frame_size": [
+      512,
+      512
+    ],
+    "frame_count": 4,
+    "layout": "horizontal",
+    "foot_pivot": [
+      256,
+      430
+    ],
+    "fps": 10,
+    "direction": "right",
+    "suggested_display_body_height": 84,
+    "source": "imagegen original art, mechanically cropped and registered",
+    "quality_note": "Four distinct generated poses; extended and passing states are visible, but limb alternation and subpixel detail are not hand-polished. Review in motion before treating as final."
+  },
+  "skeleton": {
+    "atlas": "skeleton-run-atlas.png",
+    "frame_size": [
+      512,
+      512
+    ],
+    "frame_count": 4,
+    "layout": "horizontal",
+    "foot_pivot": [
+      256,
+      430
+    ],
+    "fps": 10,
+    "direction": "right",
+    "suggested_display_body_height": 100,
+    "source": "imagegen original art, mechanically cropped and registered",
+    "quality_note": "Four distinct generated poses; extended and passing states are visible, but limb alternation and subpixel detail are not hand-polished. Review in motion before treating as final."
+  }
+}

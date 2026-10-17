@@ -1,0 +1,119 @@
+extends SceneTree
+var failures := 0
+var checks := 0
+func check(ok: bool, message: String) -> void:
+	checks += 1
+	if not ok:
+		failures += 1
+		push_error("TEST FAILED: " + message)
+func _initialize() -> void:
+	call_deferred("run")
+func run() -> void:
+	var scene = load("res://scenes/main.tscn").instantiate()
+	root.add_child(scene)
+	await process_frame
+	check(scene.buttons.size() == 4, "four real buttons")
+	check(scene.brand.texture.get_width() == 2048, "exact brand source")
+	for kind in ["signin", "create", "google", "guest", "signin", "create"]:
+		scene.open_modal(kind)
+		await process_frame
+		check(scene.modal_kind == kind, "modal opens " + kind)
+		var current = scene.modal
+		scene.open_modal(kind)
+		check(scene.modal == current, "repeated click cannot stack")
+		check(scene.buttons[0].disabled, "background disabled")
+		if kind == "signin" or kind == "create":
+			check(scene.fields.size() == (3 if kind == "create" else 2), "correct fields")
+			check(scene.fields[1].secret, "password masked")
+			for field in scene.fields:
+				field.text = "dummy-preview"
+			scene._submit_preview()
+			for field in scene.fields:
+				check(field.text.is_empty(), "dummy credentials cleared")
+			check("aren't available" in scene.notice.text, "honest preview message")
+		scene.close_modal()
+		await process_frame
+		check(scene.modal == null and scene.fields.is_empty(), "modal removed and fields discarded")
+		check(not scene.buttons[0].disabled, "menu restored")
+		check(root.gui_get_focus_owner() != null, "keyboard focus restored")
+	scene.open_modal("signin")
+	scene._notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	check(scene.modal == null, "Android back dismisses")
+	scene.open_modal("create")
+	var escape := InputEventKey.new()
+	escape.keycode = KEY_ESCAPE
+	escape.pressed = true
+	scene._unhandled_key_input(escape)
+	check(scene.modal == null, "Escape dismisses")
+	for viewport_size in [Vector2i(1280,720), Vector2i(1920,1080), Vector2i(2400,1080), Vector2i(1024,768)]:
+		root.size = viewport_size
+		await process_frame
+		scene._layout()
+		check(scene.brand.position.x >= 0, "brand fits screen")
+		for button in scene.buttons:
+			check(scene.get_global_rect().encloses(button.get_global_rect()), "button fits responsive viewport")
+		scene.open_modal("create")
+		await process_frame
+		check(scene.get_global_rect().encloses(scene.modal_panel.get_global_rect()), "modal fits viewport")
+		scene.close_modal()
+	root.size = Vector2i(1280,720)
+	await process_frame
+	scene._layout()
+	# Dispatch real pointer events through Godot's GUI, not button signals.
+	for index in range(4):
+		var point: Vector2 = scene.buttons[index].get_global_rect().get_center()
+		var press := InputEventMouseButton.new()
+		press.button_index = MOUSE_BUTTON_LEFT
+		press.position = point
+		press.pressed = true
+		Input.parse_input_event(press)
+		await process_frame
+		var release := InputEventMouseButton.new()
+		release.button_index = MOUSE_BUTTON_LEFT
+		release.position = point
+		release.pressed = false
+		Input.parse_input_event(release)
+		await process_frame
+		check(scene.modal != null, "pointer button opens modal")
+		scene.close_modal()
+		await process_frame
+	scene.buttons[3].grab_focus()
+	var enter := InputEventKey.new()
+	enter.keycode = KEY_ENTER
+	enter.pressed = true
+	Input.parse_input_event(enter)
+	await process_frame
+	enter = InputEventKey.new()
+	enter.keycode = KEY_ENTER
+	enter.pressed = false
+	Input.parse_input_event(enter)
+	await process_frame
+	check(scene.modal_kind == "signin", "keyboard Enter activates sign in")
+	scene.close_modal()
+	var touch := InputEventScreenTouch.new()
+	touch.index = 0
+	touch.position = scene.buttons[1].get_global_rect().get_center()
+	touch.pressed = true
+	Input.parse_input_event(touch)
+	await process_frame
+	var lift := InputEventScreenTouch.new()
+	lift.index = 0
+	lift.position = touch.position
+	lift.pressed = false
+	Input.parse_input_event(lift)
+	await process_frame
+	check(scene.modal_kind == "guest", "touch opens Guest")
+	scene.close_modal()
+	check(scene.runners.size() == 2, "two separate runners")
+	for runner in scene.runners:
+		check(runner.sprite_frames.get_frame_count("default") == 4, "four distinct sprite atlas frames")
+		check(runner.is_playing(), "runner animation playing")
+		check(runner.offset == Vector2(-256,-430), "registered foot pivot")
+	scene.elapsed = 0
+	scene._process(0)
+	check(scene.runners[1].position.x > scene.runners[0].position.x, "goblin leads sword skeleton")
+	check(not FileAccess.file_exists("user://account.json"), "no account persistence")
+	print("TITLE CHECKS: ",checks,"; failures: ",failures)
+	if failures == 0:
+		print("ADVENTURE ODYSSEY TITLE TEST: PASS")
+	quit(0 if failures == 0 else 1)

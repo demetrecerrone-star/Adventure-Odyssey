@@ -1,4 +1,4 @@
-name: Build Adventure Odyssey Android APK
+name: Validate and build Adventure Odyssey title preview
 
 on:
   push:
@@ -9,446 +9,14 @@ permissions:
   contents: read
 
 jobs:
-  inspect-source:
-    # Pushes inspect the archived Godot source without generating another APK.
-    if: github.event_name == 'push'
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Check out project
-        uses: actions/checkout@v4
-      - name: Inspect archived title scene and sprites
-        shell: bash
-        run: |
-          set -euo pipefail
-          cat payload/part_*.bin > /tmp/adventure_odyssey_source.zip
-          echo "861c1871c327126a1321ef0107341dbe3510cfa60cf1f0f00abac14592edb568  /tmp/adventure_odyssey_source.zip" | sha256sum -c -
-          # Snapshot the pristine checkout before the historical ZIP can overwrite it.
-          tar -cf /tmp/ao-current-overlay.tar --exclude='./.git' --exclude='./payload' .
-          unzip -qo /tmp/adventure_odyssey_source.zip -d .
-          # The historical ZIP includes older copies of tracked overlays/scripts.
-          # Restore current checkout files without Git ownership assumptions in containers.
-          tar -xf /tmp/ao-current-overlay.tar -C .
-          if ! command -v python3 >/dev/null 2>&1; then
-            apt-get update -qq
-            DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3
-          fi
-          python3 tools/apply_title_screen.py
-          python3 tools/apply_dabsky_title.py
-          python3 tools/apply_creator_improvements.py
-          python3 tools/apply_creator_palette.py
-          python3 tools/apply_creator_visual_polish.py
-          python3 tools/apply_bedroom_tutorial.py
-          python3 tools/apply_dialogue_ui.py
-          python3 tools/apply_home_furniture.py
-          python3 tools/apply_starter_house.py
-          python3 tools/apply_elmwatch_art.py
-          python3 tools/apply_npc_life.py
-          python3 tools/apply_npc_interactions.py
-          python3 tools/apply_npc_presence.py
-          python3 tools/apply_interior_navigation.py
-          python3 tools/apply_opening_tutorial.py
-          python3 tools/apply_guild_training.py
-          python3 tools/apply_forest_background.py
-          python3 tools/apply_combat_feedback.py
-          python3 tools/apply_slime_ai.py
-          python3 tools/apply_class_skills.py
-          python3 tools/apply_skill_icons.py
-          python3 tools/apply_mentor_quests.py
-          python3 tools/apply_skillbook_vfx.py
-          python3 tools/apply_economy.py
-          python3 tools/apply_mentor_art.py
-          python3 tools/apply_world_expansion.py
-          python3 tools/generate_gear_art.py
-          python3 tools/apply_item_art.py
-          python3 tools/apply_monster_loot.py
-          python3 tools/generate_character_layers.py
-          python3 tools/apply_character_layers.py
-          python3 tools/apply_equipment_visuals.py
-          python3 tools/apply_sigils_currency.py
-          python3 tools/apply_cottage_collections.py
-          python3 tools/apply_cottage_gold_shop.py
-          python3 tools/apply_ui_lifecycle_guard.py
-          python3 tools/apply_guardian_weapon_quest.py
-          python3 tools/apply_oldstone_dungeon.py
-          python3 tools/apply_combat_polish.py
-          python3 tools/apply_monster_animation.py
-          python3 tools/apply_save_reliability.py
-          python3 tools/apply_touch_input.py
-          python3 tools/apply_guardian_instance.py
-          python3 tools/apply_app_icon.py
-          echo '=== CHARACTER CREATOR AUDIT SOURCE ==='
-          python3 - <<'PY'
-          from pathlib import Path
-          lines = Path('scripts/game.gd').read_text().splitlines()
-          headers = [(i, line) for i, line in enumerate(lines) if line.startswith('func ') or line.startswith('static func ')]
-          keys = ('creat', 'class', 'hair', 'skin', 'eye', 'character', 'save', 'load', 'stat', 'preview', 'body', 'variant', 'appearance', 'confirm', 'portrait', 'sex', 'gender', 'world', 'player', 'continue', 'frame', 'move', 'equip', 'level', 'random')
-          for p,(index, header) in enumerate(headers):
-              if any(k in header.lower() for k in keys):
-                  end = headers[p+1][0] if p+1 < len(headers) else len(lines)
-                  print(f'=== FUNCTION {header} lines {index+1}-{end} ===')
-                  for line_no in range(index, end):
-                      print(f'{line_no+1:04d}: {lines[line_no]}')
-          print('=== GAME GLOBALS ===')
-          for index,line in enumerate(lines[:165]):
-              print(f'{index+1:04d}: {line}')
-          print('=== SPRITE / CLOTHING ASSETS ===')
-          for path in sorted(Path('assets').rglob('*.png')):
-              if any(k in str(path).lower() for k in ('eyes', 'eye_', 'clothing', 'outfit', 'armor', 'body', 'character', 'hair')):
-                  print(str(path))
-          print('=== TUTORIAL GAME LOOP AND INTERACTION AUDIT ===')
-          for index,line in enumerate(lines):
-              if index >= 635:
-                  print(f'{index+1:04d}: {line}')
-          print('=== SMOKE TEST ===')
-          for index,line in enumerate(Path('tests/smoke_test.gd').read_text().splitlines()):
-              print(f'{index+1:04d}: {line}')
-          PY
-          grep -q 'func _title_button' scripts/game.gd
-          test -s assets/ui/dabsky_logo.webp
-          echo '=== Relevant project files ==='
-          find . -maxdepth 6 -type f \( -name '*.tscn' -o -name '*.gd' -o -name '*.png' \) | sort | sed -n '1,220p'
-          echo '=== Title / login / sprite references ==='
-          grep -RniE 'title|login|guest|skeleton|goblin|character.creat|sprite_frames' --include='*.gd' --include='*.tscn' . | head -150 || true
-          echo '=== Candidate scripts and scenes ==='
-          find . -maxdepth 6 -type f \( -iname '*title*.gd' -o -iname '*title*.tscn' -o -iname '*menu*.gd' -o -iname '*menu*.tscn' -o -iname '*login*.gd' -o -iname '*login*.tscn' -o -iname '*main*.gd' -o -iname '*main*.tscn' \) | sort | while read -r file; do
-            echo "=== FILE: $file ==="
-            sed -n '1,280p' "$file"
-          done
-          echo '=== Project startup config ==='
-          sed -n '1,180p' project.godot
-          echo '=== Title image properties ==='
-          file assets/world/title.png
-  validate-title:
-    # Validate the actual unpacked Godot game but do not export Android.
-    if: github.event_name == 'push'
+  title-preview:
     runs-on: ubuntu-24.04
     container:
       image: barichello/godot-ci:4.7.2
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
-      - name: Check out project
+      - name: Check out direct Godot source
         uses: actions/checkout@v4
-      - name: Reconstruct source and apply title layout
-        shell: bash
-        run: |
-          set -euo pipefail
-          cat payload/part_*.bin > /tmp/adventure_odyssey_source.zip
-          echo "861c1871c327126a1321ef0107341dbe3510cfa60cf1f0f00abac14592edb568  /tmp/adventure_odyssey_source.zip" | sha256sum -c -
-          # Snapshot the pristine checkout before the historical ZIP can overwrite it.
-          tar -cf /tmp/ao-current-overlay.tar --exclude='./.git' --exclude='./payload' .
-          unzip -qo /tmp/adventure_odyssey_source.zip -d .
-          # The historical ZIP includes older copies of tracked overlays/scripts.
-          # Restore current checkout files without Git ownership assumptions in containers.
-          tar -xf /tmp/ao-current-overlay.tar -C .
-          if ! command -v python3 >/dev/null 2>&1; then
-            apt-get update -qq
-            DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3
-          fi
-          python3 tools/apply_title_screen.py
-          python3 tools/apply_dabsky_title.py
-          python3 tools/apply_creator_improvements.py
-          python3 tools/apply_creator_palette.py
-          python3 tools/apply_creator_visual_polish.py
-          python3 tools/apply_bedroom_tutorial.py
-          python3 tools/apply_dialogue_ui.py
-          python3 tools/apply_home_furniture.py
-          python3 tools/apply_starter_house.py
-          python3 tools/apply_elmwatch_art.py
-          python3 tools/apply_npc_life.py
-          python3 tools/apply_npc_interactions.py
-          python3 tools/apply_npc_presence.py
-          python3 tools/apply_interior_navigation.py
-          python3 tools/apply_opening_tutorial.py
-          python3 tools/apply_guild_training.py
-          python3 tools/apply_forest_background.py
-          python3 tools/apply_combat_feedback.py
-          python3 tools/apply_slime_ai.py
-          python3 tools/apply_class_skills.py
-          python3 tools/apply_skill_icons.py
-          python3 tools/apply_mentor_quests.py
-          python3 tools/apply_skillbook_vfx.py
-          python3 tools/apply_economy.py
-          python3 tools/apply_mentor_art.py
-          python3 tools/apply_world_expansion.py
-          python3 tools/generate_gear_art.py
-          python3 tools/apply_item_art.py
-          python3 tools/apply_monster_loot.py
-          python3 tools/generate_character_layers.py
-          python3 tools/apply_character_layers.py
-          python3 tools/apply_equipment_visuals.py
-          python3 tools/apply_sigils_currency.py
-          python3 tools/apply_cottage_collections.py
-          python3 tools/apply_cottage_gold_shop.py
-          python3 tools/apply_ui_lifecycle_guard.py
-          python3 tools/apply_guardian_weapon_quest.py
-          python3 tools/apply_oldstone_dungeon.py
-          python3 tools/apply_combat_polish.py
-          python3 tools/apply_monster_animation.py
-          python3 tools/apply_save_reliability.py
-          python3 tools/apply_touch_input.py
-          python3 tools/apply_guardian_instance.py
-          python3 tools/apply_app_icon.py
-          python3 tools/audit_character_sprites.py
-          # Generate only the pose-aligned equipment art; legacy oversized-icon previews remain archived in tools/.
-          python3 tools/generate_worn_equipment_art.py
-          python3 tools/generate_guardian_quest_weapons.py
-          sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
-      - name: Validate Godot import and game smoke test (no APK)
-        shell: bash
-        run: |
-          set -euo pipefail
-          godot --version
-          godot --headless --path . --editor --quit
-          # Require PASS marker, fail on script errors and cap runtime.
-          run_scene_test() {
-            local script="$1" marker="$2"
-            timeout 80 godot --headless --path . --quit-after 300 --script "$script" 2>&1 | tee /tmp/ao_scene_test.log
-            grep -Fq "$marker" /tmp/ao_scene_test.log
-            if grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script' /tmp/ao_scene_test.log; then
-              echo "Godot script validation failed in $script"; return 1
-            fi
-          }
-          run_scene_test res://tests/smoke_test.gd 'ADVENTURE ODYSSEY SMOKE TESTS: PASS'
-          run_scene_test res://tests/creator_deep_test.gd 'ADVENTURE ODYSSEY CREATOR DEEP TEST: PASS'
-          run_scene_test res://tests/bedroom_test.gd 'ADVENTURE ODYSSEY BEDROOM TEST: PASS'
-          run_scene_test res://tests/home_furniture_test.gd 'ADVENTURE ODYSSEY HOME FURNITURE TEST: PASS'
-          run_scene_test res://tests/starter_house_test.gd 'ADVENTURE ODYSSEY STARTER HOUSE TEST: PASS'
-          run_scene_test res://tests/opening_tutorial_test.gd 'ADVENTURE ODYSSEY OPENING TUTORIAL TEST: PASS'
-          run_scene_test res://tests/guild_training_test.gd 'ADVENTURE ODYSSEY GUILD TRAINING TEST: PASS'
-          run_scene_test res://tests/forest_background_test.gd 'ADVENTURE ODYSSEY FOREST BACKGROUND TEST: PASS'
-          run_scene_test res://tests/combat_feedback_test.gd 'ADVENTURE ODYSSEY COMBAT FEEDBACK TEST: PASS'
-          run_scene_test res://tests/slime_ai_test.gd 'ADVENTURE ODYSSEY SLIME AI TEST: PASS'
-          run_scene_test res://tests/extended_enemy_ai_test.gd 'ADVENTURE ODYSSEY EXTENDED ENEMY AI TEST: PASS /'
-          run_scene_test res://tests/dungeon_combat_ai_test.gd 'ADVENTURE ODYSSEY DUNGEON COMBAT AI TEST: PASS /'
-          run_scene_test res://tests/combat_polish_test.gd 'ADVENTURE ODYSSEY COMBAT POLISH TEST: PASS /'
-          run_scene_test res://tests/monster_animation_test.gd 'ADVENTURE ODYSSEY MONSTER ANIMATION TEST: PASS'
-          run_scene_test res://tests/save_reliability_test.gd 'ADVENTURE ODYSSEY SAVE RELIABILITY TEST: PASS'
-          run_scene_test res://tests/touch_regression_test.gd 'TOUCH REGRESSION: 16 passed; 0 failed'
-          run_scene_test res://tests/touch_input_test.gd 'TOUCH INPUT: 34 passed; 0 failed'
-          run_scene_test res://tests/class_skills_test.gd 'ADVENTURE ODYSSEY CLASS SKILLS TEST: PASS'
-          run_scene_test res://tests/skill_icons_test.gd 'ADVENTURE ODYSSEY SKILL ICONS TEST: PASS'
-          run_scene_test res://tests/mentor_quests_test.gd 'ADVENTURE ODYSSEY MENTOR QUESTS TEST: PASS'
-          run_scene_test res://tests/skillbook_vfx_test.gd 'ADVENTURE ODYSSEY SKILLBOOK VFX TEST: PASS'
-          run_scene_test res://tests/economy_test.gd 'ADVENTURE ODYSSEY ECONOMY TEST: PASS'
-          run_scene_test res://tests/item_art_test.gd 'ADVENTURE ODYSSEY ITEM ART TEST: PASS'
-          run_scene_test res://tests/character_layers_test.gd 'ADVENTURE ODYSSEY CHARACTER LAYERS TEST: PASS'
-          run_scene_test res://tests/character_polish_test.gd 'ADVENTURE ODYSSEY CHARACTER POLISH TEST: PASS'
-          run_scene_test res://tests/headgear_hairstyles_test.gd 'ADVENTURE ODYSSEY HEADGEAR HAIRSTYLES TEST: PASS'
-          run_scene_test res://tests/worn_gear_test.gd 'ADVENTURE ODYSSEY WORN GEAR TEST: PASS'
-          run_scene_test res://tests/worn_equipment_art_test.gd 'ADVENTURE ODYSSEY WORN EQUIPMENT ART TEST: PASS'
-          run_scene_test res://tests/matched_item_icons_test.gd 'ADVENTURE ODYSSEY MATCHED ITEM ICON TEST: PASS'
-          run_scene_test res://tests/equipment_visuals_test.gd 'ADVENTURE ODYSSEY EQUIPMENT VISUALS TEST: PASS'
-          run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
-          run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
-          run_scene_test res://tests/oldstone_dungeon_test.gd 'ADVENTURE ODYSSEY OLDSTONE DUNGEON TEST: PASS'
-          run_scene_test res://tests/monster_loot_test.gd 'ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS'
-          run_scene_test res://tests/guardian_weapons_test.gd 'ADVENTURE ODYSSEY GUARDIAN WEAPONS TEST: PASS'
-          run_scene_test res://tests/guardian_instance_test.gd 'ADVENTURE ODYSSEY GUARDIAN INSTANCE TEST: PASS'
-          run_scene_test res://tests/sigils_currency_test.gd 'ADVENTURE ODYSSEY SIGILS CURRENCY TEST: PASS'
-          run_scene_test res://tests/cottage_collections_test.gd 'ADVENTURE ODYSSEY COTTAGE COLLECTIONS TEST: PASS'
-          run_scene_test res://tests/cottage_gold_shop_test.gd 'ADVENTURE ODYSSEY COTTAGE GOLD SHOP TEST: PASS'
-          run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
-          run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
-          run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
-          run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'
-          run_scene_test res://tests/npc_presence_test.gd 'ADVENTURE ODYSSEY NPC PRESENCE TEST: PASS'
-          run_scene_test res://tests/interior_navigation_test.gd 'ADVENTURE ODYSSEY INTERIOR NAVIGATION TEST: PASS'
-
-      - name: Capture native rendered character creator
-        shell: bash
-        run: |
-          set -euo pipefail
-          apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq xvfb libgl1-mesa-dri libfontconfig1 libxcursor1 libxi6 libxinerama1 libxkbcommon-x11-0 libwayland-cursor0
-          mkdir -p screenshots
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/creator_screenshot.gd
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/bedroom_screenshot.gd
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/cottage_shop_screenshot.gd
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/oldstone_screenshot.gd
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/starter_house_screenshot.gd
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/elmwatch_screenshot.gd
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/guild_training_screenshot.gd
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/class_skills_screenshot.gd
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/combat_polish_screenshot.gd
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/dialogue_screenshot.gd
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/item_art_screenshot.gd
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/appearance_screenshot.gd
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/worn_gear_screenshot.gd
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/worn_equipment_icons_screenshot.gd
-          test -s screenshots/worn_equipment_previews.png
-          test -s screenshots/equipment_walk_pose_grid.png
-          test -s screenshots/equipment_fit_8x4.png
-          test -s screenshots/equipment_headgear_on_hairstyles.png
-          test -s screenshots/equipment_headgear_off_hairstyles.png
-          test -s screenshots/worn_equipment_matching_icons.png
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/character_source_atlas.gd
-          test -s screenshots/tutorial_dialogue.png
-          test -s screenshots/npc_dialogue.png
-          test -s screenshots/starter_bedroom.png
-          test -s screenshots/cottage_gold_shop_menu.png
-          test -s screenshots/cottage_sigil_shop_menu.png
-          test -s screenshots/cottage_gold_furniture_room.png
-          test -s screenshots/cottage_noble_queen_room.png
-          test -s screenshots/cottage_castle_king_room.png
-          test -s screenshots/cottage_royal_unisex_room.png
-          test -s screenshots/oldstone_entrance.png
-          test -s screenshots/oldstone_halls.png
-          test -s screenshots/oldstone_library.png
-          test -s screenshots/oldstone_chapel.png
-          test -s screenshots/oldstone_sanctum.png
-          test -s screenshots/starter_foyer.png
-          test -s screenshots/starter_living.png
-          test -s screenshots/elmwatch_town.png
-          test -s screenshots/elmwatch_guild.png
-          test -s screenshots/elmwatch_market.png
-          test -s screenshots/elmwatch_inn.png
-          test -s screenshots/elmwatch_blacksmith.png
-          test -s screenshots/guild_quest_offer.png
-          test -s screenshots/thornbrook_combat.png
-          test -s screenshots/starter_skills_warrior.png
-          test -s screenshots/starter_skills_mage.png
-          test -s screenshots/starter_skills_necromancer.png
-          test -s screenshots/combat_effects_starters.png
-          test -s screenshots/combat_effects_mentors.png
-          test -s screenshots/character_creator.png
-          test -s screenshots/equipment_original_art.png
-          test -s screenshots/market_original_art.png
-          test -s screenshots/backpack_original_art.png
-          test -s screenshots/appearance_underlayer_8x4.png
-          test -s screenshots/appearance_starter_8x4.png
-          test -s screenshots/worn_equipment_previews.png
-          test -s screenshots/equipment_walk_pose_grid.png
-          test -s screenshots/equipment_fit_8x4.png
-          test -s screenshots/equipment_headgear_on_hairstyles.png
-          test -s screenshots/equipment_headgear_off_hairstyles.png
-          test -s screenshots/ao_original_character_contact_sheet.png
-          ls -lh screenshots/character_creator.png
-      - name: Upload visual QA screenshot
-        uses: actions/upload-artifact@v4
-        with:
-          name: Adventure-Odyssey-Character-Creator-Preview
-          path: screenshots/*.png
-          if-no-files-found: error
-          retention-days: 15
-      - name: Upload native cottage decor previews
-        uses: actions/upload-artifact@v4
-        with:
-          name: Adventure-Odyssey-Cottage-Visual-Previews
-          path: screenshots/cottage_*.png
-          if-no-files-found: error
-          retention-days: 15
-      - name: Upload Oldstone pixel art review
-        uses: actions/upload-artifact@v4
-        with:
-          name: Adventure-Odyssey-Oldstone-Sprites
-          path: |
-            assets/guardian_weapon_sheets/**
-            assets/equipment_item_icons/oldstone_*.png
-            assets/equipment_worn/weapon/oldstone_*/**
-          if-no-files-found: error
-          retention-days: 15
-      - name: Upload unchanged player sprite baseline backup and audit
-        uses: actions/upload-artifact@v4
-        with:
-          name: Adventure-Odyssey-Original-Player-Sprite-Backup
-          path: |
-            screenshots/ao_original_character_sprites.zip
-            screenshots/ao_character_sprite_baseline_manifest.json
-          if-no-files-found: error
-          retention-days: 15
-  android-apk:
-    # Ordinary pushes remain validation-only. This unique opt-in marks the
-    # single signed APK explicitly requested for the 2026-10-16 gameplay batch.
-    needs: [inspect-source, validate-title]
-    if: >-
-      always() &&
-      (github.event_name == 'workflow_dispatch' ||
-       (github.event_name == 'push' &&
-        contains(github.event.head_commit.message, '[ao-release-20261016-monsters-guardian]') &&
-        needs.inspect-source.result == 'success' &&
-        needs.validate-title.result == 'success'))
-    runs-on: ubuntu-24.04
-    container:
-      image: barichello/godot-ci:4.7.2
-    timeout-minutes: 35
-
-    steps:
-      - name: Check out project
-        uses: actions/checkout@v4
-
-      - name: Reconstruct and verify Godot project
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(find payload -name 'part_*.bin' | wc -l)" -eq 35
-          cat payload/part_*.bin > /tmp/adventure_odyssey_v03.zip
-          echo "861c1871c327126a1321ef0107341dbe3510cfa60cf1f0f00abac14592edb568  /tmp/adventure_odyssey_v03.zip" | sha256sum -c -
-          # Snapshot the pristine checkout before the historical ZIP can overwrite it.
-          tar -cf /tmp/ao-current-overlay.tar --exclude='./.git' --exclude='./payload' .
-          unzip -qo /tmp/adventure_odyssey_v03.zip -d .
-          # The historical ZIP includes older copies of tracked overlays/scripts.
-          # Restore current checkout files without Git ownership assumptions in containers.
-          tar -xf /tmp/ao-current-overlay.tar -C .
-          if ! command -v python3 >/dev/null 2>&1; then
-            apt-get update -qq
-            DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3
-          fi
-          python3 tools/apply_title_screen.py
-          python3 tools/apply_dabsky_title.py
-          python3 tools/apply_creator_improvements.py
-          python3 tools/apply_creator_palette.py
-          python3 tools/apply_creator_visual_polish.py
-          python3 tools/apply_bedroom_tutorial.py
-          python3 tools/apply_dialogue_ui.py
-          python3 tools/apply_home_furniture.py
-          python3 tools/apply_starter_house.py
-          python3 tools/apply_elmwatch_art.py
-          python3 tools/apply_npc_life.py
-          python3 tools/apply_npc_interactions.py
-          python3 tools/apply_npc_presence.py
-          python3 tools/apply_interior_navigation.py
-          python3 tools/apply_opening_tutorial.py
-          python3 tools/apply_guild_training.py
-          python3 tools/apply_forest_background.py
-          python3 tools/apply_combat_feedback.py
-          python3 tools/apply_slime_ai.py
-          python3 tools/apply_class_skills.py
-          python3 tools/apply_skill_icons.py
-          python3 tools/apply_mentor_quests.py
-          python3 tools/apply_skillbook_vfx.py
-          python3 tools/apply_economy.py
-          python3 tools/apply_mentor_art.py
-          python3 tools/apply_world_expansion.py
-          python3 tools/generate_gear_art.py
-          python3 tools/apply_item_art.py
-          python3 tools/apply_monster_loot.py
-          python3 tools/generate_character_layers.py
-          python3 tools/apply_character_layers.py
-          python3 tools/apply_equipment_visuals.py
-          python3 tools/apply_sigils_currency.py
-          python3 tools/apply_cottage_collections.py
-          python3 tools/apply_cottage_gold_shop.py
-          python3 tools/apply_ui_lifecycle_guard.py
-          python3 tools/apply_guardian_weapon_quest.py
-          python3 tools/apply_oldstone_dungeon.py
-          python3 tools/apply_combat_polish.py
-          python3 tools/apply_monster_animation.py
-          python3 tools/apply_save_reliability.py
-          python3 tools/apply_touch_input.py
-          python3 tools/apply_guardian_instance.py
-          python3 tools/apply_app_icon.py
-          # Generate only the pose-aligned equipment art; legacy oversized-icon previews remain archived in tools/.
-          python3 tools/generate_worn_equipment_art.py
-          python3 tools/generate_guardian_quest_weapons.py
-          test -f project.godot
-          test -f export_presets.cfg
-          test -f assets/world/title.png
-          test -s assets/ui/dabsky_logo.webp
-          # Android requires ETC2/ASTC enabled even with the GL Compatibility renderer.
-          # The archived project predates this export setting, so patch it immediately after unpacking.
-          sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' project.godot
-          grep -F 'textures/vram_compression/import_etc2_astc=true' project.godot
-          mkdir -p build
 
       - name: Set up Android export environment
         shell: bash
@@ -458,7 +26,6 @@ jobs:
           java -version
           test -f project.godot
           test -f export_presets.cfg
-          test -f assets/world/title.png
           mkdir -p "$HOME/.local/share/godot/export_templates" "$HOME/.config" build
           # Godot-CI preinstalls templates and editor settings for root. In
           # GitHub Actions containers HOME may be /github/home instead.
@@ -473,67 +40,40 @@ jobs:
           test -d "$HOME/.local/share/godot/export_templates/4.7.2.stable"
           ls -l "$HOME/.local/share/godot/export_templates/4.7.2.stable/" | head -20
 
-      - name: Import assets and validate scenes
+      - name: Import direct source and test title interactions
         shell: bash
         run: |
           set -euo pipefail
-          godot --headless --path . --editor --quit
-          # Require PASS marker, fail on script errors and cap runtime.
-          run_scene_test() {
-            local script="$1" marker="$2"
-            timeout 80 godot --headless --path . --quit-after 300 --script "$script" 2>&1 | tee /tmp/ao_scene_test.log
-            grep -Fq "$marker" /tmp/ao_scene_test.log
-            if grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script' /tmp/ao_scene_test.log; then
-              echo "Godot script validation failed in $script"; return 1
-            fi
-          }
-          run_scene_test res://tests/smoke_test.gd 'ADVENTURE ODYSSEY SMOKE TESTS: PASS'
-          run_scene_test res://tests/creator_deep_test.gd 'ADVENTURE ODYSSEY CREATOR DEEP TEST: PASS'
-          run_scene_test res://tests/bedroom_test.gd 'ADVENTURE ODYSSEY BEDROOM TEST: PASS'
-          run_scene_test res://tests/home_furniture_test.gd 'ADVENTURE ODYSSEY HOME FURNITURE TEST: PASS'
-          run_scene_test res://tests/starter_house_test.gd 'ADVENTURE ODYSSEY STARTER HOUSE TEST: PASS'
-          run_scene_test res://tests/opening_tutorial_test.gd 'ADVENTURE ODYSSEY OPENING TUTORIAL TEST: PASS'
-          run_scene_test res://tests/guild_training_test.gd 'ADVENTURE ODYSSEY GUILD TRAINING TEST: PASS'
-          run_scene_test res://tests/forest_background_test.gd 'ADVENTURE ODYSSEY FOREST BACKGROUND TEST: PASS'
-          run_scene_test res://tests/combat_feedback_test.gd 'ADVENTURE ODYSSEY COMBAT FEEDBACK TEST: PASS'
-          run_scene_test res://tests/slime_ai_test.gd 'ADVENTURE ODYSSEY SLIME AI TEST: PASS'
-          run_scene_test res://tests/extended_enemy_ai_test.gd 'ADVENTURE ODYSSEY EXTENDED ENEMY AI TEST: PASS /'
-          run_scene_test res://tests/dungeon_combat_ai_test.gd 'ADVENTURE ODYSSEY DUNGEON COMBAT AI TEST: PASS /'
-          run_scene_test res://tests/combat_polish_test.gd 'ADVENTURE ODYSSEY COMBAT POLISH TEST: PASS /'
-          run_scene_test res://tests/monster_animation_test.gd 'ADVENTURE ODYSSEY MONSTER ANIMATION TEST: PASS'
-          run_scene_test res://tests/save_reliability_test.gd 'ADVENTURE ODYSSEY SAVE RELIABILITY TEST: PASS'
-          run_scene_test res://tests/touch_regression_test.gd 'TOUCH REGRESSION: 16 passed; 0 failed'
-          run_scene_test res://tests/touch_input_test.gd 'TOUCH INPUT: 34 passed; 0 failed'
-          run_scene_test res://tests/class_skills_test.gd 'ADVENTURE ODYSSEY CLASS SKILLS TEST: PASS'
-          run_scene_test res://tests/skill_icons_test.gd 'ADVENTURE ODYSSEY SKILL ICONS TEST: PASS'
-          run_scene_test res://tests/mentor_quests_test.gd 'ADVENTURE ODYSSEY MENTOR QUESTS TEST: PASS'
-          run_scene_test res://tests/skillbook_vfx_test.gd 'ADVENTURE ODYSSEY SKILLBOOK VFX TEST: PASS'
-          run_scene_test res://tests/economy_test.gd 'ADVENTURE ODYSSEY ECONOMY TEST: PASS'
-          run_scene_test res://tests/item_art_test.gd 'ADVENTURE ODYSSEY ITEM ART TEST: PASS'
-          run_scene_test res://tests/character_layers_test.gd 'ADVENTURE ODYSSEY CHARACTER LAYERS TEST: PASS'
-          run_scene_test res://tests/character_polish_test.gd 'ADVENTURE ODYSSEY CHARACTER POLISH TEST: PASS'
-          run_scene_test res://tests/headgear_hairstyles_test.gd 'ADVENTURE ODYSSEY HEADGEAR HAIRSTYLES TEST: PASS'
-          run_scene_test res://tests/worn_gear_test.gd 'ADVENTURE ODYSSEY WORN GEAR TEST: PASS'
-          run_scene_test res://tests/worn_equipment_art_test.gd 'ADVENTURE ODYSSEY WORN EQUIPMENT ART TEST: PASS'
-          run_scene_test res://tests/matched_item_icons_test.gd 'ADVENTURE ODYSSEY MATCHED ITEM ICON TEST: PASS'
-          run_scene_test res://tests/equipment_visuals_test.gd 'ADVENTURE ODYSSEY EQUIPMENT VISUALS TEST: PASS'
-          run_scene_test res://tests/mentor_art_test.gd 'ADVENTURE ODYSSEY MENTOR ART TEST: PASS'
-          run_scene_test res://tests/world_expansion_test.gd 'ADVENTURE ODYSSEY WORLD EXPANSION TEST: PASS'
-          run_scene_test res://tests/oldstone_dungeon_test.gd 'ADVENTURE ODYSSEY OLDSTONE DUNGEON TEST: PASS'
-          run_scene_test res://tests/monster_loot_test.gd 'ADVENTURE ODYSSEY MONSTER LOOT TEST: PASS'
-          run_scene_test res://tests/guardian_weapons_test.gd 'ADVENTURE ODYSSEY GUARDIAN WEAPONS TEST: PASS'
-          run_scene_test res://tests/guardian_instance_test.gd 'ADVENTURE ODYSSEY GUARDIAN INSTANCE TEST: PASS'
-          run_scene_test res://tests/sigils_currency_test.gd 'ADVENTURE ODYSSEY SIGILS CURRENCY TEST: PASS'
-          run_scene_test res://tests/cottage_collections_test.gd 'ADVENTURE ODYSSEY COTTAGE COLLECTIONS TEST: PASS'
-          run_scene_test res://tests/cottage_gold_shop_test.gd 'ADVENTURE ODYSSEY COTTAGE GOLD SHOP TEST: PASS'
-          run_scene_test res://tests/app_icon_test.gd 'ADVENTURE ODYSSEY APP ICON TEST: PASS'
-          run_scene_test res://tests/dialogue_test.gd 'ADVENTURE ODYSSEY DIALOGUE TEST: PASS'
-          run_scene_test res://tests/elmwatch_visual_test.gd 'ADVENTURE ODYSSEY ELMWATCH VISUAL TEST: PASS'
-          run_scene_test res://tests/npc_life_test.gd 'ADVENTURE ODYSSEY NPC LIFE TEST: PASS'
-          run_scene_test res://tests/npc_presence_test.gd 'ADVENTURE ODYSSEY NPC PRESENCE TEST: PASS'
-          run_scene_test res://tests/interior_navigation_test.gd 'ADVENTURE ODYSSEY INTERIOR NAVIGATION TEST: PASS'
+          godot --headless --path . --editor --quit 2>&1 | tee /tmp/ao_import.log
+          ! grep -Eq 'SCRIPT ERROR|Failed to load script|Parse Error' /tmp/ao_import.log
+          timeout 80 godot --headless --path . --script res://tests/title_test.gd 2>&1 | tee /tmp/ao_title_test.log
+          grep -Fq 'ADVENTURE ODYSSEY TITLE TEST: PASS' /tmp/ao_title_test.log
+          ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script|Parse Error' /tmp/ao_title_test.log
+
+      - name: Capture native title preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq xvfb libgl1-mesa-dri libfontconfig1 libxcursor1 libxi6 libxinerama1 libxkbcommon-x11-0 libwayland-cursor0
+          mkdir -p screenshots
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/title_screenshot.gd 2>&1 | tee /tmp/ao_title_capture.log
+          ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script|Parse Error' /tmp/ao_title_capture.log
+          test -s screenshots/title_preview.png
+          test -s screenshots/title_signin.png
+          test -s screenshots/title_create.png
+          test -s screenshots/title_wide.png
+
+      - name: Upload native title preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: Adventure-Odyssey-Title-Preview
+          path: screenshots/*.png
+          if-no-files-found: error
+          retention-days: 15
 
       - name: Build signed Android APK
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-title-apk]')
         shell: bash
         env:
           AO_RELEASE_KEYSTORE_BASE64: ${{ secrets.AO_RELEASE_KEYSTORE_BASE64 }}
@@ -616,6 +156,7 @@ jobs:
           sha256sum "$APK" | tee build/SHA256SUMS.txt
 
       - name: Upload APK artifact
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-title-apk]')
         uses: actions/upload-artifact@v4
         with:
           name: Adventure-Odyssey-Android-APK
@@ -625,3 +166,4 @@ jobs:
             build/Release-APK-Signature.txt
           if-no-files-found: error
           retention-days: 30
+
