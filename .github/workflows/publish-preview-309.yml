@@ -1,0 +1,35 @@
+name: Publish approved v0.7 build 309 APK
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-preview-309.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish-approved-apk:
+    if: contains(github.event.head_commit.message, '[publish-preview-309]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download the exact previously verified build
+        uses: actions/download-artifact@v4
+        with:
+          name: Adventure-Odyssey-Android-APK
+          run-id: 39029846751
+          github-token: ${{ github.token }}
+          path: verified-apk
+      - name: Verify and publish this one approved APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: demetrecerrone-star/Adventure-Odyssey
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd verified-apk
+          echo '3c21fa8ef34f4ace7bd9ad56979f2f324f5aacb78a70fa5fcb41b39977980168  Adventure-Odyssey-release.apk' | sha256sum -c -
+          gh release create ao-preview-v0.7-build309 Adventure-Odyssey-release.apk \
+            --target 4fcc386624d068ed3c55dd61660c435d817536b2 \
+            --title 'Adventure Odyssey v0.7 test preview' \
+            --notes 'Android test preview: furnished bedroom, local character creator and inventory. Build 309, version code 7. Appearance artwork and movement remain in development. No online accounts or multiplayer. SHA-256: 3c21fa8ef34f4ace7bd9ad56979f2f324f5aacb78a70fa5fcb41b39977980168' \
+            --prerelease
