@@ -50,7 +50,7 @@ func run() -> void:
 		check(not link.disabled, "preview documents available to read")
 		check(link.size.y >= 48, "policy touch target")
 	check(scene.modal_close.size.x >= 48 and scene.modal_close.size.y >= 48, "close touch target")
-	check(scene.modal_scroll.follow_focus, "scroll follows keyboard focus")
+	check(scene.fields[0].focus_entered.is_connected(scene._keep_focused_field_visible), "scroll follows keyboard focus using canvas-local coordinates")
 	check(scene.modal_box.size.y <= scene.modal_scroll.size.y, "compact panel fits standard landscape without scrolling")
 	scene._submit_preview()
 	check("valid email" in scene.notice.text, "empty email validation")

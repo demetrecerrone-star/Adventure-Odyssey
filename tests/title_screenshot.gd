@@ -50,6 +50,8 @@ func run() -> void:
 	scene._keep_focused_field_visible()
 	await process_frame
 	await process_frame
+	await process_frame
+	assert(scene.modal_scroll.get_global_rect().encloses(scene.fields[2].get_global_rect()), "Focused field must be visible in native keyboard-region capture")
 	await capture("res://screenshots/title_create_keyboard_region.png")
 	scene.close_modal()
 	root.size = Vector2i(1600,720)

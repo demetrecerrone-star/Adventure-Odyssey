@@ -172,7 +172,11 @@ func _keep_focused_field_visible() -> void:
 		return
 	var focused := get_viewport().gui_get_focus_owner()
 	if is_instance_valid(focused) and modal_scroll.is_ancestor_of(focused):
-		modal_scroll.ensure_control_visible(focused)
+		# Work in content-local coordinates. Godot's generic follow-focus
+		# offset can overshoot in a stretched, nested canvas.
+		var local_top := (modal_box.get_global_transform().affine_inverse() * focused.get_global_transform()).origin.y
+		var visible_height := modal_scroll.size.y
+		modal_scroll.scroll_vertical = int(maxf(0, local_top - (visible_height - focused.size.y) * 0.5))
 
 func open_modal(kind: String) -> void:
 	if is_instance_valid(modal):
@@ -214,7 +218,7 @@ func open_modal(kind: String) -> void:
 	modal_scroll.offset_right = -24
 	modal_scroll.offset_bottom = -20
 	modal_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	modal_scroll.follow_focus = true
+	modal_scroll.follow_focus = false
 	modal_panel.add_child(modal_scroll)
 	modal_box = VBoxContainer.new()
 	modal_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -292,6 +296,7 @@ func _add_field(caption: String, secret: bool) -> void:
 	field.add_theme_stylebox_override("normal", _style(Color("0e1520"), Color("695b47"), 1))
 	field.add_theme_stylebox_override("focus", _style(Color("121b2a"), BRASS))
 	var index := fields.size()
+	field.focus_entered.connect(_keep_focused_field_visible)
 	field.text_submitted.connect(func(_text):
 		if index + 1 < fields.size():
 			fields[index + 1].grab_focus()
