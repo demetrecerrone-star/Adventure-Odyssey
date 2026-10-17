@@ -1,0 +1,467 @@
+{
+  "base": "female",
+  "class": "Necromancer",
+  "directions": {
+    "down": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 0,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            17.92,
+            5.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            17.92,
+            7.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            17.92,
+            4.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            17.92,
+            5.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            17.92,
+            7.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            17.92,
+            4.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walks/female-necromancer/walk-down-body.png",
+      "armor": "res://assets/painted-walks/female-necromancer/walk-down-armor.png",
+      "appearance_mask": "res://assets/painted-walks/female-necromancer/walk-down-mask.png",
+      "weapon_front": "res://assets/painted-walks/female-necromancer/walk-down-weapon-front.png",
+      "weapon_back": "res://assets/painted-walks/female-necromancer/walk-down-weapon-back.png"
+    },
+    "left": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 1,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            15.36,
+            5.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            15.36,
+            7.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            15.36,
+            4.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            15.36,
+            5.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            15.36,
+            7.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            15.36,
+            4.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walks/female-necromancer/walk-left-body.png",
+      "armor": "res://assets/painted-walks/female-necromancer/walk-left-armor.png",
+      "appearance_mask": "res://assets/painted-walks/female-necromancer/walk-left-mask.png",
+      "weapon_front": "res://assets/painted-walks/female-necromancer/walk-left-weapon-front.png",
+      "weapon_back": "res://assets/painted-walks/female-necromancer/walk-left-weapon-back.png"
+    },
+    "right": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 2,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            15.36,
+            5.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            15.36,
+            7.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            15.36,
+            4.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            15.36,
+            5.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            15.36,
+            7.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            15.36,
+            4.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walks/female-necromancer/walk-right-body.png",
+      "armor": "res://assets/painted-walks/female-necromancer/walk-right-armor.png",
+      "appearance_mask": "res://assets/painted-walks/female-necromancer/walk-right-mask.png",
+      "weapon_front": "res://assets/painted-walks/female-necromancer/walk-right-weapon-front.png",
+      "weapon_back": "res://assets/painted-walks/female-necromancer/walk-right-weapon-back.png"
+    },
+    "up": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 3,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            17.92,
+            5.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            17.92,
+            7.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            17.92,
+            4.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            17.92,
+            5.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            17.92,
+            7.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            17.92,
+            4.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walks/female-necromancer/walk-up-body.png",
+      "armor": "res://assets/painted-walks/female-necromancer/walk-up-armor.png",
+      "appearance_mask": "res://assets/painted-walks/female-necromancer/walk-up-mask.png",
+      "weapon_front": "res://assets/painted-walks/female-necromancer/walk-up-weapon-front.png",
+      "weapon_back": "res://assets/painted-walks/female-necromancer/walk-up-weapon-back.png"
+    }
+  },
+  "status": "reviewed source candidates; native integration QA required"
+}

@@ -5,13 +5,17 @@
       "Warrior": "res://assets/painted-walk-pilot/manifest.json",
       "Paladin": "res://assets/painted-walks/male-paladin/manifest.json",
       "Ranger": "res://assets/painted-walks/male-ranger/manifest.json",
-      "Assassin": "res://assets/painted-walks/male-assassin/manifest.json"
+      "Assassin": "res://assets/painted-walks/male-assassin/manifest.json",
+      "Mage": "res://assets/painted-walks/male-mage/manifest.json",
+      "Necromancer": "res://assets/painted-walks/male-necromancer/manifest.json"
     },
     "female": {
       "Warrior": "res://assets/painted-walks/female-warrior/manifest.json",
       "Paladin": "res://assets/painted-walks/female-paladin/manifest.json",
       "Ranger": "res://assets/painted-walks/female-ranger/manifest.json",
-      "Assassin": "res://assets/painted-walks/female-assassin/manifest.json"
+      "Assassin": "res://assets/painted-walks/female-assassin/manifest.json",
+      "Mage": "res://assets/painted-walks/female-mage/manifest.json",
+      "Necromancer": "res://assets/painted-walks/female-necromancer/manifest.json"
     }
   }
 }

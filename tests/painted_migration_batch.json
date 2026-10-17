@@ -1,1 +1,1 @@
-[{"base":"male","class_id":"Assassin","directions":[0,1,2,3]},{"base":"female","class_id":"Assassin","directions":[0,1,2,3]}]
+[{"base": "male", "class_id": "Mage", "directions": [0, 1, 2, 3]}, {"base": "male", "class_id": "Necromancer", "directions": [0, 1, 2, 3]}, {"base": "female", "class_id": "Mage", "directions": [0, 1, 2, 3]}, {"base": "female", "class_id": "Necromancer", "directions": [0, 1, 2, 3]}]

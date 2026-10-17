@@ -145,7 +145,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 300 xvfb-run -a -s '-screen 0 1536x1024x24' godot --path . --script res://tests/painted_migration_screenshot.gd 2>&1 | tee /tmp/ao_migration.log
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 480 xvfb-run -a -s '-screen 0 1536x1024x24' godot --path . --script res://tests/painted_migration_screenshot.gd 2>&1 | tee /tmp/ao_migration.log
           ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script|Parse Error' /tmp/ao_migration.log
           for first in screenshots/migration_*_motion_00.png; do
             prefix="${first%_motion_00.png}"
