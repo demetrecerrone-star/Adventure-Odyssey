@@ -12,7 +12,12 @@ var local_guest_mode := false
 var mirror_mode := false
 var rng := RandomNumberGenerator.new()
 var panel: PanelContainer
-var scroll: ScrollContainer
+var left_scroll: ScrollContainer
+var right_scroll: ScrollContainer
+var left_options: VBoxContainer
+var right_options: VBoxContainer
+var center: VBoxContainer
+var columns: HBoxContainer
 var content: VBoxContainer
 var preview
 var notice: Label
@@ -26,85 +31,99 @@ var color_option: OptionButton
 var submit: Button
 var safe_override := Rect2()
 var keyboard_height_override := 0.0
+var keyboard_navigation := false
 func _ready() -> void:
 	rng.randomize()
 	theme = Theme.new()
 	theme.default_font = preload("res://assets/fonts/body.ttf")
-	theme.default_font_size = 18
-	theme.set_color("font_color", "Label", Color("f4ead8"))
+	theme.default_font_size = 16
+	_apply_parchment_theme()
 	var dim := ColorRect.new()
-	dim.color = Color(0.025, 0.035, 0.055, 0.96)
+	dim.color = Color("f1e8d5")
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(dim)
 	panel = PanelContainer.new()
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("181e29")
-	style.border_color = Color("b99860")
+	style.bg_color = Color("f5eedf")
+	style.border_color = Color("b28b43")
 	style.set_border_width_all(2)
-	style.set_content_margin_all(16)
+	style.set_content_margin_all(12)
 	panel.add_theme_stylebox_override("panel", style)
 	add_child(panel)
-	var stack := VBoxContainer.new()
-	panel.add_child(stack)
+	content = VBoxContainer.new()
+	content.add_theme_constant_override("separation", 8)
+	panel.add_child(content)
 	var heading := HBoxContainer.new()
-	stack.add_child(heading)
+	content.add_child(heading)
 	var title := _label("CHANGE YOUR APPEARANCE" if mirror_mode else "CREATE YOUR CHARACTER")
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	heading.add_child(title)
 	var close := _button("Back")
 	close.pressed.connect(_dismiss)
 	heading.add_child(close)
-	scroll = ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	stack.add_child(scroll)
-	content = VBoxContainer.new()
-	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	content.add_theme_constant_override("separation", 12)
-	scroll.add_child(content)
-	if development_mode:
-		content.add_child(_label("DEVELOPMENT TEST • No sign-in, account or saved character"))
+	columns = HBoxContainer.new()
+	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	columns.add_theme_constant_override("separation", 16)
+	content.add_child(columns)
+	left_scroll = _side_column()
+	left_options = left_scroll.get_child(0)
+	var center_panel := PanelContainer.new()
+	center_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	center_panel.size_flags_stretch_ratio = 1.2
+	var center_style := _surface(Color("e6d8bb"), Color("c6aa70"))
+	center_style.set_content_margin_all(8)
+	center_panel.add_theme_stylebox_override("panel", center_style)
+	columns.add_child(center_panel)
+	center = VBoxContainer.new()
+	center_panel.add_child(center)
+	right_scroll = _side_column()
+	right_options = right_scroll.get_child(0)
 	preview = Preview.new()
 	preview.manifest = manifest
 	preview.allow_starter_outfit = not development_mode
-	content.add_child(preview)
-	base_option = _choice("Body", ["Male", "Female"])
+	preview.responsive = true
+	preview.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	center.add_child(preview)
+	base_option = _choice(left_options, "Body", ["Male", "Female"])
 	base_option.item_selected.connect(func(index):
 		draft.set_base(["male", "female"][index])
 		_sync()
 	)
-	hair_option = _choice("Hair style (15 separate styles per body; artwork pending)", [])
-	hair_option.item_selected.connect(func(index): draft.hair = Catalog.hair_ids(draft.base)[index]; _refresh())
-	color_option = _choice("Hair color", Catalog.HAIR_COLORS)
-	color_option.item_selected.connect(func(index): draft.hair_color = Catalog.HAIR_COLORS[index]; _refresh())
-	eye_option = _choice("Eyes", Catalog.EYES)
-	eye_option.item_selected.connect(func(index): draft.eyes = Catalog.EYES[index]; _refresh())
 	var skins: Array = []
 	for entry in Catalog.SKINS:
 		skins.append(entry.label)
-	skin_option = _choice("Skin palette", skins)
+	skin_option = _choice(left_options, "Skin palette", skins)
 	skin_option.item_selected.connect(func(index): draft.skin = Catalog.SKINS[index].id; _refresh())
-	class_option = _choice("Class", Catalog.CLASSES)
+	class_option = _choice(left_options, "Class", Catalog.CLASSES)
 	class_option.item_selected.connect(func(index): draft.character_class = Catalog.CLASSES[index]; _refresh())
-	content.add_child(_label("Equipment is restricted to your selected class. Gear artwork is pending."))
 	var random_button := _button("Random appearance")
 	random_button.pressed.connect(func(): draft.randomize_appearance(rng); _sync())
-	content.add_child(random_button)
-	content.add_child(_label("Username"))
+	left_options.add_child(random_button)
+	hair_option = _choice(right_options, "Hair style", [])
+	hair_option.item_selected.connect(func(index): draft.hair = Catalog.hair_ids(draft.base)[index]; _refresh())
+	color_option = _choice(right_options, "Hair color", Catalog.HAIR_COLORS)
+	color_option.item_selected.connect(func(index): draft.hair_color = Catalog.HAIR_COLORS[index]; _refresh())
+	eye_option = _choice(right_options, "Eyes", Catalog.EYES)
+	eye_option.item_selected.connect(func(index): draft.eyes = Catalog.EYES[index]; _refresh())
+	preview.status.reparent(right_options)
+	preview.status.show()
+	center.add_child(_label("Username (locked)" if mirror_mode else "Username"))
 	name_field = LineEdit.new()
-	name_field.custom_minimum_size.y = 48
+	name_field.custom_minimum_size.y = 40
 	name_field.max_length = 20
-	name_field.placeholder_text = "3–20 letters, numbers or underscores"
+	name_field.placeholder_text = "3–20 letters, numbers or _"
 	name_field.text_changed.connect(func(value): draft.username = value; _refresh())
 	name_field.text_submitted.connect(func(_value): _submit())
-	name_field.focus_entered.connect(_keep_focus_visible)
-	content.add_child(name_field)
-	content.add_child(_label("Local guest save only. This does not reserve an online username." if local_guest_mode else "Name availability must be checked by the server when saving."))
+	center.add_child(name_field)
+	var footer := HBoxContainer.new()
+	footer.add_theme_constant_override("separation", 12)
+	content.add_child(footer)
 	notice = _label("")
-	content.add_child(notice)
-	submit = _button("Save appearance" if mirror_mode else ("Begin local adventure" if local_guest_mode else ("Validate development draft" if development_mode else "Create character")))
+	notice.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	footer.add_child(notice)
+	submit = _button("Save appearance" if mirror_mode else ("Begin adventure" if local_guest_mode else ("Validate draft" if development_mode else "Create character")))
 	submit.pressed.connect(_submit)
-	content.add_child(submit)
+	footer.add_child(submit)
 	var texture := Panel.new()
 	texture.set_script(TexturePanel)
 	texture.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
@@ -119,10 +138,39 @@ func _ready() -> void:
 		class_option.disabled = true
 		name_field.editable = false
 		name_field.text = draft.username
-		content.add_child(_label("Your selected base, class and username are locked."))
-		hair_option.grab_focus()
-	else:
-		base_option.grab_focus()
+	# Focus a fixed header control, never a scrolled option on opening.
+	close.grab_focus()
+func _surface(fill: Color, border: Color) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = fill
+	style.border_color = border
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(6)
+	return style
+func _apply_parchment_theme() -> void:
+	var ink := Color("382f23")
+	theme.set_color("font_color", "Label", ink)
+	for kind in ["Button", "OptionButton", "LineEdit"]:
+		theme.set_stylebox("normal", kind, _surface(Color("fff9eb"), Color("b28b43")))
+		theme.set_stylebox("hover", kind, _surface(Color("f3dfb0"), Color("97732d")))
+		theme.set_stylebox("pressed", kind, _surface(Color("e4c987"), Color("846022")))
+		theme.set_stylebox("disabled", kind, _surface(Color("e6dfd0"), Color("b6a98c")))
+		theme.set_stylebox("read_only", kind, _surface(Color("e6dfd0"), Color("b6a98c")))
+		var focus := _surface(Color.TRANSPARENT, Color("8c601c"))
+		focus.set_border_width_all(2)
+		theme.set_stylebox("focus", kind, focus)
+		for state in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_selected_color"]:
+			theme.set_color(state, kind, ink)
+		theme.set_color("font_disabled_color", kind, Color("726854"))
+		theme.set_color("font_uneditable_color", kind, Color("726854"))
+		theme.set_color("font_placeholder_color", kind, Color("81735d"))
+		theme.set_color("caret_color", kind, ink)
+	theme.set_stylebox("panel", "PopupMenu", _surface(Color("fff9eb"), Color("b28b43")))
+	theme.set_stylebox("hover", "PopupMenu", _surface(Color("e4c987"), Color("b28b43")))
+	theme.set_color("font_color", "PopupMenu", ink)
+	theme.set_color("font_hover_color", "PopupMenu", ink)
+	theme.set_constant("modulate_arrow", "OptionButton", 1)
 func _label(value: String) -> Label:
 	var label := Label.new()
 	label.text = value
@@ -131,29 +179,34 @@ func _label(value: String) -> Label:
 func _button(value: String) -> Button:
 	var button := Button.new()
 	button.text = value
-	button.custom_minimum_size = Vector2(70, 48)
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color("26303d")
-	style.border_color = Color("b99860")
-	style.set_border_width_all(2)
-	style.set_content_margin_all(10)
-	button.add_theme_stylebox_override("normal", style)
-	button.add_theme_color_override("font_color", Color("f4ead8"))
+	button.custom_minimum_size = Vector2(70, 40)
 	return button
-func _choice(label: String, items: Array) -> OptionButton:
-	content.add_child(_label(label))
+func _side_column() -> ScrollContainer:
+	var side := ScrollContainer.new()
+	side.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	side.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	side.follow_focus = false
+	columns.add_child(side)
+	var options := VBoxContainer.new()
+	options.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	options.add_theme_constant_override("separation", 6)
+	side.add_child(options)
+	return side
+func _choice(parent: VBoxContainer, label: String, items: Array) -> OptionButton:
+	parent.add_child(_label(label))
 	var control := OptionButton.new()
-	control.custom_minimum_size.y = 48
+	control.custom_minimum_size.y = 40
 	for item in items:
 		control.add_item(str(item))
-	content.add_child(control)
-	control.focus_entered.connect(_keep_focus_visible)
+	control.clip_text = true
+	parent.add_child(control)
+	control.focus_entered.connect(func(): _reveal_keyboard_focus(control))
 	return control
 func _sync() -> void:
 	base_option.select(0 if draft.base == "male" else 1)
 	hair_option.clear()
 	for i in range(15):
-		hair_option.add_item("%s hair %02d • artwork pending" % [draft.base.capitalize(), i + 1])
+		hair_option.add_item("%s hair %02d" % [draft.base.capitalize(), i + 1])
 	hair_option.select(Catalog.hair_ids(draft.base).find(draft.hair))
 	color_option.select(Catalog.HAIR_COLORS.find(draft.hair_color))
 	eye_option.select(Catalog.EYES.find(draft.eyes))
@@ -164,7 +217,7 @@ func _sync() -> void:
 	_refresh()
 func _refresh() -> void:
 	preview.update_preview(draft)
-	notice.text = draft.username_error() if not draft.username.is_empty() else "Choose your appearance and enter a username."
+	notice.text = draft.username_error() if not draft.username.is_empty() else ("Base, class and name are locked." if mirror_mode else "Local guest only. Choose a name to begin." if local_guest_mode else "Choose your appearance and username.")
 func _submit() -> void:
 	var error: String = draft.validate()
 	if not error.is_empty():
@@ -181,8 +234,7 @@ func _submit() -> void:
 func _layout() -> void:
 	if not is_instance_valid(panel):
 		return
-	var previous_size := panel.size
-	var available := Rect2(Vector2(16, 16), (size - Vector2(32, 32)).max(Vector2.ONE))
+	var available := Rect2(Vector2(8, 8), (size - Vector2(16, 16)).max(Vector2.ONE))
 	if safe_override.has_area():
 		available = available.intersection(safe_override)
 	elif OS.has_feature("android"):
@@ -195,22 +247,21 @@ func _layout() -> void:
 		keyboard = DisplayServer.virtual_keyboard_get_height() * size.y / maxf(1, DisplayServer.screen_get_size().y)
 	available.end.y = minf(available.end.y, size.y - keyboard - 12)
 	panel.position = available.position
-	panel.size = Vector2(minf(780, available.size.x), maxf(1, available.size.y))
-	panel.position.x += maxf(0, (available.size.x - panel.size.x) / 2)
-	if panel.size != previous_size:
-		_keep_focus_visible.call_deferred()
-func _keep_focus_visible() -> void:
-	if not is_inside_tree():
+	panel.size = available.size.max(Vector2.ONE)
+	# No per-frame focus recentering: touch drags must own their scroll position.
+	# Username and actions live outside both independently scrollable side lists.
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		keyboard_navigation = true
+	elif event is InputEventMouseButton or event is InputEventScreenTouch or event is InputEventPanGesture:
+		keyboard_navigation = false
+func _reveal_keyboard_focus(control: Control) -> void:
+	if not keyboard_navigation:
 		return
-	var tree := get_tree()
-	await tree.process_frame
-	await tree.process_frame
-	if not is_inside_tree():
-		return
-	var focused := get_viewport().gui_get_focus_owner()
-	if is_instance_valid(focused) and content.is_ancestor_of(focused):
-		var local_top := (content.get_global_transform().affine_inverse() * focused.get_global_transform()).origin.y
-		scroll.scroll_vertical = int(maxf(0, local_top - (scroll.size.y - focused.size.y) * 0.5))
+	await get_tree().process_frame
+	if is_instance_valid(control) and control.has_focus() and keyboard_navigation:
+		var side := left_scroll if left_options.is_ancestor_of(control) else right_scroll
+		side.ensure_control_visible(control)
 func _process(_delta: float) -> void:
 	_layout()
 func _dismiss() -> void:

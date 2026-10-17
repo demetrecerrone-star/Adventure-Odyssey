@@ -6,13 +6,19 @@ var allow_test_fixtures := false
 var allow_starter_outfit := true
 var status: Label
 var stage: Control
+var responsive := false
 func _ready() -> void:
 	status = Label.new()
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(status)
 	stage = Control.new()
-	stage.custom_minimum_size = Vector2(220, 250)
+	stage.custom_minimum_size = Vector2(0, 24) if responsive else Vector2(220, 250)
+	stage.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	stage.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stage.resized.connect(_fit_starter_preview)
 	add_child(stage)
+	if responsive:
+		status.hide()
 func update_preview(draft) -> void:
 	for child in stage.get_children():
 		stage.remove_child(child)
@@ -64,7 +70,17 @@ func _starter_preview(draft) -> bool:
 		stage.remove_child(avatar)
 		avatar.queue_free()
 		return false
-	avatar.position = Vector2(110, 240)
-	avatar.scale = Vector2.ONE * 0.9
+	_fit_starter_preview()
 	status.text = "Dressed starter preview. Selected hairstyles, eye colors and skin palettes are not rendered yet."
 	return true
+
+func _fit_starter_preview() -> void:
+	if not is_instance_valid(stage):
+		return
+	for avatar in stage.get_children():
+		if avatar is Node2D:
+			var fit := minf(stage.size.x / 256.0, stage.size.y / 256.0) * 0.94 if responsive else 0.9
+			# Sprite frame is 256 square with its foot origin at (128, 232).
+			# Center the whole frame so neither head nor feet overlap the name field.
+			avatar.position = Vector2(stage.size.x * 0.5, stage.size.y * 0.5 + 104 * fit) if responsive else Vector2(110, 240)
+			avatar.scale = Vector2.ONE * fit

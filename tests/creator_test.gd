@@ -100,8 +100,8 @@ func run() -> void:
 	await process_frame
 	check(panel.panel.position.x >= 30, "safe left respected")
 	check(panel.panel.position.y + panel.panel.size.y <= 250, "panel fits simulated keyboard region")
-	check(panel.scroll.get_v_scroll_bar().max_value > panel.scroll.size.y, "narrow screen content scrolls")
-	check(panel.scroll.get_global_rect().encloses(panel.name_field.get_global_rect()), "focused username remains visible above keyboard")
+	check(panel.left_scroll.get_v_scroll_bar().max_value > panel.left_scroll.size.y, "keyboard-constrained side options scroll")
+	check(panel.panel.get_global_rect().encloses(panel.name_field.get_global_rect()), "fixed username remains visible above keyboard")
 	var dismiss_count := [0]
 	panel.dismissed.connect(func(): dismiss_count[0] += 1)
 	panel._dismiss()

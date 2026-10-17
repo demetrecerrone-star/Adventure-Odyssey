@@ -3,6 +3,7 @@ signal exited
 const Save = preload("res://src/bedroom_save.gd")
 const Creator = preload("res://src/creator/creator_panel.gd")
 const ROOM_SIZE = Vector2(1536, 1024)
+const PLAYER_SPEED_MULTIPLIER := 1.5
 var state = Save.new()
 var stage: Node2D
 var actor: Node2D
@@ -152,7 +153,7 @@ func _layout() -> void:
 		overlay.size = size
 func _start_character() -> void:
 	actor.configure(state.character.base, state.character["class"])
-	movement_speed = actor.suggested_speed
+	movement_speed = actor.suggested_speed * PLAYER_SPEED_MULTIPLIER
 	sleeping = false
 	player = wake_spawn
 	actor.visible = actor.artwork_ready
@@ -202,10 +203,14 @@ func _process(delta: float) -> void:
 		if direction.length() < 8:
 			moving_to_target = false
 			direction = Vector2.ZERO
+	var previous_position := player
 	if direction.length() > 0:
 		facing = (2 if direction.x > 0 else 1) if absf(direction.x) > absf(direction.y) else (0 if direction.y > 0 else 3)
 		move_player(direction.limit_length(1.0) * movement_speed * minf(delta, 0.05))
-	actor.advance(facing, direction.length() > 0, delta)
+	# Keep the original stride distance at the faster speed, including analog
+	# input, blocked movement and the frame-time cap used by movement above.
+	var distance_moved := player.distance_to(previous_position)
+	actor.advance(facing, distance_moved > 0, distance_moved / actor.suggested_speed)
 	var id := nearest_prop()
 	interact_button.text = (id.capitalize() + " [E]") if not id.is_empty() else "Walk closer"
 func _gui_input(event: InputEvent) -> void:

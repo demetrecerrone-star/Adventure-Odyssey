@@ -54,7 +54,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for test in creator_test bedroom_test avatar_playback_test outfit_assets_test; do
+          for test in creator_test creator_layout_test bedroom_test avatar_playback_test outfit_assets_test; do
             timeout 100 godot --headless --path . --script "res://tests/${test}.gd" 2>&1 | tee "/tmp/ao_${test}.log"
             grep -Eq 'failures: 0|0 failures' "/tmp/ao_${test}.log"
             ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script|Parse Error' "/tmp/ao_${test}.log"
@@ -83,6 +83,17 @@ jobs:
           test -s screenshots/bedroom_play.png
           test -s screenshots/bedroom_chest.png
           test -s screenshots/bedroom_mirror.png
+
+      - name: Capture native full-screen creator
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/creator_screenshot.gd 2>&1 | tee /tmp/ao_creator_capture.log
+          ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script|Parse Error' /tmp/ao_creator_capture.log
+          test -s screenshots/creator_fullscreen.png
+          test -s screenshots/creator_landscape.png
+          test -s screenshots/creator_keyboard.png
+          test -s screenshots/creator_mirror.png
 
       - name: Upload native title preview
         uses: actions/upload-artifact@v4

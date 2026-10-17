@@ -113,14 +113,37 @@ func run() -> void:
 	pad.set_position_input(pad.size * 0.5 + Vector2(60, 0))
 	pad._notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
 	check(room.touch_direction == Vector2.ZERO, "Focus loss resets joystick")
+	check(is_equal_approx(room.movement_speed, 90.0), "Player speed is exactly 50 percent above the original 60 px/s")
+	var save_before_movement := FileAccess.get_file_as_string(path)
+	room.player = Vector2(800, 650)
+	room.touch_direction = Vector2.RIGHT
+	room.actor.advance(2, false, 0)
+	room._process(0.05)
+	check(is_equal_approx(room.player.x, 804.5), "Full stick moves at 90 logical pixels per second")
+	check(is_equal_approx(room.actor.elapsed, 0.075), "Full speed gait advances 50 percent faster")
+	check(room.actor.body.frame == 1 and room.actor.armor.frame == 1, "Paired gait advances at effective 24 fps")
+	room.actor.advance(2, false, 0)
 	room.player = Vector2(800, 650)
 	room.touch_direction = Vector2(0.5, 0)
 	room._process(0.05)
 	check(is_equal_approx(room.player.x, 800 + room.movement_speed * 0.025), "Half stick produces half speed")
+	check(is_equal_approx(room.actor.elapsed, 0.0375), "Half stick scales gait to actual travel")
 	room.player = Vector2(800, 650)
 	room.touch_direction = Vector2(1, 1)
 	room._process(0.05)
 	check(is_equal_approx(room.player.distance_to(Vector2(800, 650)), room.movement_speed * 0.05), "Diagonal movement cannot exceed speed")
+	room.player = Vector2(800, 650)
+	room.touch_direction = Vector2.RIGHT
+	room.actor.advance(2, false, 0)
+	room._process(0.5)
+	check(is_equal_approx(room.player.x, 804.5) and is_equal_approx(room.actor.elapsed, 0.075), "Slow frame caps movement and gait together")
+	room.touch_direction = Vector2.ZERO
+	room.player = Vector2(800, 650)
+	room.target = Vector2(900, 650)
+	room.moving_to_target = true
+	room._process(0.05)
+	check(is_equal_approx(room.player.x, 804.5), "Floor-tap movement uses the same faster speed")
+	check(FileAccess.get_file_as_string(path) == save_before_movement, "Movement tuning leaves persisted save untouched")
 	room._reset_movement()
 	# Exercise Godot's real viewport routing, not only the joystick methods.
 	var routed_touch := InputEventScreenTouch.new()
@@ -174,6 +197,10 @@ func run() -> void:
 	room.player = Vector2(650, 600)
 	room.move_player(Vector2(-1000, 0))
 	check(room.player.x >= room.prop_rects.bed.end.x + 16, "Large movement cannot tunnel through bed")
+	room.touch_direction = Vector2.LEFT
+	room._process(0.05)
+	check(room.can_stand(room.player) and room.actor.current_animation == "idle", "Blocked player stays outside furniture and stops gait")
+	room._reset_movement()
 	room.player = room.anchors.mirror
 	check(room.nearest_prop() == "mirror", "Mirror interaction radius")
 	room.interact()
@@ -232,6 +259,7 @@ func run() -> void:
 			class_room.state = slot
 			root.add_child(class_room)
 			await process_frame
+			check(is_equal_approx(class_room.movement_speed, 90.0), "Every base and class receives exactly 50 percent faster movement")
 			check(class_room.actor.visible and class_room.actor.artwork_ready and class_room.actor.armor.texture != null and not class_room.sleeping, "Both bases and every class spawn visibly dressed")
 			class_room.queue_free()
 			await process_frame
