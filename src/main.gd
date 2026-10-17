@@ -71,7 +71,7 @@ func _ready() -> void:
 		texture_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(texture_overlay)
 		buttons.append(button)
-	var preview := _label("BEDROOM PREVIEW  •  0.6", 12, Color("e2d5bc"))
+	var preview := _label("BEDROOM PREVIEW  •  0.7", 12, Color("e2d5bc"))
 	preview.position = Vector2(77, 476)
 	menu.add_child(preview)
 	brand = TextureRect.new()
