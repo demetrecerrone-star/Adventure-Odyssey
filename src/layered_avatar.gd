@@ -1,5 +1,10 @@
 extends Node2D
 # Body and armor always switch as a validated pair. Missing outfits never expose underwear.
+var weapon_back: Sprite2D
+var weapon_front: Sprite2D
+var weapon_outfit: Dictionary = {}
+var equipped_weapon := ""
+var character_class := ""
 var body: Sprite2D
 var armor: Sprite2D
 var hair: Sprite2D
@@ -16,16 +21,25 @@ var palette_ready := false
 const Catalog = preload("res://src/creator/catalog.gd")
 const EYE_COLORS := {"Brown":"704127", "Hazel":"8b813e", "Green":"448653", "Blue":"3d83be", "Gray":"87939b", "Amber":"c78b2e", "Violet":"9564b9"}
 func _ready() -> void:
-	for layer_name in ["Body", "Armor", "Hair"]:
+	for layer_name in ["WeaponBack", "Body", "Armor", "WeaponFront", "Hair"]:
 		var sprite := Sprite2D.new()
 		sprite.name = layer_name
 		sprite.centered = false
 		sprite.offset = Vector2(-128, -232)
 		add_child(sprite)
+	weapon_back = get_node("WeaponBack")
+	weapon_front = get_node("WeaponFront")
 	body = get_node("Body")
 	armor = get_node("Armor")
 	hair = get_node("Hair")
 func configure(base: String, selected_class: String, selected_appearance: Dictionary = {}) -> bool:
+	character_class = selected_class
+	weapon_outfit = {}
+	var weapon_path := "res://assets/held-weapons/warrior.json"
+	if selected_class == "Warrior" and FileAccess.file_exists(weapon_path):
+		var weapons = JSON.parse_string(FileAccess.get_file_as_string(weapon_path))
+		if weapons is Dictionary:
+			weapon_outfit = weapons.get("bases", {}).get(base, {})
 	appearance = selected_appearance.duplicate()
 	palette_material = ShaderMaterial.new()
 	palette_material.shader = preload("res://src/appearance_palette.gdshader")
@@ -106,3 +120,26 @@ func advance(direction: int, moving: bool, delta: float) -> void:
 		sprite.frame = frame
 	hair.texture = _texture(str(pair.get("hair", "")))
 	hair.visible = hair.texture != null and hair.texture.get_size() == Vector2(256 * frames, 256)
+	_update_weapon()
+
+func set_equipped_weapon(item: String) -> void:
+	equipped_weapon = item if preload("res://src/inventory_catalog.gd").can_equip(item, character_class) else ""
+	_update_weapon()
+func _update_weapon() -> void:
+	for sprite in [weapon_back, weapon_front]:
+		sprite.visible = false
+	if equipped_weapon != "warrior_01_weapon" or character_class != "Warrior" or not artwork_ready:
+		return
+	var key := current_animation.replace("walk_", "walk-")
+	var entry: Dictionary = weapon_outfit.get(key, {})
+	if int(entry.get("frames", 0)) != body.hframes:
+		return
+	for layer in ["back", "front"]:
+		var sprite: Sprite2D = weapon_back if layer == "back" else weapon_front
+		var texture := _texture(str(entry.get("layers", {}).get(layer, "")))
+		if texture == null or texture.get_size() != body.texture.get_size():
+			continue
+		sprite.texture = texture
+		sprite.hframes = body.hframes
+		sprite.frame = body.frame
+		sprite.visible = true

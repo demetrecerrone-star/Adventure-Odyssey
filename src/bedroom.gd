@@ -153,6 +153,7 @@ func _layout() -> void:
 		overlay.size = size
 func _start_character() -> void:
 	actor.configure(state.character.base, state.character["class"], state.character)
+	actor.set_equipped_weapon(state.equipped_weapon)
 	movement_speed = actor.suggested_speed * PLAYER_SPEED_MULTIPLIER
 	sleeping = false
 	player = wake_spawn
@@ -275,6 +276,7 @@ func _reset_movement() -> void:
 	if is_instance_valid(joystick):
 		joystick.reset()
 func open_chest(show_storage: bool = true) -> void:
+	actor.set_equipped_weapon(state.equipped_weapon)
 	_close_overlay()
 	overlay = Control.new()
 	overlay.z_index = 2100
@@ -293,6 +295,8 @@ func open_chest(show_storage: bool = true) -> void:
 	label(("STORAGE CHEST" if show_storage else "BAG") + " • Saved on this device", box)
 	label("Armor: " + state.character["class"] + " starting outfit", box)
 	label("Equipped: " + (Save.ITEMS[state.equipped_weapon] if not state.equipped_weapon.is_empty() else "None"), box)
+	if not state.equipped_weapon.is_empty() and state.equipped_weapon != "warrior_01_weapon":
+		label("Held artwork for this weapon is not available yet.", box)
 	if not state.equipped_weapon.is_empty():
 		var unequip := button("Unequip weapon", box)
 		unequip.pressed.connect(func():
