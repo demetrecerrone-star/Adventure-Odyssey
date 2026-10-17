@@ -5,6 +5,7 @@ func snap(path: String) -> void:
 	await RenderingServer.frame_post_draw
 	assert(root.get_texture().get_image().save_png(path) == OK)
 func run() -> void:
+	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	root.size = Vector2i(1536,1024)
 	DirAccess.make_dir_recursive_absolute("res://screenshots")
 	var canvas := Control.new()
