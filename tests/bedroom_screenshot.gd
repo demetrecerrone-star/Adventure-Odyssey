@@ -26,7 +26,7 @@ func run() -> void:
 	root.add_child(room)
 	await process_frame
 	assert(room.actor.artwork_ready, "Refuse a nude or missing-character screenshot")
-	room.wake_up()
+	assert(room.actor.visible and not room.sleeping, "Character is immediately visible without a wake step")
 	DirAccess.make_dir_recursive_absolute("res://screenshots")
 	await capture("res://screenshots/bedroom_play.png")
 	room.player = room.anchors.chest

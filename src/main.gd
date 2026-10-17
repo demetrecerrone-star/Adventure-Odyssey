@@ -4,7 +4,11 @@ const PREVIEW_DOCUMENTS = preload("res://src/preview_documents.gd")
 const BODY = preload("res://assets/fonts/body.ttf")
 const TITLE = preload("res://assets/fonts/title.ttf")
 const TEXTURED_PANEL = preload("res://src/textured_panel.gd")
-const RUN_TEXTURES = [preload("res://assets/title/skeleton-run.png"), preload("res://assets/title/goblin-run.png")]
+const RUN_TEXTURES = [preload("res://assets/title/skeleton-run-smooth.png"), preload("res://assets/title/goblin-run-smooth.png")]
+const RUN_FRAME_COUNT := 24
+const RUN_ATLAS_COLUMNS := 6
+const RUN_FRAME_SIZE := 512
+const RUN_FPS := 30.0
 const BRASS = Color("b99860")
 const INK = Color("181e29")
 var bedroom: Control
@@ -67,7 +71,7 @@ func _ready() -> void:
 		texture_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(texture_overlay)
 		buttons.append(button)
-	var preview := _label("BEDROOM PREVIEW  •  0.5", 12, Color("e2d5bc"))
+	var preview := _label("BEDROOM PREVIEW  •  0.6", 12, Color("e2d5bc"))
 	preview.position = Vector2(77, 476)
 	menu.add_child(preview)
 	brand = TextureRect.new()
@@ -437,15 +441,16 @@ func _notification(what: int) -> void:
 		get_tree().quit()
 
 func _setup_runners() -> void:
-	# Frame atlases are separate from the painted background and UI.
+	# Texture-preserving articulated cycles: contact, compression, passing, swing.
+	# 24 unique poses in a 6 x 4 atlas; 0.8 seconds per complete two-step cycle.
 	for index in range(2):
 		var texture: Texture2D = RUN_TEXTURES[index]
 		var frames := SpriteFrames.new()
-		frames.set_animation_speed("default", 10)
-		for i in range(4):
+		frames.set_animation_speed("default", RUN_FPS)
+		for i in range(RUN_FRAME_COUNT):
 			var frame := AtlasTexture.new()
 			frame.atlas = texture
-			frame.region = Rect2(i * texture.get_width() / 4.0, 0, texture.get_width() / 4.0, texture.get_height())
+			frame.region = Rect2((i % RUN_ATLAS_COLUMNS) * RUN_FRAME_SIZE, (i / RUN_ATLAS_COLUMNS) * RUN_FRAME_SIZE, RUN_FRAME_SIZE, RUN_FRAME_SIZE)
 			frames.add_frame("default", frame)
 		var sprite := AnimatedSprite2D.new()
 		sprite.sprite_frames = frames
@@ -453,6 +458,7 @@ func _setup_runners() -> void:
 		sprite.centered = false
 		sprite.offset = Vector2(-256, -430)
 		sprite.play()
+		sprite.frame = index * 6 # Goblin and pursuer have independent stride phases.
 		add_child(sprite)
 		move_child(sprite, 1)
 		runners.append(sprite)

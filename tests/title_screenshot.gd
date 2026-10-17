@@ -20,7 +20,7 @@ func run() -> void:
 	await capture("res://screenshots/title_preview.png")
 	for runner in scene.runners:
 		runner.pause()
-	for frame in range(4):
+	for frame in [0, 3, 6, 9, 12, 15, 18, 21, 23]:
 		for runner in scene.runners:
 			runner.frame = frame
 		await capture("res://screenshots/title_chase_%d.png" % frame)

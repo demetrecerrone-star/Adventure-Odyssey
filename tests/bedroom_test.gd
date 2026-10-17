@@ -11,6 +11,7 @@ func check(ok: bool, message: String) -> void:
 func _initialize() -> void:
 	call_deferred("run")
 func run() -> void:
+	root.size = Vector2i(1280, 720)
 	var avatar = preload("res://src/layered_avatar.gd").new()
 	root.add_child(avatar)
 	await process_frame
@@ -72,14 +73,101 @@ func run() -> void:
 	room.state = reload
 	root.add_child(room)
 	await process_frame
-	check(room.sleeping, "New character begins asleep")
+	check(not room.sleeping and room.actor.visible, "New character immediately appears beside bed")
 	for id in room.anchors:
 		check(room.can_stand(room.anchors[id]), "Interaction anchor is walkable: " + id)
 		check(reachable(room, room.wake_spawn, room.anchors[id]), "Interaction accessible from wake spawn: " + id)
 	check(room.prop_nodes.has("bed") and room.prop_nodes.has("chest") and room.prop_nodes.has("mirror"), "Three separate furniture layers")
-	room.wake_up()
-	check(not room.sleeping and room.state.awake, "Wake flow sets saved flag")
-	check(room.can_stand(room.player), "Wake beside bed in walkable space")
+	check(not room.sleeping and room.state.awake, "Character is ready immediately")
+	check(room.can_stand(room.player), "Spawn beside bed in walkable space")
+	check(room.actor.scale == Vector2.ONE * 1.05 and room.actor.position == room.player, "Larger avatar preserves foot anchor")
+	var pad = room.joystick
+	pad.set_position_input(pad.size * 0.5 + Vector2(4, 0))
+	check(pad.direction == Vector2.ZERO, "Joystick deadzone prevents drift")
+	pad.set_position_input(pad.size * 0.5 + Vector2(35, 0))
+	check(pad.direction.x > 0 and pad.direction.x < 1, "Joystick preserves analog strength")
+	pad.set_position_input(pad.size * 0.5 + Vector2(300, 300))
+	check(is_equal_approx(pad.direction.length(), 1), "Joystick clamps diagonal magnitude")
+	pad.reset()
+	var finger := InputEventScreenTouch.new()
+	finger.index = 3
+	finger.pressed = true
+	finger.position = pad.size * 0.5 + Vector2(60, 0)
+	pad._gui_input(finger)
+	check(pad.owner_index == 3 and room.touch_direction.x > 0.9, "First touch owns joystick")
+	finger.index = 4
+	finger.position = pad.size * 0.5 + Vector2(-60, 0)
+	pad._gui_input(finger)
+	check(pad.owner_index == 3 and room.touch_direction.x > 0.9, "Second finger cannot steal joystick")
+	finger.pressed = false
+	pad._input(finger)
+	check(pad.owner_index == 3, "Other finger release cannot stop owner")
+	finger.index = 3
+	pad._input(finger)
+	check(pad.owner_index == -1 and room.touch_direction == Vector2.ZERO, "Owner release resets movement")
+	finger.pressed = true
+	pad._gui_input(finger)
+	finger.canceled = true
+	pad._input(finger)
+	check(pad.owner_index == -1 and pad.direction == Vector2.ZERO, "Touch cancel resets movement")
+	pad.set_position_input(pad.size * 0.5 + Vector2(60, 0))
+	pad._notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+	check(room.touch_direction == Vector2.ZERO, "Focus loss resets joystick")
+	room.player = Vector2(800, 650)
+	room.touch_direction = Vector2(0.5, 0)
+	room._process(0.05)
+	check(is_equal_approx(room.player.x, 800 + room.movement_speed * 0.025), "Half stick produces half speed")
+	room.player = Vector2(800, 650)
+	room.touch_direction = Vector2(1, 1)
+	room._process(0.05)
+	check(is_equal_approx(room.player.distance_to(Vector2(800, 650)), room.movement_speed * 0.05), "Diagonal movement cannot exceed speed")
+	room._reset_movement()
+	# Exercise Godot's real viewport routing, not only the joystick methods.
+	var routed_touch := InputEventScreenTouch.new()
+	routed_touch.index = 0
+	routed_touch.pressed = true
+	routed_touch.position = pad.global_position + pad.size * 0.5 + Vector2(60, 0)
+	Input.parse_input_event(routed_touch.duplicate())
+	await process_frame
+	check(pad.owner_index == 0 and room.touch_direction.x > 0.9 and not room.moving_to_target, "Viewport routes touch to joystick without floor click")
+	var routed_drag := InputEventScreenDrag.new()
+	routed_drag.index = 0
+	routed_drag.position = pad.global_position + pad.size * 0.5 + Vector2(200, -200)
+	Input.parse_input_event(routed_drag)
+	await process_frame
+	check(pad.direction.x > 0 and pad.direction.y < 0 and is_equal_approx(pad.direction.length(), 1), "Owned drag continues outside joystick bounds")
+	routed_touch.pressed = false
+	routed_touch.position = routed_drag.position
+	Input.parse_input_event(routed_touch.duplicate())
+	await process_frame
+	check(pad.owner_index == -1 and room.touch_direction == Vector2.ZERO, "Release outside pad resets through viewport")
+	routed_touch.pressed = true
+	routed_touch.position = pad.global_position + pad.size * 0.5 + Vector2(60, 0)
+	Input.parse_input_event(routed_touch.duplicate())
+	await process_frame
+	var ui_touch := InputEventScreenTouch.new()
+	ui_touch.index = 1
+	ui_touch.pressed = true
+	ui_touch.position = Vector2(165, 40)
+	Input.parse_input_event(ui_touch.duplicate())
+	await process_frame
+	ui_touch = ui_touch.duplicate()
+	ui_touch.pressed = false
+	Input.parse_input_event(ui_touch.duplicate())
+	await process_frame
+	check(is_instance_valid(room.overlay), "Second finger can open Bag while joystick is held")
+	routed_touch.pressed = false
+	Input.parse_input_event(routed_touch.duplicate())
+	room._close_overlay()
+	room.open_chest(false)
+	routed_touch.pressed = true
+	routed_touch.position = pad.global_position + pad.size * 0.5 + Vector2(60, 0)
+	Input.parse_input_event(routed_touch.duplicate())
+	await process_frame
+	check(pad.owner_index == -1 and room.touch_direction == Vector2.ZERO, "Modal UI does not activate joystick beneath it")
+	routed_touch.pressed = false
+	Input.parse_input_event(routed_touch.duplicate())
+	room._close_overlay()
 	check(not room.can_stand(Vector2(400, 550)), "Bed collision")
 	check(not room.can_stand(room.prop_rects.chest.get_center()), "Chest collision")
 	check(not room.can_stand(Vector2(0, 0)), "Room boundary")
@@ -140,6 +228,13 @@ func run() -> void:
 			hero.set_base(base)
 			hero.character_class = selected_class.class_id
 			check(slot.create(hero.payload()), "Create class starter slot")
+			var class_room = preload("res://src/bedroom.gd").new()
+			class_room.state = slot
+			root.add_child(class_room)
+			await process_frame
+			check(class_room.actor.visible and class_room.actor.artwork_ready and class_room.actor.armor.texture != null and not class_room.sleeping, "Both bases and every class spawn visibly dressed")
+			class_room.queue_free()
+			await process_frame
 			var weapon: String = Save.Inventory.starter_weapon(hero.character_class)
 			check(slot.chest.healing_potion == 5 and slot.chest[weapon] == 1, "Five potions plus one class weapon regardless of gender")
 			check(slot.equipped_armor == Save.Inventory.starter_armor(hero.character_class), "Class armor starts equipped for both bases")
@@ -168,6 +263,22 @@ func run() -> void:
 		check(migration.chest.warrior_01_weapon == 1, "Migration adds only class starter weapon")
 		check(migration.transfer("warrior_01_weapon", false) and migration.load_saved() and migration.chest.warrior_01_weapon == 0 and migration.bag.warrior_01_weapon == 1, "Migration is idempotent")
 		DirAccess.remove_absolute(path)
+	# A build-306 save with the old asleep flag and emptied chest must retain progress.
+	var legacy = Save.new()
+	legacy.path = path
+	check(legacy.create(draft.payload()), "Create migration fixture")
+	check(legacy.transfer("healing_potion", false), "Collect potion before migration")
+	check(legacy.transfer("warrior_01_weapon", false) and legacy.equip("warrior_01_weapon"), "Equip before migration")
+	var prior_data = JSON.parse_string(FileAccess.get_file_as_string(path))
+	prior_data.version = 4
+	prior_data.awake = false
+	var legacy_file := FileAccess.open(path, FileAccess.WRITE)
+	legacy_file.store_string(JSON.stringify(prior_data))
+	legacy_file.close()
+	check(legacy.load_saved() and legacy.awake, "Old asleep save becomes immediately playable")
+	check(legacy.bag == prior_data.bag and legacy.chest == prior_data.chest and legacy.equipped_weapon == prior_data.equipped_weapon and legacy.equipped_armor == prior_data.equipped_armor, "Wake migration preserves exact inventory and equipment")
+	check(legacy.load_saved() and legacy.chest.healing_potion == 4 and legacy.chest.warrior_01_weapon == 0, "Wake migration is idempotent and never reseeds")
+	DirAccess.remove_absolute(path)
 	var main = load("res://scenes/main.tscn").instantiate()
 	root.add_child(main)
 	await process_frame
@@ -185,8 +296,7 @@ func run() -> void:
 	main.bedroom.overlay.draft.username = "LocalHero"
 	main.bedroom.overlay._submit()
 	await process_frame
-	check(main.bedroom.overlay == null and main.bedroom.sleeping, "Creator submit starts wake scene")
-	main.bedroom.wake_up()
+	check(main.bedroom.overlay == null and not main.bedroom.sleeping and main.bedroom.actor.visible, "Creator submit immediately shows dressed player")
 	main.bedroom._exit()
 	await process_frame
 	check(main.bedroom == null, "Saved exit restores title")

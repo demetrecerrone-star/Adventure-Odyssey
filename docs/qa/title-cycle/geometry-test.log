@@ -1,0 +1,29 @@
+{
+  "goblin": {
+    "unique_frames": 24,
+    "cycle_seconds": 0.8,
+    "support_seconds_per_foot": 0.288,
+    "bone_lengths": [
+      68,
+      66
+    ],
+    "planted_world_x_error": "< 0.001 px",
+    "loop_seam": "within normal adjacent motion",
+    "frame_bounds": "no clipping"
+  },
+  "skeleton": {
+    "unique_frames": 24,
+    "cycle_seconds": 0.8,
+    "support_seconds_per_foot": 0.288,
+    "bone_lengths": [
+      74,
+      80
+    ],
+    "planted_world_x_error": "< 0.001 px",
+    "loop_seam": "within normal adjacent motion",
+    "frame_bounds": "no clipping",
+    "hand_to_hilt_drift_px": "< 0.000001",
+    "sword_loop_seam": "within normal adjacent motion"
+  }
+}
+TITLE CYCLE GEOMETRY: PASS

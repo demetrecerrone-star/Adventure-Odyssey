@@ -11,11 +11,11 @@ var wake_spawn := Vector2(625, 700)
 var facing := 0
 var target := Vector2.ZERO
 var moving_to_target := false
-var sleeping := true
+var sleeping := false
 var overlay: Control
 var message: Label
 var interact_button: Button
-var wake_button: Button
+var joystick: Control
 var status: Label
 var prop_nodes := {}
 var prop_rects := {"bed":Rect2(270, 380, 310, 315), "chest":Rect2(990, 445, 240, 100), "mirror":Rect2(850, 385, 133, 35)}
@@ -67,7 +67,7 @@ func _ready() -> void:
 			stage.add_child(art)
 	actor = preload("res://src/layered_avatar.gd").new()
 	actor.name = "Player"
-	actor.scale = Vector2.ONE * 0.72
+	actor.scale = Vector2.ONE * 1.05
 	stage.add_child(actor)
 	var top := HBoxContainer.new()
 	top.z_index = 2000
@@ -92,19 +92,18 @@ func _ready() -> void:
 	bottom.position = Vector2(-430, -78)
 	bottom.size = Vector2(410, 60)
 	add_child(bottom)
-	wake_button = button("Wake up", bottom)
-	wake_button.pressed.connect(wake_up)
 	interact_button = button("Interact [E]", bottom)
 	interact_button.pressed.connect(interact)
-	var pad := HBoxContainer.new()
-	pad.z_index = 2000
-	pad.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
-	pad.position = Vector2(18, -78)
-	add_child(pad)
-	for direction in [{"text":"←", "v":Vector2.LEFT}, {"text":"↑", "v":Vector2.UP}, {"text":"↓", "v":Vector2.DOWN}, {"text":"→", "v":Vector2.RIGHT}]:
-		var control := button(direction.text, pad)
-		control.button_down.connect(func(): touch_direction = direction.v)
-		control.button_up.connect(func(): touch_direction = Vector2.ZERO)
+	joystick = preload("res://src/touch_joystick.gd").new()
+	joystick.name = "TouchJoystick"
+	joystick.z_index = 2000
+	add_child(joystick)
+	joystick.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	joystick.offset_left = 24
+	joystick.offset_top = -184
+	joystick.offset_right = 188
+	joystick.offset_bottom = -20
+	joystick.direction_changed.connect(func(value: Vector2): touch_direction = value)
 	resized.connect(_layout)
 	_layout()
 	if state.character.is_empty():
@@ -112,7 +111,7 @@ func _ready() -> void:
 			_start_character()
 		elif not state.error.is_empty() or FileAccess.file_exists(state.path):
 			message.text = "Your local save needs recovery. It has not been overwritten."
-			wake_button.disabled = true
+			joystick.hide()
 		else:
 			open_creator(false)
 	else:
@@ -129,6 +128,18 @@ func button(text: String, parent: Node) -> Button:
 	var result := Button.new()
 	result.text = text
 	result.custom_minimum_size = Vector2(64, 54)
+	# Godot's mouse emulation only supplies a primary pointer. Let additional
+	# fingers operate room buttons while the primary finger owns the joystick.
+	result.gui_input.connect(func(event: InputEvent):
+		if event is InputEventScreenTouch and event.index > 0:
+			if event.pressed and not event.canceled and not result.disabled:
+				result.set_meta("touch_owner", event.index)
+			elif result.get_meta("touch_owner", -1) == event.index:
+				result.remove_meta("touch_owner")
+				if not event.canceled and not result.disabled and Rect2(Vector2.ZERO, result.size).has_point(event.position):
+					result.pressed.emit()
+			result.accept_event()
+	)
 	parent.add_child(result)
 	return result
 func _layout() -> void:
@@ -142,26 +153,11 @@ func _layout() -> void:
 func _start_character() -> void:
 	actor.configure(state.character.base, state.character["class"])
 	movement_speed = actor.suggested_speed
-	sleeping = not state.awake
-	player = Vector2(440, 555) if sleeping else wake_spawn
-	actor.visible = not sleeping and actor.artwork_ready
-	wake_button.visible = sleeping
-	message.text = "Morning light fills your room. Wake up to begin." if sleeping else "Walk with arrows / WASD or tap the floor. E interacts nearby."
-	status.text = state.character.username + " • Local save • Appearance art in progress"
-	_update_actor()
-func wake_up() -> void:
-	if state.character.is_empty() or not sleeping or is_instance_valid(overlay):
-		return
-	state.awake = true
-	if not state.save():
-		state.awake = false
-		message.text = state.error
-		return
 	sleeping = false
-	actor.visible = actor.artwork_ready
 	player = wake_spawn
-	wake_button.hide()
-	message.text = "Your chest holds belongings. The mirror changes appearance."
+	actor.visible = actor.artwork_ready
+	message.text = "Move with the joystick or WASD / arrows. Your chest holds supplies."
+	status.text = state.character.username + " • Local save • Appearance art in progress"
 	_update_actor()
 func can_stand(point: Vector2) -> bool:
 	if not Geometry2D.is_point_in_polygon(point, PackedVector2Array([Vector2(235, 385), Vector2(1305, 385), Vector2(1455, 925), Vector2(80, 925)])):
@@ -208,7 +204,7 @@ func _process(delta: float) -> void:
 			direction = Vector2.ZERO
 	if direction.length() > 0:
 		facing = (2 if direction.x > 0 else 1) if absf(direction.x) > absf(direction.y) else (0 if direction.y > 0 else 3)
-		move_player(direction.normalized() * movement_speed * minf(delta, 0.05))
+		move_player(direction.limit_length(1.0) * movement_speed * minf(delta, 0.05))
 	actor.advance(facing, direction.length() > 0, delta)
 	var id := nearest_prop()
 	interact_button.text = (id.capitalize() + " [E]") if not id.is_empty() else "Walk closer"
@@ -219,10 +215,7 @@ func _gui_input(event: InputEvent) -> void:
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_E or event.keycode == KEY_SPACE:
-			if sleeping:
-				wake_up()
-			else:
-				interact()
+			interact()
 		elif event.keycode == KEY_ESCAPE:
 			if is_instance_valid(overlay):
 				cancel_overlay()
@@ -239,6 +232,7 @@ func interact() -> void:
 func open_creator(mirror: bool) -> void:
 	if is_instance_valid(overlay):
 		return
+	_reset_movement()
 	var creator = Creator.new()
 	creator.local_guest_mode = true
 	creator.mirror_mode = mirror
@@ -268,8 +262,12 @@ func _close_overlay() -> void:
 		remove_child(overlay)
 		overlay.queue_free()
 		overlay = null
+	_reset_movement()
+func _reset_movement() -> void:
 	touch_direction = Vector2.ZERO
 	moving_to_target = false
+	if is_instance_valid(joystick):
+		joystick.reset()
 func open_chest(show_storage: bool = true) -> void:
 	_close_overlay()
 	overlay = Control.new()
@@ -327,6 +325,8 @@ func _exit() -> void:
 		return
 	exited.emit()
 func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		_reset_movement()
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		if is_instance_valid(overlay):
 			cancel_overlay()

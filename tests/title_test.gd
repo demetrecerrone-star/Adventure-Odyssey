@@ -230,8 +230,13 @@ func run() -> void:
 	scene.close_modal()
 	check(scene.runners.size() == 2, "two separate runners")
 	for runner in scene.runners:
-		check(runner.sprite_frames.get_frame_count("default") == 4, "four distinct sprite atlas frames")
+		check(runner.sprite_frames.get_frame_count("default") == 24, "24 distinct articulated sprite poses")
 		check(runner.is_playing(), "runner animation playing")
+		check(runner.sprite_frames.get_animation_speed("default") == 30.0, "0.8 second complete stride")
+		for frame_index in range(24):
+			var atlas_frame: AtlasTexture = runner.sprite_frames.get_frame_texture("default", frame_index)
+			check(atlas_frame.region.size == Vector2(512, 512), "fixed registered frame size")
+			check(atlas_frame.region.position == Vector2((frame_index % 6) * 512, (frame_index / 6) * 512), "atlas row and column")
 		check(runner.offset == Vector2(-256,-430), "registered foot pivot")
 	scene.elapsed = 0
 	scene._process(0)

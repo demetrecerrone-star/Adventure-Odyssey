@@ -1,38 +1,52 @@
 {
   "goblin": {
-    "atlas": "goblin-run-atlas.png",
+    "atlas": "goblin-run-smooth.png",
+    "original_preserved": "goblin-run.png",
     "frame_size": [
       512,
       512
     ],
-    "frame_count": 4,
-    "layout": "horizontal",
+    "frame_count": 24,
+    "layout": {
+      "columns": 6,
+      "rows": 4
+    },
     "foot_pivot": [
       256,
       430
     ],
-    "fps": 10,
+    "fps": 30,
+    "cycle_seconds": 0.8,
     "direction": "right",
-    "suggested_display_body_height": 84,
-    "source": "imagegen original art, mechanically cropped and registered",
-    "quality_note": "Four distinct generated poses; extended and passing states are visible, but limb alternation and subpixel detail are not hand-polished. Review in motion before treating as final."
+    "display_scale": 0.23,
+    "phase_offset_frames": 6,
+    "source": "Approved original imagegen textures, non-destructively segmented and articulated with fixed-length two-bone inverse kinematics. No generated replacement art, duplicated frames, or crossfading.",
+    "regenerate": "python tools/build_title_cycles.py",
+    "quality_note": "Cutout animation, not newly hand-painted frame animation. Contact sheets and actual-scale preview inspected; original background, wordmark, logo and UI unchanged. Android motion acceptance still requires device review."
   },
   "skeleton": {
-    "atlas": "skeleton-run-atlas.png",
+    "atlas": "skeleton-run-smooth.png",
+    "original_preserved": "skeleton-run.png",
     "frame_size": [
       512,
       512
     ],
-    "frame_count": 4,
-    "layout": "horizontal",
+    "frame_count": 24,
+    "layout": {
+      "columns": 6,
+      "rows": 4
+    },
     "foot_pivot": [
       256,
       430
     ],
-    "fps": 10,
+    "fps": 30,
+    "cycle_seconds": 0.8,
     "direction": "right",
-    "suggested_display_body_height": 100,
-    "source": "imagegen original art, mechanically cropped and registered",
-    "quality_note": "Four distinct generated poses; extended and passing states are visible, but limb alternation and subpixel detail are not hand-polished. Review in motion before treating as final."
+    "display_scale": 0.27,
+    "phase_offset_frames": 0,
+    "source": "Approved original imagegen textures, non-destructively segmented and articulated with fixed-length two-bone inverse kinematics. No generated replacement art, duplicated frames, or crossfading.",
+    "regenerate": "python tools/build_title_cycles.py",
+    "quality_note": "Cutout animation, not newly hand-painted frame animation. Contact sheets and actual-scale preview inspected; original background, wordmark, logo and UI unchanged. Android motion acceptance still requires device review."
   }
 }

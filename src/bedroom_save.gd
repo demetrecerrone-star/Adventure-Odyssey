@@ -10,7 +10,7 @@ var bag := Inventory.empty_inventory()
 var chest := Inventory.empty_inventory()
 var equipped_weapon := ""
 var equipped_armor := ""
-var awake := false
+var awake := true
 var error := ""
 func draft_from(value: Dictionary):
 	var draft = Draft.new()
@@ -72,7 +72,7 @@ func save() -> bool:
 	if file == null:
 		error = "Couldn't save locally. Your previous save is unchanged."
 		return false
-	file.store_string(JSON.stringify({"version":4, "tutorial_chest_seeded":true, "character":character, "bag":bag, "chest":chest, "equipped_weapon":equipped_weapon, "equipped_armor":equipped_armor, "awake":awake}))
+	file.store_string(JSON.stringify({"version":5, "tutorial_chest_seeded":true, "character":character, "bag":bag, "chest":chest, "equipped_weapon":equipped_weapon, "equipped_armor":equipped_armor, "awake":awake}))
 	file.flush()
 	var write_error := file.get_error()
 	file.close()
@@ -88,7 +88,7 @@ func load_saved() -> bool:
 		error = "Local save could not be read. It has not been overwritten."
 		return false
 	var data = parser.data
-	if not data is Dictionary or int(data.get("version", -1)) not in [1, 2, 3, 4]:
+	if not data is Dictionary or int(data.get("version", -1)) not in [1, 2, 3, 4, 5]:
 		error = "Local save could not be read. It has not been overwritten."
 		return false
 	var candidate = data.get("character")
@@ -126,8 +126,9 @@ func load_saved() -> bool:
 		chest[Inventory.starter_weapon(character["class"])] = 1
 	equipped_weapon = equipment
 	equipped_armor = armor
-	awake = data.get("awake", false) == true
-	if version < 4 and not save():
+	# The retired wake gate never controls visibility. Migration preserves all loot.
+	awake = true
+	if version < 5 and not save():
 		character = {}
 		return false
 	return true
