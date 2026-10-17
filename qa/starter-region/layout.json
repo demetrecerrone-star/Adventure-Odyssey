@@ -1,0 +1,2154 @@
+{
+  "schema_version": 2,
+  "status": "Full native-painted ground coverage; scenery and engine integration not included",
+  "world_size": [
+    4608,
+    3072
+  ],
+  "world_origin": [
+    0,
+    0
+  ],
+  "world_pixels_per_texture_pixel": 1,
+  "character_visible_height": 96,
+  "movement_speed": 155,
+  "dimensions_in_actor_heights": [
+    48,
+    32
+  ],
+  "straight_crossing_seconds": [
+    29.73,
+    19.82
+  ],
+  "chunks": [
+    {
+      "file": "terrain/region_0_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "sha256": "8c6ed6c8370b2b28bb813ecd330932527ed3b6288a2f878dcfbc14e22826e470"
+    },
+    {
+      "file": "terrain/region_1_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        512,
+        0,
+        512,
+        512
+      ],
+      "sha256": "b21fe5550f47b717363b6405d20c3f1991998b1b1cb8c58c0d96c928bff8ef13"
+    },
+    {
+      "file": "terrain/region_2_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        1024,
+        0,
+        512,
+        512
+      ],
+      "sha256": "e14eb262a15dab12afec04ad12e600cb1dbefca3de3b63f4f55afea605b9b22c"
+    },
+    {
+      "file": "terrain/region_3_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        1536,
+        0,
+        512,
+        512
+      ],
+      "sha256": "495ce26c40fe8e9daa8c273f18884ce5da935212b32984f08326e745724210cb"
+    },
+    {
+      "file": "terrain/region_4_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        2048,
+        0,
+        512,
+        512
+      ],
+      "sha256": "ac9ef010f12251dfcf561f2a86b1db21e5b524700a1d0cbb668412c82ebaa7b2"
+    },
+    {
+      "file": "terrain/region_5_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        2560,
+        0,
+        512,
+        512
+      ],
+      "sha256": "91776611d2548b551ce1da60abb488f18eb6cbaaac49440bdc225950e3d2377e"
+    },
+    {
+      "file": "terrain/region_6_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        3072,
+        0,
+        512,
+        512
+      ],
+      "sha256": "94e822a09d93d31195aecbe404fc8150d4b9ab72b944b5814621d195d7995df0"
+    },
+    {
+      "file": "terrain/region_7_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        3584,
+        0,
+        512,
+        512
+      ],
+      "sha256": "d5b8df87e5e01698cf52d501af096faeb4f1457b7af9ef0ed657e921d78abee3"
+    },
+    {
+      "file": "terrain/region_8_0.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        4096,
+        0,
+        512,
+        512
+      ],
+      "sha256": "9e75e6058e84dd57e41b54c79651c462367255af27d4a39fa222d2c8efe064a5"
+    },
+    {
+      "file": "terrain/region_0_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        0,
+        512,
+        512,
+        512
+      ],
+      "sha256": "730263bb9adc3800e968728043599b5852044cec1ce6197b621770ecd0d2df2b"
+    },
+    {
+      "file": "terrain/region_1_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "sha256": "d4c3a693d6570a88618d553e6a65cc8565da7e8996de2c2b6c70fe067155cc3a"
+    },
+    {
+      "file": "terrain/region_2_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        1024,
+        512,
+        512,
+        512
+      ],
+      "sha256": "8a03bb9244d80956fff829a6a2ee4d6304a0b0de8d593449ca708e5b818335de"
+    },
+    {
+      "file": "terrain/region_3_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        1536,
+        512,
+        512,
+        512
+      ],
+      "sha256": "c7c9e8d12701211c7032f3fe91061d7e40488c0e473e38e554722c32f138eb14"
+    },
+    {
+      "file": "terrain/region_4_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        2048,
+        512,
+        512,
+        512
+      ],
+      "sha256": "34a3169fc027f56b1fd29f8c804d023242bdc28fc15e1fb239b0e855311a05ad"
+    },
+    {
+      "file": "terrain/region_5_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        2560,
+        512,
+        512,
+        512
+      ],
+      "sha256": "cc1a859c773241649a27d5b755d37f1d99bd29221f47255f767e17672b640f30"
+    },
+    {
+      "file": "terrain/region_6_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        3072,
+        512,
+        512,
+        512
+      ],
+      "sha256": "35e5dfc57a5b3ae0fe7b18aeec6d38343824b784c2082f2f25e9792098229e5c"
+    },
+    {
+      "file": "terrain/region_7_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        3584,
+        512,
+        512,
+        512
+      ],
+      "sha256": "32853463e75b19e959128759dd735ea5b1b30ac86eddad481b334c72f349f4a2"
+    },
+    {
+      "file": "terrain/region_8_1.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        4096,
+        512,
+        512,
+        512
+      ],
+      "sha256": "a75aad5e687910555352192656aec748bde96a69ee843acbdb96d93031fcaad3"
+    },
+    {
+      "file": "terrain/region_0_2.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        0,
+        1024,
+        512,
+        512
+      ],
+      "sha256": "e204ba44d17c1fc88173a89e7d8cb5264b025c2bf86a82dfc7c9208efcaf816b"
+    },
+    {
+      "file": "terrain/region_1_2.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        512,
+        1024,
+        512,
+        512
+      ],
+      "sha256": "2932dde9c5b5845037dbead2781af9636ff81de7322301f2aaf422fff7f6b611"
+    },
+    {
+      "file": "terrain/region_2_2.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        1024,
+        1024,
+        512,
+        512
+      ],
+      "sha256": "c5c974b83d336d4c65c9024a76fc5ada045313b05f4b391647663f04fcb5a080"
+    },
+    {
+      "file": "terrain/region_3_2.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        1536,
+        1024,
+        512,
+        512
+      ],
+      "sha256": "67520b774e8f5417fc315c5e227cea16ebb653f9b1a21d0ed48af8355ee8b526"
+    },
+    {
+      "file": "terrain/region_4_2.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        2048,
+        1024,
+        512,
+        512
+      ],
+      "sha256": "e7ce9b664f4a0f147f619988e1b26bd630dbb0a39e9ce721f006c9e7093d0845"
+    },
+    {
+      "file": "terrain/region_5_2.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        2560,
+        1024,
+        512,
+        512
+      ],
+      "sha256": "81f8d450d1751cb2a2b30d2db5e51b89c16b64135b174f39925253876fe18b71"
+    },
+    {
+      "file": "terrain/region_6_2.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        3072,
+        1024,
+        512,
+        512
+      ],
+      "sha256": "30dac77f89625a216cfe327b8433765e954a9201aa758f765a9365660851a509"
+    },
+    {
+      "file": "terrain/region_7_2.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        3584,
+        1024,
+        512,
+        512
+      ],
+      "sha256": "49ace45aa2802d1eff657db330eb06fba0184367bbdd3a366b08e5fa7912aa0f"
+    },
+    {
+      "file": "terrain/region_8_2.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        4096,
+        1024,
+        512,
+        512
+      ],
+      "sha256": "58aef2ef26e6359c33d9f2aa8007ccd9d79694b977ffe6469ca61725a3b7d212"
+    },
+    {
+      "file": "terrain/region_0_3.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        0,
+        1536,
+        512,
+        512
+      ],
+      "sha256": "cb7caf8f96bba726d6c76eed82648abcbe4bf43475b70deef9085ce1d4fa8c9e"
+    },
+    {
+      "file": "terrain/region_1_3.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        512,
+        1536,
+        512,
+        512
+      ],
+      "sha256": "fb9dcf1171ed2bd61b5b693ecdfb8decce846fcaba05585d8507785413676ef1"
+    },
+    {
+      "file": "terrain/region_2_3.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        1024,
+        1536,
+        512,
+        512
+      ],
+      "sha256": "ce4ea49032741e4ecfa5af86c281cb67e90ffd59bd3c05a5581ff17e1662f9d2"
+    },
+    {
+      "file": "terrain/region_3_3.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        1536,
+        1536,
+        512,
+        512
+      ],
+      "sha256": "4f18ab26c4df4f839b6da3c25f367e8faf42bee276dff6504698927072228474"
+    },
+    {
+      "file": "terrain/region_4_3.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        2048,
+        1536,
+        512,
+        512
+      ],
+      "sha256": "fc6f46ced8acf032a364dbaf1f50fede35d740b37db68d66bfe372600b8fe44d"
+    },
+    {
+      "file": "terrain/region_5_3.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        2560,
+        1536,
+        512,
+        512
+      ],
+      "sha256": "a0885a2daa40efcc08990b888aa898f0eac7da3e7bb33738180b9264b698672e"
+    },
+    {
+      "file": "terrain/region_6_3.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        3072,
+        1536,
+        512,
+        512
+      ],
+      "sha256": "e5a08498262d97b1e70e8044434cc186fe023d858b2bcb4e82245993721bef2c"
+    },
+    {
+      "file": "terrain/region_7_3.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        3584,
+        1536,
+        512,
+        512
+      ],
+      "sha256": "b38e9f2968363e27abf08ae03ff0edfbb66fed7da4259056d6a334ec30c6f453"
+    },
+    {
+      "file": "terrain/region_8_3.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        4096,
+        1536,
+        512,
+        512
+      ],
+      "sha256": "da12b8475d05cb967533c18bf0b24ae72ac89c3078cf430b3c666457e475ea5b"
+    },
+    {
+      "file": "terrain/region_0_4.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        0,
+        2048,
+        512,
+        512
+      ],
+      "sha256": "1e35b31133522847ba83b3e84ddf028468c926bdbc4f5747c49f8a170b576af3"
+    },
+    {
+      "file": "terrain/region_1_4.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        512,
+        2048,
+        512,
+        512
+      ],
+      "sha256": "50d32dd657f1fabccfd46006c3ea8d74bab06672ce510797a48453d9011bed7f"
+    },
+    {
+      "file": "terrain/region_2_4.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        1024,
+        2048,
+        512,
+        512
+      ],
+      "sha256": "e3efb530149960c1149879525d7ca0ece7c8cc5fb977eed63fde72656e5cf301"
+    },
+    {
+      "file": "terrain/region_3_4.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        1536,
+        2048,
+        512,
+        512
+      ],
+      "sha256": "20d64399258bdd57f697882db4a28a414a3fc8d568ba563536d2b24c28c07310"
+    },
+    {
+      "file": "terrain/region_4_4.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        2048,
+        2048,
+        512,
+        512
+      ],
+      "sha256": "53637755bd70a3c715fcbac35811f1c905ef22e889a6b4d4f082c0fa39e014da"
+    },
+    {
+      "file": "terrain/region_5_4.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        2560,
+        2048,
+        512,
+        512
+      ],
+      "sha256": "e38f486d88bae4c986d909809331722c5c1e01c59a952c5ee29aa1a4f848acc7"
+    },
+    {
+      "file": "terrain/region_6_4.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        3072,
+        2048,
+        512,
+        512
+      ],
+      "sha256": "1fe7aa9e85ae7460d71a0cdfe9fe2ac4a330e3c0da52e6e0b9751d61169f59f9"
+    },
+    {
+      "file": "terrain/region_7_4.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        3584,
+        2048,
+        512,
+        512
+      ],
+      "sha256": "8ce54f0d4f9fddc100feac8a08fbe7ef3b945e7fbe49032dba01e1e28c507d5a"
+    },
+    {
+      "file": "terrain/region_8_4.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        4096,
+        2048,
+        512,
+        512
+      ],
+      "sha256": "0063811b101bf71549c04da3b58155d3afb3296e352a836bbeef563ee9e8996d"
+    },
+    {
+      "file": "terrain/region_0_5.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        0,
+        2560,
+        512,
+        512
+      ],
+      "sha256": "3b7d799217160cefe6e7f0d8a3799f3f5f4cab03ee47872c5e79f24236ea3a32"
+    },
+    {
+      "file": "terrain/region_1_5.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        512,
+        2560,
+        512,
+        512
+      ],
+      "sha256": "72517cd1e0951bf8e6109cae3accce74c1afa5004906e7f7f9d4dceaf6cd0ab9"
+    },
+    {
+      "file": "terrain/region_2_5.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        1024,
+        2560,
+        512,
+        512
+      ],
+      "sha256": "3fd3d129137b93e0a32ad3b4cb420c6d8921e3bfd5b8c3d90bb30c133327cb53"
+    },
+    {
+      "file": "terrain/region_3_5.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        1536,
+        2560,
+        512,
+        512
+      ],
+      "sha256": "0b114ba9465193e971d4451f384ccc01259a460928b1caf21b274bdccc8160a6"
+    },
+    {
+      "file": "terrain/region_4_5.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        2048,
+        2560,
+        512,
+        512
+      ],
+      "sha256": "2d3a5bdbaae1acd665fa2c744252c0079d1a8f49044c63780b1507f32efea1bc"
+    },
+    {
+      "file": "terrain/region_5_5.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        2560,
+        2560,
+        512,
+        512
+      ],
+      "sha256": "ea39774cde219ba306e546a3ba33e4d3c34fcfe11bab7d82e51b6b9f0c424779"
+    },
+    {
+      "file": "terrain/region_6_5.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        3072,
+        2560,
+        512,
+        512
+      ],
+      "sha256": "37460b2c4d4269dead58a9ea7affa456cd02a17ad03b017eb18b46ae645acc12"
+    },
+    {
+      "file": "terrain/region_7_5.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        3584,
+        2560,
+        512,
+        512
+      ],
+      "sha256": "42a184870e6233dd966979ed3c9b1e6e2cd6743968a46e5df3918ec03ac3818c"
+    },
+    {
+      "file": "terrain/region_8_5.png",
+      "core_rect_px": [
+        2,
+        2,
+        512,
+        512
+      ],
+      "world_rect": [
+        4096,
+        2560,
+        512,
+        512
+      ],
+      "sha256": "bb6e02806bb58c52c16f727117df8008f57190ea90d123e74db9e03bc8bda6d7"
+    }
+  ],
+  "source_sections": [
+    {
+      "id": "west",
+      "rect": [
+        0,
+        768,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "original-corridor",
+      "rect": [
+        1344,
+        768,
+        2880,
+        1023
+      ],
+      "native": [
+        2880,
+        1023
+      ]
+    },
+    {
+      "id": "northwest",
+      "rect": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "southwest",
+      "rect": [
+        0,
+        1536,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "northcentral",
+      "rect": [
+        1280,
+        0,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "southcentral",
+      "rect": [
+        1280,
+        1536,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "northtown",
+      "rect": [
+        2560,
+        0,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "southtown",
+      "rect": [
+        2560,
+        1536,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "northeast",
+      "rect": [
+        3072,
+        0,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "southeast",
+      "rect": [
+        3072,
+        1536,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "eastmiddle",
+      "rect": [
+        3072,
+        768,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "bottomwest",
+      "rect": [
+        0,
+        2048,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "bottomcentral",
+      "rect": [
+        1280,
+        2048,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "bottomriver",
+      "rect": [
+        2560,
+        2048,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "bottomconfluence",
+      "rect": [
+        3072,
+        2048,
+        1536,
+        1024
+      ],
+      "native": [
+        1536,
+        1024
+      ]
+    }
+  ],
+  "navigation": "navigation.json",
+  "gutter": 2,
+  "chunk_core_size": 512,
+  "import_settings": "Linear sampling core rect only; no mipmaps without padded mip levels. Cull to camera plus margin. Do not load giant source texture on mobile.",
+  "memory_rgba_mib": {
+    "all_54_chunks": 54.85,
+    "nine_chunk_window": 9.14,
+    "sixteen_chunk_cache": 16.25
+  },
+  "validation": {
+    "coverage_percent": 100,
+    "uncovered_pixels": 0,
+    "pixel_exact_chunk_reassembly": true,
+    "route_water_mask_checks": {
+      "home_to_plaza": {
+        "water_bank_overlap_pixels": 0,
+        "reserved_lot_overlap_pixels": 0
+      },
+      "town_entry_to_guild": {
+        "water_bank_overlap_pixels": 0,
+        "reserved_lot_overlap_pixels": 0
+      },
+      "forest_to_home": {
+        "water_bank_overlap_pixels": 0,
+        "reserved_lot_overlap_pixels": 0
+      },
+      "meadow_to_home": {
+        "water_bank_overlap_pixels": 0,
+        "reserved_lot_overlap_pixels": 0
+      },
+      "plaza_to_foothills": {
+        "water_bank_overlap_pixels": 0,
+        "reserved_lot_overlap_pixels": 0
+      }
+    },
+    "native_zoom_visual_review": "8 seam windows inspected. Continuous painted roads and banks; texture character varies between panels. No GPU or physics pass claimed."
+  },
+  "layering": "Ground only: no buildings, trees or actors baked in. Low terrain shelves/riverbank rocks are painted ground. Roads remain painted into terrain.",
+  "scale": "Original provisional 4608x3072 retained. All production extension sources 1536x1024 native; no upscaling. One unused 1355x1161 study retained separately.",
+  "capacity": "11 footprint reservations (7 original + 4 new), not placed buildings; main market plaza and multiple residential/market grass lots remain open. Footprint acceptance requires actual sprite placement and collision QA.",
+  "routes": [
+    {
+      "id": "home_to_plaza",
+      "clear_width": 72,
+      "points": [
+        [
+          1644,
+          1318
+        ],
+        [
+          1684,
+          1393
+        ],
+        [
+          1944,
+          1368
+        ],
+        [
+          2184,
+          1283
+        ],
+        [
+          2344,
+          1318
+        ],
+        [
+          2464,
+          1298
+        ],
+        [
+          2614,
+          1258
+        ],
+        [
+          2874,
+          1268
+        ],
+        [
+          3144,
+          1268
+        ]
+      ],
+      "length_world_px": 1571.7,
+      "seconds_at_155": 10.14
+    },
+    {
+      "id": "town_entry_to_guild",
+      "clear_width": 72,
+      "points": [
+        [
+          2344,
+          1318
+        ],
+        [
+          2329,
+          1213
+        ],
+        [
+          2424,
+          1128
+        ]
+      ],
+      "length_world_px": 233.5,
+      "seconds_at_155": 1.51
+    },
+    {
+      "id": "forest_to_home",
+      "clear_width": 72,
+      "points": [
+        [
+          245,
+          40
+        ],
+        [
+          250,
+          150
+        ],
+        [
+          330,
+          330
+        ],
+        [
+          425,
+          500
+        ],
+        [
+          445,
+          750
+        ],
+        [
+          530,
+          960
+        ],
+        [
+          650,
+          1130
+        ],
+        [
+          850,
+          1230
+        ],
+        [
+          1100,
+          1300
+        ],
+        [
+          1344,
+          1340
+        ],
+        [
+          1684,
+          1393
+        ]
+      ],
+      "length_world_px": 2277.8,
+      "seconds_at_155": 14.7
+    },
+    {
+      "id": "meadow_to_home",
+      "clear_width": 72,
+      "points": [
+        [
+          40,
+          2955
+        ],
+        [
+          240,
+          2870
+        ],
+        [
+          420,
+          2750
+        ],
+        [
+          430,
+          2540
+        ],
+        [
+          500,
+          2350
+        ],
+        [
+          690,
+          2150
+        ],
+        [
+          880,
+          1990
+        ],
+        [
+          1110,
+          1870
+        ],
+        [
+          1410,
+          1780
+        ],
+        [
+          1620,
+          1680
+        ],
+        [
+          1680,
+          1540
+        ],
+        [
+          1684,
+          1393
+        ]
+      ],
+      "length_world_px": 2490.0,
+      "seconds_at_155": 16.06
+    },
+    {
+      "id": "plaza_to_foothills",
+      "clear_width": 72,
+      "points": [
+        [
+          3144,
+          1268
+        ],
+        [
+          3500,
+          1280
+        ],
+        [
+          3850,
+          1280
+        ],
+        [
+          4025,
+          1150
+        ],
+        [
+          4060,
+          1010
+        ],
+        [
+          4210,
+          910
+        ],
+        [
+          4310,
+          740
+        ],
+        [
+          4420,
+          480
+        ],
+        [
+          4450,
+          320
+        ],
+        [
+          4400,
+          160
+        ],
+        [
+          4350,
+          40
+        ]
+      ],
+      "length_world_px": 2203.7,
+      "seconds_at_155": 14.22
+    }
+  ],
+  "blocked_polygons": [
+    {
+      "id": "starter_home",
+      "kind": "reserved_lot",
+      "polygon": [
+        [
+          1474,
+          1028
+        ],
+        [
+          1774,
+          1028
+        ],
+        [
+          1784,
+          1268
+        ],
+        [
+          1494,
+          1288
+        ]
+      ]
+    },
+    {
+      "id": "guild",
+      "kind": "reserved_lot",
+      "polygon": [
+        [
+          2234,
+          868
+        ],
+        [
+          2474,
+          808
+        ],
+        [
+          2644,
+          988
+        ],
+        [
+          2364,
+          1093
+        ]
+      ]
+    },
+    {
+      "id": "shop_west",
+      "kind": "reserved_lot",
+      "polygon": [
+        [
+          2474,
+          1138
+        ],
+        [
+          2504,
+          1128
+        ],
+        [
+          2564,
+          1208
+        ],
+        [
+          2474,
+          1243
+        ]
+      ]
+    },
+    {
+      "id": "shop_southwest",
+      "kind": "reserved_lot",
+      "polygon": [
+        [
+          2464,
+          1378
+        ],
+        [
+          2784,
+          1358
+        ],
+        [
+          2824,
+          1473
+        ],
+        [
+          2624,
+          1568
+        ],
+        [
+          2434,
+          1503
+        ]
+      ]
+    },
+    {
+      "id": "home_north_plaza",
+      "kind": "reserved_lot",
+      "polygon": [
+        [
+          2714,
+          938
+        ],
+        [
+          2954,
+          868
+        ],
+        [
+          3064,
+          1013
+        ],
+        [
+          2904,
+          1118
+        ]
+      ]
+    },
+    {
+      "id": "shop_south_plaza",
+      "kind": "reserved_lot",
+      "polygon": [
+        [
+          2924,
+          1493
+        ],
+        [
+          3184,
+          1503
+        ],
+        [
+          3334,
+          1648
+        ],
+        [
+          3174,
+          1738
+        ],
+        [
+          2864,
+          1648
+        ]
+      ]
+    },
+    {
+      "id": "blacksmith_workyard",
+      "kind": "reserved_lot",
+      "polygon": [
+        [
+          3494,
+          1618
+        ],
+        [
+          3804,
+          1558
+        ],
+        [
+          4064,
+          1658
+        ],
+        [
+          4034,
+          1748
+        ],
+        [
+          3564,
+          1748
+        ]
+      ]
+    },
+    {
+      "id": "north_home_a",
+      "kind": "reserved_lot",
+      "polygon": [
+        [
+          2860,
+          625
+        ],
+        [
+          3070,
+          545
+        ],
+        [
+          3270,
+          660
+        ],
+        [
+          3140,
+          735
+        ]
+      ]
+    },
+    {
+      "id": "north_home_b",
+      "kind": "reserved_lot",
+      "polygon": [
+        [
+          3160,
+          470
+        ],
+        [
+          3330,
+          390
+        ],
+        [
+          3510,
+          490
+        ],
+        [
+          3400,
+          565
+        ]
+      ]
+    },
+    {
+      "id": "north_home_c",
+      "kind": "reserved_lot",
+      "polygon": [
+        [
+          3450,
+          650
+        ],
+        [
+          3630,
+          580
+        ],
+        [
+          3830,
+          730
+        ],
+        [
+          3650,
+          800
+        ]
+      ]
+    },
+    {
+      "id": "southeast_workyard_extension",
+      "kind": "reserved_lot",
+      "polygon": [
+        [
+          3410,
+          1880
+        ],
+        [
+          3870,
+          1810
+        ],
+        [
+          4000,
+          2150
+        ],
+        [
+          3560,
+          2230
+        ]
+      ]
+    },
+    {
+      "id": "upper_stream_and_bank",
+      "kind": "water_bank",
+      "polygon": [
+        [
+          2009,
+          768
+        ],
+        [
+          2354,
+          768
+        ],
+        [
+          2269,
+          832
+        ],
+        [
+          2216,
+          918
+        ],
+        [
+          2145,
+          954
+        ],
+        [
+          2209,
+          1033
+        ],
+        [
+          2231,
+          1100
+        ],
+        [
+          2286,
+          1167
+        ],
+        [
+          2257,
+          1211
+        ],
+        [
+          2186,
+          1205
+        ],
+        [
+          2119,
+          1153
+        ],
+        [
+          2095,
+          1090
+        ],
+        [
+          2024,
+          1044
+        ],
+        [
+          1964,
+          972
+        ],
+        [
+          1950,
+          909
+        ],
+        [
+          1986,
+          855
+        ]
+      ]
+    },
+    {
+      "id": "lower_stream_and_bank",
+      "kind": "water_bank",
+      "polygon": [
+        [
+          2180,
+          1383
+        ],
+        [
+          2252,
+          1360
+        ],
+        [
+          2309,
+          1395
+        ],
+        [
+          2315,
+          1461
+        ],
+        [
+          2352,
+          1509
+        ],
+        [
+          2424,
+          1564
+        ],
+        [
+          2534,
+          1632
+        ],
+        [
+          2644,
+          1665
+        ],
+        [
+          2736,
+          1698
+        ],
+        [
+          2824,
+          1791
+        ],
+        [
+          2574,
+          1791
+        ],
+        [
+          2454,
+          1729
+        ],
+        [
+          2354,
+          1693
+        ],
+        [
+          2269,
+          1626
+        ],
+        [
+          2200,
+          1554
+        ],
+        [
+          2161,
+          1483
+        ]
+      ]
+    },
+    {
+      "id": "forest_cliff",
+      "kind": "cliff",
+      "polygon": [
+        [
+          1344,
+          850
+        ],
+        [
+          1435,
+          847
+        ],
+        [
+          1487,
+          898
+        ],
+        [
+          1498,
+          951
+        ],
+        [
+          1445,
+          965
+        ],
+        [
+          1344,
+          934
+        ]
+      ]
+    },
+    {
+      "id": "north_river",
+      "kind": "water_bank",
+      "polygon": [
+        [
+          2070,
+          0
+        ],
+        [
+          2400,
+          0
+        ],
+        [
+          2274,
+          114
+        ],
+        [
+          2190,
+          270
+        ],
+        [
+          2325,
+          444
+        ],
+        [
+          2262,
+          618
+        ],
+        [
+          2334,
+          744
+        ],
+        [
+          2238,
+          870
+        ],
+        [
+          2298,
+          1050
+        ],
+        [
+          2235,
+          1170
+        ],
+        [
+          2130,
+          1185
+        ],
+        [
+          2034,
+          1023
+        ],
+        [
+          2061,
+          849
+        ],
+        [
+          2145,
+          702
+        ],
+        [
+          2070,
+          546
+        ],
+        [
+          2022,
+          381
+        ],
+        [
+          2097,
+          195
+        ]
+      ]
+    },
+    {
+      "id": "south_river",
+      "kind": "water_bank",
+      "polygon": [
+        [
+          2370,
+          1590
+        ],
+        [
+          2595,
+          1674
+        ],
+        [
+          2700,
+          1830
+        ],
+        [
+          2790,
+          2046
+        ],
+        [
+          3060,
+          2295
+        ],
+        [
+          3345,
+          2484
+        ],
+        [
+          3684,
+          2643
+        ],
+        [
+          4035,
+          2730
+        ],
+        [
+          4230,
+          2625
+        ],
+        [
+          4290,
+          2400
+        ],
+        [
+          4215,
+          2199
+        ],
+        [
+          4290,
+          1977
+        ],
+        [
+          4401,
+          1836
+        ],
+        [
+          4380,
+          1656
+        ],
+        [
+          4326,
+          1440
+        ],
+        [
+          4380,
+          1245
+        ],
+        [
+          4290,
+          1080
+        ],
+        [
+          4395,
+          996
+        ],
+        [
+          4500,
+          1176
+        ],
+        [
+          4470,
+          1410
+        ],
+        [
+          4524,
+          1644
+        ],
+        [
+          4500,
+          1875
+        ],
+        [
+          4389,
+          2064
+        ],
+        [
+          4410,
+          2238
+        ],
+        [
+          4485,
+          2394
+        ],
+        [
+          4410,
+          2670
+        ],
+        [
+          4260,
+          2877
+        ],
+        [
+          4095,
+          2982
+        ],
+        [
+          3720,
+          2913
+        ],
+        [
+          3360,
+          2775
+        ],
+        [
+          3030,
+          2583
+        ],
+        [
+          2790,
+          2406
+        ],
+        [
+          2607,
+          2187
+        ],
+        [
+          2529,
+          1995
+        ],
+        [
+          2460,
+          1821
+        ]
+      ]
+    },
+    {
+      "id": "forest_west_shelf",
+      "kind": "cliff",
+      "polygon": [
+        [
+          525,
+          390
+        ],
+        [
+          1005,
+          585
+        ],
+        [
+          1245,
+          738
+        ],
+        [
+          1296,
+          918
+        ],
+        [
+          1170,
+          975
+        ],
+        [
+          1050,
+          846
+        ],
+        [
+          825,
+          720
+        ],
+        [
+          555,
+          672
+        ]
+      ]
+    },
+    {
+      "id": "northeast_cliff",
+      "kind": "cliff",
+      "polygon": [
+        [
+          3630,
+          135
+        ],
+        [
+          4020,
+          240
+        ],
+        [
+          4230,
+          315
+        ],
+        [
+          4170,
+          426
+        ],
+        [
+          3900,
+          384
+        ],
+        [
+          3660,
+          297
+        ]
+      ]
+    },
+    {
+      "id": "boundary_left",
+      "kind": "boundary",
+      "polygon": [
+        [
+          -64,
+          -64
+        ],
+        [
+          0,
+          -64
+        ],
+        [
+          0,
+          3136
+        ],
+        [
+          -64,
+          3136
+        ]
+      ]
+    },
+    {
+      "id": "boundary_right",
+      "kind": "boundary",
+      "polygon": [
+        [
+          4608,
+          -64
+        ],
+        [
+          4672,
+          -64
+        ],
+        [
+          4672,
+          3136
+        ],
+        [
+          4608,
+          3136
+        ]
+      ]
+    },
+    {
+      "id": "boundary_top",
+      "kind": "boundary",
+      "polygon": [
+        [
+          0,
+          -64
+        ],
+        [
+          4608,
+          -64
+        ],
+        [
+          4608,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "boundary_bottom",
+      "kind": "boundary",
+      "polygon": [
+        [
+          0,
+          3072
+        ],
+        [
+          4608,
+          3072
+        ],
+        [
+          4608,
+          3136
+        ],
+        [
+          0,
+          3136
+        ]
+      ]
+    }
+  ]
+}
