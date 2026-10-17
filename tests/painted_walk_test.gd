@@ -19,8 +19,8 @@ func run()->void:
 			a.set_equipped_weapon(cls.to_lower()+"_01_weapon")
 			for facing in range(4):
 				a.advance(facing,true,0)
-				var pilot:bool=cls in ["Warrior","Paladin"]
-				check(a.uses_painted_pilot()==pilot,"Pilot covers both Warrior and Paladin bases four directions only")
+				var pilot:bool=cls in ["Warrior","Paladin","Ranger"]
+				check(a.uses_painted_pilot()==pilot,"Pilot covers reviewed Warrior/Paladin/Ranger directional coverage")
 				check(a.body.hframes==(6 if pilot else 8),"Real drawing count follows scope")
 				check(is_equal_approx(a.cadence_speed(facing),155.0 if pilot else 60.0 * 155.0 / 135.0),"Actual-distance cadence calibration")
 				check(a.palette_ready and a.hair_renderer.ready and a.weapon_back.visible,"All customization and equipment retained")

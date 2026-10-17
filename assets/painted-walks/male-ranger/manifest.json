@@ -1,0 +1,467 @@
+{
+  "base": "male",
+  "class": "Ranger",
+  "directions": {
+    "down": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 0,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            12.799999999999997,
+            4.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            12.799999999999997,
+            6.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            12.799999999999997,
+            3.1999999999999957
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            12.799999999999997,
+            4.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            12.799999999999997,
+            6.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            12.799999999999997,
+            3.1999999999999957
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walks/male-ranger/walk-down-body.png",
+      "armor": "res://assets/painted-walks/male-ranger/walk-down-armor.png",
+      "appearance_mask": "res://assets/painted-walks/male-ranger/walk-down-mask.png",
+      "weapon_front": "res://assets/painted-walks/male-ranger/walk-down-weapon-front.png",
+      "weapon_back": "res://assets/painted-walks/male-ranger/walk-down-weapon-back.png"
+    },
+    "left": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 1,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            15.5,
+            4.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            15.5,
+            6.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            15.5,
+            3.1999999999999957
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            15.5,
+            4.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            15.5,
+            6.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            15.5,
+            3.1999999999999957
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walks/male-ranger/walk-left-body.png",
+      "armor": "res://assets/painted-walks/male-ranger/walk-left-armor.png",
+      "appearance_mask": "res://assets/painted-walks/male-ranger/walk-left-mask.png",
+      "weapon_front": "res://assets/painted-walks/male-ranger/walk-left-weapon-front.png",
+      "weapon_back": "res://assets/painted-walks/male-ranger/walk-left-weapon-back.png"
+    },
+    "right": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 2,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            133,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            8.299999999999997,
+            4.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            133,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            8.299999999999997,
+            6.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            133,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            8.299999999999997,
+            3.1999999999999957
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            133,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            8.299999999999997,
+            4.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            133,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            8.299999999999997,
+            6.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            133,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            8.299999999999997,
+            3.1999999999999957
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walks/male-ranger/walk-right-body.png",
+      "armor": "res://assets/painted-walks/male-ranger/walk-right-armor.png",
+      "appearance_mask": "res://assets/painted-walks/male-ranger/walk-right-mask.png",
+      "weapon_front": "res://assets/painted-walks/male-ranger/walk-right-weapon-front.png",
+      "weapon_back": "res://assets/painted-walks/male-ranger/walk-right-weapon-back.png"
+    },
+    "up": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 3,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            12.799999999999997,
+            4.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            43
+          ],
+          "translation": [
+            12.799999999999997,
+            5.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            12.799999999999997,
+            3.1999999999999957
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            12.799999999999997,
+            4.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            43
+          ],
+          "translation": [
+            12.799999999999997,
+            5.199999999999996
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            12.799999999999997,
+            3.1999999999999957
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walks/male-ranger/walk-up-body.png",
+      "armor": "res://assets/painted-walks/male-ranger/walk-up-armor.png",
+      "appearance_mask": "res://assets/painted-walks/male-ranger/walk-up-mask.png",
+      "weapon_front": "res://assets/painted-walks/male-ranger/walk-up-weapon-front.png",
+      "weapon_back": "res://assets/painted-walks/male-ranger/walk-up-weapon-back.png"
+    }
+  },
+  "status": "reviewed source candidates; native integration QA required"
+}
