@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - run: apt-get update && apt-get install -y xvfb libgl1-mesa-dri python3-pil python3-numpy
+      - run: apt-get update && apt-get install -y xvfb libgl1-mesa-dri libfontconfig1 libxcursor1 libxi6 libxinerama1 libxkbcommon-x11-0 libwayland-cursor0 python3-pil python3-numpy
       - name: Validate assets and headless physics
         working-directory: qa/ground-corridor
         shell: bash
