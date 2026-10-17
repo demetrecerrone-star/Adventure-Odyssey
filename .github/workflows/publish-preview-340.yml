@@ -1,0 +1,35 @@
+name: Publish approved v0.9 build 340 APK
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-preview-340.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish-approved-apk:
+    if: contains(github.event.head_commit.message, '[publish-preview-340]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download the exact previously verified build
+        uses: actions/download-artifact@v4
+        with:
+          name: Adventure-Odyssey-Android-APK
+          run-id: 39072730997
+          github-token: ${{ github.token }}
+          path: verified-apk
+      - name: Verify and publish this one approved APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: demetrecerrone-star/Adventure-Odyssey
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd verified-apk
+          echo 'a4f351cae0d3da6b77b00d5f0577cb7f4e16e1d15e64ca6baf0a42bb0280a5fa  Adventure-Odyssey-release.apk' | sha256sum -c -
+          gh release create ao-preview-v0.9-build340 Adventure-Odyssey-release.apk \
+            --target bfc0b182cb3701368ea683edbaf052281f587321 \
+            --title 'Adventure Odyssey v0.9 test preview' \
+            --notes 'Android ARM64 test preview, version code 9. Build 340 from bfc0b182. Includes all twelve dressed six-pose walk sets at faster travel speed, painted starter region, town walls and four enterable interiors with static attendants, saved room travel, bedroom inventory and appearance customization. Shop services, tutorial quests, combat and the new HUD remain pending. Same package and release certificate as v0.8; install as an update to retain local saves. SHA-256: a4f351cae0d3da6b77b00d5f0577cb7f4e16e1d15e64ca6baf0a42bb0280a5fa' \
+            --prerelease
