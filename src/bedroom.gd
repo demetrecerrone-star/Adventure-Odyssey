@@ -152,7 +152,7 @@ func _layout() -> void:
 	if is_instance_valid(overlay):
 		overlay.size = size
 func _start_character() -> void:
-	actor.configure(state.character.base, state.character["class"])
+	actor.configure(state.character.base, state.character["class"], state.character)
 	movement_speed = actor.suggested_speed * PLAYER_SPEED_MULTIPLIER
 	sleeping = false
 	player = wake_spawn
@@ -254,6 +254,7 @@ func open_creator(mirror: bool) -> void:
 			return
 		_close_overlay()
 		if mirror:
+			actor.configure(state.character.base, state.character["class"], state.character)
 			message.text = "Appearance saved locally. Your base, class and username are unchanged."
 		else:
 			_start_character()

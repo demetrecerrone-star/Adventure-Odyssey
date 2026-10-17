@@ -66,12 +66,12 @@ func update_preview(draft) -> void:
 func _starter_preview(draft) -> bool:
 	var avatar = preload("res://src/layered_avatar.gd").new()
 	stage.add_child(avatar)
-	if not avatar.configure(draft.base, draft.character_class):
+	if not avatar.configure(draft.base, draft.character_class, draft.payload()):
 		stage.remove_child(avatar)
 		avatar.queue_free()
 		return false
 	_fit_starter_preview()
-	status.text = "Dressed starter preview. Selected hairstyles, eye colors and skin palettes are not rendered yet."
+	status.text = "Skin and eye colors are shown. Hairstyles and hair colors await fitted directional artwork." if avatar.palette_ready else "Dressed starter preview. Appearance masks are unavailable; selected colors are not shown."
 	return true
 
 func _fit_starter_preview() -> void:

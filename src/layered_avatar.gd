@@ -10,6 +10,11 @@ var facing := 0
 var elapsed := 0.0
 var current_animation := ""
 var texture_cache := {}
+var appearance: Dictionary = {}
+var palette_material: ShaderMaterial
+var palette_ready := false
+const Catalog = preload("res://src/creator/catalog.gd")
+const EYE_COLORS := {"Brown":"704127", "Hazel":"8b813e", "Green":"448653", "Blue":"3d83be", "Gray":"87939b", "Amber":"c78b2e", "Violet":"9564b9"}
 func _ready() -> void:
 	for layer_name in ["Body", "Armor", "Hair"]:
 		var sprite := Sprite2D.new()
@@ -20,7 +25,15 @@ func _ready() -> void:
 	body = get_node("Body")
 	armor = get_node("Armor")
 	hair = get_node("Hair")
-func configure(base: String, selected_class: String) -> bool:
+func configure(base: String, selected_class: String, selected_appearance: Dictionary = {}) -> bool:
+	appearance = selected_appearance.duplicate()
+	palette_material = ShaderMaterial.new()
+	palette_material.shader = preload("res://src/appearance_palette.gdshader")
+	var skin_id := str(appearance.get("skin", "warm"))
+	for entry in Catalog.SKINS:
+		if entry.id == skin_id:
+			palette_material.set_shader_parameter("skin_color", Color(entry.color))
+	palette_material.set_shader_parameter("eye_color", Color(EYE_COLORS.get(str(appearance.get("eyes", "Brown")), EYE_COLORS.Brown)))
 	outfit = {}
 	artwork_ready = false
 	current_animation = ""
@@ -78,6 +91,15 @@ func advance(direction: int, moving: bool, delta: float) -> void:
 	if animation != "idle":
 		frame = int(elapsed * clampf(float(pair.get("fps", 8)), 1, 20)) % frames
 	body.texture = _texture(pair.body)
+	var mask_path: String = str(pair.body).replace("character-outfits/", "character-appearance/").replace("-body.png", "-mask.png")
+	var mask_texture := _texture(mask_path)
+	palette_ready = palette_material != null and mask_path != str(pair.body) and mask_texture != null and mask_texture.get_size() == body.texture.get_size()
+	if palette_ready:
+		palette_material.set_shader_parameter("appearance_mask", mask_texture)
+		body.material = palette_material
+	else:
+		# Missing or malformed masks never trigger whole-body/armor tinting.
+		body.material = null
 	armor.texture = _texture(pair.armor)
 	for sprite in [body, armor, hair]:
 		sprite.hframes = frames

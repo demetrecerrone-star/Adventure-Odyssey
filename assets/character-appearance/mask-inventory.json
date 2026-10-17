@@ -1,0 +1,367 @@
+{
+  "schema_version": 1,
+  "status": "palette_mask_candidate",
+  "original_art_modified": false,
+  "records": [
+    {
+      "body": "assets/character-outfits/male/assassin/idle-body.png",
+      "mask": "assets/character-appearance/male/assassin/idle-mask.png",
+      "skin_pixels": 31558,
+      "iris_pixels": 49
+    },
+    {
+      "body": "assets/character-outfits/male/assassin/walk-down-body.png",
+      "mask": "assets/character-appearance/male/assassin/walk-down-mask.png",
+      "skin_pixels": 72551,
+      "iris_pixels": 240
+    },
+    {
+      "body": "assets/character-outfits/male/assassin/walk-left-body.png",
+      "mask": "assets/character-appearance/male/assassin/walk-left-mask.png",
+      "skin_pixels": 58458,
+      "iris_pixels": 80
+    },
+    {
+      "body": "assets/character-outfits/male/assassin/walk-right-body.png",
+      "mask": "assets/character-appearance/male/assassin/walk-right-mask.png",
+      "skin_pixels": 58546,
+      "iris_pixels": 78
+    },
+    {
+      "body": "assets/character-outfits/male/assassin/walk-up-body.png",
+      "mask": "assets/character-appearance/male/assassin/walk-up-mask.png",
+      "skin_pixels": 65492,
+      "iris_pixels": 0
+    },
+    {
+      "body": "assets/character-outfits/male/mage/idle-body.png",
+      "mask": "assets/character-appearance/male/mage/idle-mask.png",
+      "skin_pixels": 14991,
+      "iris_pixels": 49
+    },
+    {
+      "body": "assets/character-outfits/male/mage/walk-down-body.png",
+      "mask": "assets/character-appearance/male/mage/walk-down-mask.png",
+      "skin_pixels": 28444,
+      "iris_pixels": 240
+    },
+    {
+      "body": "assets/character-outfits/male/mage/walk-left-body.png",
+      "mask": "assets/character-appearance/male/mage/walk-left-mask.png",
+      "skin_pixels": 31344,
+      "iris_pixels": 80
+    },
+    {
+      "body": "assets/character-outfits/male/mage/walk-right-body.png",
+      "mask": "assets/character-appearance/male/mage/walk-right-mask.png",
+      "skin_pixels": 32923,
+      "iris_pixels": 78
+    },
+    {
+      "body": "assets/character-outfits/male/mage/walk-up-body.png",
+      "mask": "assets/character-appearance/male/mage/walk-up-mask.png",
+      "skin_pixels": 29417,
+      "iris_pixels": 0
+    },
+    {
+      "body": "assets/character-outfits/male/necromancer/idle-body.png",
+      "mask": "assets/character-appearance/male/necromancer/idle-mask.png",
+      "skin_pixels": 14991,
+      "iris_pixels": 49
+    },
+    {
+      "body": "assets/character-outfits/male/necromancer/walk-down-body.png",
+      "mask": "assets/character-appearance/male/necromancer/walk-down-mask.png",
+      "skin_pixels": 28444,
+      "iris_pixels": 240
+    },
+    {
+      "body": "assets/character-outfits/male/necromancer/walk-left-body.png",
+      "mask": "assets/character-appearance/male/necromancer/walk-left-mask.png",
+      "skin_pixels": 31344,
+      "iris_pixels": 80
+    },
+    {
+      "body": "assets/character-outfits/male/necromancer/walk-right-body.png",
+      "mask": "assets/character-appearance/male/necromancer/walk-right-mask.png",
+      "skin_pixels": 32923,
+      "iris_pixels": 78
+    },
+    {
+      "body": "assets/character-outfits/male/necromancer/walk-up-body.png",
+      "mask": "assets/character-appearance/male/necromancer/walk-up-mask.png",
+      "skin_pixels": 29417,
+      "iris_pixels": 0
+    },
+    {
+      "body": "assets/character-outfits/male/paladin/idle-body.png",
+      "mask": "assets/character-appearance/male/paladin/idle-mask.png",
+      "skin_pixels": 41509,
+      "iris_pixels": 49
+    },
+    {
+      "body": "assets/character-outfits/male/paladin/walk-down-body.png",
+      "mask": "assets/character-appearance/male/paladin/walk-down-mask.png",
+      "skin_pixels": 97224,
+      "iris_pixels": 240
+    },
+    {
+      "body": "assets/character-outfits/male/paladin/walk-left-body.png",
+      "mask": "assets/character-appearance/male/paladin/walk-left-mask.png",
+      "skin_pixels": 73480,
+      "iris_pixels": 80
+    },
+    {
+      "body": "assets/character-outfits/male/paladin/walk-right-body.png",
+      "mask": "assets/character-appearance/male/paladin/walk-right-mask.png",
+      "skin_pixels": 73552,
+      "iris_pixels": 78
+    },
+    {
+      "body": "assets/character-outfits/male/paladin/walk-up-body.png",
+      "mask": "assets/character-appearance/male/paladin/walk-up-mask.png",
+      "skin_pixels": 91996,
+      "iris_pixels": 0
+    },
+    {
+      "body": "assets/character-outfits/male/ranger/idle-body.png",
+      "mask": "assets/character-appearance/male/ranger/idle-mask.png",
+      "skin_pixels": 31558,
+      "iris_pixels": 49
+    },
+    {
+      "body": "assets/character-outfits/male/ranger/walk-down-body.png",
+      "mask": "assets/character-appearance/male/ranger/walk-down-mask.png",
+      "skin_pixels": 72551,
+      "iris_pixels": 240
+    },
+    {
+      "body": "assets/character-outfits/male/ranger/walk-left-body.png",
+      "mask": "assets/character-appearance/male/ranger/walk-left-mask.png",
+      "skin_pixels": 58458,
+      "iris_pixels": 80
+    },
+    {
+      "body": "assets/character-outfits/male/ranger/walk-right-body.png",
+      "mask": "assets/character-appearance/male/ranger/walk-right-mask.png",
+      "skin_pixels": 58546,
+      "iris_pixels": 78
+    },
+    {
+      "body": "assets/character-outfits/male/ranger/walk-up-body.png",
+      "mask": "assets/character-appearance/male/ranger/walk-up-mask.png",
+      "skin_pixels": 65492,
+      "iris_pixels": 0
+    },
+    {
+      "body": "assets/character-outfits/male/warrior/idle-body.png",
+      "mask": "assets/character-appearance/male/warrior/idle-mask.png",
+      "skin_pixels": 41448,
+      "iris_pixels": 49
+    },
+    {
+      "body": "assets/character-outfits/male/warrior/walk-down-body.png",
+      "mask": "assets/character-appearance/male/warrior/walk-down-mask.png",
+      "skin_pixels": 97245,
+      "iris_pixels": 240
+    },
+    {
+      "body": "assets/character-outfits/male/warrior/walk-left-body.png",
+      "mask": "assets/character-appearance/male/warrior/walk-left-mask.png",
+      "skin_pixels": 73594,
+      "iris_pixels": 80
+    },
+    {
+      "body": "assets/character-outfits/male/warrior/walk-right-body.png",
+      "mask": "assets/character-appearance/male/warrior/walk-right-mask.png",
+      "skin_pixels": 73515,
+      "iris_pixels": 78
+    },
+    {
+      "body": "assets/character-outfits/male/warrior/walk-up-body.png",
+      "mask": "assets/character-appearance/male/warrior/walk-up-mask.png",
+      "skin_pixels": 91474,
+      "iris_pixels": 0
+    },
+    {
+      "body": "assets/character-outfits/female/assassin/idle-body.png",
+      "mask": "assets/character-appearance/female/assassin/idle-mask.png",
+      "skin_pixels": 24114,
+      "iris_pixels": 52
+    },
+    {
+      "body": "assets/character-outfits/female/assassin/walk-down-body.png",
+      "mask": "assets/character-appearance/female/assassin/walk-down-mask.png",
+      "skin_pixels": 51273,
+      "iris_pixels": 248
+    },
+    {
+      "body": "assets/character-outfits/female/assassin/walk-left-body.png",
+      "mask": "assets/character-appearance/female/assassin/walk-left-mask.png",
+      "skin_pixels": 44850,
+      "iris_pixels": 88
+    },
+    {
+      "body": "assets/character-outfits/female/assassin/walk-right-body.png",
+      "mask": "assets/character-appearance/female/assassin/walk-right-mask.png",
+      "skin_pixels": 45560,
+      "iris_pixels": 88
+    },
+    {
+      "body": "assets/character-outfits/female/assassin/walk-up-body.png",
+      "mask": "assets/character-appearance/female/assassin/walk-up-mask.png",
+      "skin_pixels": 54270,
+      "iris_pixels": 0
+    },
+    {
+      "body": "assets/character-outfits/female/mage/idle-body.png",
+      "mask": "assets/character-appearance/female/mage/idle-mask.png",
+      "skin_pixels": 13710,
+      "iris_pixels": 52
+    },
+    {
+      "body": "assets/character-outfits/female/mage/walk-down-body.png",
+      "mask": "assets/character-appearance/female/mage/walk-down-mask.png",
+      "skin_pixels": 26086,
+      "iris_pixels": 248
+    },
+    {
+      "body": "assets/character-outfits/female/mage/walk-left-body.png",
+      "mask": "assets/character-appearance/female/mage/walk-left-mask.png",
+      "skin_pixels": 28173,
+      "iris_pixels": 88
+    },
+    {
+      "body": "assets/character-outfits/female/mage/walk-right-body.png",
+      "mask": "assets/character-appearance/female/mage/walk-right-mask.png",
+      "skin_pixels": 29668,
+      "iris_pixels": 88
+    },
+    {
+      "body": "assets/character-outfits/female/mage/walk-up-body.png",
+      "mask": "assets/character-appearance/female/mage/walk-up-mask.png",
+      "skin_pixels": 28188,
+      "iris_pixels": 0
+    },
+    {
+      "body": "assets/character-outfits/female/necromancer/idle-body.png",
+      "mask": "assets/character-appearance/female/necromancer/idle-mask.png",
+      "skin_pixels": 13710,
+      "iris_pixels": 52
+    },
+    {
+      "body": "assets/character-outfits/female/necromancer/walk-down-body.png",
+      "mask": "assets/character-appearance/female/necromancer/walk-down-mask.png",
+      "skin_pixels": 26086,
+      "iris_pixels": 248
+    },
+    {
+      "body": "assets/character-outfits/female/necromancer/walk-left-body.png",
+      "mask": "assets/character-appearance/female/necromancer/walk-left-mask.png",
+      "skin_pixels": 28173,
+      "iris_pixels": 88
+    },
+    {
+      "body": "assets/character-outfits/female/necromancer/walk-right-body.png",
+      "mask": "assets/character-appearance/female/necromancer/walk-right-mask.png",
+      "skin_pixels": 29668,
+      "iris_pixels": 88
+    },
+    {
+      "body": "assets/character-outfits/female/necromancer/walk-up-body.png",
+      "mask": "assets/character-appearance/female/necromancer/walk-up-mask.png",
+      "skin_pixels": 28188,
+      "iris_pixels": 0
+    },
+    {
+      "body": "assets/character-outfits/female/paladin/idle-body.png",
+      "mask": "assets/character-appearance/female/paladin/idle-mask.png",
+      "skin_pixels": 35424,
+      "iris_pixels": 52
+    },
+    {
+      "body": "assets/character-outfits/female/paladin/walk-down-body.png",
+      "mask": "assets/character-appearance/female/paladin/walk-down-mask.png",
+      "skin_pixels": 76953,
+      "iris_pixels": 248
+    },
+    {
+      "body": "assets/character-outfits/female/paladin/walk-left-body.png",
+      "mask": "assets/character-appearance/female/paladin/walk-left-mask.png",
+      "skin_pixels": 64742,
+      "iris_pixels": 88
+    },
+    {
+      "body": "assets/character-outfits/female/paladin/walk-right-body.png",
+      "mask": "assets/character-appearance/female/paladin/walk-right-mask.png",
+      "skin_pixels": 65347,
+      "iris_pixels": 88
+    },
+    {
+      "body": "assets/character-outfits/female/paladin/walk-up-body.png",
+      "mask": "assets/character-appearance/female/paladin/walk-up-mask.png",
+      "skin_pixels": 81169,
+      "iris_pixels": 0
+    },
+    {
+      "body": "assets/character-outfits/female/ranger/idle-body.png",
+      "mask": "assets/character-appearance/female/ranger/idle-mask.png",
+      "skin_pixels": 24114,
+      "iris_pixels": 52
+    },
+    {
+      "body": "assets/character-outfits/female/ranger/walk-down-body.png",
+      "mask": "assets/character-appearance/female/ranger/walk-down-mask.png",
+      "skin_pixels": 51273,
+      "iris_pixels": 248
+    },
+    {
+      "body": "assets/character-outfits/female/ranger/walk-left-body.png",
+      "mask": "assets/character-appearance/female/ranger/walk-left-mask.png",
+      "skin_pixels": 44850,
+      "iris_pixels": 88
+    },
+    {
+      "body": "assets/character-outfits/female/ranger/walk-right-body.png",
+      "mask": "assets/character-appearance/female/ranger/walk-right-mask.png",
+      "skin_pixels": 45560,
+      "iris_pixels": 88
+    },
+    {
+      "body": "assets/character-outfits/female/ranger/walk-up-body.png",
+      "mask": "assets/character-appearance/female/ranger/walk-up-mask.png",
+      "skin_pixels": 54270,
+      "iris_pixels": 0
+    },
+    {
+      "body": "assets/character-outfits/female/warrior/idle-body.png",
+      "mask": "assets/character-appearance/female/warrior/idle-mask.png",
+      "skin_pixels": 35290,
+      "iris_pixels": 52
+    },
+    {
+      "body": "assets/character-outfits/female/warrior/walk-down-body.png",
+      "mask": "assets/character-appearance/female/warrior/walk-down-mask.png",
+      "skin_pixels": 76461,
+      "iris_pixels": 248
+    },
+    {
+      "body": "assets/character-outfits/female/warrior/walk-left-body.png",
+      "mask": "assets/character-appearance/female/warrior/walk-left-mask.png",
+      "skin_pixels": 64848,
+      "iris_pixels": 88
+    },
+    {
+      "body": "assets/character-outfits/female/warrior/walk-right-body.png",
+      "mask": "assets/character-appearance/female/warrior/walk-right-mask.png",
+      "skin_pixels": 65441,
+      "iris_pixels": 88
+    },
+    {
+      "body": "assets/character-outfits/female/warrior/walk-up-body.png",
+      "mask": "assets/character-appearance/female/warrior/walk-up-mask.png",
+      "skin_pixels": 80477,
+      "iris_pixels": 0
+    }
+  ]
+}

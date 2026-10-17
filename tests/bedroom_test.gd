@@ -210,7 +210,18 @@ func run() -> void:
 	var first = room.overlay
 	room.interact()
 	check(room.overlay == first, "Repeated interaction does not stack panels")
+	var identity_before := [room.state.character.base, room.state.character["class"], room.state.character.username]
+	room.overlay.draft.skin = "purple"
+	room.overlay.draft.eyes = "Green"
+	room.overlay._submit()
+	check(room.overlay == null, "Save mirror closes panel")
+	check(room.actor.appearance.skin == "purple" and room.actor.appearance.eyes == "Green", "Mirror save refreshes rendered appearance immediately")
+	check([room.state.character.base, room.state.character["class"], room.state.character.username] == identity_before, "Mirror keeps identity unchanged")
+	room.interact()
+	await process_frame
+	room.overlay.draft.skin = "blue"
 	room._close_overlay()
+	check(room.actor.appearance.skin == "purple", "Cancelled mirror draft does not alter gameplay appearance")
 	check(room.overlay == null, "Close mirror")
 	room.player = room.anchors.chest
 	room.interact()

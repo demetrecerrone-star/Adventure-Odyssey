@@ -1,0 +1,11 @@
+# Isolated appearance palettes (local candidate)
+
+The shared dressed-avatar renderer accepts the persisted cosmetic selection. Creator preview, initial spawn and mirror-save refresh all use this contract. Twelve skin and seven eye colors are material parameters applied to a body-only mask; armor has no material and is not recolored. Base, class, name, outfit proportions and camera remain unchanged. Mirror cancellation does not change the actor.
+
+`tools/build_appearance_masks.py` deterministically derives 60 mask atlases from the existing registered body atlases without changing originals. Red marks warm skin pigment; green marks iris pigment within per-base/per-direction registered eye regions. The existing eight-phase gait bob is used for eye registration. Black pupils and desaturated eye highlights are retained. Back views contain no iris mask. Palette masks are separate assets, so future artist-refined masks can replace them without touching source characters. Missing/invalid masks leave original dressed artwork visible, never a full-sprite tint.
+
+The composite review covers male/female warrior frames with six representative skin colors. This is an offline composition, not an engine or device screenshot. Full native shader/color-space rendering and actual Android readability remain unverified because this executor has no display/Xvfb. These masks are a reviewed implementation candidate, not a new art approval. Fine iris differences are necessarily small at gameplay scale. Palette brightness/shading should be reviewed in the native captures before release.
+
+Hair is unfinished. Existing selections remain separated into 15 male and 15 female IDs; random appearance still never changes class/name. The local recovered art includes only one fitted male down-facing hair pilot. Source backups may contain additional unfitted hairstyles; no claim is made that the local inventory is exhaustive. No partial-direction hair is integrated, and creator labels explicitly mark both hair controls as art pending.
+
+Validation: `tests/appearance_test.gd` checks selected palette parameters, isolated body material, all outfits/directions, frame pairing and creator wiring. `tests/bedroom_test.gd` covers immediate mirror refresh, locked identity and cancellation. Existing suites remain required. No commit, push, APK or release is part of this change.
