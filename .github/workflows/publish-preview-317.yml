@@ -1,0 +1,35 @@
+name: Publish approved v0.8 build 317 APK
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-preview-317.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish-approved-apk:
+    if: contains(github.event.head_commit.message, '[publish-preview-317]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download the exact previously verified build
+        uses: actions/download-artifact@v4
+        with:
+          name: Adventure-Odyssey-Android-APK
+          run-id: 39034275926
+          github-token: ${{ github.token }}
+          path: verified-apk
+      - name: Verify and publish this one approved APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: demetrecerrone-star/Adventure-Odyssey
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd verified-apk
+          echo '7fa2a35d110b78cdc92fa97a64644985fbae335636215dcd3ef2a74684c09863  Adventure-Odyssey-release.apk' | sha256sum -c -
+          gh release create ao-preview-v0.8-build317 Adventure-Odyssey-release.apk \
+            --target 750f41f999f96dda096cb538964a94e479c770bc \
+            --title 'Adventure Odyssey v0.8 test preview' \
+            --notes 'Android test preview: furnished bedroom, local character creator and inventory. Build 317, version code 8. Includes 30 directional hairstyles, visible skin/eye/hair colors, all six equipped class weapons and the full-screen light creator. Movement remains a short-step preview; weapons are visual equipment without combat. No online accounts or multiplayer. SHA-256: 7fa2a35d110b78cdc92fa97a64644985fbae335636215dcd3ef2a74684c09863' \
+            --prerelease
