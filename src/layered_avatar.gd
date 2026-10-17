@@ -17,6 +17,7 @@ var elapsed := 0.0
 var current_animation := ""
 var texture_cache := {}
 var appearance: Dictionary = {}
+var painted_pilot: Dictionary = {}
 var palette_material: ShaderMaterial
 var palette_ready := false
 const Catalog = preload("res://src/creator/catalog.gd")
@@ -36,6 +37,12 @@ func _ready() -> void:
 	hair_renderer.attach(self, body, armor)
 func configure(base: String, selected_class: String, selected_appearance: Dictionary = {}) -> bool:
 	character_class = selected_class
+	painted_pilot = {}
+	var pilot_path := "res://assets/painted-walk-pilot/manifest.json"
+	if base == "male" and selected_class == "Warrior" and FileAccess.file_exists(pilot_path):
+		var data = JSON.parse_string(FileAccess.get_file_as_string(pilot_path))
+		if data is Dictionary:
+			painted_pilot = data
 	weapon_outfit = {}
 	var weapon_path := "res://assets/held-weapons/" + selected_class.to_lower() + ".json"
 	if FileAccess.file_exists(weapon_path):
@@ -62,6 +69,10 @@ func configure(base: String, selected_class: String, selected_appearance: Dictio
 	if manifest is Dictionary:
 		outfit = manifest.get("bases", {}).get(base, {}).get("classes", {}).get(selected_class, {})
 		suggested_speed = clampf(float(outfit.get("movement_speed", manifest.get("movement_speed", 60))), 1, 230)
+	if _valid_painted_pilot():
+		outfit.walk.left = painted_pilot.walk_left
+	else:
+		painted_pilot = {}
 	artwork_ready = _valid_pair(outfit.get("idle", {}), 4)
 	visible = artwork_ready
 	if artwork_ready:
@@ -85,6 +96,12 @@ func _valid_pair(pair: Dictionary, frames: int) -> bool:
 		if texture == null or texture.get_size() != Vector2(256 * frames, 256):
 			return false
 	return true
+func _valid_painted_pilot() -> bool:
+	var pair: Dictionary = painted_pilot.get("walk_left", {})
+	if not _valid_pair(pair, 6):
+		return false
+	var mask := _texture(str(pair.get("appearance_mask", "")))
+	return mask != null and mask.get_size() == Vector2(1536, 256) and painted_pilot.get("hair_offsets", []).size() == 6 and painted_pilot.get("weapon_offsets", []).size() == 6
 func advance(direction: int, moving: bool, delta: float) -> void:
 	facing = clampi(direction, 0, 3)
 	if not artwork_ready:
@@ -108,7 +125,7 @@ func advance(direction: int, moving: bool, delta: float) -> void:
 	if animation != "idle":
 		frame = int(elapsed * clampf(float(pair.get("fps", 8)), 1, 20)) % frames
 	body.texture = _texture(pair.body)
-	var mask_path: String = str(pair.body).replace("character-outfits/", "character-appearance/").replace("-body.png", "-mask.png")
+	var mask_path: String = str(pair.get("appearance_mask", str(pair.body).replace("character-outfits/", "character-appearance/").replace("-body.png", "-mask.png")))
 	var mask_texture := _texture(mask_path)
 	palette_ready = palette_material != null and mask_path != str(pair.body) and mask_texture != null and mask_texture.get_size() == body.texture.get_size()
 	if palette_ready:
@@ -123,8 +140,25 @@ func advance(direction: int, moving: bool, delta: float) -> void:
 		sprite.frame = frame
 	hair.texture = _texture(str(pair.get("hair", "")))
 	hair.visible = false
-	hair_renderer.advance(current_animation, body.hframes, body.frame)
+	for sprite in [hair_renderer.rear, hair_renderer.front]:
+		sprite.position = Vector2.ZERO
+	if uses_painted_pilot():
+		hair_renderer.advance("idle", 4, 1)
+		for sprite in [hair_renderer.rear, hair_renderer.front]:
+			sprite.position = _pilot_offset("hair_offsets")
+	else:
+		hair_renderer.advance(current_animation, body.hframes, body.frame)
 	_update_weapon()
+
+func uses_painted_pilot() -> bool:
+	return not painted_pilot.is_empty() and current_animation == "walk_left"
+func cadence_speed(direction: int) -> float:
+	return 135.0 if not painted_pilot.is_empty() and direction == 1 else suggested_speed
+func _pilot_offset(key: String) -> Vector2:
+	var offsets: Array = painted_pilot.get(key, [])
+	if body.frame < offsets.size():
+		return Vector2(offsets[body.frame][0], offsets[body.frame][1])
+	return Vector2.ZERO
 
 func set_equipped_weapon(item: String) -> void:
 	equipped_weapon = item if preload("res://src/inventory_catalog.gd").can_equip(item, character_class) else ""
@@ -132,18 +166,22 @@ func set_equipped_weapon(item: String) -> void:
 func _update_weapon() -> void:
 	for sprite in [weapon_back, weapon_front]:
 		sprite.visible = false
+		sprite.position = Vector2.ZERO
 	if not preload("res://src/inventory_catalog.gd").can_equip(equipped_weapon, character_class) or not artwork_ready:
 		return
 	var key := current_animation.replace("walk_", "walk-")
-	var entry: Dictionary = weapon_outfit.get(key, {})
-	if int(entry.get("frames", 0)) != body.hframes:
+	var entry: Dictionary = weapon_outfit.get("idle" if uses_painted_pilot() else key, {})
+	var weapon_frames := 4 if uses_painted_pilot() else body.hframes
+	if int(entry.get("frames", 0)) != weapon_frames:
 		return
 	for layer in ["back", "front"]:
 		var sprite: Sprite2D = weapon_back if layer == "back" else weapon_front
 		var texture := _texture(str(entry.get("layers", {}).get(layer, "")))
-		if texture == null or texture.get_size() != body.texture.get_size():
+		if texture == null or texture.get_size() != Vector2(256 * weapon_frames, 256):
 			continue
 		sprite.texture = texture
-		sprite.hframes = body.hframes
-		sprite.frame = body.frame
+		sprite.hframes = weapon_frames
+		sprite.frame = 1 if uses_painted_pilot() else body.frame
+		if uses_painted_pilot():
+			sprite.position = _pilot_offset("weapon_offsets")
 		sprite.visible = true

@@ -24,13 +24,13 @@ func run() -> void:
 				var pair: Dictionary = avatar.outfit.walk[["down", "left", "right", "up"][direction]]
 				var frame_count := int(pair.frames)
 				var fps := float(pair.fps)
-				check(frame_count == 8 and fps == 16, "Eight real phases at 16fps")
+				check((frame_count == 6 and fps == 9) if base == "male" and selected_class == "Warrior" and direction == 1 else (frame_count == 8 and fps == 16), "Approved bounded pilot or existing eight-phase manifest")
 				avatar.advance(direction, true, 0)
 				for phase in range(frame_count):
 					check(avatar.body.frame == phase and avatar.armor.frame == phase, "Manifest phase shared by body and outfit")
 					check(avatar.body.hframes == frame_count and avatar.armor.hframes == frame_count, "Frame grid follows manifest")
 					avatar.advance(direction, true, 1.0 / fps)
-				check(avatar.body.frame == 0 and avatar.armor.frame == 0, "Cycle wraps exactly after half a second")
+				check(avatar.body.frame == 0 and avatar.armor.frame == 0, "Cycle wraps after the manifest duration")
 				avatar.advance(direction, false, 0)
 				check(avatar.body.frame == direction and avatar.armor.frame == direction, "Stopping restores dressed idle")
 			avatar.queue_free()

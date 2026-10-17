@@ -26,8 +26,8 @@ func run() -> void:
 					for phase in range(8):
 						avatar.advance(direction,true,0.0625)
 						check(avatar.hair_renderer.ready, "Walking hair is available")
-						check(avatar.hair_renderer.front.frame == avatar.body.frame and avatar.hair_renderer.rear.frame == avatar.body.frame, "Head motion stays paired")
-						check(avatar.hair_renderer.front.hframes == avatar.body.hframes, "Hair atlas matches real frame count")
+						check((avatar.hair_renderer.front.frame == 1 and avatar.hair_renderer.front.position == avatar._pilot_offset("hair_offsets")) if avatar.uses_painted_pilot() else (avatar.hair_renderer.front.frame == avatar.body.frame and avatar.hair_renderer.rear.frame == avatar.body.frame), "Head motion stays registered")
+						check(avatar.hair_renderer.front.hframes == (4 if avatar.uses_painted_pilot() else avatar.body.hframes), "Hair source grid follows registered contract")
 			for color in Catalog.HAIR_COLORS:
 				avatar.configure(base,selected_class,{"hair":base+"_hair_01","hair_color":color})
 				check(avatar.hair_renderer.front.material.get_shader_parameter("hair_color") == Color(avatar.hair_renderer.COLORS[color]), "Selected hair color reaches shader")

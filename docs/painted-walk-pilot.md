@@ -1,0 +1,9 @@
+# Approved six-drawing left walk pilot
+
+Only male Warrior left-walking uses the six user-approved drawings, in their original order. Six phases at 9 fps and 135 world px/s imply 15 px actual movement per drawing and a 90 px cycle. Playback is driven by actual travel; analog input and collision do not make feet animate at requested-but-unachieved velocity. Other bases/classes/directions retain existing eight-frame artwork. All characters receive the requested movement speed of 135 px/s; only this pilot's cadence has the new calibration.
+
+The original white-background drawings are separated into exposed-body and armor alpha layers. Their recomposition exactly matches the extracted transparent composite; extracting alpha from white-matted art is approximate. No gait or costume redesign was performed. Isolated skin/iris masks preserve cosmetic colors; armor receives no palette material. Existing selected left-facing hair and class sword use per-frame head/hand translations. Original hair, armor, body and weapon assets remain unchanged. Transforms reset on returning to idle or another direction. Weapons remain equipment-only, with equip/unequip/class/save rules intact.
+
+This is the accepted bounded pilot, not a complete animation replacement. Existing lead-leg/arm-alternation and illustrated costume drift remain. Subpixel warm antialias pixels can remain around some skin edges; inspect native palette captures. Hair has no separate sway. Per-foot contact or slide-free stride is not proven by the timing-derived 90 px cycle.
+
+Local Godot validation: 25,011 checks pass, including 309 pilot-specific scope, cadence, registration and equipment checks. Native capture script covers four appearance combinations over all six drawings plus an actual two-second bedroom traversal at 36 captured frames/sec. No APK is authorized until the map milestone is complete.

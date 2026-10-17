@@ -1,0 +1,362 @@
+{
+  "status": "approved six-drawing male Warrior left pilot; other coverage unchanged",
+  "base": "male",
+  "class": "Warrior",
+  "walk_left": {
+    "body": "res://assets/painted-walk-pilot/walk-left-body.png",
+    "armor": "res://assets/painted-walk-pilot/walk-left-armor.png",
+    "appearance_mask": "res://assets/painted-walk-pilot/walk-left-mask.png",
+    "frames": 6,
+    "fps": 9,
+    "movement_speed": 135
+  },
+  "hair_offsets": [
+    [
+      4,
+      0
+    ],
+    [
+      5,
+      2
+    ],
+    [
+      3,
+      -1
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      3,
+      2
+    ],
+    [
+      5,
+      -1
+    ]
+  ],
+  "weapon_offsets": [
+    [
+      -6,
+      17
+    ],
+    [
+      -7,
+      13
+    ],
+    [
+      -5,
+      9
+    ],
+    [
+      -9,
+      16
+    ],
+    [
+      -5,
+      12
+    ],
+    [
+      -3,
+      7
+    ]
+  ],
+  "registration": {
+    "status": "candidate_pending_visual_QA",
+    "frames": 6,
+    "fps_at_135": 9,
+    "cell_size": [
+      256,
+      256
+    ],
+    "pivot": [
+      128,
+      232
+    ],
+    "pixels_per_frame": 15,
+    "source": "exact approved frame-00..05.png",
+    "source_hair_cell": "idle-left cell1 of4",
+    "source_weapon_cell": "idle-left cell1 of4",
+    "registration": [
+      {
+        "frame": 0,
+        "head": {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            129,
+            42
+          ],
+          "translation": [
+            4,
+            0
+          ],
+          "rotation_rad": 0,
+          "scale": 1
+        },
+        "weapon": {
+          "source_grip": [
+            91,
+            121
+          ],
+          "target_grip": [
+            85,
+            138
+          ],
+          "translation": [
+            -6,
+            17
+          ],
+          "rotation_rad": 0,
+          "scale": 1,
+          "depth": "back"
+        },
+        "near_hand": [
+          176,
+          163
+        ],
+        "iris_estimate": [
+          115,
+          75
+        ],
+        "ground_contact": "unverified"
+      },
+      {
+        "frame": 1,
+        "head": {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            130,
+            44
+          ],
+          "translation": [
+            5,
+            2
+          ],
+          "rotation_rad": 0,
+          "scale": 1
+        },
+        "weapon": {
+          "source_grip": [
+            91,
+            121
+          ],
+          "target_grip": [
+            84,
+            134
+          ],
+          "translation": [
+            -7,
+            13
+          ],
+          "rotation_rad": 0,
+          "scale": 1,
+          "depth": "back"
+        },
+        "near_hand": [
+          176,
+          165
+        ],
+        "iris_estimate": [
+          116,
+          77
+        ],
+        "ground_contact": "unverified"
+      },
+      {
+        "frame": 2,
+        "head": {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            3,
+            -1
+          ],
+          "rotation_rad": 0,
+          "scale": 1
+        },
+        "weapon": {
+          "source_grip": [
+            91,
+            121
+          ],
+          "target_grip": [
+            86,
+            130
+          ],
+          "translation": [
+            -5,
+            9
+          ],
+          "rotation_rad": 0,
+          "scale": 1,
+          "depth": "back"
+        },
+        "near_hand": [
+          180,
+          163
+        ],
+        "iris_estimate": [
+          114,
+          74
+        ],
+        "ground_contact": "unverified"
+      },
+      {
+        "frame": 3,
+        "head": {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            126,
+            42
+          ],
+          "translation": [
+            1,
+            0
+          ],
+          "rotation_rad": 0,
+          "scale": 1
+        },
+        "weapon": {
+          "source_grip": [
+            91,
+            121
+          ],
+          "target_grip": [
+            82,
+            137
+          ],
+          "translation": [
+            -9,
+            16
+          ],
+          "rotation_rad": 0,
+          "scale": 1,
+          "depth": "back"
+        },
+        "near_hand": [
+          176,
+          159
+        ],
+        "iris_estimate": [
+          112,
+          75
+        ],
+        "ground_contact": "unverified"
+      },
+      {
+        "frame": 4,
+        "head": {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            3,
+            2
+          ],
+          "rotation_rad": 0,
+          "scale": 1
+        },
+        "weapon": {
+          "source_grip": [
+            91,
+            121
+          ],
+          "target_grip": [
+            86,
+            133
+          ],
+          "translation": [
+            -5,
+            12
+          ],
+          "rotation_rad": 0,
+          "scale": 1,
+          "depth": "back"
+        },
+        "near_hand": [
+          171,
+          167
+        ],
+        "iris_estimate": [
+          114,
+          77
+        ],
+        "ground_contact": "unverified"
+      },
+      {
+        "frame": 5,
+        "head": {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            130,
+            41
+          ],
+          "translation": [
+            5,
+            -1
+          ],
+          "rotation_rad": 0,
+          "scale": 1
+        },
+        "weapon": {
+          "source_grip": [
+            91,
+            121
+          ],
+          "target_grip": [
+            88,
+            128
+          ],
+          "translation": [
+            -3,
+            7
+          ],
+          "rotation_rad": 0,
+          "scale": 1,
+          "depth": "back"
+        },
+        "near_hand": [
+          179,
+          163
+        ],
+        "iris_estimate": [
+          116,
+          74
+        ],
+        "ground_contact": "unverified"
+      }
+    ],
+    "recomposition_exact": true,
+    "limitations": [
+      "White matte removal cannot recover exact original antialias alpha; inspect dark-background edges",
+      "Masks manually bounded and color-isolated; eye placement requires close visual QA",
+      "Head transforms preserve orientation with translation only; style-by-style hair fit not yet approved",
+      "Weapon grip estimated from closed hand; blade should remain behind hand",
+      "No reliable footplant anchors in source drawings"
+    ]
+  }
+}

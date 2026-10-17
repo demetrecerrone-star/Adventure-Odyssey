@@ -22,7 +22,7 @@ func run() -> void:
 				avatar.elapsed = float(frame) / 16
 				avatar.advance(direction, true, 0)
 				check(avatar.weapon_front.visible and avatar.weapon_back.visible, "Both weapon layers available")
-				check(avatar.weapon_front.frame == avatar.body.frame and avatar.weapon_back.frame == avatar.body.frame, "Weapon gait registered")
+				check(avatar.weapon_front.frame == (1 if avatar.uses_painted_pilot() else avatar.body.frame) and avatar.weapon_back.frame == (1 if avatar.uses_painted_pilot() else avatar.body.frame), "Weapon gait registered")
 		check(avatar.weapon_back.get_index() < avatar.body.get_index() and avatar.weapon_front.get_index() > avatar.armor.get_index(), "Back-body-armor-front depth")
 		avatar.set_equipped_weapon("mage_01_weapon")
 		check(not avatar.weapon_front.visible, "Wrong class weapon hidden")
@@ -43,7 +43,7 @@ func run() -> void:
 					avatar.elapsed = float(frame) / 16
 					avatar.advance(direction, true, 0)
 					check(avatar.weapon_front.visible and avatar.weapon_back.visible, "Every class/both bases has paired weapon layers")
-					check(avatar.weapon_front.frame == avatar.body.frame and avatar.weapon_back.frame == avatar.body.frame, "Every weapon follows gait")
+					check(avatar.weapon_front.frame == (1 if avatar.uses_painted_pilot() else avatar.body.frame) and avatar.weapon_back.frame == (1 if avatar.uses_painted_pilot() else avatar.body.frame), "Every weapon follows gait")
 			avatar.queue_free()
 			await process_frame
 	var room = preload("res://src/bedroom.gd").new()
