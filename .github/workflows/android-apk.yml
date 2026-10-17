@@ -55,7 +55,7 @@ jobs:
         run: |
           set -euo pipefail
           apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq xvfb libgl1-mesa-dri libfontconfig1 libxcursor1 libxi6 libxinerama1 libxkbcommon-x11-0 libwayland-cursor0
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3 xvfb libgl1-mesa-dri libfontconfig1 libxcursor1 libxi6 libxinerama1 libxkbcommon-x11-0 libwayland-cursor0
           mkdir -p screenshots
           LIBGL_ALWAYS_SOFTWARE=1 timeout 120 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/title_screenshot.gd 2>&1 | tee /tmp/ao_title_capture.log
           ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script|Parse Error' /tmp/ao_title_capture.log
@@ -161,15 +161,25 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PYTHON'
-          import zipfile
+          import zipfile, pathlib, shutil
           z = zipfile.ZipFile('build/Adventure-Odyssey-release.apk')
           names = z.namelist()
           assert z.testzip() is None, 'APK ZIP CRC failure'
           for asset in ('dusk-kingdom-background', 'adventure-odyssey-wordmark', 'by-dabsky', 'goblin-run', 'skeleton-run', 'body.ttf', 'title.ttf', 'textured_panel'):
               assert any(asset in n for n in names), 'Missing packaged title dependency: ' + asset
           assert any(n.endswith('.ctex') for n in names), 'No imported textures exported'
+          root = pathlib.Path('/tmp/ao-packaged-title')
+          for name in names:
+              if name.startswith('assets/') and not name.endswith('/'):
+                  target = root / name[len('assets/'):]
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(z.read(name))
+          shutil.copyfile('project.godot', root / 'project.godot')
           print('PACKAGED TITLE DEPENDENCIES: PASS')
           PYTHON
+          timeout 80 godot --headless --path /tmp/ao-packaged-title --script "$GITHUB_WORKSPACE/tests/title_test.gd" 2>&1 | tee /tmp/ao_packaged_test.log
+          grep -Fq 'ADVENTURE ODYSSEY TITLE TEST: PASS' /tmp/ao_packaged_test.log
+          ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load|Parse Error|Error loading' /tmp/ao_packaged_test.log
 
       - name: Upload APK artifact
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-title-apk]')
