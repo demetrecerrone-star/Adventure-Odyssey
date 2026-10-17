@@ -1,0 +1,444 @@
+{
+  "schema_version": 1,
+  "status": "dressed_eight_phase_movement_preview",
+  "cell_size": [
+    256,
+    256
+  ],
+  "pivot": [
+    128,
+    232
+  ],
+  "directions": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "movement_speed": 60,
+  "walk_fps": 16,
+  "limits": [
+    "Mechanically constructed eight-phase gait with foot-lift passing poses.",
+    "Stiff knees and some side boot deformation remain.",
+    "Foot sliding and responsiveness require runtime review.",
+    "Hair/palette variants not included."
+  ],
+  "bases": {
+    "male": {
+      "classes": {
+        "Warrior": {
+          "starter_armor": "warrior_01_armor",
+          "movement_speed": 60,
+          "idle": {
+            "body": "res://assets/character-outfits/male/warrior/idle-body.png",
+            "armor": "res://assets/character-outfits/male/warrior/idle-armor.png"
+          },
+          "walk": {
+            "down": {
+              "body": "res://assets/character-outfits/male/warrior/walk-down-body.png",
+              "armor": "res://assets/character-outfits/male/warrior/walk-down-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "left": {
+              "body": "res://assets/character-outfits/male/warrior/walk-left-body.png",
+              "armor": "res://assets/character-outfits/male/warrior/walk-left-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "right": {
+              "body": "res://assets/character-outfits/male/warrior/walk-right-body.png",
+              "armor": "res://assets/character-outfits/male/warrior/walk-right-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "up": {
+              "body": "res://assets/character-outfits/male/warrior/walk-up-body.png",
+              "armor": "res://assets/character-outfits/male/warrior/walk-up-armor.png",
+              "frames": 8,
+              "fps": 16
+            }
+          }
+        },
+        "Paladin": {
+          "starter_armor": "paladin_01_armor",
+          "movement_speed": 60,
+          "idle": {
+            "body": "res://assets/character-outfits/male/paladin/idle-body.png",
+            "armor": "res://assets/character-outfits/male/paladin/idle-armor.png"
+          },
+          "walk": {
+            "down": {
+              "body": "res://assets/character-outfits/male/paladin/walk-down-body.png",
+              "armor": "res://assets/character-outfits/male/paladin/walk-down-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "left": {
+              "body": "res://assets/character-outfits/male/paladin/walk-left-body.png",
+              "armor": "res://assets/character-outfits/male/paladin/walk-left-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "right": {
+              "body": "res://assets/character-outfits/male/paladin/walk-right-body.png",
+              "armor": "res://assets/character-outfits/male/paladin/walk-right-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "up": {
+              "body": "res://assets/character-outfits/male/paladin/walk-up-body.png",
+              "armor": "res://assets/character-outfits/male/paladin/walk-up-armor.png",
+              "frames": 8,
+              "fps": 16
+            }
+          }
+        },
+        "Mage": {
+          "starter_armor": "mage_01_armor",
+          "movement_speed": 60,
+          "idle": {
+            "body": "res://assets/character-outfits/male/mage/idle-body.png",
+            "armor": "res://assets/character-outfits/male/mage/idle-armor.png"
+          },
+          "walk": {
+            "down": {
+              "body": "res://assets/character-outfits/male/mage/walk-down-body.png",
+              "armor": "res://assets/character-outfits/male/mage/walk-down-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "left": {
+              "body": "res://assets/character-outfits/male/mage/walk-left-body.png",
+              "armor": "res://assets/character-outfits/male/mage/walk-left-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "right": {
+              "body": "res://assets/character-outfits/male/mage/walk-right-body.png",
+              "armor": "res://assets/character-outfits/male/mage/walk-right-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "up": {
+              "body": "res://assets/character-outfits/male/mage/walk-up-body.png",
+              "armor": "res://assets/character-outfits/male/mage/walk-up-armor.png",
+              "frames": 8,
+              "fps": 16
+            }
+          }
+        },
+        "Necromancer": {
+          "starter_armor": "necromancer_01_armor",
+          "movement_speed": 60,
+          "idle": {
+            "body": "res://assets/character-outfits/male/necromancer/idle-body.png",
+            "armor": "res://assets/character-outfits/male/necromancer/idle-armor.png"
+          },
+          "walk": {
+            "down": {
+              "body": "res://assets/character-outfits/male/necromancer/walk-down-body.png",
+              "armor": "res://assets/character-outfits/male/necromancer/walk-down-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "left": {
+              "body": "res://assets/character-outfits/male/necromancer/walk-left-body.png",
+              "armor": "res://assets/character-outfits/male/necromancer/walk-left-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "right": {
+              "body": "res://assets/character-outfits/male/necromancer/walk-right-body.png",
+              "armor": "res://assets/character-outfits/male/necromancer/walk-right-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "up": {
+              "body": "res://assets/character-outfits/male/necromancer/walk-up-body.png",
+              "armor": "res://assets/character-outfits/male/necromancer/walk-up-armor.png",
+              "frames": 8,
+              "fps": 16
+            }
+          }
+        },
+        "Ranger": {
+          "starter_armor": "ranger_01_armor",
+          "movement_speed": 60,
+          "idle": {
+            "body": "res://assets/character-outfits/male/ranger/idle-body.png",
+            "armor": "res://assets/character-outfits/male/ranger/idle-armor.png"
+          },
+          "walk": {
+            "down": {
+              "body": "res://assets/character-outfits/male/ranger/walk-down-body.png",
+              "armor": "res://assets/character-outfits/male/ranger/walk-down-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "left": {
+              "body": "res://assets/character-outfits/male/ranger/walk-left-body.png",
+              "armor": "res://assets/character-outfits/male/ranger/walk-left-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "right": {
+              "body": "res://assets/character-outfits/male/ranger/walk-right-body.png",
+              "armor": "res://assets/character-outfits/male/ranger/walk-right-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "up": {
+              "body": "res://assets/character-outfits/male/ranger/walk-up-body.png",
+              "armor": "res://assets/character-outfits/male/ranger/walk-up-armor.png",
+              "frames": 8,
+              "fps": 16
+            }
+          }
+        },
+        "Assassin": {
+          "starter_armor": "assassin_01_armor",
+          "movement_speed": 60,
+          "idle": {
+            "body": "res://assets/character-outfits/male/assassin/idle-body.png",
+            "armor": "res://assets/character-outfits/male/assassin/idle-armor.png"
+          },
+          "walk": {
+            "down": {
+              "body": "res://assets/character-outfits/male/assassin/walk-down-body.png",
+              "armor": "res://assets/character-outfits/male/assassin/walk-down-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "left": {
+              "body": "res://assets/character-outfits/male/assassin/walk-left-body.png",
+              "armor": "res://assets/character-outfits/male/assassin/walk-left-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "right": {
+              "body": "res://assets/character-outfits/male/assassin/walk-right-body.png",
+              "armor": "res://assets/character-outfits/male/assassin/walk-right-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "up": {
+              "body": "res://assets/character-outfits/male/assassin/walk-up-body.png",
+              "armor": "res://assets/character-outfits/male/assassin/walk-up-armor.png",
+              "frames": 8,
+              "fps": 16
+            }
+          }
+        }
+      }
+    },
+    "female": {
+      "classes": {
+        "Warrior": {
+          "starter_armor": "warrior_01_armor",
+          "movement_speed": 60,
+          "idle": {
+            "body": "res://assets/character-outfits/female/warrior/idle-body.png",
+            "armor": "res://assets/character-outfits/female/warrior/idle-armor.png"
+          },
+          "walk": {
+            "down": {
+              "body": "res://assets/character-outfits/female/warrior/walk-down-body.png",
+              "armor": "res://assets/character-outfits/female/warrior/walk-down-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "left": {
+              "body": "res://assets/character-outfits/female/warrior/walk-left-body.png",
+              "armor": "res://assets/character-outfits/female/warrior/walk-left-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "right": {
+              "body": "res://assets/character-outfits/female/warrior/walk-right-body.png",
+              "armor": "res://assets/character-outfits/female/warrior/walk-right-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "up": {
+              "body": "res://assets/character-outfits/female/warrior/walk-up-body.png",
+              "armor": "res://assets/character-outfits/female/warrior/walk-up-armor.png",
+              "frames": 8,
+              "fps": 16
+            }
+          }
+        },
+        "Paladin": {
+          "starter_armor": "paladin_01_armor",
+          "movement_speed": 60,
+          "idle": {
+            "body": "res://assets/character-outfits/female/paladin/idle-body.png",
+            "armor": "res://assets/character-outfits/female/paladin/idle-armor.png"
+          },
+          "walk": {
+            "down": {
+              "body": "res://assets/character-outfits/female/paladin/walk-down-body.png",
+              "armor": "res://assets/character-outfits/female/paladin/walk-down-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "left": {
+              "body": "res://assets/character-outfits/female/paladin/walk-left-body.png",
+              "armor": "res://assets/character-outfits/female/paladin/walk-left-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "right": {
+              "body": "res://assets/character-outfits/female/paladin/walk-right-body.png",
+              "armor": "res://assets/character-outfits/female/paladin/walk-right-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "up": {
+              "body": "res://assets/character-outfits/female/paladin/walk-up-body.png",
+              "armor": "res://assets/character-outfits/female/paladin/walk-up-armor.png",
+              "frames": 8,
+              "fps": 16
+            }
+          }
+        },
+        "Mage": {
+          "starter_armor": "mage_01_armor",
+          "movement_speed": 60,
+          "idle": {
+            "body": "res://assets/character-outfits/female/mage/idle-body.png",
+            "armor": "res://assets/character-outfits/female/mage/idle-armor.png"
+          },
+          "walk": {
+            "down": {
+              "body": "res://assets/character-outfits/female/mage/walk-down-body.png",
+              "armor": "res://assets/character-outfits/female/mage/walk-down-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "left": {
+              "body": "res://assets/character-outfits/female/mage/walk-left-body.png",
+              "armor": "res://assets/character-outfits/female/mage/walk-left-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "right": {
+              "body": "res://assets/character-outfits/female/mage/walk-right-body.png",
+              "armor": "res://assets/character-outfits/female/mage/walk-right-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "up": {
+              "body": "res://assets/character-outfits/female/mage/walk-up-body.png",
+              "armor": "res://assets/character-outfits/female/mage/walk-up-armor.png",
+              "frames": 8,
+              "fps": 16
+            }
+          }
+        },
+        "Necromancer": {
+          "starter_armor": "necromancer_01_armor",
+          "movement_speed": 60,
+          "idle": {
+            "body": "res://assets/character-outfits/female/necromancer/idle-body.png",
+            "armor": "res://assets/character-outfits/female/necromancer/idle-armor.png"
+          },
+          "walk": {
+            "down": {
+              "body": "res://assets/character-outfits/female/necromancer/walk-down-body.png",
+              "armor": "res://assets/character-outfits/female/necromancer/walk-down-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "left": {
+              "body": "res://assets/character-outfits/female/necromancer/walk-left-body.png",
+              "armor": "res://assets/character-outfits/female/necromancer/walk-left-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "right": {
+              "body": "res://assets/character-outfits/female/necromancer/walk-right-body.png",
+              "armor": "res://assets/character-outfits/female/necromancer/walk-right-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "up": {
+              "body": "res://assets/character-outfits/female/necromancer/walk-up-body.png",
+              "armor": "res://assets/character-outfits/female/necromancer/walk-up-armor.png",
+              "frames": 8,
+              "fps": 16
+            }
+          }
+        },
+        "Ranger": {
+          "starter_armor": "ranger_01_armor",
+          "movement_speed": 60,
+          "idle": {
+            "body": "res://assets/character-outfits/female/ranger/idle-body.png",
+            "armor": "res://assets/character-outfits/female/ranger/idle-armor.png"
+          },
+          "walk": {
+            "down": {
+              "body": "res://assets/character-outfits/female/ranger/walk-down-body.png",
+              "armor": "res://assets/character-outfits/female/ranger/walk-down-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "left": {
+              "body": "res://assets/character-outfits/female/ranger/walk-left-body.png",
+              "armor": "res://assets/character-outfits/female/ranger/walk-left-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "right": {
+              "body": "res://assets/character-outfits/female/ranger/walk-right-body.png",
+              "armor": "res://assets/character-outfits/female/ranger/walk-right-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "up": {
+              "body": "res://assets/character-outfits/female/ranger/walk-up-body.png",
+              "armor": "res://assets/character-outfits/female/ranger/walk-up-armor.png",
+              "frames": 8,
+              "fps": 16
+            }
+          }
+        },
+        "Assassin": {
+          "starter_armor": "assassin_01_armor",
+          "movement_speed": 60,
+          "idle": {
+            "body": "res://assets/character-outfits/female/assassin/idle-body.png",
+            "armor": "res://assets/character-outfits/female/assassin/idle-armor.png"
+          },
+          "walk": {
+            "down": {
+              "body": "res://assets/character-outfits/female/assassin/walk-down-body.png",
+              "armor": "res://assets/character-outfits/female/assassin/walk-down-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "left": {
+              "body": "res://assets/character-outfits/female/assassin/walk-left-body.png",
+              "armor": "res://assets/character-outfits/female/assassin/walk-left-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "right": {
+              "body": "res://assets/character-outfits/female/assassin/walk-right-body.png",
+              "armor": "res://assets/character-outfits/female/assassin/walk-right-armor.png",
+              "frames": 8,
+              "fps": 16
+            },
+            "up": {
+              "body": "res://assets/character-outfits/female/assassin/walk-up-body.png",
+              "armor": "res://assets/character-outfits/female/assassin/walk-up-armor.png",
+              "frames": 8,
+              "fps": 16
+            }
+          }
+        }
+      }
+    }
+  }
+}

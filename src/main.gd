@@ -7,6 +7,7 @@ const TEXTURED_PANEL = preload("res://src/textured_panel.gd")
 const RUN_TEXTURES = [preload("res://assets/title/skeleton-run.png"), preload("res://assets/title/goblin-run.png")]
 const BRASS = Color("b99860")
 const INK = Color("181e29")
+var bedroom: Control
 var background: TextureRect
 var menu: Control
 var brand: TextureRect
@@ -66,7 +67,7 @@ func _ready() -> void:
 		texture_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(texture_overlay)
 		buttons.append(button)
-	var preview := _label("TITLE PREVIEW  •  0.4", 12, Color("e2d5bc"))
+	var preview := _label("BEDROOM PREVIEW  •  0.5", 12, Color("e2d5bc"))
 	preview.position = Vector2(77, 476)
 	menu.add_child(preview)
 	brand = TextureRect.new()
@@ -255,7 +256,10 @@ func open_modal(kind: String) -> void:
 	elif kind == "google":
 		notice.text = "Google sign-in isn't connected yet. This title-screen preview doesn't open an account or send any data."
 	else:
-		notice.text = "You're viewing the first title-screen milestone. The new adventure is still being built.\n\nEnjoy the kingdom view and the chase!"
+		notice.text = "Start a local guest adventure or continue the bedroom saved on this device. This does not create an online account."
+		var begin := _button("Enter local adventure")
+		begin.pressed.connect(_open_bedroom)
+		modal_box.add_child(begin)
 	var actions := HBoxContainer.new()
 	actions.add_theme_constant_override("separation", 10)
 	modal_box.add_child(actions)
@@ -466,3 +470,23 @@ func _process(delta: float) -> void:
 		var u := clampf((x - painted_origin.x) / painted_size.x, 0.0, 1.0)
 		var road_y := painted_origin.y + painted_size.y * (0.805 + 0.04 * sin(u * PI))
 		runners[i].position = Vector2(x, road_y)
+
+func _open_bedroom() -> void:
+	if is_instance_valid(bedroom):
+		return
+	close_modal()
+	for button in buttons:
+		button.disabled = true
+	bedroom = preload("res://src/bedroom.gd").new()
+	bedroom.exited.connect(func():
+		if not is_instance_valid(bedroom):
+			return
+		remove_child(bedroom)
+		bedroom.queue_free()
+		bedroom = null
+		for button in buttons:
+			button.disabled = false
+		buttons[1].grab_focus()
+	)
+	add_child(bedroom)
+	bedroom.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

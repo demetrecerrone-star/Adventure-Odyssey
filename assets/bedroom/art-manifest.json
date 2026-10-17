@@ -1,0 +1,224 @@
+{
+  "canvas": [
+    1536,
+    1024
+  ],
+  "generation": "built-in image_gen; sources unchanged",
+  "camera": "three-quarter overhead 2.5D; front horizontal, tops visible",
+  "layers": {
+    "rug": {
+      "source": "rug-source.png",
+      "crop_bbox": [
+        119,
+        216,
+        1419,
+        865
+      ],
+      "registered": "rug.png",
+      "display_bounds": [
+        580,
+        540,
+        455,
+        235
+      ],
+      "bottom_center_anchor": [
+        807.5,
+        775
+      ],
+      "source_sha256": "e100287719c8941a479560a60696abdad4ec134b26205ab3243347a2d0f2ea05"
+    },
+    "pictures": {
+      "source": "pictures-source.png",
+      "crop_bbox": [
+        91,
+        146,
+        1685,
+        742
+      ],
+      "registered": "pictures.png",
+      "display_bounds": [
+        980,
+        115,
+        210,
+        80
+      ],
+      "bottom_center_anchor": [
+        1085.0,
+        195
+      ],
+      "source_sha256": "55ca412b044933654846f61625c4bfa8ef7d2057da1b56c5c6a495f8c2e33943"
+    },
+    "bed": {
+      "source": "bed-source.png",
+      "crop_bbox": [
+        440,
+        56,
+        1098,
+        934
+      ],
+      "registered": "bed.png",
+      "display_bounds": [
+        180,
+        285,
+        310,
+        410
+      ],
+      "bottom_center_anchor": [
+        335.0,
+        695
+      ],
+      "source_sha256": "6b237881f30af8c87409ab0023e19e2a127a1aa323cb3b16f2ef7fcb7bf60c3b"
+    },
+    "bedside": {
+      "source": "bedside-source.png",
+      "crop_bbox": [
+        255,
+        64,
+        1057,
+        1124
+      ],
+      "registered": "bedside.png",
+      "display_bounds": [
+        495,
+        305,
+        125,
+        170
+      ],
+      "bottom_center_anchor": [
+        557.5,
+        475
+      ],
+      "source_sha256": "246e232dad892d68387485a2bc4dade854493fe752f11c4f4b2635c1e08ac781"
+    },
+    "dresser": {
+      "source": "dresser-source.png",
+      "crop_bbox": [
+        211,
+        51,
+        1358,
+        944
+      ],
+      "registered": "dresser.png",
+      "display_bounds": [
+        945,
+        275,
+        225,
+        180
+      ],
+      "bottom_center_anchor": [
+        1057.5,
+        455
+      ],
+      "source_sha256": "3d716ecc829ba522f4b06fa32d58cc984205ed1347ad77f44f31787d49f7826b"
+    },
+    "mirror": {
+      "source": "mirror-source.png",
+      "crop_bbox": [
+        542,
+        27,
+        987,
+        961
+      ],
+      "registered": "mirror.png",
+      "display_bounds": [
+        1195,
+        160,
+        133,
+        280
+      ],
+      "bottom_center_anchor": [
+        1261.5,
+        440
+      ],
+      "source_sha256": "dc23dbd17365442c42abdbd859b84e5d0e4d7a76760486ac931302d978ace599"
+    },
+    "chest": {
+      "source": "chest-source.png",
+      "crop_bbox": [
+        196,
+        206,
+        1341,
+        810
+      ],
+      "registered": "chest.png",
+      "display_bounds": [
+        215,
+        710,
+        240,
+        126
+      ],
+      "bottom_center_anchor": [
+        335.0,
+        836
+      ],
+      "source_sha256": "e01a5d80660af40864f5b7ef7cb68b8a1c5d52bb2e9fd071528aab5ba9168ac5"
+    },
+    "bookshelf": {
+      "source": "bookshelf-source.png",
+      "crop_bbox": [
+        209,
+        75,
+        842,
+        1452
+      ],
+      "registered": "bookshelf.png",
+      "display_bounds": [
+        1310,
+        405,
+        140,
+        300
+      ],
+      "bottom_center_anchor": [
+        1380.0,
+        705
+      ],
+      "source_sha256": "77ab9b5ec8d2d8d6ef85f3f4e4814f0c469282fbe26d164cb074808082de3ae8"
+    },
+    "chair": {
+      "source": "chair-source.png",
+      "crop_bbox": [
+        167,
+        129,
+        1251,
+        1058
+      ],
+      "registered": "chair.png",
+      "display_bounds": [
+        1090,
+        650,
+        190,
+        175
+      ],
+      "bottom_center_anchor": [
+        1185.0,
+        825
+      ],
+      "source_sha256": "99b9bd1c397bccbd7018f8bea3c797bd25e5477f884c6a0920f38d2eb9c02ae5",
+      "processing": "Actual generated rear view reflected horizontally to face upper-right mirror; then translated down80px in v4."
+    }
+  },
+  "floor_polygon": [
+    [
+      215,
+      380
+    ],
+    [
+      1325,
+      380
+    ],
+    [
+      1480,
+      945
+    ],
+    [
+      55,
+      945
+    ]
+  ],
+  "door_threshold": [
+    780,
+    375
+  ],
+  "revision": 4,
+  "revision_note": "Only chair moved down80px from v3; approximately two local floorboard widths. All other layers unchanged."
+}

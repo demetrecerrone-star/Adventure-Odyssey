@@ -1,3 +1,7 @@
+# Historical title-only validation
+
+These results describe the pre-bedroom base commit d6037a6. Current bedroom validation and limitations are in `bedroom-milestone.md`.
+
 # Title preview validation
 
 Local Godot 4.6.3 headless import and 101 checks pass: four actual buttons, repeated modal open/close, duplicate-click guard, masked password fields, clearing dummy credentials on submit/close, truthful unconfigured-auth messaging, Android Back, Escape, responsive bounds at 1280×720, 1920×1080, 2400×1080 and 1024×768, actual mouse/touch/keyboard GUI input, separate animated runners with registered pivots and correct chase order.
