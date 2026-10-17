@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "bases": {
+    "male": {
+      "Warrior": "res://assets/painted-walk-pilot/manifest.json"
+    },
+    "female": {
+      "Warrior": "res://assets/painted-walks/female-warrior/manifest.json"
+    }
+  }
+}

@@ -40,10 +40,12 @@ func configure(base: String, selected_class: String, selected_appearance: Dictio
 	character_class = selected_class
 	painted_pilot = {}
 	painted_directions = {}
-	var pilot_path := "res://assets/painted-walk-pilot/manifest.json"
-	if base == "male" and selected_class == "Warrior" and FileAccess.file_exists(pilot_path):
+	# Only reviewed catalog entries opt into painted walks. Unmigrated outfits
+	# keep their current paired artwork instead of borrowing another identity.
+	var pilot_path := _painted_manifest_path(base, selected_class)
+	if not pilot_path.is_empty() and FileAccess.file_exists(pilot_path):
 		var data = JSON.parse_string(FileAccess.get_file_as_string(pilot_path))
-		if data is Dictionary:
+		if data is Dictionary and data.get("base", "") == base and data.get("class", "") == selected_class:
 			painted_pilot = data
 	weapon_outfit = {}
 	var weapon_path := "res://assets/held-weapons/" + selected_class.to_lower() + ".json"
@@ -83,6 +85,12 @@ func configure(base: String, selected_class: String, selected_appearance: Dictio
 	if artwork_ready:
 		advance(facing, false, 0)
 	return artwork_ready
+func _painted_manifest_path(base: String, selected_class: String) -> String:
+	var path := "res://assets/painted-walks/catalog.json"
+	if not FileAccess.file_exists(path): return ""
+	var catalog = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if not catalog is Dictionary: return ""
+	return str(catalog.get("bases", {}).get(base, {}).get(selected_class, ""))
 func _texture(path: String) -> Texture2D:
 	if path.is_empty():
 		return null

@@ -127,14 +127,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 180 xvfb-run -a -s '-screen 0 1536x1024x24' godot --path . --script res://tests/painted_walk_screenshot.gd 2>&1 | tee /tmp/ao_painted_walk.log
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 300 xvfb-run -a -s '-screen 0 1536x1024x24' godot --path . --script res://tests/painted_walk_screenshot.gd 2>&1 | tee /tmp/ao_painted_walk.log
           ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script|Parse Error' /tmp/ao_painted_walk.log
-          for direction in down left right up; do test -s "screenshots/painted_walk_customization_${direction}.png"; done
+          for direction in down left right up; do test -s "screenshots/painted_male_warrior_${direction}.png"; done
+          for direction in down left right up; do test -s "screenshots/painted_female_warrior_${direction}.png"; done
           ffmpeg -y -loglevel error -framerate 36 -i screenshots/painted_walk_motion_%02d.png -c:v libx264 -pix_fmt yuv420p -movflags +faststart screenshots/painted_walk_runtime.mp4
           cp screenshots/painted_walk_motion_00.png screenshots/painted_walk_bedroom_start.png
           cp screenshots/painted_walk_motion_71.png screenshots/painted_walk_bedroom_end.png
           rm screenshots/painted_walk_motion_*.png
-          for direction in down right up; do
+          for direction in down right up female_down female_left female_right female_up; do
             ffmpeg -y -loglevel error -framerate 36 -i "screenshots/painted_${direction}_motion_%02d.png" -c:v libx264 -pix_fmt yuv420p -movflags +faststart "screenshots/painted_${direction}_runtime.mp4"
             cp "screenshots/painted_${direction}_motion_23.png" "screenshots/painted_${direction}_bedroom_end.png"
             rm screenshots/painted_${direction}_motion_*.png

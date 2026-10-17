@@ -1,0 +1,467 @@
+{
+  "base": "female",
+  "class": "Warrior",
+  "status": "female Warrior reviewed directional migration candidates: up, left, down, right",
+  "directions": {
+    "up": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 3,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            23.040000000000006,
+            7.560000000000002
+          ],
+          "rotation_rad": 0,
+          "scale": 0.82,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            23.040000000000006,
+            9.560000000000002
+          ],
+          "rotation_rad": 0,
+          "scale": 0.82,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            23.040000000000006,
+            6.560000000000002
+          ],
+          "rotation_rad": 0,
+          "scale": 0.82,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            23.040000000000006,
+            7.560000000000002
+          ],
+          "rotation_rad": 0,
+          "scale": 0.82,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            23.040000000000006,
+            9.560000000000002
+          ],
+          "rotation_rad": 0,
+          "scale": 0.82,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            23.040000000000006,
+            6.560000000000002
+          ],
+          "rotation_rad": 0,
+          "scale": 0.82,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walks/female-warrior/walk-up-body.png",
+      "armor": "res://assets/painted-walks/female-warrior/walk-up-armor.png",
+      "appearance_mask": "res://assets/painted-walks/female-warrior/walk-up-mask.png",
+      "weapon_front": "res://assets/painted-walks/female-warrior/walk-up-weapon-front.png",
+      "weapon_back": "res://assets/painted-walks/female-warrior/walk-up-weapon-back.png"
+    },
+    "left": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 1,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            15.5,
+            4.2
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            15.5,
+            6.2
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            15.5,
+            3.2
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            15.5,
+            4.2
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            15.5,
+            6.2
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            125,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            15.5,
+            3.2
+          ],
+          "rotation_rad": 0,
+          "scale": 0.9,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walks/female-warrior/walk-left-body.png",
+      "armor": "res://assets/painted-walks/female-warrior/walk-left-armor.png",
+      "appearance_mask": "res://assets/painted-walks/female-warrior/walk-left-mask.png",
+      "weapon_front": "res://assets/painted-walks/female-warrior/walk-left-weapon-front.png",
+      "weapon_back": "res://assets/painted-walks/female-warrior/walk-left-weapon-back.png"
+    },
+    "down": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 0,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            15.36,
+            5.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            15.36,
+            7.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            15.36,
+            4.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            15.36,
+            5.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            44
+          ],
+          "translation": [
+            15.36,
+            7.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            128,
+            42
+          ],
+          "target_anchor": [
+            128,
+            41
+          ],
+          "translation": [
+            15.36,
+            4.039999999999999
+          ],
+          "rotation_rad": 0,
+          "scale": 0.88,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walks/female-warrior/walk-down-body.png",
+      "armor": "res://assets/painted-walks/female-warrior/walk-down-armor.png",
+      "appearance_mask": "res://assets/painted-walks/female-warrior/walk-down-mask.png",
+      "weapon_front": "res://assets/painted-walks/female-warrior/walk-down-weapon-front.png",
+      "weapon_back": "res://assets/painted-walks/female-warrior/walk-down-weapon-back.png"
+    },
+    "right": {
+      "frames": 6,
+      "fps": 9,
+      "movement_speed": 155,
+      "source_idle_cell": 2,
+      "hair_transforms": [
+        {
+          "source_anchor": [
+            129,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            17.060000000000002,
+            5.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            129,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            17.060000000000002,
+            5.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            129,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            17.060000000000002,
+            5.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            129,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            17.060000000000002,
+            5.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            129,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            17.060000000000002,
+            5.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        },
+        {
+          "source_anchor": [
+            129,
+            42
+          ],
+          "target_anchor": [
+            128,
+            42
+          ],
+          "translation": [
+            17.060000000000002,
+            5.880000000000003
+          ],
+          "rotation_rad": 0,
+          "scale": 0.86,
+          "formula": "target=source*scale+translation"
+        }
+      ],
+      "body": "res://assets/painted-walks/female-warrior/walk-right-body.png",
+      "armor": "res://assets/painted-walks/female-warrior/walk-right-armor.png",
+      "appearance_mask": "res://assets/painted-walks/female-warrior/walk-right-mask.png",
+      "weapon_front": "res://assets/painted-walks/female-warrior/walk-right-weapon-front.png",
+      "weapon_back": "res://assets/painted-walks/female-warrior/walk-right-weapon-back.png"
+    }
+  }
+}
