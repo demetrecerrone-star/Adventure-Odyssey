@@ -2,7 +2,8 @@
   "schema": 1,
   "bases": {
     "male": {
-      "Warrior": "res://assets/painted-walk-pilot/manifest.json"
+      "Warrior": "res://assets/painted-walk-pilot/manifest.json",
+      "Paladin": "res://assets/painted-walks/male-paladin/manifest.json"
     },
     "female": {
       "Warrior": "res://assets/painted-walks/female-warrior/manifest.json",
