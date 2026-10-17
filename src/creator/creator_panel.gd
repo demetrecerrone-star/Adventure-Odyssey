@@ -32,6 +32,7 @@ var submit: Button
 var safe_override := Rect2()
 var keyboard_height_override := 0.0
 var keyboard_navigation := false
+var compact_layout := false
 func _ready() -> void:
 	rng.randomize()
 	theme = Theme.new()
@@ -101,7 +102,7 @@ func _ready() -> void:
 	left_options.add_child(random_button)
 	hair_option = _choice(right_options, "Hair style", [])
 	hair_option.item_selected.connect(func(index): draft.hair = Catalog.hair_ids(draft.base)[index]; _refresh())
-	color_option = _choice(right_options, "Hair color (art pending)", Catalog.HAIR_COLORS)
+	color_option = _choice(right_options, "Hair color", Catalog.HAIR_COLORS)
 	color_option.item_selected.connect(func(index): draft.hair_color = Catalog.HAIR_COLORS[index]; _refresh())
 	eye_option = _choice(right_options, "Eyes", Catalog.EYES)
 	eye_option.item_selected.connect(func(index): draft.eyes = Catalog.EYES[index]; _refresh())
@@ -246,6 +247,18 @@ func _layout() -> void:
 	if keyboard == 0 and OS.has_feature("android"):
 		keyboard = DisplayServer.virtual_keyboard_get_height() * size.y / maxf(1, DisplayServer.screen_get_size().y)
 	available.end.y = minf(available.end.y, size.y - keyboard - 12)
+	# Container minimum sizes override requested panel.size. Reserve room for
+	# font-metric differences and the IME by reducing decoration, not controls.
+	var compact := available.size.y < 300
+	if compact != compact_layout:
+		compact_layout = compact
+		panel.get_theme_stylebox("panel").set_content_margin_all(4 if compact else 12)
+		center.get_parent().get_theme_stylebox("panel").set_content_margin_all(4 if compact else 8)
+		content.add_theme_constant_override("separation", 4 if compact else 8)
+		center.add_theme_constant_override("separation", 2 if compact else 4)
+		notice.max_lines_visible = 2 if compact else -1
+		notice.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS if compact else TextServer.OVERRUN_NO_TRIMMING
+	notice.tooltip_text = notice.text if compact else ""
 	panel.position = available.position
 	panel.size = available.size.max(Vector2.ONE)
 	# No per-frame focus recentering: touch drags must own their scroll position.

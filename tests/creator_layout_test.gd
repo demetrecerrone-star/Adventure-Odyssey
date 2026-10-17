@@ -43,10 +43,20 @@ func run() -> void:
 		screen.keyboard_height_override = 150
 		screen.name_field.grab_focus()
 		await settle()
-		check(screen.panel.get_global_rect().end.y <= 250, "screen stays above simulated keyboard")
+		check(screen.panel.get_global_rect().end.y <= 238, "screen preserves full 12 px gap above simulated keyboard")
 		check(screen.preview.stage.size.y > 0, "preview remains present with keyboard")
 		check(screen.panel.get_global_rect().encloses(screen.name_field.get_global_rect()), "keyboard cannot hide fixed username")
 		check(screen.panel.get_global_rect().encloses(screen.submit.get_global_rect()), "keyboard cannot hide submit")
+		# Stress larger text metrics as well as the normal font. Container minimum
+		# height must not silently defeat the keyboard-safe requested rectangle.
+		for font_size in [20, 16]:
+			screen.theme.default_font_size = font_size
+			await settle()
+			check(screen.panel.get_global_rect().end.y <= 238, "keyboard-safe bounds survive taller font metrics")
+			check(screen.panel.get_combined_minimum_size().y <= 223, "compact content minimum fits available keyboard region")
+			check(screen.panel.get_global_rect().encloses(screen.name_field.get_global_rect()), "name stays visible with taller text metrics")
+			check(screen.panel.get_global_rect().encloses(screen.submit.get_global_rect()), "submit stays visible with taller text metrics")
+			check(screen.preview.stage.size.y >= 24, "keyboard retains preview rather than hiding character")
 		for side in [screen.left_scroll, screen.right_scroll]:
 			var preview_rect: Rect2 = screen.preview.get_global_rect()
 			var name_rect: Rect2 = screen.name_field.get_global_rect()
