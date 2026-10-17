@@ -155,6 +155,22 @@ jobs:
           ls -lh "$APK"
           sha256sum "$APK" | tee build/SHA256SUMS.txt
 
+      - name: Verify packaged title dependencies
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-title-apk]')
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import zipfile
+          z = zipfile.ZipFile('build/Adventure-Odyssey-release.apk')
+          names = z.namelist()
+          assert z.testzip() is None, 'APK ZIP CRC failure'
+          for asset in ('dusk-kingdom-background', 'adventure-odyssey-wordmark', 'by-dabsky', 'goblin-run', 'skeleton-run', 'body.ttf', 'title.ttf', 'textured_panel'):
+              assert any(asset in n for n in names), 'Missing packaged title dependency: ' + asset
+          assert any(n.endswith('.ctex') for n in names), 'No imported textures exported'
+          print('PACKAGED TITLE DEPENDENCIES: PASS')
+          PYTHON
+
       - name: Upload APK artifact
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-title-apk]')
         uses: actions/upload-artifact@v4
