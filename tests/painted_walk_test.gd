@@ -19,8 +19,8 @@ func run()->void:
 			a.set_equipped_weapon(cls.to_lower()+"_01_weapon")
 			for facing in range(4):
 				a.advance(facing,true,0)
-				var pilot:bool=cls=="Warrior"
-				check(a.uses_painted_pilot()==pilot,"Pilot covers both Warrior bases four directions only")
+				var pilot:bool=cls=="Warrior" or (base=="female" and cls=="Paladin")
+				check(a.uses_painted_pilot()==pilot,"Pilot covers both Warriors and female Paladin four directions only")
 				check(a.body.hframes==(6 if pilot else 8),"Real drawing count follows scope")
 				check(is_equal_approx(a.cadence_speed(facing),155.0 if pilot else 60.0 * 155.0 / 135.0),"Actual-distance cadence calibration")
 				check(a.palette_ready and a.hair_renderer.ready and a.weapon_back.visible,"All customization and equipment retained")
@@ -29,7 +29,7 @@ func run()->void:
 						a.elapsed=(phase+0.01)/9.0
 						a.advance(facing,true,0)
 						check(a.body.frame==phase,"Literal6 drawings, no duplicate phases")
-						if base=="male" and facing==1:
+						if base=="male" and cls=="Warrior" and facing==1:
 							check(a.hair_renderer.front.position==a._pilot_offset("hair_offsets"),"Head registration follows pose")
 							check(a.weapon_back.position==a._pilot_offset("weapon_offsets"),"Sword grip follows far hand")
 						else:
@@ -48,7 +48,7 @@ func run()->void:
 					check(a.body.frame==before,"Collision-stopped movement never advances")
 					a.set_equipped_weapon("")
 					check(not a.weapon_back.visible and not a.weapon_front.visible,"Unequip hides pilot sword")
-					a.set_equipped_weapon("warrior_01_weapon")
+					a.set_equipped_weapon(cls.to_lower()+"_01_weapon")
 				a.advance(facing,false,0)
 				check(a.hair_renderer.front.position==Vector2.ZERO and a.hair_renderer.front.scale==Vector2.ONE and a.weapon_back.position==Vector2.ZERO,"Idle clears pilot transforms")
 				check(a.body.hframes==4,"Idle artwork unchanged")

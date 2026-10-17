@@ -141,6 +141,19 @@ jobs:
             rm screenshots/painted_${direction}_motion_*.png
           done
 
+      - name: Capture current painted migration batch
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 300 xvfb-run -a -s '-screen 0 1536x1024x24' godot --path . --script res://tests/painted_migration_screenshot.gd 2>&1 | tee /tmp/ao_migration.log
+          ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script|Parse Error' /tmp/ao_migration.log
+          for first in screenshots/migration_*_motion_00.png; do
+            prefix="${first%_motion_00.png}"
+            ffmpeg -y -loglevel error -framerate 36 -i "${prefix}_motion_%02d.png" -c:v libx264 -pix_fmt yuv420p -movflags +faststart "${prefix}_runtime.mp4"
+            cp "${prefix}_motion_23.png" "${prefix}_bedroom_end.png"
+            rm "${prefix}"_motion_*.png
+          done
+
       - name: Upload native title preview
         uses: actions/upload-artifact@v4
         with:

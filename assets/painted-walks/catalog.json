@@ -5,7 +5,8 @@
       "Warrior": "res://assets/painted-walk-pilot/manifest.json"
     },
     "female": {
-      "Warrior": "res://assets/painted-walks/female-warrior/manifest.json"
+      "Warrior": "res://assets/painted-walks/female-warrior/manifest.json",
+      "Paladin": "res://assets/painted-walks/female-paladin/manifest.json"
     }
   }
 }
