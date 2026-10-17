@@ -1,5 +1,6 @@
 extends Control
 
+const PREVIEW_DOCUMENTS = preload("res://src/preview_documents.gd")
 const BODY = preload("res://assets/fonts/body.ttf")
 const TITLE = preload("res://assets/fonts/title.ttf")
 const TEXTURED_PANEL = preload("res://src/textured_panel.gd")
@@ -154,7 +155,7 @@ func _keyboard_safe_rect(safe: Rect2) -> Rect2:
 	return safe
 
 func _layout_modal(safe: Rect2) -> void:
-	modal_panel.size = Vector2(minf(510, safe.size.x), minf(650 if modal_kind == "create" else 560, safe.size.y))
+	modal_panel.size = Vector2(minf(510, safe.size.x), minf(650 if modal_kind in ["create", "privacy", "terms"] else 560, safe.size.y))
 	modal_panel.position = safe.get_center() - modal_panel.size * 0.5
 
 func open_modal(kind: String) -> void:
@@ -176,19 +177,19 @@ func open_modal(kind: String) -> void:
 	modal_panel.set_script(TEXTURED_PANEL)
 	modal_panel.add_theme_stylebox_override("panel", _style(INK, BRASS))
 	modal.add_child(modal_panel)
-	var headings := {"signin": "Sign In", "create": "Create Account", "google": "Sign in with Google", "guest": "Title Preview"}
+	var headings := {"signin": "Sign In", "create": "Create Account", "google": "Sign in with Google", "guest": "Title Preview", "privacy": "Privacy Policy", "terms": "Terms of Use"}
 	var heading := _label(headings[kind], 27, Color("ffe1a5"), TITLE)
 	heading.position = Vector2(24, 22)
 	modal_panel.add_child(heading)
 	modal_close = _button("×")
-	modal_close.tooltip_text = "Close and return to title"
+	modal_close.tooltip_text = "Back to Create Account" if kind in ["privacy", "terms"] else "Close and return to title"
 	modal_close.custom_minimum_size = Vector2(48, 48)
 	modal_close.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	modal_close.offset_left = -66
 	modal_close.offset_right = -18
 	modal_close.offset_top = 14
 	modal_close.offset_bottom = 62
-	modal_close.pressed.connect(close_modal)
+	modal_close.pressed.connect(_back_from_modal)
 	modal_panel.add_child(modal_close)
 	modal_scroll = ScrollContainer.new()
 	modal_scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -213,6 +214,11 @@ func open_modal(kind: String) -> void:
 		if kind == "create":
 			_add_field("Confirm password", true)
 			_add_legal_preview()
+	elif kind in ["privacy", "terms"]:
+		notice.text = "Title preview information • No account or agreement is created."
+		var document := _label(PREVIEW_DOCUMENTS.PRIVACY if kind == "privacy" else PREVIEW_DOCUMENTS.TERMS, 15, Color("f4ead8"))
+		document.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		modal_box.add_child(document)
 	elif kind == "google":
 		notice.text = "Google sign-in isn't connected yet. This title-screen preview doesn't open an account or send any data."
 	else:
@@ -220,9 +226,9 @@ func open_modal(kind: String) -> void:
 	var actions := HBoxContainer.new()
 	actions.add_theme_constant_override("separation", 10)
 	modal_box.add_child(actions)
-	var close := _button("Back")
+	var close := _button("Back to Create Account" if kind in ["privacy", "terms"] else "Back")
 	close.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	close.pressed.connect(close_modal)
+	close.pressed.connect(_back_from_modal)
 	actions.add_child(close)
 	if kind == "signin" or kind == "create":
 		var submit := _button("Create Account" if kind == "create" else "Sign In")
@@ -281,20 +287,31 @@ func _add_legal_preview() -> void:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
 	modal_box.add_child(row)
-	for caption in ["Privacy Policy", "Terms of Service"]:
+	for caption in ["Privacy Policy", "Terms of Use"]:
 		var link := _button(caption)
 		link.custom_minimum_size.y = 48
 		link.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		link.add_theme_font_size_override("font_size", 14)
 		link.add_theme_stylebox_override("disabled", _style(Color("161d28"), Color("695b47"), 1))
 		link.add_theme_color_override("font_disabled_color", Color("b6ac98"))
-		link.disabled = true
-		link.tooltip_text = "Unavailable in this preview: approved document not supplied"
+		link.tooltip_text = "Read preview " + caption.to_lower()
+		link.pressed.connect(_open_legal_document.bind("privacy" if caption == "Privacy Policy" else "terms"))
 		row.add_child(link)
 		legal_controls.append(link)
-	var explanation := _label("Policies unavailable in this preview. No account is created.", 13, Color("cfbb98"))
+	var explanation := _label("Read about this preview. No account or agreement is created.", 13, Color("cfbb98"))
 	explanation.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	modal_box.add_child(explanation)
+
+func _open_legal_document(kind: String) -> void:
+	# Never retain draft credentials while viewing a document.
+	close_modal()
+	open_modal(kind)
+
+func _back_from_modal() -> void:
+	var was_document := modal_kind in ["privacy", "terms"]
+	close_modal()
+	if was_document:
+		open_modal("create")
 
 func _validation_error(message: String, index: int) -> void:
 	notice.text = message
@@ -347,13 +364,13 @@ func close_modal() -> void:
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel") and is_instance_valid(modal):
-		close_modal()
+		_back_from_modal()
 		get_viewport().set_input_as_handled()
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		if is_instance_valid(modal):
-			close_modal()
+			_back_from_modal()
 	elif what == NOTIFICATION_WM_CLOSE_REQUEST:
 		get_tree().quit()
 

@@ -35,6 +35,10 @@ func run() -> void:
 	scene._submit_preview()
 	await capture("res://screenshots/title_create_validation.png")
 	scene.close_modal()
+	for document_kind in ["privacy", "terms"]:
+		scene.open_modal(document_kind)
+		await capture("res://screenshots/title_%s.png" % document_kind)
+		scene.close_modal()
 	root.size = Vector2i(800,450)
 	await process_frame
 	scene.open_modal("create")

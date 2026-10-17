@@ -14,6 +14,10 @@ func run() -> void:
 	await process_frame
 	check(scene.buttons.size() == 4, "four real buttons")
 	check(scene.brand.texture.get_width() == 2048, "exact brand source")
+	for document in [scene.PREVIEW_DOCUMENTS.PRIVACY, scene.PREVIEW_DOCUMENTS.TERMS]:
+		check("Draft for review" in document, "bundled document visibly a review draft")
+		check("Developer: Dabsky" in document and "dabskycreativestudio@gmail.com" in document, "approved developer and contact bundled")
+		check(document.length() > 1500, "complete document available without network")
 	for kind in ["signin", "create", "google", "guest", "signin", "create"]:
 		scene.open_modal(kind)
 		await process_frame
@@ -43,7 +47,7 @@ func run() -> void:
 	check(scene.password_toggles.size() == 2, "independent password visibility controls")
 	check(scene.legal_controls.size() == 2, "privacy and terms previews present")
 	for link in scene.legal_controls:
-		check(link.disabled, "unapproved policy never opens or claims consent")
+		check(not link.disabled, "preview documents available to read")
 		check(link.size.y >= 48, "policy touch target")
 	check(scene.modal_close.size.x >= 48 and scene.modal_close.size.y >= 48, "close touch target")
 	check(scene.modal_scroll.follow_focus, "scroll follows keyboard focus")
@@ -82,6 +86,23 @@ func run() -> void:
 		check(scene.modal_scroll.get_v_scroll_bar().max_value > scene.modal_scroll.size.y, "short landscape content scrolls")
 		check(scene.modal_panel.get_global_rect().encloses(scene.modal_close.get_global_rect()), "close stays reachable without scrolling")
 	scene.close_modal()
+	for document_kind in ["privacy", "terms"]:
+		scene.open_modal("create")
+		scene.fields[1].text = "dummy-secret"
+		var old_password = scene.fields[1]
+		scene._open_legal_document(document_kind)
+		check(old_password.text.is_empty(), "opening document immediately clears password")
+		check(scene.modal_kind == document_kind and scene.fields.is_empty(), "document reader replaces form")
+		await process_frame
+		check(scene.notice.text.contains("No account or agreement"), "reader does not imply agreement")
+		scene._notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+		check(scene.modal_kind == "create", "Android back returns from document to create")
+		check(scene.fields[1].text.is_empty() and scene.fields[1].secret, "returned form is empty and masked")
+		scene._open_legal_document(document_kind)
+		scene.modal_close.pressed.emit()
+		check(scene.modal_kind == "create", "document close returns to account panel")
+		scene.close_modal()
+		await process_frame
 	scene.open_modal("signin")
 	scene._notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
 	check(scene.modal == null, "Android back dismisses")
