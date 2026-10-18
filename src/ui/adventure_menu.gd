@@ -56,6 +56,11 @@ var _stat_deltas: Dictionary = {}
 var _stat_preview: Dictionary = {}
 var _stat_reviewing := false
 var _stat_committing := false
+const ItemIcon = preload("res://src/ui/inventory_item_icon.gd")
+var inventory_row: HBoxContainer
+var inventory_scroll: ScrollContainer
+var inventory_content: VBoxContainer
+var inventory_details: Control
 const PLANNED_EFFECTS := [
 	["physical_power", "Physical power", "number"], ["spell_power", "Spell power", "number"],
 	["max_hp", "Maximum HP", "number"], ["max_mana", "Maximum mana", "number"],
@@ -218,6 +223,10 @@ func _layout() -> void:
 	_portrait_height = clampf(body_scroll.size.y - 58, 190, 430)
 	if is_instance_valid(portrait_stage):
 		portrait_stage.custom_minimum_size.y = _portrait_height
+	if is_instance_valid(inventory_row):
+		inventory_row.custom_minimum_size.y = body_scroll.size.y - 2
+		portrait_stage.custom_minimum_size = Vector2(clampf(body_scroll.size.x * 0.29, 140, 250), body_scroll.size.y - 2)
+		inventory_scroll.custom_minimum_size.y = body_scroll.size.y - 2
 		_place_avatar()
 
 func show_page(id: String) -> void:
@@ -272,6 +281,10 @@ func _clear_body() -> void:
 	_touch_buttons = _touch_buttons.filter(func(button): return is_instance_valid(button) and not body.is_ancestor_of(button))
 	avatar = null
 	portrait_stage = null
+	inventory_row = null
+	inventory_scroll = null
+	inventory_content = null
+	inventory_details = null
 	fixed_button = null
 	floating_button = null
 	handed_button = null
@@ -382,58 +395,114 @@ func _place_avatar() -> void:
 	avatar.position = Vector2(portrait_stage.size.x * 0.5, portrait_stage.size.y * 0.5 + 104 * factor)
 
 func _build_inventory() -> void:
-	if state != null:
-		_card(body, "PERSONAL WALLET", "%d gold · This character only" % state.wallet_gold)
-		var ring_card := _card(body, "RING", "Keepsake ring" if not state.equipped_ring.is_empty() else "No ring equipped")
-		if not state.equipped_ring.is_empty():
-			var remove_ring := _button("Unequip ring to bag", ring_card)
-			remove_ring.name = "UnequipRing"
-			remove_ring.pressed.connect(func(): ring_unequip_requested.emit())
-	var equipped := _card(body, "EQUIPPED WEAPON", _weapon_label(str(state.equipped_weapon) if state != null else ""))
-	if state != null and not str(state.equipped_weapon).is_empty():
-		var unequip := _button("Unequip to bag", equipped)
-		unequip.name = "UnequipWeapon"
-		unequip.pressed.connect(func(): unequip_requested.emit())
+	inventory_row = HBoxContainer.new()
+	inventory_row.name = "InventorySplit"
+	inventory_row.add_theme_constant_override("separation", 12)
+	inventory_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.add_child(inventory_row)
+	_make_portrait(inventory_row)
+	portrait_stage.name = "InventoryCharacter"
+	portrait_stage.size_flags_horizontal = Control.SIZE_FILL
+	inventory_scroll = ScrollContainer.new()
+	inventory_scroll.name = "OwnedItemsScroll"
+	inventory_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	inventory_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	inventory_row.add_child(inventory_scroll)
+	inventory_content = VBoxContainer.new()
+	inventory_content.name = "OwnedItems"
+	inventory_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	inventory_content.add_theme_constant_override("separation", 10)
+	inventory_scroll.add_child(inventory_content)
 	if state == null:
-		_label("No local character is available.", body)
+		_label("No local character is available.", inventory_content)
 		return
+	_label("%d gold · Your bag" % state.wallet_gold, inventory_content, 16, true)
 	var owned: Array[String] = []
 	for id in Inventory.LABELS:
 		if int(state.bag.get(id, 0)) > 0: owned.append(id)
 	if owned.is_empty():
-		_card(body, "YOUR BAG", "Your bag is empty. Collect supplies from your storage chest.")
+		_card(inventory_content, "YOUR BAG", "Your bag is empty. Collect supplies from your storage chest.")
+		_build_equipped_inventory()
 		return
 	if selected_item not in owned: selected_item = owned[0]
-	_label("YOUR BAG", body, 18, true)
+	_label("YOUR BAG", inventory_content, 18, true)
 	for id in owned:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 10)
-		body.add_child(row)
+		inventory_content.add_child(row)
 		var inspect := _button("%s  × %d" % [Inventory.LABELS[id], int(state.bag[id])], row)
 		inspect.name = "Inspect_" + id
 		inspect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		inspect.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		inspect.custom_minimum_size.y = 64
+		inspect.clip_text = true
+		inspect.tooltip_text = Inventory.LABELS[id] + " × " + str(state.bag[id])
 		_set_active(inspect, selected_item == id)
+		for style_name in ["normal", "hover", "pressed", "focus", "disabled"]:
+			var style = inspect.get_theme_stylebox(style_name).duplicate()
+			style.content_margin_left = 62
+			inspect.add_theme_stylebox_override(style_name, style)
+		var icon = ItemIcon.new()
+		inspect.add_child(icon)
+		icon.configure(id, str(_character().get("base", "male")))
+		icon.position = Vector2(5, 6)
+		icon.size = Vector2(52, 52)
 		inspect.pressed.connect(func():
 			selected_item = id
 			refresh_state()
+			call_deferred("_reveal_inventory_details")
 		)
-		if id == "keepsake_ring":
-			var ring_button := _button("Equip ring", row)
-			ring_button.name = "EquipRing"
-			ring_button.disabled = not state.equipped_ring.is_empty()
-			ring_button.pressed.connect(func(): ring_equip_requested.emit())
-		if Inventory.WEAPONS.has(id):
-			var equip := _button("Equip", row)
-			equip.name = "Equip_" + id
-			equip.custom_minimum_size.x = 90
-			equip.disabled = not Inventory.can_equip(id, str(_character().get("class", ""))) or not str(state.equipped_weapon).is_empty()
-			equip.pressed.connect(func(): equip_requested.emit(id))
 	_build_item_details()
+	_build_equipped_inventory()
+
+func _build_equipped_inventory() -> void:
+	if state != null:
+		var ring_card := _card(inventory_content, "RING", "Keepsake ring" if not state.equipped_ring.is_empty() else "No ring equipped")
+		if not state.equipped_ring.is_empty():
+			_add_item_icon(ring_card, str(state.equipped_ring))
+			var remove_ring := _button("Unequip ring to bag", ring_card)
+			remove_ring.name = "UnequipRing"
+			remove_ring.pressed.connect(func(): ring_unequip_requested.emit())
+	if state != null:
+		var armor_card := _card(inventory_content, "WORN ARMOR", str(state.equipped_armor).replace("_01_armor", " armor").capitalize())
+		_add_item_icon(armor_card, str(state.equipped_armor))
+	var equipped := _card(inventory_content, "EQUIPPED WEAPON", _weapon_label(str(state.equipped_weapon) if state != null else ""))
+	if state != null and not str(state.equipped_weapon).is_empty():
+		_add_item_icon(equipped, str(state.equipped_weapon))
+		var unequip := _button("Unequip to bag", equipped)
+		unequip.name = "UnequipWeapon"
+		unequip.pressed.connect(func(): unequip_requested.emit())
+
+func _add_item_icon(parent: Node, id: String) -> void:
+	var icon = ItemIcon.new()
+	parent.add_child(icon)
+	icon.configure(id, str(_character().get("base", "male")))
+	icon.custom_minimum_size = Vector2(52, 52)
+	icon.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+
+func _reveal_inventory_details() -> void:
+	await get_tree().process_frame
+	if page != "inventory" or not is_instance_valid(inventory_details) or not is_instance_valid(inventory_scroll): return
+	inventory_scroll.scroll_vertical = int(inventory_details.get_parent().position.y)
 
 func _build_item_details() -> void:
-	var info := _card(body, "ITEM DETAILS", Inventory.LABELS.get(selected_item, "Unknown item"))
+	var info := _card(inventory_content, "ITEM DETAILS", Inventory.LABELS.get(selected_item, "Unknown item"))
+	inventory_details = info
+	var back := _button("Back to bag", info)
+	back.name = "BackToBag"
+	back.pressed.connect(func(): inventory_scroll.scroll_vertical = 0)
 	var item: Dictionary = state.get_item_details(selected_item, "bag")
+	if selected_item == "keepsake_ring":
+		var ring_button := _button("Equip ring", info)
+		ring_button.name = "EquipRing"
+		ring_button.disabled = not state.equipped_ring.is_empty()
+		ring_button.pressed.connect(func(): ring_equip_requested.emit())
+	if Inventory.WEAPONS.has(selected_item):
+		var equip := _button("Equip", info)
+		equip.name = "Equip_" + selected_item
+		equip.custom_minimum_size.x = 90
+		equip.disabled = not Inventory.can_equip(selected_item, str(_character().get("class", ""))) or not str(state.equipped_weapon).is_empty()
+		equip.pressed.connect(func(): equip_requested.emit(selected_item))
 	_label("Character-bound" if item.get("binding", "") == "character" else "Binding: " + str(item.get("binding", "Unbound")), info, 14)
 	if int(item.get("upgrade_level", 0)) > 0:
 		_label("Upgrade: +%d · Combat benefit is not defined yet." % int(item.upgrade_level), info, 14)
@@ -872,7 +941,9 @@ func _button(value: String, parent: Node) -> Button:
 	parent.add_child(button)
 	_bind_extra_touch(button)
 	button.focus_entered.connect(func():
-		if _keyboard_navigation and body_scroll.is_ancestor_of(button): body_scroll.ensure_control_visible(button)
+		if _keyboard_navigation and is_instance_valid(inventory_scroll) and inventory_scroll.is_ancestor_of(button):
+			inventory_scroll.ensure_control_visible(button)
+		elif _keyboard_navigation and body_scroll.is_ancestor_of(button): body_scroll.ensure_control_visible(button)
 	)
 	return button
 
