@@ -2,35 +2,67 @@
 
 ## Approved accounting
 
-Every class starts at level 1 with STR, AGI, VIT, INT, WIS and LUK equal to **10**. Class, appearance, equipment and tutorial progress do not alter those baselines. Every level above 1 contributes **5 freely assignable points**. A player may place all available points into one attribute, split them among attributes, or leave them unspent. Assigning points does not change the character's class, class equipment restrictions or starter weapon.
+Every class starts at character level 1 with STR, AGI, VIT, INT, WIS and LUK equal to **10**. Class, appearance, equipment and tutorial progress do not alter those baselines. Character levels above 1 each contribute **5 freely assignable points**, usable only for **STR, AGI, VIT, INT and WIS**. A player may place all available points into one eligible attribute, split them, or leave them unspent. **Luck cannot receive free stat points, including a zero-valued LUK entry in an allocation request.** It grows through its separate earned-XP progression.
 
-The current game has no XP, combat or legitimate level-up source. New and migrated characters consequently stay at level 1 with zero earned points during normal play. The Stats page must not include a grant-points, debug-level or simulated level-up control. Completing tutorial errands, buying items, reloading a save and entering another scene do not award levels or points.
+The current game has no character XP/level-up source or loot/refill event source. New and migrated characters therefore have character level 1, zero free points, Luck 10, and **0 / 100 Luck XP toward Luck 11** during normal play. No menu grants levels, points or XP. Tutorial errands, purchases, storage-chest opening or transfers, changing scenes, and reloads do not award either kind of progression. Assigning points never changes class or class equipment restrictions.
 
-The authoritative implementation is `src/character_stats.gd`. The six `KEYS`, `LABELS` and `DESCRIPTIONS` define display metadata; `BASE_ATTRIBUTE = 10` and `POINTS_PER_LEVEL = 5` define the approved accounting. These two rules require an explicit save migration if changed, because earned balances are derived using them. `MAX_LEVEL = 1000` is a bounded serialization guard, not an announced gameplay cap or XP curve.
+The authoritative implementation is `src/character_stats.gd`. `KEYS` contains all six display attributes; `ALLOCATABLE_KEYS` contains only the five free-point attributes. `BASE_ATTRIBUTE = 10` and `POINTS_PER_LEVEL = 5` define the approved character-point accounting. Changing these accounting rules requires an explicit save migration. `MAX_LEVEL = 1000` is a bounded character-level serialization guard, not an announced gameplay cap or XP curve.
 
-## Persistent state and safety
+## Independent Luck progression
 
-The permanent local guest file remains `user://bedroom_guest_v1.json`. Save schema **8** adds a nested `stats` object:
+Luck starts at value 10. Completing the first 100 earned Luck XP raises it to 11; the next threshold is 125 XP, then 150, then 175, and so on. `LUCK_TUNING` contains the provisional `first_threshold = 100` and `threshold_increment = 25`. Overflow carries forward. For internal rank `r`, starting at 1, the current threshold is `100 + 25 × (r − 1)`, and Luck's value is `10 + r − 1`. The menu displays the attribute value, such as Luck 10, and current/required XP; it must not confuse internal rank 1 with attribute value 10.
 
-- `version`: stat schema 1
-- `level`: integer 1 or greater, within the serialization bound
-- `revision`: nonnegative integer incremented on each successful stat allocation or level increase
-- `allocations`: exactly six uppercase keys, each holding a nonnegative integer
+Examples:
 
-Attribute values are `10 + allocations[key]`. Total earned points are `5 × (level − 1)`. Unspent points are earned points minus the sum of all allocations. Validation enforces this invariant; the balance is never independently incremented or persisted. This avoids duplicate level awards and incompatible duplicated balance fields.
+- Total XP 0: Luck 10, 0 / 100 XP
+- Total XP 99: Luck 10, 99 / 100 XP
+- Total XP 100: Luck 11, 0 / 125 XP
+- Total XP 110: Luck 11, 10 / 125 XP
+- Total XP 225: Luck 12, 0 / 150 XP
 
-A model state must have exactly those four fields. Missing, unknown, negative, fractional, nonfinite, boolean or malformed values are rejected. JSON whole-number floats are accepted because Godot's JSON loader returns numbers as floats. Current-schema saves with missing or invalid stats are rejected without rewriting the file or modifying the live session.
+A future, trusted event boundary supports these provisional reward amounts, centralized in `LUCK_EVENT_XP`:
 
-Migration from versions 1–7 adds level-1 baseline stats only when no stat object exists. Existing valid stat metadata in downgraded metadata-bearing backups is preserved; malformed supplied stats are rejected. The existing inventory/tutorial migrations still run as appropriate. Ledger-bearing saves retain character identity and class, exact item instances and provenance, equipment, upgrade entitlements, tutorial stage and receipts, gold, purchase receipts, and location. Migration is validated and written before replacing live state. Reloading it does not grant anything again. As with other local save data, schema validation is not cryptographic anti-cheat and cannot prove an edited legacy file's historical authenticity.
+- A verified first discovery of a source: **25 XP**, once for that source
+- A legitimate new refill of a previously discovered source: **5 XP**, once for that source and distinct refill-cycle reference
+- Opening an empty source: **0 XP**, no receipt, revision change or write
+
+An event reference is not proof that a chest or refill exists. The eventual gameplay owner must establish a real discovered source, genuine newly available loot, and a stable refill-cycle reference from authoritative world state. It must never create fresh event/cycle IDs merely because the user opens a chest again. There is no actual chest refill, loot, cooldown or reward-discovery system added here, and the current bedroom storage chest is not connected to this API. Test fixtures are the only current callers. Before real integration, the gameplay owner's loot/refill evidence and returned stat candidate must be included in a single save transaction.
+
+All positive awards have validated receipts with a historical reward revision. `LUCK_REWARD_REVISION = 1` currently defines exactly 25/5 XP; a future reward-balance change must retain prior revisions or explicitly migrate old receipts. The threshold curve is computed separately; changing it will alter the computed Luck value/progress for existing total XP and requires an intentional balance decision. There is no caller-supplied arbitrary XP amount.
+
+## Persistent state and migration
+
+The permanent local guest file remains `user://bedroom_guest_v1.json`. Save schema **9** uses stat schema **2**:
+
+- `version`: stat schema 2
+- `level`: earned character level, bounded positive integer
+- `revision`: nonnegative integer incremented on each successful allocation, character-level increase, or positive Luck-XP award
+- `allocations`: exactly STR, AGI, VIT, INT and WIS, each a nonnegative integer
+- `luck`: exactly `version = 1`, `total_xp`, and `event_receipts`
+
+The separate invariants are:
+
+1. Character free points: `spent_points + unspent_points = 5 × (character_level − 1)`, where spent points sum only the five eligible allocations. Each eligible attribute is `10 + allocation`.
+2. Luck: `total_xp = sum(valid earned-event receipt XP)`. Luck value and current/required XP derive solely from this total using the configured curve. Luck does not grant, consume or depend on character free points.
+
+Each positive Luck receipt is keyed by a unique event ID and contains exactly `source_id`, `kind`, `refill_id`, `xp`, and `reward_revision`. A source can have only one first-discovery receipt. A source/refill-cycle pair can have only one refill receipt, and a refill requires that source's first-discovery receipt. IDs must be trimmed, nonempty strings of at most 128 characters. An empty opening never adds a receipt. A safety bound limits receipt count to 20,000, with total XP bounded to that many maximum configured revision-1 awards.
+
+State validation rejects missing/extra fields, unknown keys, malformed receipts, incompatible totals, unknown reward revisions, negative, fractional, nonfinite or boolean numeric values. JSON whole-number floats are accepted because Godot's JSON parser returns numbers as floats. Current v9 saves with missing or invalid stats are rejected without rewriting disk or replacing live state.
+
+The v8 → v9 migration validates the exact old stat schema 1 before changing it. It removes the old LUK allocation, retains all five other allocations and character level, and initializes Luck 10 with zero XP and no receipts. Removing the old LUK allocation refunds exactly those spent points into the derived unspent balance; it never converts them to XP. The stat revision increases once where possible. For example, a level-4 character with 7 points in other stats and 5 in Luck changes from 3 unspent to 8 unspent. Reloading does not repeat the refund; spending the refunded points does not make them reappear.
+
+A v8 file missing its formerly required stats is corruption and does not receive defaults. Unknown extra XP fields in old schema 1 are rejected. If a downgraded backup already contains complete, valid schema-2 Luck XP with reconciled receipts, that genuine supported state is preserved intact. Versions 1–7 without any stat object receive baseline defaults, while valid supplied stat metadata follows the same migration validation. Existing inventory/tutorial migration runs as appropriate. Character identity/class, item instances and provenance, equipment, upgrades, tutorial stage and receipts, gold, shop purchases, and location remain preserved. Migration is validated and written before replacing live state; an I/O failure preserves both the old file and the live session. Schema validation is not cryptographic anti-cheat and cannot prove an edited local file's historical authenticity.
 
 ## Save API and menu integration
 
-- `get_stat_summary()` returns a detached dictionary with `ok`, `code`, `message`, `level`, `revision`, `earned_points`, `spent_points`, `unspent_points`, `attributes`, `allocations`, `planned_effects` and `effects_status`. Every operation requires a valid complete live save.
-- `preview_stat_allocation(deltas, expected_revision)` validates a proposed allocation and returns detached proposed values. It performs no writes and does not expose the candidate state. A sparse dictionary or all six keys are accepted; values must be whole nonnegative amounts, total positive and within the unspent balance.
-- `allocate_stat_points(deltas, expected_revision)` repeats the authoritative checks, then persists the entire transaction atomically. The successful result has `code = allocated` and `points_assigned`. A stale revision is rejected before mutation. Repeated taps with the same revision cannot assign twice, including after reload. The revision belongs to stat state; unrelated inventory/location updates do not invalidate a still-current stat draft.
-- `advance_character_level(target_level, expected_revision)` is an unconnected future gameplay/service boundary. A future progression system must first establish a legitimately earned target level. An increase awards exactly five points for each newly crossed level and preserves all previous allocations. The current level returns an idempotent no-op with `duplicate = true` and `points_awarded = 0`, with no revision change or write; a lower target or stale revision is rejected. No current gameplay/UI code calls this method. Isolated test fixtures call it to test the allocation flow without inventing live XP progression.
+- `get_stat_summary()` returns detached `ok`, `code`, `message`, `level`, `revision`, `earned_points`, `spent_points`, `unspent_points`, `attributes` (six display keys), `allocations` (five eligible keys), `planned_effects`, and `effects_status`.
+- Luck summary fields are `luck_level` (internal rank, not the displayed attribute value), `luck_xp` (current-rank progress), `luck_xp_required`, `luck_total_xp`, and `luck_progress` (fraction in `[0,1)`). Display `attributes.LUK` beside `luck_xp / luck_xp_required` and use the fraction for the XP bar.
+- `preview_stat_allocation(deltas, expected_revision)` validates and returns proposed detached values without writes or an exposed candidate state. Only eligible keys are accepted; totals must be positive and within the balance.
+- `allocate_stat_points(deltas, expected_revision)` repeats authoritative validation and atomically saves. A stale revision is rejected before mutation. Repeated taps with the same revision cannot allocate twice, including after reload. Unrelated inventory/location changes do not invalidate a still-current stat draft; earned Luck events do change the shared stat revision.
+- `advance_character_level(target_level, expected_revision)` remains an unconnected future progression boundary. A future caller must establish the legitimately earned level. It awards exactly five points for each new level and leaves Luck unchanged. The current level returns a no-write no-op; a lower level or stale revision is rejected.
+- `record_luck_event(event_id, source_id, kind, refill_id, expected_revision)` is the unconnected trusted future event boundary. Supported kinds are `first_discovery`, `refill`, and `empty_open`; only refill uses a nonempty refill ID. A valid positive event atomically saves its receipt, XP and revision, returning `luck_xp_awarded`. An exact successful replay returns `duplicate = true`, zero award and no write even with the original revision. Reusing that ID for different content is rejected. A new event ID cannot repeat an existing discovery or refill cycle. New events require the current revision. Empty openings return zero and do not write.
 
-The menu owns a local draft and calls preview, then requires explicit confirmation before calling allocation. Cancelling, dismissing, switching pages or viewing effects does not save allocations. The Save service uses the existing temporary-file/rename transaction: any failed temporary write or final rename restores all prior memory, including the stat revision, and preserves the prior disk file. An exact retry after failure can succeed. Errors include `stale_revision`, `insufficient_points`, `invalid_allocation`, `unknown_stat`, `empty_allocation`, `invalid_save` and `save_failed`.
+Every Save operation requires a valid complete live save. The menu owns its local allocation draft, previews it, and requires explicit confirmation before allocation. Cancelling or switching pages writes nothing. Both failed temporary writes and failed final renames restore the full prior state, including free points, Luck XP, receipts and revision; exact retries can safely succeed. No current UI invokes the level or Luck event APIs.
 
 ## Provisional derived-effect previews
 
@@ -57,12 +89,7 @@ At the common all-10 baseline, the previews are physical power 20, spell power 2
 
 ## Verification
 
-- `tests/character_stats_test.gd` covers baseline/accounting, all-six free allocation, preview isolation, malformed inputs and state, monotonic and repeated levels, exact point budgets, effect ownership and diminishing-return caps.
-- `tests/stat_save_test.gd` covers every class, explicit allocation and reload, stale/double-tap rejection, cancelling/preview isolation, whole-save preservation, both I/O failure stages and retries, failed-level rollback, current-schema corruption, and versions 1–7 migration with tutorial/shop/upgrade preservation and no duplicate grants.
-- Existing tutorial, shop, HUD and inventory tests verify that adding stats does not change their accounting or behavior.
-
-## UI and native review contract
-
-The Stats menu keeps a local +/- draft, then displays a separate review before Confirm. Cancel, page changes and dismissal discard unsaved points. The fixed footer stays outside the scroll region on 844×390 phones and 1280×720 views in either handedness. Character details show current saved values; HUD displays saved level while XP and current HP/MP remain unavailable. No stat maxima are presented as current health.
-
-`tests/stat_panel_test.gd` exercises actual allocation callbacks, failure, stale drafts, repeated confirmation, cancellation, touch ownership and responsive geometry. `tests/stat_screenshot.gd` validates and captures 24 isolated desktop/phone states; its level-2 fixtures exist only in the capture script. Native visual review is required after CI before calling the checkpoint verified.
+- `tests/character_stats_test.gd`: five-stat accounting, no free-point Luck access, exact Luck thresholds and overflow, separate invariants, refund migration, malformed input/state, event-ID and semantic replay defense, full/reduced/zero rewards, effect ownership and caps.
+- `tests/stat_save_test.gd`: every class, allocation/reload, stale/double-tap rejection, both I/O failure stages for allocation and Luck XP, v8 refund persistence and rollback, no duplicate XP after restart, current-schema corruption, older migration preservation, and no Luck XP from existing tutorial/shop/storage actions.
+- `tests/stat_panel_test.gd`: local drafts/confirmation, five eligible steppers, Luck value and numeric XP bar with no Luck stepper, partial/threshold progress and UI state restoration.
+- Existing tutorial, shop, HUD and inventory regressions ensure their accounting is unchanged.

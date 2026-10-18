@@ -130,6 +130,8 @@ func run() -> void:
 	for key in ["STR", "AGI", "VIT", "INT", "WIS", "LUK"]:
 		check(stats_text.contains(key), "Planned attribute exists: " + key)
 	check(stats_text.count("10") >= 6 and menu.subtitle_label.text.contains("No points available"), "Six configured core stats and actual zero balance are shown")
+	check(menu.find_child("StatMinus_LUK", true, false) == null and menu.find_child("StatPlus_LUK", true, false) == null, "Luck has no free-point controls")
+	check(menu.stat_rows.LUK.xp_label.text == "0 / 100 XP", "Luck shows actual baseline XP progress")
 	check(stats_text.find("Luck") < stats_text.find("PLANNED EFFECTS"), "Luck belongs to core attributes, before planned effects")
 	menu.show_page("quest_log")
 	check(labels(menu.body).contains("Read the envelope") and labels(menu.body).contains("Combat remains unavailable"), "Quest log shows actual tutorial and honest combat boundary")

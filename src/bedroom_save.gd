@@ -1,5 +1,5 @@
 extends RefCounted
-# Permanent local guest slot. Counts are compatibility views of the v8 ledger.
+# Permanent local guest slot. Counts are compatibility views of the v9 ledger.
 const Draft = preload("res://src/creator/character_draft.gd")
 const Progress = preload("res://src/tutorial_progress.gd")
 const Stats = preload("res://src/character_stats.gd")
@@ -7,7 +7,7 @@ const APPEARANCE = ["hair", "hair_color", "eyes", "skin"]
 const Inventory = preload("res://src/inventory_catalog.gd")
 const ShopCatalog = preload("res://src/shop_catalog.gd")
 const ITEMS = Inventory.LABELS
-const VERSION := 8
+const VERSION := 9
 const MAX_COUNT := 999
 const ACTION_SCENES = {
 	"read_envelope":"starter_region", "guild_assign_blacksmith":"guild_interior",
@@ -112,6 +112,22 @@ func advance_character_level(target_level, expected_revision) -> Dictionary:
 	result.code = "level_recorded"
 	result.message = "Character level recorded."
 	result["points_awarded"] = plan.points_awarded
+	return result
+
+# Unconnected future gameplay boundary. A real loot/refill service must verify
+# evidence first. Storage-chest open/transfer and tutorial actions never call it.
+func record_luck_event(event_id, source_id, kind, refill_id, expected_revision) -> Dictionary:
+	if character.is_empty() or not _valid_live_state(): return _stat_failure("invalid_save", "Your local save is not ready to record Luck experience.")
+	var plan := Stats.plan_luck_event(stats, event_id, source_id, kind, refill_id, expected_revision)
+	if not plan.ok or not plan.has("next_state"): return plan
+	var previous := snapshot()
+	stats = plan.next_state.duplicate(true)
+	if not _commit(previous): return _stat_failure("save_failed", error)
+	var result := Stats.summary(stats)
+	result.code = "luck_recorded"
+	result.message = "Earned Luck experience recorded."
+	result["duplicate"] = false
+	result["luck_xp_awarded"] = plan.luck_xp_awarded
 	return result
 
 func _stat_failure(code: String, message: String) -> Dictionary:
@@ -561,8 +577,12 @@ func _valid_counts(value, required: Array, exact: bool) -> bool:
 	return true
 
 func _migrate(data: Dictionary) -> Dictionary:
-	# Supplied stat metadata is never silently repaired, even in legacy files.
-	if data.has("stats") and not Stats.validate_state(data.stats): return {}
+	# v8 already required stats. Missing metadata is corruption, not a fresh slot.
+	if int(data.version) >= 8 and not data.has("stats"): return {}
+	var migrated_stats := Stats.initial_state()
+	if data.has("stats"):
+		migrated_stats = Stats.migrate_legacy_state(data.stats)
+		if migrated_stats.is_empty(): return {}
 	# A downgraded test/backup with intact v6 metadata keeps its original ownership
 	# and receipts. Partial ledger metadata must never become a fresh legacy slot.
 	if data.has("item_ledger") or data.has("character_id") or data.has("tutorial"):
@@ -571,9 +591,9 @@ func _migrate(data: Dictionary) -> Dictionary:
 		preserved.awake = true
 		# v6 already owned its gold and grants; migration adds no new value.
 		if not preserved.has("purchase_receipts"): preserved.purchase_receipts = {}
-		# Earlier releases had no levels or allocations. Existing valid stat
-		# metadata in downgraded backups is preserved, never re-awarded/reset.
-		if not preserved.has("stats"): preserved.stats = Stats.initial_state()
+		# Prior Luck free points become unspent; other stats and genuine, validated
+		# XP metadata are retained. Migration never manufactures earned Luck XP.
+		preserved.stats = migrated_stats.duplicate(true)
 		return preserved if _valid_snapshot(preserved) else {}
 	var hero = data.get("character")
 	if not hero is Dictionary or hero.get("base", "") not in ["male", "female"] or not draft_from(hero).validate().is_empty(): return {}
@@ -591,7 +611,7 @@ func _migrate(data: Dictionary) -> Dictionary:
 	# Build in an isolated instance so migration failure cannot mutate this session.
 	var candidate = get_script().new()
 	candidate.character = hero.duplicate(true)
-	if data.has("stats"): candidate.stats = data.stats.duplicate(true)
+	candidate.stats = migrated_stats.duplicate(true)
 	candidate.character_id = _new_id()
 	candidate.location = point.duplicate(true)
 	candidate.gold_seeded = true

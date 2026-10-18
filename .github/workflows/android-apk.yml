@@ -125,6 +125,8 @@ jobs:
           test -s screenshots/stats_844x390_right_review.png
           test -s screenshots/stats_844x390_left_confirmed.png
           test -s screenshots/stats_1280x720_right_effects.png
+          test -s screenshots/stats_844x390_right_luck_xp.png
+          test -s screenshots/stats_844x390_left_luck_rank.png
       - name: Capture native HUD and menu layouts
         shell: bash
         run: |

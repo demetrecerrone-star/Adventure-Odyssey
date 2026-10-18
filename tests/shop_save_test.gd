@@ -56,7 +56,7 @@ func reject_corrupt(state, data: Dictionary, label: String) -> void:
 	state.path = path
 
 func run() -> void:
-	check(Save.VERSION == 8 and Catalog.MAX_QUANTITY == 10, "Bounded v8 service")
+	check(Save.VERSION == 9 and Catalog.MAX_QUANTITY == 10, "Bounded v9 service")
 	check(Catalog.STOCK_POLICY == "unlimited" and Catalog.CURRENT_REVISION == 1, "Explicit development stock and price revision")
 	check(Catalog.entries_for("apothecary").size() == 2 and Catalog.entries_for("general_store").size() == 1, "Only approved potions stocked")
 	check(Catalog.entries_for("blacksmith").is_empty() and Catalog.shop_for_scene("guild_interior").is_empty(), "No gear or guild shop")

@@ -344,7 +344,7 @@ func _build_character() -> void:
 				current_stats.append("%s %d" % [attribute[0], int(stat_summary.attributes[attribute[0]])])
 		var attributes := _card(details, "CORE ATTRIBUTES", "  ·  ".join(current_stats) if not current_stats.is_empty() else "Stats unavailable")
 		_label("Strength · Agility · Vitality · Intelligence · Wisdom · Luck", attributes, 13).modulate = MUTED
-		_label("All six start at 10. Level-ups grant 5 points to allocate in Stats.", attributes, 14).modulate = MUTED
+		_label("All six start at 10. Level-ups grant 5 points for STR, AGI, VIT, INT and WIS. Luck grows only through XP.", attributes, 14).modulate = MUTED
 		var values := _card(details, "PLANNED COMBAT VALUES", "View provisional bonuses in Stats.")
 		_label("Combat is not implemented. These planned effects do not affect gameplay yet.", values, 13).modulate = MUTED
 
@@ -507,6 +507,9 @@ func _build_stat_grid() -> void:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 5)
 		card.add_child(row)
+		if key == "LUK":
+			_build_luck_progress(row)
+			continue
 		var identity := VBoxContainer.new()
 		identity.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		identity.custom_minimum_size.x = 78
@@ -533,6 +536,53 @@ func _build_stat_grid() -> void:
 	var help := _label("Use + / − to plan your points. Only Confirm saves them.", body, 14)
 	help.name = "StatHelp"
 	help.modulate = MUTED
+	_label("Luck grows through XP. XP earning is not available yet.", body, 13).modulate = MUTED
+
+func _build_luck_progress(row: HBoxContainer) -> void:
+	row.add_theme_constant_override("separation", 14)
+	var identity := VBoxContainer.new()
+	identity.custom_minimum_size.x = 80
+	identity.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	identity.add_theme_constant_override("separation", 0)
+	row.add_child(identity)
+	var heading := HBoxContainer.new()
+	heading.add_theme_constant_override("separation", 8)
+	identity.add_child(heading)
+	var name_label := _label("LUK", heading, 18, true)
+	name_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	var value := _label("", heading, 17)
+	value.name = "StatValue_LUK"
+	value.autowrap_mode = TextServer.AUTOWRAP_OFF
+	value.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_label("Luck", identity, 13).modulate = MUTED
+	var progress := VBoxContainer.new()
+	progress.name = "LuckProgress"
+	progress.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	progress.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	progress.add_theme_constant_override("separation", 5)
+	row.add_child(progress)
+	var xp_label := _label("", progress, 13)
+	xp_label.name = "LuckXPLabel"
+	xp_label.modulate = MUTED
+	var xp_bar := ProgressBar.new()
+	xp_bar.name = "LuckXPBar"
+	xp_bar.custom_minimum_size = Vector2(90, 10)
+	xp_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	xp_bar.show_percentage = false
+	xp_bar.mouse_filter = Control.MOUSE_FILTER_PASS
+	xp_bar.tooltip_text = "Luck grows only through XP. XP earning is not available yet."
+	var rail := StyleBoxFlat.new()
+	rail.bg_color = Color("dfd2b4")
+	rail.border_color = Color("b39154")
+	rail.set_border_width_all(1)
+	rail.set_corner_radius_all(4)
+	xp_bar.add_theme_stylebox_override("background", rail)
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = Color("397c72")
+	fill.set_corner_radius_all(4)
+	xp_bar.add_theme_stylebox_override("fill", fill)
+	progress.add_child(xp_bar)
+	stat_rows.LUK = {"value":value, "xp_label":xp_label, "xp_bar":xp_bar}
 
 func _build_stat_review() -> void:
 	var review := _card(body, "REVIEW ALLOCATION", "Spend %d points · %d will remain" % [_stat_total(), int(_stat_preview.get("unspent_points", 0))])
@@ -559,7 +609,7 @@ func _build_planned_effects() -> void:
 		value.name = "StatEffect_" + definition[0]
 		value.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		stat_effect_labels[definition[0]] = value
-	_label("All attributes start at 10. Each level after 1 grants 5 points. Chance bonuses use diminishing returns; tuning may change.", section, 13).modulate = MUTED
+	_label("All attributes start at 10. Each level after 1 grants 5 points for the other five stats; Luck grows through XP. Chance bonuses use diminishing returns; tuning may change.", section, 13).modulate = MUTED
 
 func _clear_stat_actions() -> void:
 	_release_touch_owners()
@@ -614,6 +664,12 @@ func _sync_stat_controls() -> void:
 	for key in stat_rows:
 		var row: Dictionary = stat_rows[key]
 		var saved := int(_stat_snapshot.attributes[key])
+		if key == "LUK":
+			row.value.text = str(saved)
+			row.xp_label.text = "%d / %d XP" % [int(_stat_snapshot.luck_xp), int(_stat_snapshot.luck_xp_required)]
+			row.xp_bar.max_value = maxf(1, float(_stat_snapshot.luck_xp_required))
+			row.xp_bar.value = float(_stat_snapshot.luck_xp)
+			continue
 		var added := int(_stat_deltas.get(key, 0))
 		row.value.text = "%d" % saved if added == 0 else "%d\n+%d" % [saved, added]
 		row.value.add_theme_color_override("font_color", Color("236f68") if added > 0 else INK)
@@ -636,7 +692,7 @@ func _sync_stat_controls() -> void:
 
 func _change_stat(key: String, change: int) -> void:
 	if page != "stats" or _stat_reviewing or _stat_committing or _dismiss_pending or not _stat_snapshot.get("ok", false): return
-	if change not in [-1, 1] or not _stat_snapshot.attributes.has(key): return
+	if key == "LUK" or change not in [-1, 1] or not _stat_snapshot.attributes.has(key): return
 	var current := int(_stat_deltas.get(key, 0))
 	if change == -1 and current <= 0: return
 	if change == 1 and _stat_total() >= int(_stat_snapshot.unspent_points): return

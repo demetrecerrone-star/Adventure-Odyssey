@@ -67,17 +67,31 @@ func run() -> void:
 			await snap(prefix + "_unspent.png")
 			await click(room.overlay.stat_rows.STR.plus)
 			await click(room.overlay.stat_rows.STR.plus)
-			await click(room.overlay.stat_rows.LUK.plus)
+			await click(room.overlay.stat_rows.WIS.plus)
 			assert(room.overlay._stat_total() == 3 and state.get_stat_summary().unspent_points == 5)
 			await snap(prefix + "_draft.png")
 			await click(room.overlay.stat_primary)
 			assert(room.overlay._stat_reviewing and room.overlay.stat_primary.name == "StatConfirm")
 			await snap(prefix + "_review.png")
 			await click(room.overlay.stat_primary)
-			assert(state.get_stat_summary().attributes.STR == 12 and state.get_stat_summary().attributes.LUK == 11 and state.get_stat_summary().unspent_points == 2)
+			assert(state.get_stat_summary().attributes.STR == 12 and state.get_stat_summary().attributes.WIS == 11 and state.get_stat_summary().attributes.LUK == 10 and state.get_stat_summary().unspent_points == 2)
 			await snap(prefix + "_confirmed.png")
 			room.overlay.body_scroll.scroll_vertical = 10000
 			await snap(prefix + "_effects.png")
+			# Real gameplay does not call this future discovery service yet. These
+			# isolated capture receipts show the bar with genuine persisted data.
+			assert(state.record_luck_event("capture.luck.1", "capture.source.1", "first_discovery", "", state.get_stat_summary().revision).ok)
+			room.overlay.refresh_state()
+			room.overlay.set_notice("")
+			room.overlay.body_scroll.set_deferred("scroll_vertical", 0)
+			assert(room.overlay.stat_rows.LUK.xp_label.text == "25 / 100 XP")
+			await snap(prefix + "_luck_xp.png")
+			for index in range(2, 5):
+				assert(state.record_luck_event("capture.luck.%d" % index, "capture.source.%d" % index, "first_discovery", "", state.get_stat_summary().revision).ok)
+			room.overlay.refresh_state()
+			room.overlay.body_scroll.set_deferred("scroll_vertical", 0)
+			assert(room.overlay.stat_rows.LUK.value.text == "11" and room.overlay.stat_rows.LUK.xp_label.text == "0 / 125 XP")
+			await snap(prefix + "_luck_rank.png")
 			var preferences_path: String = room.control_preferences.path
 			room.free()
 			await settle()

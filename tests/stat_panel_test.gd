@@ -59,13 +59,19 @@ func run() -> void:
 	for attribute in Menu.CORE_ATTRIBUTES:
 		var key: String = attribute[0]
 		check(menu.stat_rows.has(key) and menu.stat_rows[key].value.text == "10", "Actual configured baseline shown for " + key)
-		check(menu.stat_rows[key].minus.disabled and menu.stat_rows[key].plus.disabled, "No free points or baseline refunds for " + key)
-		add_point(menu, key)
+		if key == "LUK":
+			check(not menu.stat_rows.LUK.has("minus") and not menu.stat_rows.LUK.has("plus"), "Luck has no point allocation controls")
+			check(menu.stat_rows.LUK.xp_label.text == "0 / 100 XP" and menu.stat_rows.LUK.xp_bar.value == 0 and menu.stat_rows.LUK.xp_bar.max_value == 100, "Luck displays actual initial zero of 100 XP")
+			menu._change_stat("LUK", 1)
+		else:
+			check(menu.stat_rows[key].minus.disabled and menu.stat_rows[key].plus.disabled, "No free points or baseline refunds for " + key)
+			add_point(menu, key)
 	preview(menu)
 	confirm(menu)
 	check(before_disk == FileAccess.get_file_as_string(state.path) and before_state == JSON.stringify(state.snapshot()), "Opening stats and disabled-event injection never change save")
 	check(labels(menu.body).contains("Combat is not implemented") and labels(menu.body).contains("no gameplay effect yet"), "Planned effects cannot be mistaken for implemented combat")
 	check(labels(menu.body).contains("Physical power: 20") and labels(menu.body).contains("Maximum HP: 100") and labels(menu.body).contains("Accuracy: 90.00%"), "Planned numbers are computed from configured values")
+	check(labels(menu.body).contains("XP earning is not available yet"), "Luck XP source is clearly marked unavailable")
 	menu.show_page("character")
 	check(menu.page == "character", "Zero-point stats never block another page")
 	menu.free()
@@ -83,12 +89,19 @@ func run() -> void:
 				var key: String = attribute[0]
 				var row = menu.find_child("Stat_" + key, true, false)
 				check(menu.body_scroll.get_global_rect().grow(1).encloses(row.get_global_rect()), "All six stats fit first view at %s left=%s: %s" % [dimensions, left, key])
+				if key == "LUK":
+					check(row.get_global_rect().encloses(menu.stat_rows.LUK.xp_bar.get_global_rect()) and menu.stat_rows.LUK.xp_bar.size.x >= 90, "Luck XP bar fits beside its name and value")
+					check(menu.stat_rows.LUK.value.get_global_rect().end.x < menu.stat_rows.LUK.xp_bar.get_global_rect().position.x, "Luck value sits beside its name, before XP bar")
+					check(menu.find_child("StatMinus_LUK", true, false) == null and menu.find_child("StatPlus_LUK", true, false) == null, "Luck stepper nodes are absent")
+					continue
 				for button in [menu.stat_rows[key].minus, menu.stat_rows[key].plus]:
 					check(button.size.x >= 44 and button.size.y >= 44, "44px stepper target for " + key)
 					check(row.get_global_rect().encloses(button.get_global_rect()), "Stepper stays inside stat card for " + key)
 			for button in [menu.stat_primary, menu.stat_cancel]:
 				check(button.size.x >= 44 and button.size.y >= 44 and menu.panel.get_global_rect().encloses(button.get_global_rect()), "Fixed actions remain touch-sized and on screen")
 			check((menu.stat_primary.position.x < menu.stat_cancel.position.x) == left, "Primary action follows action-hand preference")
+			menu._change_stat("LUK", 1)
+			check(menu._stat_total() == 0 and state.get_stat_summary().attributes.LUK == 10, "Luck cannot consume available free points even through an injected change")
 			add_point(menu, "STR")
 			check(menu._stat_total() == 1 and menu.stat_rows.STR.value.text.contains("+1"), "Draft stepper shows the pending increment")
 			check(menu.stat_effect_labels.physical_power.text.contains("20 → 22"), "Provisional effect updates from authoritative preview")
@@ -97,11 +110,11 @@ func run() -> void:
 			await settle()
 			var previous_scroll: int = menu.body_scroll.scroll_vertical
 			var action_rect: Rect2 = menu.stat_footer.get_global_rect()
-			add_point(menu, "LUK")
+			add_point(menu, "WIS")
 			await settle()
 			check(menu.body_scroll.scroll_vertical == previous_scroll and menu.stat_footer.get_global_rect() == action_rect, "Stepper changes preserve scroll and fixed action position")
-			menu.stat_rows.LUK.minus.pressed.emit()
-			check(not menu._stat_deltas.has("LUK"), "Minus removes only draft allocations")
+			menu.stat_rows.WIS.minus.pressed.emit()
+			check(not menu._stat_deltas.has("WIS"), "Minus removes only draft allocations")
 			menu.stat_cancel.pressed.emit()
 			await settle()
 			check(menu._stat_total() == 0 and menu.stat_rows.STR.value.text == "10", "Cancel discards draft and shows unchanged saved stats")
@@ -118,11 +131,11 @@ func run() -> void:
 	menu.stat_cancel.pressed.emit()
 	add_point(menu, "STR")
 	add_point(menu, "STR")
-	add_point(menu, "LUK")
+	add_point(menu, "WIS")
 	preview(menu)
 	await settle()
 	check(menu._stat_reviewing and menu.stat_primary.name == "StatConfirm", "Spending requires explicit review state")
-	check(labels(menu.body).contains("STR  10 → 12 (+2)") and labels(menu.body).contains("LUK  10 → 11 (+1)"), "Review lists exact saved-to-proposed changes")
+	check(labels(menu.body).contains("STR  10 → 12 (+2)") and labels(menu.body).contains("WIS  10 → 11 (+1)"), "Review lists exact saved-to-proposed changes")
 	check(labels(menu.body).contains("3 points · 2 will remain"), "Review shows exact total and remaining balance")
 	check(before_disk == FileAccess.get_file_as_string(state.path), "Preview is read-only")
 	menu.stat_edit.pressed.emit()
@@ -132,7 +145,7 @@ func run() -> void:
 	old_confirm.pressed.emit()
 	old_confirm.pressed.emit()
 	await settle()
-	check(state.get_stat_summary().attributes.STR == 12 and state.get_stat_summary().attributes.LUK == 11 and state.get_stat_summary().unspent_points == 2, "Confirm commits exactly once despite a double tap")
+	check(state.get_stat_summary().attributes.STR == 12 and state.get_stat_summary().attributes.WIS == 11 and state.get_stat_summary().attributes.LUK == 10 and state.get_stat_summary().unspent_points == 2, "Confirm commits exactly once despite a double tap")
 	check(menu._stat_total() == 0 and not menu._stat_reviewing and menu.notice.text.contains("Points saved"), "Success clears draft and acknowledges persistence")
 	for attribute in Menu.CORE_ATTRIBUTES:
 		var row = menu.find_child("Stat_" + attribute[0], true, false)
@@ -142,15 +155,15 @@ func run() -> void:
 	check(restored.load_saved() and restored.get_stat_summary().attributes == state.get_stat_summary().attributes, "Confirmed stats persist across reload")
 	menu.character_tab = "details"
 	menu.show_page("character")
-	check(labels(menu.body).contains("STR 12") and labels(menu.body).contains("LUK 11"), "Character details reflect confirmed values")
+	check(labels(menu.body).contains("STR 12") and labels(menu.body).contains("WIS 11") and labels(menu.body).contains("LUK 10"), "Character details reflect confirmed values")
 	menu.show_page("stats")
 	add_point(menu, "AGI")
 	preview(menu)
-	check(state.allocate_stat_points({"WIS":1}, state.get_stat_summary().revision).ok, "Simulate a concurrent authoritative stat change")
+	check(state.allocate_stat_points({"INT":1}, state.get_stat_summary().revision).ok, "Simulate a concurrent authoritative stat change")
 	confirm(menu)
 	await settle()
-	check(state.get_stat_summary().attributes.AGI == 10 and state.get_stat_summary().attributes.WIS == 11, "Stale confirmation cannot spend points")
-	check(menu._stat_total() == 0 and menu.stat_rows.WIS.value.text == "11" and menu.notice.text.contains("changed"), "Stale result reloads current authority and requires a fresh draft")
+	check(state.get_stat_summary().attributes.AGI == 10 and state.get_stat_summary().attributes.INT == 11, "Stale confirmation cannot spend points")
+	check(menu._stat_total() == 0 and menu.stat_rows.INT.value.text == "11" and menu.notice.text.contains("changed"), "Stale result reloads current authority and requires a fresh draft")
 	add_point(menu, "AGI")
 	check(menu.notice.text.is_empty(), "Accepted edit clears obsolete error or success status")
 	preview(menu)
@@ -173,7 +186,7 @@ func run() -> void:
 	escape.keycode = KEY_ESCAPE
 	escape.pressed = true
 	menu._input(escape)
-	check(menu._dismiss_pending and menu._stat_total() == 0 and state.get_stat_summary().attributes.INT == 10, "Back/Escape discards draft without spending")
+	check(menu._dismiss_pending and menu._stat_total() == 0 and state.get_stat_summary().attributes.INT == 11, "Back/Escape discards draft without spending")
 	menu.free()
 	await settle()
 	menu = make_menu(state)
@@ -185,6 +198,35 @@ func run() -> void:
 	check(menu._stat_total() == 0 and state.get_stat_summary().attributes.VIT == 10, "Close from review disarms even a late confirmation event")
 	menu.free()
 	await settle()
+	# XP is seeded only through isolated fixture events, never a runtime control.
+	var luck_state = make_state()
+	check(luck_state.record_luck_event("stat.panel.discovery.1", "stat.panel.source.1", "first_discovery", "", luck_state.get_stat_summary().revision).ok, "Fixture records one genuine-source-shaped Luck discovery")
+	var luck_before := JSON.stringify(luck_state.snapshot())
+	for dimensions in [Vector2i(1280, 720), Vector2i(844, 390)]:
+		root.size = dimensions
+		for left in [false, true]:
+			menu = make_menu(luck_state, left)
+			await settle()
+			check(menu.stat_rows.LUK.value.text == "10" and menu.stat_rows.LUK.xp_label.text == "25 / 100 XP", "Luck shows authoritative partial progress at %s left=%s" % [dimensions, left])
+			check(is_equal_approx(menu.stat_rows.LUK.xp_bar.value / menu.stat_rows.LUK.xp_bar.max_value, 0.25), "Luck bar uses actual XP fraction")
+			var row = menu.find_child("Stat_LUK", true, false)
+			check(menu.body_scroll.get_global_rect().grow(1).encloses(row.get_global_rect()) and row.get_global_rect().encloses(menu.stat_rows.LUK.xp_bar.get_global_rect()), "Seeded Luck remains fully visible at %s left=%s" % [dimensions, left])
+			check(luck_before == JSON.stringify(luck_state.snapshot()), "Reading Luck progress never awards XP")
+			menu.free()
+			await settle()
+	for index in range(2, 5):
+		check(luck_state.record_luck_event("stat.panel.discovery.%d" % index, "stat.panel.source.%d" % index, "first_discovery", "", luck_state.get_stat_summary().revision).ok, "Fixture advances Luck from earned XP")
+	root.size = Vector2i(844, 390)
+	for left in [false, true]:
+		menu = make_menu(luck_state, left)
+		await settle()
+		check(menu.stat_rows.LUK.value.text == "11" and menu.stat_rows.LUK.xp_label.text == "0 / 125 XP", "XP threshold updates Luck value and next requirement")
+		check(menu.stat_rows.LUK.xp_bar.value == 0 and menu.stat_rows.LUK.xp_bar.max_value == 125, "Next-rank bar resets to actual progress")
+		menu.character_tab = "details"
+		menu.show_page("character")
+		check(labels(menu.body).contains("LUK 11"), "Character details display actual XP-earned Luck")
+		menu.free()
+		await settle()
 	for path in paths: DirAccess.remove_absolute(path)
 	print("STAT PANEL TEST: %d checks, %d failures" % [checks, failures])
 	quit(1 if failures else 0)
