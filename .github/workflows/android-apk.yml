@@ -288,7 +288,7 @@ jobs:
           z = zipfile.ZipFile('build/Adventure-Odyssey-release.apk')
           names = z.namelist()
           assert z.testzip() is None, 'APK ZIP CRC failure'
-          for asset in ('dusk-kingdom-background', 'adventure-odyssey-wordmark', 'by-dabsky', 'goblin-run', 'skeleton-run', 'body.ttf', 'title.ttf', 'textured_panel'):
+          for asset in ('dusk-kingdom-background', 'adventure-odyssey-wordmark', 'by-dabsky', 'goblin-run', 'skeleton-run', 'body.ttf', 'title.ttf', 'textured_panel', 'adventure_hud', 'adventure_menu', 'ornate_panel', 'control_preferences'):
               assert any(asset in n for n in names), 'Missing packaged title dependency: ' + asset
           assert any(n.endswith('.ctex') for n in names), 'No imported textures exported'
           root = pathlib.Path('/tmp/ao-packaged-title')

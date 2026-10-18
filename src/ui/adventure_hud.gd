@@ -77,6 +77,13 @@ class Medallion:
 		elif emblem == "menu":
 			for y in [-8, 0, 8]:
 				draw_line(center + Vector2(-10, y), center + Vector2(10, y), Color("f0dba6"), 3, true)
+		# Button draws its native text before this custom face. Repaint captions
+		# above the medallion so disabled skills remain identifiable on screen.
+		if emblem in ["attack", "skill"]:
+			var font := get_theme_font("font")
+			var font_size := 14 if emblem == "attack" else 16
+			var baseline := center.y + 17.0 if emblem == "attack" else center.y + (font.get_ascent(font_size) - font.get_descent(font_size)) * 0.5
+			draw_string(font, Vector2(3, baseline), text.strip_edges(), HORIZONTAL_ALIGNMENT_CENTER, size.x - 6, font_size, Color("e0d6b9"))
 
 class MapPlaceholder:
 	extends Control
@@ -175,16 +182,16 @@ func _build() -> void:
 	location_label = _label("Bedroom", map_panel, 14)
 	location_label.add_theme_font_override("font", TITLE_FONT)
 	var map_notice := _label("Map unavailable", map_panel, 12, MUTED)
-	_place(map_notice, Rect2(14, 36, 125, 19))
+	_place(map_notice, Rect2(26, 36, 125, 19))
 	coordinates_label = _label("X 0  ·  Y 0", map_panel, 12, MUTED)
-	_place(coordinates_label, Rect2(14, 57, 135, 18))
+	_place(coordinates_label, Rect2(26, 57, 125, 18))
 	var placeholder := MapPlaceholder.new()
 	placeholder.name = "MinimapUnavailable"
 	map_panel.add_child(placeholder)
 	_place(placeholder, Rect2(153, 30, 40, 40))
 	quest_panel = _panel("QuestTracker")
 	var quest_label := _label("No quest system yet", quest_panel, 12, MUTED)
-	_place(quest_label, Rect2(13, 8, 186, 23))
+	_place(quest_label, Rect2(26, 8, 158, 23))
 	quest_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	vitals_panel = _panel("VitalsUnavailable")
 	hp_label = _label("HP unavailable", vitals_panel, 13, MUTED)
@@ -356,7 +363,7 @@ func _layout() -> void:
 	_place(status, Rect2(92, 76, identity_width - 108, 16))
 	_place(menu_button, Rect2(available.position + Vector2(margin + 8, 118), Vector2(52, 52)))
 	_place(map_panel, Rect2(available.position + Vector2(available.size.x - margin - 210, margin), Vector2(210, 87)))
-	_place(location_label, Rect2(14, 11, 180, 23))
+	_place(location_label, Rect2(26, 11, 158, 23))
 	_place(quest_panel, Rect2(available.position + Vector2(available.size.x - margin - 210, 105), Vector2(210, 40)))
 	var action_size := Vector2(244, 182)
 	var action_x := margin if left_handed else available.size.x - margin - action_size.x

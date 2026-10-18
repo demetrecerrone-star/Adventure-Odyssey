@@ -61,6 +61,9 @@ func run() -> void:
 	check(hud.progression_label.text == "Level / XP unavailable", "progression has no invented values")
 	check(hud.location_label.text == "Adventurer Guild" and hud.coordinates_label.text == "X 716  ·  Y 1322", "pre-ready location uses real rounded coordinates")
 	check(hud.attack_button.disabled and hud.potion_button.disabled, "combat and potion controls unavailable")
+	check(hud.attack_button.text.strip_edges() == "Attack" and hud.attack_button.emblem == "attack", "attack has a distinct caption for its custom face")
+	for index in hud.skill_buttons.size():
+		check(hud.skill_buttons[index].text == ["I", "II", "III"][index] and hud.skill_buttons[index].emblem == "skill", "custom skill face has an identifiable Roman caption")
 	for skill in hud.skill_buttons:
 		check(skill.disabled, "skill unavailable " + skill.name)
 	check(hud.hp_label.text == "HP unavailable" and hud.mp_label.text == "MP unavailable", "vitals contain no invented stats or bars")

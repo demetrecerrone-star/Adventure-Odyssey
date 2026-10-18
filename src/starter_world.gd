@@ -94,7 +94,7 @@ func _update_actor() -> void:
 	_update_fortification_depth()
 	_layout()
 	if is_instance_valid(status) and not state.character.is_empty():
-		status.text = "%s • Starter region • %d, %d" % [state.character.username,player.x,player.y]
+		status.text = "Local save • Starter region"
 func update_chunks() -> void:
 	var needed := Rect2(camera_position-size/camera_zoom/2,size/camera_zoom).grow(128)
 	for i in world_layout.chunks.size():

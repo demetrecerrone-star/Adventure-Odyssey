@@ -146,7 +146,7 @@ func _start_character() -> void:
 	player = wake_spawn
 	actor.visible = actor.artwork_ready
 	message.text = "Move with the joystick or WASD / arrows. Your chest holds supplies."
-	status.text = state.character.username + " • Local save • Appearance art in progress"
+	status.text = "Local save • " + state.character.username
 	_update_actor()
 func can_stand(point: Vector2) -> bool:
 	if not Geometry2D.is_point_in_polygon(point, PackedVector2Array([Vector2(235, 385), Vector2(1305, 385), Vector2(1455, 925), Vector2(80, 925)])):
@@ -168,6 +168,7 @@ func move_player(delta: Vector2) -> void:
 func _update_actor() -> void:
 	actor.position = player
 	actor.z_index = int(player.y)
+	_refresh_hud_location()
 func nearest_prop() -> String:
 	var result := ""
 	var distance := 135.0
@@ -373,7 +374,8 @@ func _refresh_hud_location() -> void:
 	if not is_instance_valid(hud): return
 	var scene_name := "Bedroom"
 	if get_script().resource_path.ends_with("starter_world.gd"): scene_name = "Starter region"
-	elif get_script().resource_path.ends_with("town_interior.gd"): scene_name = str(get("room_id")).replace("_interior", "").replace("_", " ").capitalize()
+	elif get_script().resource_path.ends_with("town_interior.gd"):
+		scene_name = {"guild_interior":"Adventurer Guild", "blacksmith_interior":"Blacksmith", "apothecary_interior":"Apothecary", "general_store_interior":"General store"}.get(str(get("room_id")), "Town interior")
 	hud.set_world_position(scene_name, player)
 func _apply_control_layout() -> void:
 	if not is_instance_valid(joystick) or not is_instance_valid(hud): return
