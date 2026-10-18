@@ -1,5 +1,6 @@
 # Monster coins, character XP and Adventure Odyssey Sigils
 
+Current wilderness behavior is documented in [Respawning wilderness](respawning-wilderness.md). The initial quest-gated/permanently cleared encounter behavior below is historical.
 Gold remains the existing character-bound coin wallet. Adventure Odyssey Sigils are a separate earned-only wallet. There is no cash purchase or exchange system.
 
 Current provisional quest-monster tuning:

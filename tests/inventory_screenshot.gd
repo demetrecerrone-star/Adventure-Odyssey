@@ -11,7 +11,7 @@ func snap(name:String)->void:
  await settle()
  if not validate_only:
   await RenderingServer.frame_post_draw
-  assert(root.get_texture().get_image().save_png("res://screenshots/"+name)==OK)
+  assert(root.get_texture().get_image().save_png((OS.get_environment("AO_CAPTURE_DIR") if not OS.get_environment("AO_CAPTURE_DIR").is_empty() else "res://screenshots")+"/"+name)==OK)
  captured+=1
 func click(button:Button)->void:
  assert(not button.disabled)

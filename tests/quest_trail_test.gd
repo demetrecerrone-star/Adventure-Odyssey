@@ -22,16 +22,16 @@ func run():
    for j in range(count+1):check(w.can_stand(a.lerp(b,float(j)/count)),"Gold trail cannot point through walls or terrain: "+stage)
  var before=JSON.stringify(w.state.snapshot())
  var node=Trail.new();root.add_child(node)
- node.update_quest("first_combat_active",Vector2(1000,2020),w.encounter.enemies)
+ node.update_quest("first_combat_active",Vector2(1000,2020),w.populations.south_meadow_slimes.enemies)
  check(node.visible and node.branches.size()==3,"Active assignment marks each living slime branch")
  for branch in node.branches:
   for i in range(branch.size()-1):
    for j in 100:check(w.can_stand(branch[i].lerp(branch[i+1],float(j)/99)),"Meadow branch remains walkable")
- w.encounter.enemies[0].hp=0
- node.update_quest("first_combat_active",Vector2.ZERO,w.encounter.enemies)
+ w.populations.south_meadow_slimes.enemies[0].hp=0
+ node.update_quest("first_combat_active",Vector2.ZERO,w.populations.south_meadow_slimes.enemies)
  check(node.branches.size()==2,"Defeated spawn branch disappears")
  for stage in ["awaiting_letter","first_combat_pending","return_guild_first_combat","forest_patrol_complete"]:
-  node.update_quest(stage,Vector2.ZERO,w.encounter.enemies)
+  node.update_quest(stage,Vector2.ZERO,w.populations.south_meadow_slimes.enemies)
   check(not node.visible and node.route.is_empty(),"No false trail before acceptance or after completion")
  check(JSON.stringify(w.state.snapshot())==before,"Wayfinding never mutates saved progress")
  DirAccess.remove_absolute(w.state.path);node.free();w.free()

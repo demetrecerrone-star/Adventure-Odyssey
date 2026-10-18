@@ -1,5 +1,6 @@
 # First field assignment
 
+Current wilderness behavior is documented in [Respawning wilderness](respawning-wilderness.md). The initial quest-gated/permanently cleared encounter behavior below is historical.
 The existing preparation sequence remains unchanged. After the keepsake errand,
 the receptionist now offers **Clear the South Meadow**. Accept it at the guild,
 equip a weapon, and cross the west bridge, follow the south branch, and clear the three slimes east

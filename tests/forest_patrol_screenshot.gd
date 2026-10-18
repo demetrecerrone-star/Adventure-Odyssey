@@ -2,7 +2,7 @@ extends "res://tests/tutorial_save_test.gd"
 func capture(file: String) -> void:
 	for tick in 3: await process_frame
 	await RenderingServer.frame_post_draw
-	assert(root.get_texture().get_image().save_png("res://screenshots/"+file)==OK)
+	assert(root.get_texture().get_image().save_png((OS.get_environment("AO_CAPTURE_DIR") if not OS.get_environment("AO_CAPTURE_DIR").is_empty() else "res://screenshots")+"/"+file)==OK)
 func run() -> void:
 	DirAccess.make_dir_recursive_absolute("res://screenshots")
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
@@ -40,7 +40,7 @@ func run() -> void:
 		await capture("forest_patrol_supplies_%s.png" % ("left" if handed else "right"))
 		world.cancel_overlay()
 	for enemy in world.encounter.enemies:
-		world.player = enemy.position+Vector2(0,60)
+		world.player = enemy.position+Vector2(60,0)
 		for hit in 8:
 			if enemy.hp <= 0: break
 			world.encounter.attack_cooldown = 0

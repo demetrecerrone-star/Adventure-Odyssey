@@ -10,7 +10,7 @@ const APPEARANCE = ["hair", "hair_color", "eyes", "skin"]
 const Inventory = preload("res://src/inventory_catalog.gd")
 const ShopCatalog = preload("res://src/shop_catalog.gd")
 const ITEMS = Inventory.LABELS
-const VERSION := 12
+const VERSION := 13
 const Relic = preload("res://src/hidden_relic.gd")
 const MAX_COUNT := 999
 const ACTION_SCENES = {
@@ -213,16 +213,16 @@ func transfer(item: String, to_chest: bool) -> bool:
 	return _move_item(item, "bag" if to_chest else "chest", "chest" if to_chest else "bag")
 
 func equip(item: String) -> bool:
-	if character.is_empty() or not equipped_weapon.is_empty() or not Inventory.can_equip(item, character["class"]): return false
-	return _move_item(item, "bag", "equipped_weapon")
+	if character.is_empty() or not Inventory.can_equip(item, character["class"]): return false
+	return _equip_from_bag(item, "equipped_weapon")
 
 func unequip() -> bool:
 	if equipped_weapon.is_empty(): return false
 	return _move_item(equipped_weapon, "equipped_weapon", "bag")
 
 func equip_ring(item: String = "keepsake_ring") -> bool:
-	if character.is_empty() or not equipped_ring.is_empty() or not Inventory.ring_allowed(item): return false
-	return _move_item(item, "bag", "equipped_ring")
+	if character.is_empty() or not Inventory.ring_allowed(item): return false
+	return _equip_from_bag(item, "equipped_ring")
 
 func unequip_ring() -> bool:
 	if equipped_ring.is_empty(): return false
@@ -449,6 +449,33 @@ func set_location(scene: String, point: Vector2) -> bool:
 	location = next
 	return _commit(previous)
 
+func _equip_from_bag(item: String, slot: String) -> bool:
+	# Swap ledger containers in one transaction. Never save the intermediate unequip.
+	if not _valid_live_state(): return false
+	var index := _find_stack(item, "bag")
+	if index < 0: return false
+	var old_index := -1
+	for i in item_ledger.size():
+		if item_ledger[i].container == slot: old_index = i
+	if old_index >= 0:
+		var old_item: String = item_ledger[old_index].item_id
+		var count_after := int(bag[old_item]) + 1 - (1 if old_item == item else 0)
+		if count_after > MAX_COUNT: return false
+	var previous := snapshot()
+	if old_index >= 0: item_ledger[old_index].container = "bag"
+	var entry: Dictionary = item_ledger[index]
+	if entry.quantity == 1:
+		entry.container = slot
+	else:
+		entry.quantity -= 1
+		var split := entry.duplicate(true)
+		split.id = _new_id()
+		split.quantity = 1
+		split.container = slot
+		item_ledger.append(split)
+	_sync_views()
+	return _commit(previous)
+
 func _move_item(item: String, source: String, target: String) -> bool:
 	if not _valid_live_state(): return false
 	var index := _find_stack(item, source)
@@ -571,10 +598,13 @@ func _valid_snapshot(data: Dictionary) -> bool:
 	var hero = data.get("character")
 	if not hero is Dictionary or hero.get("base", "") not in ["male", "female"] or not draft_from(hero).validate().is_empty(): return false
 	if not _valid_id(data.get("character_id")) or not valid_location(data.get("location")) or data.get("awake") != true: return false
-	if not _whole(data.get("chest_gold"), 0, 100) or not _whole(data.get("wallet_gold"), 0, 190): return false
+	if not _whole(data.get("chest_gold"), 0, 100) or not _whole(data.get("wallet_gold"), 0, 4000000000): return false
 	var gold_spent := _verified_purchase_total(data)
 	if not data.get("tutorial") is Dictionary or not Progress.validate_state(data.tutorial): return false
-	if not Rewards.valid(data.get("progression")) or not _valid_cosmetics(data): return false
+	if not Rewards.valid(data.get("progression")) or data.progression.version != 2 or not _valid_cosmetics(data): return false
+	for group in Rewards.ENCOUNTERS:
+		var acceptance := "guild_assign_first_combat" if group == FIRST_ENCOUNTER else "guild_assign_forest_patrol"
+		if int(data.progression.population.quest_kills[group]) > 0 and not data.tutorial.action_receipts.has(acceptance): return false
 	var earned_gold := (25 if data.tutorial.reward_receipts.has(COMBAT_REWARD) else 0) + (40 if data.tutorial.reward_receipts.has(FOREST_REWARD) else 0)
 	if gold_spent < 0 or data.chest_gold + data.wallet_gold + gold_spent != 100 + earned_gold + Rewards.totals(data.progression).gold: return false
 	if not Stats.validate_state(data.get("stats")) or not Resources.valid(data.get("combat"), data.stats): return false
@@ -742,12 +772,23 @@ func _migrate(data: Dictionary) -> Dictionary:
 				if preserved.tutorial.event_receipts.has(event):
 					for index in Rewards.ENCOUNTERS[encounter_id].count:
 						preserved.progression.kills[Rewards.key(encounter_id,index)] = Rewards.receipt(encounter_id,index)
+			preserved.progression.population = Rewards.Population.initial(preserved.progression.kills,str(preserved.tutorial.stage))
 			var totals := Rewards.totals(preserved.progression)
 			preserved.wallet_gold += totals.gold
 			preserved.wallet_sigils = totals.sigils
 			var earned := Rewards.summary(preserved.progression)
 			if earned.level > preserved.stats.level:
 				preserved.stats = Stats.plan_level_advance(preserved.stats,earned.level,preserved.stats.revision).next_state
+		preserved.progression = Rewards.migrate(preserved.progression,str(preserved.tutorial.stage))
+		if preserved.progression.is_empty(): return {}
+		# A v12 kill checkpoint could precede the separate quest-clear write.
+		# Proven accepted kill receipts complete that pending objective, never its payment.
+		for group in Rewards.ENCOUNTERS:
+			var row: Dictionary = Rewards.ENCOUNTERS[group]
+			if preserved.tutorial.stage == row.stage and int(preserved.progression.population.quest_kills[group]) >= int(row.count):
+				var finished := Progress.plan_event(preserved.tutorial,row.event,"tutorial:"+preserved.character_id+":"+row.event,{"encounter_id":group})
+				if not finished.ok: return {}
+				preserved.tutorial = finished.next_state
 		return preserved if _valid_snapshot(preserved) else {}
 	var hero = data.get("character")
 	if not hero is Dictionary or hero.get("base", "") not in ["male", "female"] or not draft_from(hero).validate().is_empty(): return {}
@@ -831,26 +872,49 @@ func enemy_is_defeated(encounter_id: String, index: int) -> bool:
 # Called only by the encounter controller with its verified dead spawn indexes.
 # Unique quest incarnations make reward replay idempotent across retry/reload.
 func record_enemy_defeats(encounter_id: String, indexes: Array, resources: Dictionary) -> bool:
-	if not _valid_live_state() or not Rewards.ENCOUNTERS.has(encounter_id):
+	# Compatibility entry for original quest-v1 fixtures/imports. Runtime supplies
+	# the exact incarnation rendered by the world through record_spawn_defeats.
+	if not Rewards.ENCOUNTERS.has(encounter_id): return false
+	var lives: Array = []
+	for index in indexes:
+		if not Rewards.whole(index,0,int(Rewards.ENCOUNTERS[encounter_id].count)-1): return false
+		lives.append({"index":int(index),"generation":0})
+	if tutorial.stage != Rewards.ENCOUNTERS[encounter_id].stage and not indexes.all(func(index): return enemy_is_defeated(encounter_id,index)):
+		error = "Accept this guild assignment and return to the field first."
+		return false
+	return record_spawn_defeats(encounter_id,lives,resources,int(Time.get_unix_time_from_system()),false)
+
+func spawn_generation(group: String, index: int) -> int:
+	return Rewards.Population.generation(progression.population,group,index)
+
+func spawn_ready(group: String, index: int, now: int = -1) -> bool:
+	return Rewards.Population.ready(progression.population,group,index,int(Time.get_unix_time_from_system()) if now < 0 else now)
+
+func record_spawn_defeats(group: String, lives: Array, resources: Dictionary, now: int = -1, complete_quest: bool = true) -> bool:
+	if not _valid_live_state() or not Rewards.ENCOUNTERS.has(group):
 		error = "Monster rewards are unavailable here."; return false
 	if not Resources.valid(resources,stats) or resources.revision != combat.revision: return false
-	var row: Dictionary = Rewards.ENCOUNTERS[encounter_id]
-	var pending: Array = []
-	for index in indexes:
-		if not Rewards.whole(index,0,int(row.count)-1): return false
-		if not enemy_is_defeated(encounter_id,int(index)) and not pending.has(int(index)): pending.append(int(index))
-	if pending.is_empty(): return true
-	if tutorial.stage != row.stage or location.scene != "starter_region": error = "Accept this guild assignment and return to the field first."; return false
+	var plan := Rewards.Population.plan_defeats(progression.population,group,lives,str(tutorial.stage),int(Time.get_unix_time_from_system()) if now < 0 else now)
+	if not plan.ok: error = "That monster life is not ready. Reload the area safely."; return false
+	if plan.accepted.is_empty(): return true
+	if location.scene != "starter_region": error = "Return to the wilderness first."; return false
 	var previous := snapshot()
-	for index in pending:
-		progression.kills[Rewards.key(encounter_id,index)] = Rewards.receipt(encounter_id,index)
+	var row: Dictionary = Rewards.ENCOUNTERS[group]
+	progression.population = plan.next_state
+	for index in plan.accepted:
+		if not progression.kills.has(Rewards.key(group,index)):
+			progression.kills[Rewards.key(group,index)] = Rewards.receipt(group,index)
+			wallet_sigils += int(row.sigils)
 		wallet_gold += int(row.gold)
-		wallet_sigils += int(row.sigils)
 	var earned := Rewards.summary(progression)
 	if earned.level > stats.level:
-		var plan := Stats.plan_level_advance(stats,earned.level,stats.revision)
-		if not plan.ok: _restore(previous); return false
-		stats = plan.next_state.duplicate(true)
+		var advancement := Stats.plan_level_advance(stats,earned.level,stats.revision)
+		if not advancement.ok: _restore(previous); return false
+		stats = advancement.next_state.duplicate(true)
+	if complete_quest and tutorial.stage == row.stage and int(progression.population.quest_kills[group]) >= int(row.count):
+		var quest := Progress.plan_event(tutorial,row.event,_receipt(row.event),{"encounter_id":group})
+		if not quest.ok: _restore(previous); return false
+		tutorial = quest.next_state.duplicate(true)
 	combat = resources.duplicate(true); combat.revision += 1
 	return _commit(previous)
 

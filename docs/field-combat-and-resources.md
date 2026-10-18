@@ -1,5 +1,6 @@
 # Field combat, resources and Western Forest patrol
 
+Current wilderness behavior is documented in [Respawning wilderness](respawning-wilderness.md). The initial quest-gated/permanently cleared encounter behavior below is historical.
 This milestone keeps the six existing classes and all 18 archived skill names. The three field buttons and keyboard 1/2/3 now execute real effects; F remains a free basic strike. P opens field supplies. Secondary-touch release works while another finger holds movement; cancellation, dragging away, focus loss and modal opening discard held actions.
 
 ## Playable sequence

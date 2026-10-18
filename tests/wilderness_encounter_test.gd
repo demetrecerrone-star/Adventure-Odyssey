@@ -56,7 +56,8 @@ func run() -> void:
 			check(world.player.distance_to(waypoint) < 2,"Swept meadow access to "+str(waypoint))
 	check(world.wilderness_nodes.size() == 14,"Fourteen approved wilderness accents")
 	for rect in world.wilderness_footprints: check(not world.can_stand(rect.get_center()),"New solid footprint")
-	for enemy in world.enemy_nodes: check(not enemy.visible,"No ambush before guild assignment")
+	for group in world.populations:
+		for enemy in world.population_nodes[group]: check(enemy.visible,"Independent group visible before guild assignment")
 	check(world.state.transfer("warrior_01_weapon",false),"Collect starter for valid assignment")
 	var helper = preload("res://tests/tutorial_save_test.gd").new()
 	for action in ["read_envelope","guild_assign_blacksmith","blacksmith_claim_starter","upgrade","guild_after_blacksmith","apothecary_claim_gift","guild_after_apothecary","general_store_claim_keepsake","guild_after_general_store","guild_assign_first_combat"]:

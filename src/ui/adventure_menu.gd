@@ -6,6 +6,7 @@ signal inventory_requested
 signal equip_requested(item: String)
 signal ring_equip_requested
 signal ring_unequip_requested
+signal potion_requested(item: String)
 signal unequip_requested
 signal settings_changed(mode: String, left_handed: bool)
 signal title_requested
@@ -62,6 +63,8 @@ var inventory_row: HBoxContainer
 var inventory_scroll: ScrollContainer
 var inventory_content: VBoxContainer
 var inventory_details: Control
+var item_popup: Control
+var item_container := "bag"
 const PLANNED_EFFECTS := [
 	["physical_power", "Physical power", "number"], ["spell_power", "Spell power", "number"],
 	["max_hp", "Maximum HP", "number"], ["max_mana", "Maximum mana", "number"],
@@ -237,6 +240,7 @@ func _layout() -> void:
 		_place_avatar()
 
 func show_page(id: String) -> void:
+	_close_item_popup()
 	if id == "quests": id = "quest_log"
 	if not PAGES.has(id) and id != "menu": id = "character"
 	_reset_stat_draft()
@@ -335,6 +339,7 @@ func _build_character() -> void:
 		_label("Equipped starting outfit · Character-bound", armor, 13).modulate = MUTED
 		_card(armor_side, "RING", "Keepsake ring · Character-bound" if state != null and not state.equipped_ring.is_empty() else "No ring equipped")
 		_make_portrait(columns)
+		_add_equipment_slots()
 		var weapon_side := VBoxContainer.new()
 		weapon_side.name = "WeaponSide"
 		weapon_side.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -412,6 +417,7 @@ func _build_inventory() -> void:
 	body.add_child(inventory_row)
 	_make_portrait(inventory_row)
 	portrait_stage.name = "InventoryCharacter"
+	_add_equipment_slots()
 	portrait_stage.size_flags_horizontal = Control.SIZE_FILL
 	inventory_scroll = ScrollContainer.new()
 	inventory_scroll.name = "OwnedItemsScroll"
@@ -430,9 +436,9 @@ func _build_inventory() -> void:
 	var owned: Array[String] = []
 	for id in Inventory.LABELS:
 		if int(state.bag.get(id, 0)) > 0: owned.append(id)
+	owned.sort_custom(func(a, b): return Inventory.LABELS[a].naturalnocasecmp_to(Inventory.LABELS[b]) < 0)
 	if owned.is_empty():
 		_card(inventory_content, "YOUR BAG", "Your bag is empty. Collect supplies from your storage chest.")
-		_build_equipped_inventory()
 		return
 	if selected_item not in owned: selected_item = owned[0]
 	_label("YOUR BAG", inventory_content, 18, true)
@@ -458,12 +464,9 @@ func _build_inventory() -> void:
 		icon.position = Vector2(5, 6)
 		icon.size = Vector2(52, 52)
 		inspect.pressed.connect(func():
-			selected_item = id
-			refresh_state()
-			call_deferred("_reveal_inventory_details")
+			_open_item_popup(id, "bag")
 		)
-	_build_item_details()
-	_build_equipped_inventory()
+	_label("Tap an item or equipment slot for details.", inventory_content, 14).modulate = MUTED
 
 func _build_equipped_inventory() -> void:
 	if state != null:
@@ -495,43 +498,148 @@ func _reveal_inventory_details() -> void:
 	if page != "inventory" or not is_instance_valid(inventory_details) or not is_instance_valid(inventory_scroll): return
 	inventory_scroll.scroll_vertical = int(inventory_details.get_parent().position.y)
 
-func _build_item_details() -> void:
-	var info := _card(inventory_content, "ITEM DETAILS", Inventory.LABELS.get(selected_item, "Unknown item"))
+func _add_equipment_slots() -> void:
+	for data in [["Weapon",state.equipped_weapon,"equipped_weapon",Vector2(0,0)], ["Armor",state.equipped_armor,"equipped_armor",Vector2(1,0)], ["Ring",state.equipped_ring,"equipped_ring",Vector2(0,1)]]:
+		var button := _button("", portrait_stage)
+		button.name = "EquipmentSlot_" + data[2]
+		button.custom_minimum_size = Vector2(58,58)
+		button.size = Vector2(58,58)
+		button.tooltip_text = data[0]
+		button.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+		var icon = ItemIcon.new()
+		button.add_child(icon)
+		icon.position = Vector2(3,3)
+		icon.size = Vector2(52,52)
+		if not str(data[1]).is_empty(): icon.configure(data[1], str(_character().get("base","male")))
+		else:
+			icon.hide()
+			button.text = data[0]
+			button.add_theme_font_size_override("font_size",12)
+		var place := func(): button.position = Vector2(4 if data[3].x == 0 else maxf(4,portrait_stage.size.x-62), 4 if data[3].y == 0 else maxf(4,portrait_stage.size.y-62))
+		portrait_stage.resized.connect(place)
+		place.call()
+		button.pressed.connect(func():
+			if not str(data[1]).is_empty(): _open_item_popup(data[1],data[2])
+			else: set_notice("This %s slot is empty. Choose an item from your bag." % str(data[0]).to_lower())
+		)
+
+func _close_item_popup() -> void:
+	if is_instance_valid(item_popup):
+		_release_touch_owners()
+		_touch_buttons = _touch_buttons.filter(func(button): return is_instance_valid(button) and not item_popup.is_ancestor_of(button))
+		remove_child(item_popup)
+		item_popup.queue_free()
+	item_popup = null
+
+func _open_item_popup(id: String, container: String) -> void:
+	_close_item_popup()
+	_release_touch_owners()
+	selected_item = id
+	item_container = container
+	item_popup = Control.new()
+	item_popup.name = "ItemPopup"
+	item_popup.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	item_popup.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(item_popup)
+	var shade := ColorRect.new()
+	shade.color = Color(0.08,0.10,0.08,0.8)
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	item_popup.add_child(shade)
+	var frame := Ornate.new()
+	frame.name = "ItemPopupFrame"
+	item_popup.add_child(frame)
+	frame.size = Vector2(minf(560,size.x-32),minf(490,size.y-24))
+	frame.position = (size-frame.size)*0.5
+	var close := _button("Close",frame)
+	close.name = "CloseItemPopup"
+	close.position = Vector2(frame.size.x-106,16)
+	close.size = Vector2(86,44)
+	close.pressed.connect(_close_item_popup)
+	var heading := _label("ITEM DETAILS",frame,20,true)
+	heading.position = Vector2(22,22)
+	heading.size = Vector2(frame.size.x-150,32)
+	var scroll := ScrollContainer.new()
+	frame.add_child(scroll)
+	scroll.position = Vector2(20,68)
+	scroll.size = frame.size-Vector2(40,88)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	var content := VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation",8)
+	scroll.add_child(content)
+	_build_item_details(content)
+	var popup_buttons: Array[Button] = []
+	for button in _touch_buttons:
+		if is_instance_valid(button) and item_popup.is_ancestor_of(button) and not button.disabled: popup_buttons.append(button)
+	for i in popup_buttons.size():
+		var previous: NodePath = popup_buttons[posmod(i-1,popup_buttons.size())].get_path()
+		var following: NodePath = popup_buttons[(i+1)%popup_buttons.size()].get_path()
+		popup_buttons[i].focus_previous = previous
+		popup_buttons[i].focus_next = following
+		popup_buttons[i].focus_neighbor_top = previous
+		popup_buttons[i].focus_neighbor_bottom = following
+		popup_buttons[i].focus_neighbor_left = previous
+		popup_buttons[i].focus_neighbor_right = following
+	close.grab_focus()
+
+func _weapon_damage(id: String, container: String) -> int:
+	if id.is_empty(): return 0
+	var details: Dictionary = state.get_item_details(id,container)
+	var summary: Dictionary = state.get_stat_summary()
+	return (1000 if id == "hidden_old_stick" else 12) + int(details.get("upgrade_level",0)) + int((summary.attributes.STR-10)*0.5)
+
+func _build_item_details(parent: Node = null) -> void:
+	if parent == null: parent = inventory_content
+	var info := VBoxContainer.new()
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info.add_theme_constant_override("separation",8)
+	parent.add_child(info)
 	inventory_details = info
-	var back := _button("Back to bag", info)
-	back.name = "BackToBag"
-	back.pressed.connect(func(): inventory_scroll.scroll_vertical = 0)
-	var item: Dictionary = state.get_item_details(selected_item, "bag")
-	if selected_item == "hidden_old_stick":
-		_label("Basic strike: 1,000 base damage + Strength. Unique character-bound find.", info, 14)
-	if selected_item == "keepsake_ring":
-		var ring_button := _button("Equip ring", info)
-		ring_button.name = "EquipRing"
-		ring_button.disabled = not state.equipped_ring.is_empty()
-		ring_button.pressed.connect(func(): ring_equip_requested.emit())
-	if Inventory.WEAPONS.has(selected_item):
-		var equip := _button("Equip", info)
+	var item: Dictionary = state.get_item_details(selected_item,item_container)
+	var identity := HBoxContainer.new()
+	info.add_child(identity)
+	_add_item_icon(identity,selected_item)
+	_label(Inventory.LABELS.get(selected_item,_armor_label()),identity,18,true).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var actions := HBoxContainer.new()
+	info.add_child(actions)
+	if item_container == "bag" and Inventory.WEAPONS.has(selected_item):
+		var equip := _button("Equip" if state.equipped_weapon.is_empty() else "Equip & swap",actions)
 		equip.name = "Equip_" + selected_item
-		equip.custom_minimum_size.x = 90
-		equip.disabled = not Inventory.can_equip(selected_item, str(_character().get("class", ""))) or not str(state.equipped_weapon).is_empty()
+		equip.disabled = not Inventory.can_equip(selected_item,str(_character().get("class","")))
 		equip.pressed.connect(func(): equip_requested.emit(selected_item))
-	_label("Character-bound" if item.get("binding", "") == "character" else "Binding: " + str(item.get("binding", "Unbound")), info, 14)
-	if int(item.get("upgrade_level", 0)) > 0:
-		_label("Upgrade: +%d · Each rank adds 1 basic strike damage." % int(item.upgrade_level), info, 14)
-	if selected_item == "keepsake_ring":
-		_label("A personal keepsake. Ring slot; no defined numeric bonus.", info, 14)
-		return
-	if not Inventory.WEAPONS.has(selected_item):
-		_label("Stored in your bag. This item has no equipment slot.", info, 14)
-		return
-	var definition: Dictionary = Inventory.WEAPONS[selected_item]
-	_label("%s  ·  %s" % ["All classes" if definition.class_id == "All" else str(definition.class_id)+" only", str(definition.type).capitalize()], info, 14)
-	if not Inventory.can_equip(selected_item, str(_character().get("class", ""))):
-		_label("Your class cannot equip this weapon.", info, 14).modulate = Color("9c3027")
-	elif not str(state.equipped_weapon).is_empty():
-		_label("Unequip your current weapon before equipping another.", info, 14)
-	_label("Current: " + _weapon_label(str(state.equipped_weapon)), info, 14)
-	_label("Equipment comparisons are not yet configured. Basic strikes use this weapon, its upgrade rank and Strength. Class skills have separate damage values.", info, 14).modulate = MUTED
+	elif item_container == "bag" and selected_item == "keepsake_ring":
+		var equip := _button("Equip ring",actions)
+		equip.name = "EquipRing"
+		equip.pressed.connect(func(): ring_equip_requested.emit())
+	elif item_container == "bag" and selected_item in ["healing_potion","mana_potion"]:
+		var use := _button("Use potion",actions)
+		use.name = "Use_" + selected_item
+		use.pressed.connect(func(): potion_requested.emit(selected_item))
+	elif item_container in ["equipped_weapon","equipped_ring"]:
+		var remove := _button("Unequip to bag",actions)
+		remove.name = "UnequipWeapon" if item_container == "equipped_weapon" else "UnequipRing"
+		remove.pressed.connect(func():
+			if item_container == "equipped_weapon": unequip_requested.emit()
+			else: ring_unequip_requested.emit()
+		)
+	_label("Count: %d · %s" % [int(state.bag.get(selected_item,0)) if item_container == "bag" else 1,"In bag" if item_container == "bag" else "Equipped"],info,14)
+	_label("Character-bound" if item.get("binding","") == "character" else "Unbound",info,14)
+	if selected_item in ["healing_potion","mana_potion"]:
+		_label("Restores 40 HP." if selected_item == "healing_potion" else "Restores 25 MP.",info,16)
+		_label("No potion consumed at full health/mana. Shared 3-second cooldown.",info,14)
+	elif Inventory.WEAPONS.has(selected_item):
+		var damage := _weapon_damage(selected_item,item_container)
+		_label("Basic strike: %s damage" % str(damage),info,18,true)
+		var difference := damage - _weapon_damage(state.equipped_weapon,"equipped_weapon")
+		var comparison := _label("%+d damage compared with equipped weapon" % difference,info,15)
+		comparison.add_theme_color_override("font_color",Color("28723d") if difference > 0 else (Color("a32e26") if difference < 0 else MUTED))
+		_label("Upgrade +%d · Strength included" % int(item.get("upgrade_level",0)),info,14)
+		_label("All classes" if selected_item == "hidden_old_stick" else str(Inventory.WEAPONS[selected_item].class_id)+" only",info,14)
+		if not Inventory.can_equip(selected_item,str(_character().get("class",""))): _label("Your class cannot equip this weapon.",info,14).modulate = Color("a32e26")
+		_label("Unique hidden find." if selected_item == "hidden_old_stick" else "A dependable starter weapon.",info,14)
+		_label("Swapping keeps your old weapon in the bag. Class skills have separate damage values.",info,14).modulate = MUTED
+	else:
+		_label("A personal keepsake. No numeric combat bonus." if selected_item == "keepsake_ring" else "Your class outfit. Cosmetic dyes change its color; no numeric armor bonus is active.",info,14)
 
 func _reset_stat_draft() -> void:
 	_stat_snapshot = {}
@@ -851,6 +959,10 @@ func _build_quests() -> void:
 	var forest_stages := ["forest_patrol_active", "return_guild_forest", "forest_patrol_complete"]
 	var heading := "WESTERN FOREST · COMPLETE" if state.tutorial.stage == "forest_patrol_complete" else ("WESTERN FOREST · IN PROGRESS" if state.tutorial.stage in forest_stages else ("TUTORIAL · COMPLETE" if state.tutorial.stage == "tutorial_complete" else "TUTORIAL · IN PROGRESS"))
 	_card(body, heading, progress.objective(state.tutorial))
+	_card(body, "WILDERNESS GROUPS", "Slimes roam the South Meadow; wolves roam the western woods. Follow the roadside signs. You can fight without a quest. Defeated monsters return after 45 seconds; repeat fights earn gold and XP. Main roads are safe.")
+	for group in state.Rewards.ENCOUNTERS:
+		if state.tutorial.stage == state.Rewards.ENCOUNTERS[group].stage:
+			_label("Assignment kills: %d / %d · Only kills after acceptance count." % [state.progression.population.quest_kills[group],state.Rewards.ENCOUNTERS[group].count],body,16,true)
 	if progress.STAGES.find(state.tutorial.stage) < progress.STAGES.find("first_combat_active"):
 		var tasks := [
 			["read_envelope", "Read the envelope outside home."],
@@ -1029,7 +1141,8 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_ESCAPE or event.is_action_pressed("ui_cancel"):
 			get_viewport().set_input_as_handled()
-			_dismiss()
+			if is_instance_valid(item_popup): _close_item_popup()
+			else: _dismiss()
 			return
 		if event.keycode == KEY_TAB:
 			_keyboard_navigation = true

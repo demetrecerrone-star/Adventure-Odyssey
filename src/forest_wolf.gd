@@ -20,7 +20,7 @@ func sync(enemy: Dictionary) -> void:
 	visible = enemy.hp > 0
 	var row := 0 if int(enemy.facing) == 0 else (2 if int(enemy.facing) == 3 else 1)
 	var frame := 0
-	if enemy.mode in ["chase","return"]: frame = int(enemy.phase)%4
+	if enemy.mode in ["chase","return","wander"]: frame = int(enemy.phase)%4
 	elif enemy.mode == "windup":
 		row += 3
 		frame = 1

@@ -39,10 +39,10 @@ const OBJECTIVES := {
 	"return_guild_general_store":"Return to the guild receptionist with your keepsake.",
 	"first_combat_pending":"Speak to the guild receptionist to accept your first field assignment.",
 	"first_combat_active":"Follow the gold road marks past home to the South Meadow. Clear three slimes.",
-	"return_guild_first_combat":"The South Meadow is clear. Return to the guild receptionist for your reward.",
+	"return_guild_first_combat":"Three slimes defeated. Return to the guild receptionist for your reward.",
 	"tutorial_complete":"Training complete. Speak to the guild receptionist about the Western Forest patrol.",
 	"forest_patrol_active":"Clear two wolves from the Western Forest trail. Cross the west bridge, follow the northern branch, and search just east of the first wooded bend.",
-	"return_guild_forest":"Forest clear. Return to the guild for 40 gold.",
+	"return_guild_forest":"Patrol complete. Return to the guild for 40 gold.",
 	"forest_patrol_complete":"Patrol complete. Spend Sigils on home dyes and decor."
 }
 

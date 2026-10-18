@@ -39,6 +39,7 @@ func run() -> void:
 		check(world.encounter.enemies[0].hp == first_hp, "Weapon required")
 		check(state.equip(weapon), "Restore weapon")
 		for enemy in world.encounter.enemies:
+			if enemy == world.encounter.enemies[-1]: DirAccess.make_dir_absolute(state.path + ".tmp")
 			world.player = enemy.position + Vector2(0,60)
 			check(world.can_stand(world.player), "Player can stand in attack range")
 			for hit in range(3):
@@ -59,8 +60,8 @@ func run() -> void:
 		root.add_child(world); world.set_process(false)
 		await process_frame
 		world._process_encounter(0)
-		for enemy in world.enemy_nodes: check(not enemy.visible, "Reload never respawns cleared monsters")
-		check(world.hud.attack_button.disabled, "Cleared encounter disables combat")
+		for enemy in world.enemy_nodes: check(not enemy.visible, "Reload preserves pending respawn cooldown")
+		check(world.hud.attack_button.disabled, "Empty group disables targetless basic attack")
 		world.queue_free(); await process_frame
 		var room = load("res://src/town_interior.gd").new()
 		room.room_id = "guild_interior"; room.state = state

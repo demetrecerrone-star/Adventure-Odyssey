@@ -1,0 +1,26 @@
+extends "res://tests/tutorial_save_test.gd"
+func run() -> void:
+ for selected_class in ["Warrior","Ranger","Mage","Necromancer","Assassin","Paladin"]:
+  var state=fixture(selected_class)
+  var weapon: String=Save.Inventory.starter_weapon(selected_class)
+  check(state.transfer(weapon,false) and state.equip(weapon),"Equip starter")
+  check(state.set_location("starter_region",Save.Relic.point(state.hidden_relic)) and state.claim_hidden_stick(state.hidden_relic.tree_id),"Find unique stick")
+  var ledger=state.item_ledger.duplicate(true)
+  fail_write(state,func(): return state.equip(Save.Relic.ITEM),"occupied-slot swap")
+  check(state.equip(Save.Relic.ITEM),"Equip stick without unequipping")
+  check(state.equipped_weapon==Save.Relic.ITEM and state.bag[weapon]==1 and state.bag[Save.Relic.ITEM]==0,"Old starter retained in bag")
+  check(state.item_ledger.size()==ledger.size(),"Swap creates no duplicate ledger entries")
+  var loaded=Save.new(); loaded.path=state.path
+  check(loaded.load_saved() and snap(loaded)==snap(state),"Swap survives reload")
+  fail_write(state,func(): return state.equip(weapon),"swap back")
+  check(state.equip(weapon) and state.equipped_weapon==weapon and state.bag[Save.Relic.ITEM]==1,"Swap back retains unique relic")
+  check(state.item_ledger==ledger,"Round trip preserves every instance and binding")
+  check(state.receive_item(weapon,999,"world_drop","swap.capacity"),"Fill outgoing weapon bag count")
+  var full=snap(state)
+  check(not state.equip(Save.Relic.ITEM) and snap(state)==full,"Full outgoing bag stack rejects swap without loss")
+  var previous=snap(state)
+  check(not state.equip("mage_01_weapon") if selected_class!="Mage" else not state.equip("warrior_01_weapon"),"Wrong class rejected")
+  check(snap(state)==previous,"Rejected equip unchanged")
+ for path in paths: DirAccess.remove_absolute(path)
+ print("EQUIPMENT SWAP CHECKS: %d; failures: %d" % [checks,failures])
+ quit(1 if failures else 0)

@@ -45,7 +45,8 @@ func run() -> void:
 		DirAccess.remove_absolute(state.path+".tmp"); world.use_class_skill(0)
 		check(state.combat.mana < world.encounter.max_mana and state.combat.skills[0] > 0,"Class ability in forest pays persisted mana/cooldown")
 		for enemy in world.encounter.enemies:
-			world.player = enemy.position+Vector2(0,60)
+			if enemy == world.encounter.enemies[-1]: DirAccess.make_dir_absolute(state.path+".tmp")
+			world.player = enemy.position+Vector2(60,0)
 			check(world.can_stand(world.player),"Accessible wolf attack approach")
 			for hit in 6:
 				if enemy.hp <= 0: break
@@ -61,7 +62,7 @@ func run() -> void:
 		world.queue_free(); await process_frame
 		world = load("res://src/starter_world.gd").new(); world.state = state
 		root.add_child(world); world.set_process(false); await process_frame; world._process_encounter(0)
-		for node in world.enemy_nodes: check(not node.visible,"Cleared forest never respawns on reload")
+		for node in world.enemy_nodes: check(not node.visible,"Forest reload preserves respawn deadline")
 		world.queue_free(); await process_frame
 		move_near(state,"guild_complete_forest_patrol")
 		fail_write(state,func(): return state.perform_tutorial_action("guild_complete_forest_patrol"),"forest payment")

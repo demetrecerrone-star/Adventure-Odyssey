@@ -8,6 +8,8 @@ const MAX_HP := 100
 const ENEMY_HP := 36
 const ATTACK_RANGE := 108.0
 const LEASH := 235.0
+var continuous := false
+var territory := Rect2()
 var encounter_id := ID
 var spawns: Array = SPAWNS.duplicate()
 var retry_point := RETRY_POINT
@@ -78,7 +80,7 @@ func living_count() -> int:
 	return count
 
 func attack(player: Vector2, can_stand: Callable) -> bool:
-	if defeated or victory or attack_cooldown > 0: return false
+	if defeated or (victory and not continuous) or attack_cooldown > 0: return false
 	var selected := -1
 	var nearest := ATTACK_RANGE
 	for i in enemies.size():
@@ -107,11 +109,11 @@ func line_clear(a: Vector2, b: Vector2, can_stand: Callable) -> bool:
 	return true
 
 func tick(delta: float, player: Vector2, can_stand: Callable) -> void:
-	if defeated or victory: return
+	if defeated or (victory and not continuous): return
 	# Cap simulation steps: resuming from background cannot deliver a burst of damage.
 	var dt := clampf(delta,0,0.05)
 	_tick_skills(dt,player,can_stand)
-	if victory: return
+	if victory and not continuous: return
 	attack_cooldown = maxf(0,attack_cooldown-dt)
 	invulnerability = maxf(0,invulnerability-dt)
 	strike_flash = maxf(0,strike_flash-dt)
@@ -124,7 +126,7 @@ func tick(delta: float, player: Vector2, can_stand: Callable) -> void:
 		if enemy.stun > 0: continue
 		var offset: Vector2 = player-enemy.position
 		var distance := offset.length()
-		if player.distance_to(enemy.home) > leash or Vector2(enemy.position).distance_to(enemy.home) > leash:
+		if (territory.has_area() and not territory.has_point(player)) or player.distance_to(enemy.home) > leash or Vector2(enemy.position).distance_to(enemy.home) > leash:
 			enemy.mode = "return"
 		if enemy.mode == "return":
 			_move(enemy,enemy.home,dt,can_stand)
@@ -159,7 +161,13 @@ func tick(delta: float, player: Vector2, can_stand: Callable) -> void:
 				enemy.mode = "chase"
 				_move(enemy,player,dt,can_stand)
 			else: enemy.mode = "idle"
-		else: enemy.mode = "idle"
+		else:
+			enemy.mode = "idle"
+			if continuous:
+				enemy.mode = "wander"
+				enemy.phase += dt*0.35
+				var wander: Vector2 = enemy.home + Vector2(cos(enemy.phase),sin(enemy.phase))*24
+				_move(enemy,wander,dt*0.22,can_stand)
 
 func _face(enemy: Dictionary, offset: Vector2) -> void:
 	if offset.length() > 0:
@@ -175,6 +183,7 @@ func _move(enemy: Dictionary, destination: Vector2, dt: float, can_stand: Callab
 	if old != enemy.position: enemy.phase += dt*7.0
 
 func _enemy_can_stand(point: Vector2, moving: Dictionary, can_stand: Callable) -> bool:
+	if territory.has_area() and not territory.has_point(point): return false
 	if not can_stand.call(point): return false
 	for other in enemies:
 		if other != moving and other.hp > 0 and point.distance_to(other.position) < 42: return false
@@ -182,6 +191,8 @@ func _enemy_can_stand(point: Vector2, moving: Dictionary, can_stand: Callable) -
 
 func configure(data: Dictionary, selected_class: String, stats_summary: Dictionary, upgrade: int = 0) -> void:
 	encounter_id = data.get("id",ID)
+	continuous = bool(data.get("continuous",false))
+	territory = data.get("territory",Rect2())
 	spawns = []
 	for point in data.get("spawns",[]): spawns.append(Vector2(point[0],point[1]))
 	if spawns.is_empty(): spawns = SPAWNS.duplicate()
@@ -240,7 +251,7 @@ func _targets(player: Vector2, radius: float, can_stand: Callable) -> Array:
 
 func use_skill(slot: int, player: Vector2, can_stand: Callable) -> Dictionary:
 	var skills := Abilities.for_class(hero_class)
-	if slot < 0 or slot >= skills.size() or defeated or victory: return {"ok":false,"message":"No active encounter."}
+	if slot < 0 or slot >= skills.size() or defeated or (victory and not continuous): return {"ok":false,"message":"No active encounter."}
 	var skill: Dictionary = skills[slot]
 	if skill_cooldowns[slot] > 0: return {"ok":false,"message":"%s is cooling down." % skill.name}
 	if mana < skill.mana: return {"ok":false,"message":"%s needs %d mana. Use a mana potion or keep moving to recover." % [skill.name,skill.mana]}

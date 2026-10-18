@@ -461,12 +461,21 @@ func open_menu() -> void:
 	menu.inventory_requested.connect(func(): open_chest(false))
 	menu.equip_requested.connect(func(item: String):
 		if not state.equip(item): menu.set_notice(state.error, true)
-		else: actor.set_equipped_weapon(state.equipped_weapon)
+		else:
+			actor.set_equipped_weapon(state.equipped_weapon)
+			menu.set_notice("Equipment saved.")
+		menu.refresh_state()
+	)
+	menu.potion_requested.connect(func(item: String):
+		var result: Dictionary = _use_inventory_potion(item)
+		menu.set_notice(result.message, not result.ok)
 		menu.refresh_state()
 	)
 	menu.unequip_requested.connect(func():
 		if not state.unequip(): menu.set_notice(state.error, true)
-		else: actor.set_equipped_weapon(state.equipped_weapon)
+		else:
+			actor.set_equipped_weapon(state.equipped_weapon)
+			menu.set_notice("Equipment saved.")
 		menu.refresh_state()
 	)
 	menu.ring_equip_requested.connect(func():
@@ -485,6 +494,9 @@ func open_menu() -> void:
 		menu.sync_preferences()
 	)
 	_sync_modal_input()
+
+func _use_inventory_potion(item: String) -> Dictionary:
+	return state.consume_combat_potion(item,"potion:"+state._new_id(),state.combat.duplicate(true))
 
 func _control_safe_rect() -> Rect2:
 	var full := Rect2(Vector2.ZERO, size)

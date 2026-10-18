@@ -18,7 +18,7 @@ func sync(enemy: Dictionary) -> void:
 	z_index = int(position.y*0.4)
 	visible = enemy.hp > 0
 	var frame := 0
-	if enemy.mode in ["chase","return"]: frame = int(enemy.phase)%3
+	if enemy.mode in ["chase","return","wander"]: frame = int(enemy.phase)%3
 	elif enemy.mode == "windup": frame = 1
 	elif enemy.mode == "recover": frame = 2 if enemy.timer > 0.2 else 0
 	sprite.texture = frames[int(enemy.facing)*3+frame]
@@ -34,6 +34,9 @@ func _draw() -> void:
 	if data.mode == "windup":
 		draw_arc(Vector2.ZERO,40,0,TAU,40,Color("ffb45c"),4,true)
 	draw_set_transform(Vector2.ZERO)
+	var font = preload("res://assets/fonts/body.ttf")
+	draw_string_outline(font,Vector2(-24,-74),"Slime",HORIZONTAL_ALIGNMENT_LEFT,-1,17,4,Color("243121"))
+	draw_string(font,Vector2(-24,-74),"Slime",HORIZONTAL_ALIGNMENT_LEFT,-1,17,Color("f5edc9"))
 	if data.hp < 36 or data.mode in ["chase","windup","recover"]:
 		draw_rect(Rect2(-27,-67,54,6),Color("30241f"))
 		draw_rect(Rect2(-26,-66,52*float(data.hp)/36,4),Color("9fce62"))

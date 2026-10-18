@@ -348,6 +348,12 @@ func nearest_prop() -> String:
 const Encounter = preload("res://src/wilderness_encounter.gd")
 const Slime = preload("res://src/wilderness_slime.gd")
 var encounter = Encounter.new()
+var populations := {}
+var population_nodes := {}
+var population_data := {}
+var respawn_poll := 0.0
+var population_clock: Callable = func(): return int(Time.get_unix_time_from_system())
+var monster_signs: Array[Node2D] = []
 var enemy_nodes: Array[Node2D] = []
 var encounter_saved := false
 var encounter_save_retry := 0.0
@@ -420,23 +426,41 @@ func _load_wilderness() -> void:
 		if item.has("collision"):
 			var r: Array = item.collision
 			wilderness_footprints.append(Rect2(r[0],r[1],r[2],r[3]))
-	combat_data = {}
-	if state.tutorial.stage in ["forest_patrol_active","return_guild_forest","forest_patrol_complete"] and FileAccess.file_exists("res://assets/starter-region/forest_patrol.json"):
-		combat_data = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/forest_patrol.json"))
-	encounter.configure(combat_data,state.character["class"],state.get_stat_summary(),state.basic_weapon_bonus())
-	encounter.apply_resources(state.combat)
-	_restore_defeated_spawns()
-	for enemy in encounter.enemies:
-		var renderer = load(combat_data.get("renderer","res://src/wilderness_slime.gd"))
-		var node = renderer.new()
-		stage.add_child(node)
-		node.sync(enemy)
-		node.hide()
-		enemy_nodes.append(node)
+	var forest_config: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/forest_patrol.json"))
+	for group in [Encounter.ID,"west_forest_patrol"]:
+		var config: Dictionary = {} if group == Encounter.ID else forest_config.duplicate(true)
+		config.continuous = true
+		config.territory = Rect2(980,2100,450,470) if group == Encounter.ID else Rect2(520,790,440,390)
+		var model = Encounter.new()
+		model.configure(config,state.character["class"],state.get_stat_summary(),state.basic_weapon_bonus())
+		model.apply_resources(state.combat)
+		populations[group] = model
+		population_data[group] = config
+		var nodes: Array[Node2D] = []
+		for index in model.enemies.size():
+			var enemy: Dictionary = model.enemies[index]
+			enemy.generation = state.spawn_generation(group,index)
+			if not state.spawn_ready(group,index,int(population_clock.call())): enemy.hp = 0; enemy.mode = "dead"; enemy.generation -= 1
+			var node = load(config.get("renderer","res://src/wilderness_slime.gd")).new()
+			stage.add_child(node)
+			node.sync(enemy)
+			node.visible = enemy.hp > 0
+			nodes.append(node)
+		population_nodes[group] = nodes
+	encounter = populations["west_forest_patrol" if player.y < 1600 else Encounter.ID]
+	combat_data = population_data[encounter.encounter_id]
+	enemy_nodes.assign(population_nodes[encounter.encounter_id])
 	combat_fx = CombatFX.new()
 	combat_fx.encounter = encounter
 	combat_fx.z_index = 1900
 	stage.add_child(combat_fx)
+	for sign_data in [[Vector2(1415,1660),"SLIME MEADOW ↓"],[Vector2(1000,2050),"SLIMES →"],[Vector2(875,1205),"← WOLF WOODS"]]:
+		var signpost = preload("res://src/wilderness_signpost.gd").new()
+		signpost.position = sign_data[0]
+		signpost.text = sign_data[1]
+		signpost.z_index = 1800
+		stage.add_child(signpost)
+		monster_signs.append(signpost)
 	quest_trail = preload("res://src/quest_trail.gd").new()
 	quest_trail.z_index = 2
 	stage.add_child(quest_trail)
@@ -462,35 +486,86 @@ func _bind_combat_touch(control: Button, action: Callable) -> void:
 
 func _restore_defeated_spawns() -> void:
 	for index in encounter.enemies.size():
-		if state.enemy_is_defeated(encounter.encounter_id,index):
+		encounter.enemies[index].generation = state.spawn_generation(encounter.encounter_id,index)
+		if not state.spawn_ready(encounter.encounter_id,index,int(population_clock.call())):
 			encounter.enemies[index].hp = 0
 			encounter.enemies[index].mode = "dead"
+			encounter.enemies[index].generation -= 1
 	encounter.victory = encounter.living_count() == 0
+
+func _refresh_population(now: int = -1) -> void:
+	if now < 0: now = int(population_clock.call())
+	for group in populations:
+		var model = populations[group]
+		for index in model.enemies.size():
+			var enemy: Dictionary = model.enemies[index]
+			# Only a committed dead life may respawn. An unpaid kill remains frozen.
+			if enemy.hp <= 0 and int(enemy.get("generation",-1)) < state.spawn_generation(group,index) and state.spawn_ready(group,index,now):
+				var fresh = Encounter.new()
+				fresh.configure(population_data[group],state.character["class"],state.get_stat_summary(),state.basic_weapon_bonus())
+				model.enemies[index] = fresh.enemies[index].duplicate(true)
+				model.enemies[index].generation = state.spawn_generation(group,index)
+				model.victory = false
+
+func _select_population() -> bool:
+	var group: String = "west_forest_patrol" if player.y < 1600 else Encounter.ID
+	if encounter.encounter_id == group: return true
+	if not pending_combat.is_empty() or not _checkpoint_combat(): return false
+	encounter = populations[group]
+	encounter.apply_resources(state.combat)
+	for field in ["buff_timer","shield_timer","trap_timer","summon_timer"]: encounter.set(field,0.0)
+	combat_data = population_data[group]
+	enemy_nodes.assign(population_nodes[group])
+	combat_fx.encounter = encounter
+	combat_stats_revision = -1
+	return true
+
+func _combat_can_stand(point: Vector2) -> bool:
+	if not encounter.territory.has_point(point) or not can_stand(point): return false
+	# The painted forest bend includes a through-road. Its full protected corridor
+	# remains safe even though the wolf territory is beside it.
+	for route in world_layout.routes:
+		for i in range(route.points.size()-1):
+			var a := Vector2(route.points[i][0],route.points[i][1])
+			var b := Vector2(route.points[i+1][0],route.points[i+1][1])
+			if point.distance_to(Geometry2D.get_closest_point_to_segment(point,a,b)) <= float(route.clear_width)*0.5+FOOT_RADIUS: return false
+	return true
 
 func _save_monster_rewards() -> bool:
 	var dead: Array = []
 	for index in encounter.enemies.size():
-		if encounter.enemies[index].hp <= 0 and not state.enemy_is_defeated(encounter.encounter_id,index): dead.append(index)
+		var enemy: Dictionary = encounter.enemies[index]
+		if enemy.hp <= 0 and int(enemy.get("generation",-1)) == state.spawn_generation(encounter.encounter_id,index):
+			# A reloaded cooldown corpse is marked with the previous paid life.
+			if not state.spawn_ready(encounter.encounter_id,index,int(population_clock.call())): continue
+			dead.append({"index":index,"generation":int(enemy.generation)})
 	if dead.is_empty(): return true
 	var old_level: int = state.stats.level
-	if not state.record_enemy_defeats(encounter.encounter_id,dead,encounter.resource_state(int(state.combat.revision))):
+	var old_sigils: int = state.wallet_sigils
+	var old_stage: String = state.tutorial.stage
+	if not state.record_spawn_defeats(encounter.encounter_id,dead,encounter.resource_state(int(state.combat.revision)),int(population_clock.call())):
 		message.text = "Rewards could not save. Combat paused; keep this area open to retry. " + state.error
 		return false
 	var reward: Dictionary = state.Rewards.ENCOUNTERS[encounter.encounter_id]
-	message.text = "+%d gold · +%d XP · +%d Sigils" % [dead.size()*reward.gold,dead.size()*reward.xp,dead.size()*reward.sigils]
+	message.text = "+%d gold · +%d XP" % [dead.size()*reward.gold,dead.size()*reward.xp]
+	if state.wallet_sigils > old_sigils: message.text += " · +%d Sigils (first discovery)" % (state.wallet_sigils-old_sigils)
 	if state.stats.level > old_level:
 		last_level_up = int(state.stats.level)
 		message.text += " · Level %d! 5 stat points ready." % state.stats.level
+	if state.tutorial.stage != old_stage: message.text += " · Assignment complete. Return to the guild."
 	_refresh_hud()
 	return true
 
 func _combat_active() -> bool:
-	return state.tutorial.get("stage","") in ["first_combat_active","forest_patrol_active"] and not encounter_saved
+	return not populations.is_empty()
 
 func attack_nearby() -> void:
 	if _combat_active() and not _save_monster_rewards(): return
 	if not _combat_active() or is_instance_valid(overlay) or encounter.defeated or state.equipped_weapon.is_empty() or not pending_combat.is_empty(): return
-	if encounter.attack(player,can_stand):
+	if not _combat_can_stand(player):
+		message.text = "The main road is safe. Step into the meadow or woods to fight."
+		return
+	if encounter.attack(player,_combat_can_stand):
 		message.text = "Keep moving. Amber ring means an enemy is about to strike."
 	elif encounter.attack_cooldown <= 0:
 		message.text = "Move closer to an enemy to attack. [F] or Attack."
@@ -500,7 +575,7 @@ func attack_nearby() -> void:
 func _checkpoint_combat() -> bool:
 	if _combat_active() and not _save_monster_rewards(): return false
 	if not pending_combat.is_empty(): return false
-	var current := encounter.resource_state(int(state.combat.revision))
+	var current: Dictionary = encounter.resource_state(int(state.combat.revision))
 	if current.hp == state.combat.hp and current.mana == state.combat.mana and current.skills == state.combat.skills and current.potion == state.combat.potion: return true
 	if state.commit_combat_resources(current):
 		combat_checkpoint_elapsed = 0.0
@@ -512,7 +587,7 @@ func use_class_skill(slot: int) -> void:
 	if _combat_active() and not _save_monster_rewards(): return
 	if not _combat_active() or is_instance_valid(overlay) or encounter.defeated or not pending_combat.is_empty(): return
 	var before: Dictionary = encounter.capture()
-	var result: Dictionary = encounter.use_skill(slot,player,can_stand)
+	var result: Dictionary = encounter.use_skill(slot,player,_combat_can_stand)
 	message.text = result.message
 	if not result.ok: return
 	if not _checkpoint_combat():
@@ -522,6 +597,17 @@ func use_class_skill(slot: int) -> void:
 	player = result.position
 	_update_actor()
 	_process_encounter(0)
+
+func open_menu() -> void:
+	if not _checkpoint_combat(): return
+	super.open_menu()
+
+func _use_inventory_potion(item: String) -> Dictionary:
+	var result: Dictionary = state.consume_combat_potion(item,"potion:"+state._new_id(),encounter.resource_state(int(state.combat.revision)))
+	if result.ok:
+		encounter.apply_resources(state.combat)
+		_update_combat_hud()
+	return result
 
 func open_field_supplies() -> void:
 	if _combat_active() and not _save_monster_rewards(): return
@@ -554,7 +640,7 @@ func _update_combat_hud() -> void:
 	var active := _combat_active()
 	var paused := is_instance_valid(overlay) or sleeping or not pending_combat.is_empty()
 	interact_button.visible = not nearest_prop().is_empty()
-	hud.attack_button.disabled = not active or paused or encounter.defeated or state.equipped_weapon.is_empty() or encounter.attack_cooldown > 0
+	hud.attack_button.disabled = not active or paused or encounter.defeated or state.equipped_weapon.is_empty() or encounter.attack_cooldown > 0 or encounter.living_count() == 0
 	hud.combat_status.text = "Tap skills • Bag: potions" if _uses_touch_hints() else "Skills [1–3] • Supplies [P]"
 	hud.attack_button.tooltip_text = "Basic strike [F]. Equip your weapon." if active else "Accept a field assignment at the guild."
 	hud.hp_label.text = "HP %d / %d" % [encounter.hp,encounter.max_hp]
@@ -569,11 +655,19 @@ func _update_combat_hud() -> void:
 		button.tooltip_text = "%s • %d MP • %.1fs cooldown" % [skill.name,skill.mana,skill.cd]
 		button.disabled = not active or paused or encounter.defeated or encounter.skill_cooldowns[slot] > 0 or encounter.mana < skill.mana
 		button.queue_redraw()
-	if active:
+	if active and state.tutorial.stage == state.Rewards.ENCOUNTERS[encounter.encounter_id].stage:
 		var label_text: String = combat_data.get("label","South meadow")
-		hud.set_tutorial_objective("%s: %d remaining." % [label_text,encounter.living_count()] if player.distance_to(encounter.retry_point) < 700 else ("Follow the gold road marks to the forest." if encounter.encounter_id != Encounter.ID else "Follow the gold road marks to the South Meadow."))
+		var credit: int = state.progression.population.quest_kills[encounter.encounter_id]
+		var needed: int = state.Rewards.ENCOUNTERS[encounter.encounter_id].count
+		var species := "Slimes" if encounter.encounter_id == Encounter.ID else "Wolves"
+		hud.set_tutorial_objective("%s %d/%d · %s" % [species,credit,needed,label_text] if player.distance_to(encounter.retry_point) < 700 else ("Wolves: follow gold marks to the forest." if encounter.encounter_id != Encounter.ID else "Slimes: follow gold marks to South Meadow."))
 
 func _process_encounter(delta: float) -> void:
+	if not is_instance_valid(overlay) and not encounter.defeated and not _select_population(): return
+	respawn_poll -= delta
+	if respawn_poll <= 0:
+		respawn_poll = 1.0
+		_refresh_population()
 	# Stat allocation and weapon upgrades are infrequent; avoid validating the
 	# complete save ledger on every rendered frame. Transactions still validate.
 	var upgrade: int = state.basic_weapon_bonus()
@@ -601,7 +695,7 @@ func _process_encounter(delta: float) -> void:
 	if not paused:
 		var before: Dictionary = encounter.capture()
 		if active:
-			encounter.tick(delta,player,can_stand)
+			encounter.tick(delta,player,_combat_can_stand)
 		else:
 			# Safe in-town resource recovery; no inactive enemy/summon simulation.
 			var dt := clampf(delta,0,0.05)
@@ -619,23 +713,21 @@ func _process_encounter(delta: float) -> void:
 				return
 		if active and not _save_monster_rewards(): return
 		if active and encounter.defeated: _show_encounter_defeat()
-		elif active and encounter.victory:
-			encounter_save_retry -= delta
-			if encounter_save_retry <= 0:
-				encounter_save_retry = 2.0
-				if state.record_encounter_victory(encounter.encounter_id):
-					encounter_saved = true
-					_refresh_hud()
-					message.text = "Level %d! +5 stat points. Area cleared; return to the guild." % last_level_up if last_level_up > 0 else "Area cleared! Return to the guild for your reward."
-				else: message.text = "Area cleared; progress could not save. Keep this area open to retry. " + state.error
+
 	_update_combat_hud()
 	_sync_encounter_visuals()
 
 func _sync_encounter_visuals() -> void:
-	if is_instance_valid(quest_trail): quest_trail.update_quest(state.tutorial.stage,player,encounter.enemies)
-	for i in enemy_nodes.size():
-		enemy_nodes[i].sync(encounter.enemies[i])
-		enemy_nodes[i].visible = _combat_active() and encounter.enemies[i].hp > 0
+	for signpost in monster_signs:
+		signpost.hero = player
+		signpost.queue_redraw()
+	if is_instance_valid(quest_trail):
+		var quest_group: String = "west_forest_patrol" if state.tutorial.stage == "forest_patrol_active" else Encounter.ID
+		quest_trail.update_quest(state.tutorial.stage,player,populations[quest_group].enemies)
+	for group in populations:
+		for i in population_nodes[group].size():
+			population_nodes[group][i].sync(populations[group].enemies[i])
+			population_nodes[group][i].visible = populations[group].enemies[i].hp > 0
 	if is_instance_valid(combat_fx):
 		combat_fx.player = player
 		combat_fx.visible = _combat_active()
@@ -673,7 +765,7 @@ func _show_encounter_defeat() -> void:
 	content.add_theme_constant_override("separation",14)
 	margin.add_child(content)
 	label("You were overwhelmed",content)
-	label("No extra items or gold were lost. Used potions stay consumed.\nRetry restores HP and mana. Defeated monsters stay cleared.",content)
+	label("No extra items or gold were lost. Used potions stay consumed.\nRetry restores HP and mana. Monsters return after their respawn cooldown.",content)
 	var retry := button("Retry from the safe path",content)
 	for appearance in ["normal","hover","pressed","focus","disabled"]:
 		retry.add_theme_stylebox_override(appearance,preload("res://src/ui/ornate_panel.gd").make_button_style(appearance in ["hover","pressed"]))

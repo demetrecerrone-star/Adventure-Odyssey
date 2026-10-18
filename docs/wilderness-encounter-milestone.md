@@ -1,5 +1,6 @@
 > Historical first-combat checkpoint. Current resource, skill, reward and retry behavior is documented in field-combat-and-resources.md and monster-xp-and-sigils.md.
 
+Current wilderness behavior is documented in [Respawning wilderness](respawning-wilderness.md). The initial quest-gated/permanently cleared encounter behavior below is historical.
 # South meadow field encounter
 
 A bounded playable first encounter is now connected to the guild field assignment. This is a training-combat slice, not the full class-skill/stat combat system.

@@ -75,20 +75,20 @@ static func describe(id: String, value: Dictionary, _selected_class: String = ""
 					result.choices.append(_choice("guild_assign_first_combat", "Accept: clear the South Meadow"))
 					result.choices.append(_choice("field_advice", "What should I know before I leave?", "local"))
 				"first_combat_active":
-					result.body = "Follow the gold road marks across the west bridge, past home, and down the south branch. They lead to the three South Meadow slimes east of the trail. Equip your weapon from your inventory before fighting, then use Attack when a slime is close. Your class skills and carried potions can help. Return when the meadow is clear."
+					result.body = "Follow the gold road marks across the west bridge, past home, and down the south branch. They lead to the three South Meadow slimes east of the trail. Equip your weapon from your inventory before fighting, then use Attack when a slime is close. Your class skills and carried potions can help. Only kills after accepting count for this job. Defeat three, then return."
 				"return_guild_first_combat":
-					result.body = "You made it back. That's the part I was waiting for. The herb gatherers can use the meadow again because of you. Your first assignment is complete; you've earned these 25 gold."
+					result.body = "You made it back. That's the part I was waiting for. You bought the herb gatherers some breathing room. Your first assignment is complete; you've earned these 25 gold."
 					result.choices.append(_choice("guild_complete_first_combat", "Complete training • Collect 25 gold"))
 				"tutorial_complete":
 					result.body = "There's another road that needs you, if you're ready. Two wolves have trapped travelers on the Western Forest trail. Cross the west bridge, take the northern branch, then look east of the wooded bend. Clear both for 40 gold. Bring healing supplies."
 					result.choices.append(_choice("guild_assign_forest_patrol", "Accept: Western Forest patrol"))
 				"forest_patrol_active":
-					result.body = "The Western Forest patrol is still open. Cross the west bridge, follow the northern branch, and look east of the first wooded bend. Clear both wolves, then report back. Step away from their amber attack rings, and use your class skills when you have enough mana. Used potions stay consumed, even if you retry."
+					result.body = "The Western Forest patrol is still open. Cross the west bridge, follow the northern branch, and look east of the first wooded bend. Defeat two wolves for this assignment, then report back. Step away from their amber attack rings, and use your class skills when you have enough mana. Used potions stay consumed, even if you retry."
 				"return_guild_forest":
 					result.body = "A traveler came through before you. Said someone finally opened the forest road. I had a feeling it was you. Your 40 gold is ready. Sit a moment before you take on the whole world."
 					result.choices.append(_choice("guild_complete_forest_patrol", "Finish patrol • Collect 40 gold"))
 				"forest_patrol_complete":
-					result.body = "Both the meadow and the western forest route are clear. Your 40 gold patrol reward has been paid. Your earned Sigils can buy dyes and blankets at home. Visit your bed to preview them; combat stats stay the same."
+					result.body = "Both guild assignments are complete. Slimes and wolves still roam outside town; they return after a short while. Your 40 gold patrol reward has been paid. Your earned Sigils can buy dyes and blankets at home. Visit your bed to preview them; combat stats stay the same."
 		"blacksmith":
 			if stage == "visit_blacksmith":
 				result.body = "Let me see your hands. New to this, then. Good; you haven't learned bad habits yet. Bring your class weapon from the home chest. I'll provide a free +1 lesson. Take the supplies, then select and confirm the upgrade yourself. A weapon deserves a patient hand."
