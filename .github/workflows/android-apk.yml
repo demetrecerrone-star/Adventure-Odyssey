@@ -92,6 +92,7 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE=1 timeout 180 xvfb-run -a -s '-screen 0 1280x720x24' godot --audio-driver Dummy --path . --script res://tests/interior_screenshot.gd 2>&1 | tee /tmp/ao_interior_capture.log
           if grep -E 'SCRIPT ERROR|ERROR:' /tmp/ao_interior_capture.log; then exit 1; fi
           test -s screenshots/guild_interior_entry.png
+          test -s screenshots/guild_interior_phone_entry.png
           test -s screenshots/general_store_interior_world_return.png
 
       - name: Capture native residential town polish

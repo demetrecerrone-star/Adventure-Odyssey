@@ -59,6 +59,12 @@ func run()->void:
 		root.add_child(room); room.set_process(false)
 		for npc in layout.npcs:
 			var stand := point(npc.interaction_anchor)
+			var facing := Vector2.RIGHT if npc.get("facing","") == "right" else Vector2.LEFT
+			check(npc.get("facing","") in ["left","right"],id+" attendant uses explicit side-facing art")
+			check(str(npc.asset_file).contains("_idle_"+str(npc.facing)),id+" facing metadata matches actual sprite file")
+			check(facing.dot((point(layout.door_threshold)-point(npc.position)).normalized()) > 0.7,id+" attendant faces doorway")
+			check(facing.dot((spawn-point(npc.position)).normalized()) > 0.7,id+" attendant faces arriving player, not away from door")
+			check(facing.dot((stand-point(npc.position)).normalized()) > 0.95,id+" attendant faces customer approach")
 			var outbound := grid_route(room,spawn,stand)
 			var inbound := grid_route(room,stand,exit_point)
 			check(not outbound.is_empty(),id+" entry to NPC route on 16 px grid")
@@ -90,7 +96,14 @@ func run()->void:
 				room.joystick.set_position_input(room.joystick.size*0.5+Vector2(60,0)); room.moving_to_target = true
 				room._notification(notification)
 				check(room.touch_direction == Vector2.ZERO and room.joystick.direction == Vector2.ZERO and not room.moving_to_target,id+" focus loss stops joystick and tap target")
+		check(layout.props.filter(func(prop):return prop.get("decoration",false)).size() >= 3,id+" has restrained lived-in details")
 		for prop in layout.props:
+			check(room.prop_nodes[prop.id].texture != null,id+" decorative/shared texture resolves "+prop.id)
+			if prop.get("collision_polygon") is Array:
+				var center := Vector2.ZERO
+				for vertex in prop.collision_polygon:center += point(vertex)
+				center /= prop.collision_polygon.size()
+				check(not room.can_stand(center),id+" detail polygon blocks feet "+prop.id)
 			if prop.collision_rect == null: continue
 			var node:Sprite2D = room.prop_nodes[prop.id]
 			room.player = Vector2(prop.position[0],float(prop.depth_y)+20); room._update_actor()
@@ -99,6 +112,18 @@ func run()->void:
 			check(room.actor.z_index < node.z_index,id+" actor behind furniture above depth line "+prop.id)
 		check(inventory(state) == before,id+" playability checks preserve inventory")
 		room.free(); await process_frame
+		# An older save may stand where a newly furnished room now has a solid prop.
+		var detail:Dictionary = layout.props.filter(func(prop):return prop.get("decoration",false) and prop.collision_rect is Array)[0]
+		var rect:Array = detail.collision_rect
+		var obstructed := Rect2(rect[0],rect[1],rect[2],rect[3]).get_center()
+		check(state.set_location(id,obstructed),id+" older saved furnishing position fixture")
+		var recovered = Save.new();recovered.path = path
+		check(recovered.load_saved(),id+" furnishing update retains loadable save")
+		var reopened = Interior.new();reopened.room_id = id;reopened.state = recovered
+		root.add_child(reopened);reopened.set_process(false)
+		check(reopened.can_stand(reopened.player) and reopened.player.distance_to(spawn)<1,id+" blocked old position safely returns to entry")
+		check(JSON.parse_string(inventory(recovered))==JSON.parse_string(before),id+" safe entry recovery preserves character and equipment")
+		reopened.free();await process_frame
 	DirAccess.remove_absolute(path)
 	print("INTERIOR PLAYABILITY CHECKS: %d; failures: %d" % [checks,failures])
 	quit(1 if failures else 0)

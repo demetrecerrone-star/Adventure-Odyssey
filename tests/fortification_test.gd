@@ -34,6 +34,16 @@ func run()->void:
 		world.player = Vector2(center.x,world.building_front_y(item,center.x)+30)
 		world._update_actor()
 		check(sprite.z_index < world.actor.z_index and is_equal_approx(sprite.self_modulate.a,1.0),"Front depth and opacity restore: "+item.id)
+	world.player = Vector2(3495,1840)
+	world._update_actor()
+	for id in ["south_west_00_00","gate_workyard_south_post_0"]:
+		check(is_equal_approx(world.fortification_nodes[id].self_modulate.a,1.0),"Transparent source padding beside south gate does not fade " + id)
+	world.player = Vector2(2502.0,1519.8)
+	world._update_actor()
+	var visible_relief := 0
+	for node in world.fortification_nodes.values():
+		if node.self_modulate.a < 0.5:visible_relief += 1
+	check(visible_relief > 0,"Genuine opaque wall overlap at general store still reveals player")
 	var gates:Array = data.get("gates",[])
 	check(gates.size() == 4,"Four open gates")
 	for gate in gates:

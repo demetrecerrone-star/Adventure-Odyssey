@@ -1,0 +1,11 @@
+# Lived-in interiors and character visibility
+
+Fourteen separate decorative placements reuse existing approved painted art. No source image was repainted, mirrored or rescaled nonuniformly. Guild adds waiting bench, planter, side bookshelf and rug; apothecary adds bench, planter, side bookshelf and rug; general store adds stock barrel, crate and waiting bench; smith adds firewood, cooling-water barrel and stock crate. These are decorative, with no invented inventory or services.
+
+All four attendants already face sideways toward the door/customer approach. Their original art and position remain unchanged. Explicit facing metadata and regression checks now require a positive facing projection toward entry and the interaction stand. Bedroom already has nine layered furnishings and remains unchanged.
+
+Solid details have measured floor footprints, while rugs remain noncolliding at floor depth. The central entry lane and entry→NPC→exit routes remain clear. A separate audit checked 16px and stricter24px clearance on a10px grid; runtime tests sweep actual collision routes. Native phone/desktop entry and attendant captures are the remaining verification gate for scale, placement and depth.
+
+Exterior visibility fixes preserve every building/wall collision and depth boundary. Padded texture rectangles no longer trigger wall fading by themselves. Cached one-bit alpha masks test whether opaque foreground covers sample points on the player's head, torso or legs. Genuinely obscuring walls and buildings fade locally to38% opacity; clear objects restore full opacity. Tests cover the false south-gate fade, true general-store overlap, and previously invisible reachable positions behind home/guild. No art, combat, save or character-customization changes.
+
+This is a bounded QA-only checkpoint. Native software-renderer captures do not certify hardware Android performance. No APK is built.

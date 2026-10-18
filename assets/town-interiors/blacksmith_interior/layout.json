@@ -1,5 +1,5 @@
 {
-  "status": "Isolated review package. Visual composition inspected and ground-foot navigation verified; engine integration, native occlusion and APK QA pending.",
+  "status": "Runtime room layout; approved source artwork reused as separate decorative layers. Native composition and navigation regression required for revisions.",
   "scene_id": "blacksmith_interior",
   "canvas": [
     1536,
@@ -223,6 +223,128 @@
         414.72
       ],
       "attendant_id": "blacksmith"
+    },
+    {
+      "id": "detail_firewood",
+      "file": "res://assets/starter-region/scenery/stacked-firewood.png",
+      "source_anchor": [
+        318.316,
+        321.139
+      ],
+      "position": [
+        300,
+        700
+      ],
+      "scale": 0.4,
+      "depth_y": 700,
+      "collision_rect": null,
+      "decoration": true,
+      "note": "Existing approved painted art; decorative only, no inventory or interaction.",
+      "source_size": [
+        512,
+        341
+      ],
+      "world_draw_rect": [
+        172.674,
+        571.544,
+        204.8,
+        136.4
+      ],
+      "collision_polygon": [
+        [
+          197,
+          659
+        ],
+        [
+          256,
+          616
+        ],
+        [
+          358,
+          655
+        ],
+        [
+          300,
+          700
+        ]
+      ]
+    },
+    {
+      "id": "detail_barrel",
+      "file": "res://assets/starter-region/scenery/barrel.png",
+      "source_anchor": [
+        270.482,
+        498.303
+      ],
+      "position": [
+        620,
+        665
+      ],
+      "scale": 0.25,
+      "depth_y": 665,
+      "collision_rect": [
+        581,
+        626,
+        78,
+        39
+      ],
+      "decoration": true,
+      "note": "Existing approved painted art; decorative only, no inventory or interaction.",
+      "source_size": [
+        512,
+        509
+      ],
+      "world_draw_rect": [
+        552.38,
+        540.424,
+        128.0,
+        127.25
+      ]
+    },
+    {
+      "id": "detail_crate",
+      "file": "res://assets/starter-region/scenery/wooden-crate.png",
+      "source_anchor": [
+        265.391,
+        464.004
+      ],
+      "position": [
+        1270,
+        845
+      ],
+      "scale": 0.24,
+      "depth_y": 845,
+      "collision_rect": null,
+      "decoration": true,
+      "note": "Existing approved painted art; decorative only, no inventory or interaction.",
+      "source_size": [
+        512,
+        484
+      ],
+      "world_draw_rect": [
+        1206.306,
+        733.639,
+        122.88,
+        116.16
+      ],
+      "collision_polygon": [
+        [
+          1228,
+          819
+        ],
+        [
+          1270,
+          796
+        ],
+        [
+          1312,
+          819
+        ],
+        [
+          1270,
+          845
+        ]
+      ]
     }
   ],
   "npcs": [
@@ -267,7 +389,8 @@
         240.64,
         240.64
       ],
-      "draw_before_prop_id": "workbench"
+      "draw_before_prop_id": "workbench",
+      "facing": "left"
     }
   ],
   "center_clearance_corridor": [

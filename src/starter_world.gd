@@ -25,6 +25,7 @@ var building_nodes := {}
 var building_data: Array = []
 var fortification_nodes := {}
 var fortification_data: Array = []
+var occlusion_masks := {}
 var entrance_labels := {"envelope":"Guild letter", "home":"Home", "guild":"Adventurer Guild", "shop_southwest":"General store", "shop_south_plaza":"Apothecary", "blacksmith_workyard":"Blacksmith"}
 func _ready() -> void:
 	world_layout = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/layout.json"))
@@ -197,11 +198,29 @@ func _update_fortification_depth() -> void:
 			if player.y >= building_front_y(item,player.x): depth = mini(depth,actor.z_index-2)
 			else:
 				depth = maxi(depth,actor.z_index+2)
-				obscures_player = true
+				obscures_player = _opaque_over_player(sprite)
 		sprite.z_index = depth
 		# Foreground fortifications must not hide the controlled character or
 		# a nearby shop entrance. Only the overlapping module fades locally.
 		sprite.self_modulate.a = 0.38 if obscures_player else 1.0
+func _opaque_over_player(sprite:Sprite2D) -> bool:
+	# Source canvases include transparent padding. Sample the visible head/torso/
+	# legs, rather than fading a nearby object merely because its canvas overlaps.
+	# Cache one-bit masks per texture, not full CPU RGBA copies per placement.
+	var key := sprite.texture.resource_path
+	if not occlusion_masks.has(key):
+		var image := sprite.texture.get_image()
+		if image.is_compressed(): image.decompress()
+		var mask := BitMap.new()
+		mask.create_from_image_alpha(image, 0.15)
+		occlusion_masks[key] = mask
+	var mask:BitMap = occlusion_masks[key]
+	var bounds := Rect2i(Vector2i.ZERO,mask.get_size())
+	for source_point in [Vector2(128,64),Vector2(128,100),Vector2(110,120),Vector2(146,120),Vector2(128,160),Vector2(128,200)]:
+		var world_point:Vector2 = player+(source_point-Vector2(128,232))*actor.scale
+		var pixel := Vector2i((world_point-sprite.position)/sprite.scale)
+		if bounds.has_point(pixel) and mask.get_bitv(pixel): return true
+	return false
 func building_front_y(item:Dictionary, x:float) -> float:
 	var crossings:Array[float] = []
 	var polygon:Array = item.collision_polygon
@@ -221,13 +240,17 @@ func _update_building_depth() -> void:
 	for item in building_data:
 		var sprite:Sprite2D = building_nodes[item.id]
 		var depth := int(item.depth_anchor_world[1]*0.4)
+		var obscures_player := false
 		var visual := Rect2(sprite.position,Vector2(item.display_size[0],item.display_size[1]))
 		if visual.intersects(actor_rect):
 			# A diagonal foundation has different foreground Y at each X. Keep
 			# the player in front at every accessible facade, not only the door.
 			if player.y >= building_front_y(item,player.x): depth = mini(depth,actor.z_index-2)
-			else: depth = maxi(depth,actor.z_index+2)
+			else:
+				depth = maxi(depth,actor.z_index+2)
+				obscures_player = _opaque_over_player(sprite)
 		sprite.z_index = depth
+		sprite.self_modulate.a = 0.38 if obscures_player else 1.0
 func _process(delta: float) -> void:
 	super._process(delta)
 	var nearby := nearest_prop()

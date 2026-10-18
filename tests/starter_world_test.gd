@@ -44,8 +44,14 @@ func run()->void:
 		world.player = Vector2(item.position[0],top-32)
 		world._update_actor()
 		check(world.building_nodes[item.id].z_index > world.actor.z_index,"Actor renders behind building "+item.id)
+	for fixture in [["starter_home",Vector2(1644,1105.5)],["guild",Vector2(2445,851.89)]]:
+		world.player = fixture[1]
+		world._update_actor()
+		check(world.can_stand(world.player),"Behind-building visibility fixture stays on accessible ground")
+		check(world.building_nodes[fixture[0]].self_modulate.a < 0.5,"Opaque foreground building reveals player: "+fixture[0])
 	world.player = world.HOME
 	world._update_actor()
+	check(is_equal_approx(world.building_nodes["starter_home"].self_modulate.a,1.0),"Building opacity restores at home approach")
 	check(world.can_stand(Vector2(2267.28,1299.561)),"No false-positive river vertex snag on home route")
 	check(not world.can_stand(Vector2(247,1148)),"Painted low forest ledge blocks feet")
 	check(not world.can_stand(Vector2(66,1109)),"Cliff face forest_low_west_ledge")

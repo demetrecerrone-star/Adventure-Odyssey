@@ -34,6 +34,7 @@ func _ready() -> void:
  message.text = "Explore the room. Speak to the attendant with [E], or return through the door."
  status.text = state.character.get("username","")+" • "+ROOMS[room_id].label
 func _asset(file:String) -> String:
+ if file.begins_with("res://assets/"): return file
  return "res://assets/town-interiors/"+room_id+"/"+file
 func _layer(item:Dictionary,file:String) -> Sprite2D:
  var sprite := Sprite2D.new()

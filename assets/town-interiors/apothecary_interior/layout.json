@@ -1,5 +1,5 @@
 {
-  "status": "Isolated review package. Visual composition inspected and ground-foot navigation verified; engine integration, native occlusion and APK QA pending.",
+  "status": "Runtime room layout; approved source artwork reused as separate decorative layers. Native composition and navigation regression required for revisions.",
   "scene_id": "apothecary_interior",
   "canvas": [
     1536,
@@ -185,6 +185,142 @@
         313.5,
         313.5
       ]
+    },
+    {
+      "id": "detail_bench",
+      "file": "res://assets/starter-region/scenery/wooden-bench-ew.png",
+      "source_anchor": [
+        257,
+        304.634
+      ],
+      "position": [
+        430,
+        610
+      ],
+      "scale": 0.52,
+      "depth_y": 610,
+      "collision_rect": [
+        325,
+        561,
+        210,
+        49
+      ],
+      "decoration": true,
+      "note": "Existing approved painted art; decorative only, no inventory or interaction.",
+      "source_size": [
+        512,
+        338
+      ],
+      "world_draw_rect": [
+        296.36,
+        451.59,
+        266.24,
+        175.76
+      ]
+    },
+    {
+      "id": "detail_planter",
+      "file": "res://assets/starter-region/scenery/flower-planter.png",
+      "source_anchor": [
+        263.549,
+        241.5
+      ],
+      "position": [
+        435,
+        465
+      ],
+      "scale": 0.44,
+      "depth_y": 465,
+      "collision_rect": null,
+      "decoration": true,
+      "note": "Existing approved painted art; decorative only, no inventory or interaction.",
+      "source_size": [
+        512,
+        337
+      ],
+      "world_draw_rect": [
+        319.038,
+        358.74,
+        225.28,
+        148.28
+      ],
+      "collision_polygon": [
+        [
+          349,
+          465
+        ],
+        [
+          521,
+          465
+        ],
+        [
+          527,
+          435
+        ],
+        [
+          343,
+          435
+        ]
+      ]
+    },
+    {
+      "id": "detail_bookshelf",
+      "file": "res://assets/bedroom/bookshelf.png",
+      "source_anchor": [
+        1380,
+        705
+      ],
+      "position": [
+        1360,
+        835
+      ],
+      "scale": 0.8,
+      "depth_y": 835,
+      "collision_rect": [
+        1308,
+        783,
+        104,
+        52
+      ],
+      "decoration": true,
+      "note": "Existing approved painted art; decorative only, no inventory or interaction.",
+      "source_size": [
+        1536,
+        1024
+      ],
+      "world_draw_rect": [
+        256.0,
+        271.0,
+        1228.8,
+        819.2
+      ]
+    },
+    {
+      "id": "detail_rug",
+      "file": "res://assets/bedroom/rug.png",
+      "source_anchor": [
+        807.5,
+        775
+      ],
+      "position": [
+        590,
+        845
+      ],
+      "scale": 0.6,
+      "depth_y": 1,
+      "collision_rect": null,
+      "decoration": true,
+      "note": "Existing approved painted art; decorative only, no inventory or interaction.",
+      "source_size": [
+        1536,
+        1024
+      ],
+      "world_draw_rect": [
+        105.5,
+        380.0,
+        921.6,
+        614.4
+      ]
     }
   ],
   "npcs": [
@@ -229,7 +365,8 @@
         216.021,
         216.021
       ],
-      "draw_before_prop_id": "counter"
+      "draw_before_prop_id": "counter",
+      "facing": "left"
     }
   ],
   "center_clearance_corridor": [

@@ -28,6 +28,9 @@ func run() -> void:
   await process_frame
   assert(room.can_stand(room.player) and room.actor.artwork_ready)
   await snap(id+"_entry.png")
+  root.size = Vector2i(844,390)
+  await snap(id+"_phone_entry.png")
+  root.size = Vector2i(1280,720)
   var npc:Dictionary = room.room_data.npcs[0]
   room.player = Vector2(npc.interaction_anchor[0],npc.interaction_anchor[1])
   assert(room.can_stand(room.player))

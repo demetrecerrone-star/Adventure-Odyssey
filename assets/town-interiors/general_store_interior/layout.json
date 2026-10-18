@@ -1,5 +1,5 @@
 {
-  "status": "Isolated review package. Visual composition inspected and ground-foot navigation verified; engine integration, native occlusion and APK QA pending.",
+  "status": "Runtime room layout; approved source artwork reused as separate decorative layers. Native composition and navigation regression required for revisions.",
   "scene_id": "general_store_interior",
   "canvas": [
     1536,
@@ -186,6 +186,115 @@
         388.74,
         388.74
       ]
+    },
+    {
+      "id": "detail_barrel",
+      "file": "res://assets/starter-region/scenery/barrel.png",
+      "source_anchor": [
+        270.482,
+        498.303
+      ],
+      "position": [
+        1180,
+        460
+      ],
+      "scale": 0.25,
+      "depth_y": 460,
+      "collision_rect": [
+        1141,
+        421,
+        78,
+        39
+      ],
+      "decoration": true,
+      "note": "Existing approved painted art; decorative only, no inventory or interaction.",
+      "source_size": [
+        512,
+        509
+      ],
+      "world_draw_rect": [
+        1112.38,
+        335.424,
+        128.0,
+        127.25
+      ]
+    },
+    {
+      "id": "detail_crate",
+      "file": "res://assets/starter-region/scenery/wooden-crate.png",
+      "source_anchor": [
+        265.391,
+        464.004
+      ],
+      "position": [
+        1285,
+        535
+      ],
+      "scale": 0.24,
+      "depth_y": 535,
+      "collision_rect": null,
+      "decoration": true,
+      "note": "Existing approved painted art; decorative only, no inventory or interaction.",
+      "source_size": [
+        512,
+        484
+      ],
+      "world_draw_rect": [
+        1221.306,
+        423.639,
+        122.88,
+        116.16
+      ],
+      "collision_polygon": [
+        [
+          1243,
+          509
+        ],
+        [
+          1285,
+          486
+        ],
+        [
+          1327,
+          509
+        ],
+        [
+          1285,
+          535
+        ]
+      ]
+    },
+    {
+      "id": "detail_bench",
+      "file": "res://assets/starter-region/scenery/wooden-bench-ew.png",
+      "source_anchor": [
+        257,
+        304.634
+      ],
+      "position": [
+        430,
+        815
+      ],
+      "scale": 0.52,
+      "depth_y": 815,
+      "collision_rect": [
+        325,
+        766,
+        210,
+        49
+      ],
+      "decoration": true,
+      "note": "Existing approved painted art; decorative only, no inventory or interaction.",
+      "source_size": [
+        512,
+        338
+      ],
+      "world_draw_rect": [
+        296.36,
+        656.59,
+        266.24,
+        175.76
+      ]
     }
   ],
   "npcs": [
@@ -230,7 +339,8 @@
         250.88,
         250.88
       ],
-      "draw_before_prop_id": "counter"
+      "draw_before_prop_id": "counter",
+      "facing": "left"
     }
   ],
   "center_clearance_corridor": [
