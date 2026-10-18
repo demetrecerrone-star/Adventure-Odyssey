@@ -118,6 +118,7 @@ func _speak() -> void:
  var close := button("Leave conversation",box)
  close.pressed.connect(_close_overlay)
  close.grab_focus()
+ _sync_modal_input()
 func _exit() -> void:
  _reset_movement()
  if state.set_location(room_id,player): exited.emit()

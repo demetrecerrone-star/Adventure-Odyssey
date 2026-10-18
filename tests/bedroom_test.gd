@@ -171,14 +171,14 @@ func run() -> void:
 	var ui_touch := InputEventScreenTouch.new()
 	ui_touch.index = 1
 	ui_touch.pressed = true
-	ui_touch.position = Vector2(165, 40)
+	ui_touch.position = room.hud.menu_button.get_global_rect().get_center()
 	Input.parse_input_event(ui_touch.duplicate())
 	await process_frame
 	ui_touch = ui_touch.duplicate()
 	ui_touch.pressed = false
 	Input.parse_input_event(ui_touch.duplicate())
 	await process_frame
-	check(is_instance_valid(room.overlay), "Second finger can open Bag while joystick is held")
+	check(is_instance_valid(room.overlay), "Second finger can open adventure menu while joystick is held")
 	routed_touch.pressed = false
 	Input.parse_input_event(routed_touch.duplicate())
 	room._close_overlay()
@@ -237,7 +237,7 @@ func run() -> void:
 	var final_reload = Save.new()
 	final_reload.path = path
 	check(final_reload.load_saved() and final_reload.awake, "Wake flag survives reload")
-	check(room.stage.z_index >= 0 and room.stage.z_index + room.actor.z_index < room.message.z_index, "World stays behind modal UI")
+	check(room.stage.z_index >= 0 and room.stage.z_index + room.actor.z_index < room.hud.z_index + room.message.z_index, "World stays behind modal UI")
 	var failed = Save.new()
 	failed.character = state.character.duplicate(true)
 	failed.chest.healing_potion = 5

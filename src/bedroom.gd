@@ -24,6 +24,9 @@ var prop_rects := {"bed":Rect2(270, 380, 310, 315), "chest":Rect2(990, 445, 240,
 var anchors := {"bed":Vector2(590, 670), "chest":Vector2(1110, 585), "mirror":Vector2(925, 475), "door":Vector2(760, 395)}
 var touch_direction := Vector2.ZERO
 var movement_speed := 60.0
+var hud: Control
+var control_preferences = preload("res://src/control_preferences.gd").new()
+var _modal_input_blocked := false
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -71,42 +74,24 @@ func _ready() -> void:
 	actor.name = "Player"
 	actor.scale = Vector2.ONE * 1.05
 	stage.add_child(actor)
-	var top := HBoxContainer.new()
-	top.z_index = 2000
-	top.position = Vector2(18, 14)
-	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(top)
-	var back := button("Save & title", top)
-	back.pressed.connect(_exit)
-	var inventory_button := button("Bag", top)
-	inventory_button.pressed.connect(func():
-		if not sleeping and not state.character.is_empty() and not is_instance_valid(overlay):
-			open_chest(false)
-	)
-	status = label("Local guest adventure • Bedroom", top)
-	message = label("", self)
-	message.z_index = 2000
-	message.position = Vector2(24, 76)
-	message.add_theme_color_override("font_color", Color("fff0c7"))
-	var bottom := HBoxContainer.new()
-	bottom.z_index = 2000
-	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
-	bottom.position = Vector2(-430, -78)
-	bottom.size = Vector2(410, 60)
-	add_child(bottom)
-	interact_button = button("Interact [E]", bottom)
+	control_preferences.load_saved()
+	hud = preload("res://src/ui/adventure_hud.gd").new()
+	hud.z_index = 2000
+	add_child(hud)
+	hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	hud.menu_requested.connect(open_menu)
+	status = hud.status
+	message = hud.message
+	interact_button = hud.interact_button
 	interact_button.pressed.connect(interact)
 	joystick = preload("res://src/touch_joystick.gd").new()
 	joystick.name = "TouchJoystick"
 	joystick.z_index = 2000
 	add_child(joystick)
-	joystick.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
-	joystick.offset_left = 24
-	joystick.offset_top = -184
-	joystick.offset_right = 188
-	joystick.offset_bottom = -20
 	joystick.direction_changed.connect(func(value: Vector2): touch_direction = value)
+	_apply_control_layout()
 	resized.connect(_layout)
+	resized.connect(_apply_control_layout)
 	_layout()
 	if state.character.is_empty():
 		if state.load_saved():
@@ -155,6 +140,7 @@ func _layout() -> void:
 func _start_character() -> void:
 	actor.configure(state.character.base, state.character["class"], state.character)
 	actor.set_equipped_weapon(state.equipped_weapon)
+	_refresh_hud()
 	movement_speed = actor.suggested_speed * PLAYER_SPEED_MULTIPLIER
 	sleeping = false
 	player = wake_spawn
@@ -194,6 +180,8 @@ func nearest_prop() -> String:
 func _process(delta: float) -> void:
 	if not is_instance_valid(actor):
 		return
+	_sync_modal_input()
+	_refresh_hud_location()
 	interact_button.disabled = sleeping or is_instance_valid(overlay) or nearest_prop().is_empty()
 	if sleeping or is_instance_valid(overlay) or state.character.is_empty():
 		return
@@ -261,6 +249,8 @@ func open_creator(mirror: bool) -> void:
 		_close_overlay()
 		if mirror:
 			actor.configure(state.character.base, state.character["class"], state.character)
+			actor.set_equipped_weapon(state.equipped_weapon)
+			_refresh_hud()
 			message.text = "Appearance saved locally. Your base, class and username are unchanged."
 		else:
 			_start_character()
@@ -269,12 +259,14 @@ func open_creator(mirror: bool) -> void:
 	overlay = creator
 	add_child(creator)
 	creator.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_sync_modal_input()
 func _close_overlay() -> void:
 	if is_instance_valid(overlay):
 		remove_child(overlay)
 		overlay.queue_free()
 		overlay = null
 	_reset_movement()
+	_sync_modal_input()
 func _reset_movement() -> void:
 	touch_direction = Vector2.ZERO
 	moving_to_target = false
@@ -334,6 +326,7 @@ func open_chest(show_storage: bool = true) -> void:
 	var close := button("Close", box)
 	close.pressed.connect(_close_overlay)
 	close.grab_focus()
+	_sync_modal_input()
 func _exit() -> void:
 	if not state.character.is_empty() and not state.save():
 		message.text = state.error
@@ -371,3 +364,76 @@ func _load_layout() -> void:
 		var point: Array = data.interactions[id]
 		if point.size() == 2:
 			anchors[id] = Vector2(point[0], point[1])
+
+func _refresh_hud() -> void:
+	if is_instance_valid(hud):
+		hud.set_character(state.character)
+		_refresh_hud_location()
+func _refresh_hud_location() -> void:
+	if not is_instance_valid(hud): return
+	var scene_name := "Bedroom"
+	if get_script().resource_path.ends_with("starter_world.gd"): scene_name = "Starter region"
+	elif get_script().resource_path.ends_with("town_interior.gd"): scene_name = str(get("room_id")).replace("_interior", "").replace("_", " ").capitalize()
+	hud.set_world_position(scene_name, player)
+func _apply_control_layout() -> void:
+	if not is_instance_valid(joystick) or not is_instance_valid(hud): return
+	_reset_movement()
+	joystick.configure(control_preferences.mode)
+	var safe := _control_safe_rect()
+	hud.set_safe_rect(safe)
+	var extent := Vector2(244, clampf(safe.size.y - 190, 176, 200)) if control_preferences.mode == "floating" else Vector2(164,164)
+	# Keep activation bounded to the thumb corner; never mirror the world or text.
+	joystick.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	joystick.size = extent
+	joystick.position = Vector2(safe.end.x - extent.x - 18 if control_preferences.left_handed else safe.position.x + 18.0, maxf(safe.position.y + 100.0, safe.end.y - extent.y - 16))
+	hud.set_left_handed(control_preferences.left_handed)
+	_sync_modal_input()
+func _sync_modal_input() -> void:
+	var blocked: bool = is_instance_valid(overlay) or sleeping or state.character.is_empty()
+	if blocked != _modal_input_blocked:
+		_modal_input_blocked = blocked
+		_reset_movement()
+		if is_instance_valid(joystick): joystick.set_input_enabled(not blocked)
+		if is_instance_valid(hud): hud.set_modal_active(blocked)
+func open_menu() -> void:
+	if is_instance_valid(overlay) or state.character.is_empty(): return
+	_reset_movement()
+	var menu = preload("res://src/ui/adventure_menu.gd").new()
+	menu.state = state
+	menu.preferences = control_preferences
+	menu.initial_page = "menu"
+	menu.z_index = 2100
+	overlay = menu
+	add_child(menu)
+	menu.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	menu.dismissed.connect(_close_overlay)
+	menu.title_requested.connect(_exit)
+	menu.inventory_requested.connect(func(): open_chest(false))
+	menu.equip_requested.connect(func(item: String):
+		if not state.equip(item): menu.set_notice(state.error, true)
+		else: actor.set_equipped_weapon(state.equipped_weapon)
+		menu.refresh_state()
+	)
+	menu.unequip_requested.connect(func():
+		if not state.unequip(): menu.set_notice(state.error, true)
+		else: actor.set_equipped_weapon(state.equipped_weapon)
+		menu.refresh_state()
+	)
+	menu.settings_changed.connect(func(mode: String, left_handed: bool):
+		if control_preferences.apply(mode, left_handed):
+			_apply_control_layout()
+			menu.set_notice("Controls saved on this device.")
+		else: menu.set_notice(control_preferences.error, true)
+		menu.sync_preferences()
+	)
+	_sync_modal_input()
+
+func _control_safe_rect() -> Rect2:
+	var full := Rect2(Vector2.ZERO, size)
+	if OS.get_name() != "Android": return full
+	var window_size := Vector2(DisplayServer.window_get_size())
+	var safe := Rect2(DisplayServer.get_display_safe_area())
+	if window_size.x <= 0 or window_size.y <= 0 or not safe.has_area(): return full
+	var ratio := size / window_size
+	var local := Rect2((safe.position - Vector2(DisplayServer.window_get_position())) * ratio, safe.size * ratio).intersection(full)
+	return local if local.size.x >= 640 and local.size.y >= 300 else full

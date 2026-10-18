@@ -1,0 +1,571 @@
+extends Control
+# A read-only view of the existing save. Scene owners perform every save/equip
+# operation and refresh this view only after the authoritative operation returns.
+signal dismissed
+signal inventory_requested
+signal equip_requested(item: String)
+signal unequip_requested
+signal settings_changed(mode: String, left_handed: bool)
+signal title_requested
+
+const Ornate = preload("res://src/ui/ornate_panel.gd")
+const Avatar = preload("res://src/layered_avatar.gd")
+const Inventory = preload("res://src/inventory_catalog.gd")
+const Catalog = preload("res://src/creator/catalog.gd")
+const PAGES := {"character":"Character", "inventory":"Inventory", "stats":"Stats", "quest_log":"Quest Log", "settings":"Settings"}
+const INK := Color("35291d")
+const MUTED := Color("76664e")
+var state
+var preferences
+var initial_page := "character"
+var page := "character"
+var character_tab := "equipment"
+var selected_item := ""
+var notice: Label
+var sidebar: Control
+var panel: Control
+var body_scroll: ScrollContainer
+var body: VBoxContainer
+var close_button: Button
+var page_buttons := {}
+var title_label: Label
+var subtitle_label: Label
+var avatar
+var portrait_stage: Control
+var fixed_button: Button
+var floating_button: Button
+var handed_button: Button
+var _dismiss_pending := false
+var _portrait_height := 300.0
+var _keyboard_navigation := false
+var dropdown: Control
+var dropdown_scroll: ScrollContainer
+var _dim: ColorRect
+var _touch_buttons: Array[Button] = []
+
+func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_setup_theme()
+	_dim = ColorRect.new()
+	_dim.color = Color(0.10, 0.12, 0.10, 0.78)
+	_dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(_dim)
+	sidebar = Ornate.new()
+	sidebar.name = "MenuSidebar"
+	add_child(sidebar)
+	var menu_title := _label("MENU", sidebar, 24, true)
+	menu_title.name = "MenuTitle"
+	menu_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	for id in PAGES:
+		var button := _button(PAGES[id], sidebar)
+		button.name = "Page_" + id
+		button.pressed.connect(show_page.bind(id))
+		page_buttons[id] = button
+	panel = Ornate.new()
+	panel.name = "PagePanel"
+	add_child(panel)
+	title_label = _label("", panel, 26, true)
+	title_label.name = "PageTitle"
+	subtitle_label = _label("", panel, 14)
+	subtitle_label.modulate = MUTED
+	close_button = _button("Close", panel)
+	close_button.name = "CloseMenu"
+	close_button.pressed.connect(_dismiss)
+	body_scroll = ScrollContainer.new()
+	body_scroll.name = "PageScroll"
+	body_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	body_scroll.follow_focus = false
+	body_scroll.scroll_deadzone = 8
+	panel.add_child(body_scroll)
+	body = VBoxContainer.new()
+	body.name = "PageBody"
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.add_theme_constant_override("separation", 12)
+	body_scroll.add_child(body)
+	notice = _label("", panel, 14)
+	notice.name = "Notice"
+	notice.max_lines_visible = 2
+	_create_dropdown()
+	resized.connect(_layout)
+	_layout()
+	show_page(initial_page)
+
+func _setup_theme() -> void:
+	theme = Theme.new()
+	theme.default_font = preload("res://assets/fonts/body.ttf")
+	theme.default_font_size = 16
+	for type in ["Label", "Button"]:
+		theme.set_color("font_color", type, INK)
+	for key in ["font_hover_color", "font_pressed_color", "font_focus_color"]:
+		theme.set_color(key, "Button", INK)
+	theme.set_color("font_disabled_color", "Button", MUTED)
+	theme.set_stylebox("normal", "Button", Ornate.make_button_style())
+	theme.set_stylebox("hover", "Button", Ornate.make_button_style(true))
+	theme.set_stylebox("pressed", "Button", Ornate.make_button_style(true))
+	theme.set_stylebox("disabled", "Button", Ornate.make_button_style(false, true))
+	var focus := StyleBoxFlat.new()
+	focus.bg_color = Color(0, 0, 0, 0)
+	focus.border_color = Color("267e88")
+	focus.set_border_width_all(3)
+	focus.set_corner_radius_all(8)
+	theme.set_stylebox("focus", "Button", focus)
+	# A finger-sized scrollbar supplements touch scrolling in the page body.
+	theme.set_constant("scrollbar_width", "ScrollContainer", 44)
+	var rail := StyleBoxFlat.new()
+	rail.bg_color = Color("e0d2b5")
+	rail.content_margin_left = 22
+	rail.content_margin_right = 22
+	rail.set_corner_radius_all(7)
+	theme.set_stylebox("scroll", "VScrollBar", rail)
+	var grabber := StyleBoxFlat.new()
+	grabber.bg_color = Color("b39154")
+	grabber.content_margin_left = 22
+	grabber.content_margin_right = 22
+	grabber.content_margin_top = 22
+	grabber.content_margin_bottom = 22
+	grabber.set_corner_radius_all(7)
+	for style in ["grabber", "grabber_highlight", "grabber_pressed"]:
+		theme.set_stylebox(style, "VScrollBar", grabber)
+
+func _create_dropdown() -> void:
+	dropdown = Ornate.new()
+	dropdown.name = "HamburgerDropdown"
+	dropdown.compact = true
+	add_child(dropdown)
+	dropdown_scroll = ScrollContainer.new()
+	dropdown_scroll.name = "DropdownScroll"
+	dropdown_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	dropdown_scroll.scroll_deadzone = 8
+	dropdown.add_child(dropdown_scroll)
+	var entries := VBoxContainer.new()
+	entries.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	entries.add_theme_constant_override("separation", 8)
+	dropdown_scroll.add_child(entries)
+	for id in PAGES:
+		var entry := _button(PAGES[id], entries)
+		entry.name = "Dropdown_" + id
+		entry.pressed.connect(show_page.bind(id))
+	var leave := _button("Save & title", entries)
+	leave.name = "DropdownSaveAndTitle"
+	leave.pressed.connect(func(): title_requested.emit())
+
+func _layout() -> void:
+	if not is_instance_valid(panel): return
+	dropdown.position = Vector2(80, 118)
+	dropdown.size = Vector2(242, minf(340, size.y - 130))
+	dropdown_scroll.position = Vector2(14, 14)
+	dropdown_scroll.size = dropdown.size - Vector2(28, 28)
+	var margin := 12.0 if size.y < 500 else 22.0
+	var available := size - Vector2.ONE * margin * 2
+	var side_width := clampf(size.x * 0.215, 176, 242)
+	sidebar.position = Vector2.ONE * margin
+	sidebar.size = Vector2(side_width, available.y)
+	var menu_title: Label = sidebar.get_node("MenuTitle")
+	menu_title.position = Vector2(20, 17)
+	menu_title.size = Vector2(side_width - 40, 30)
+	var gap := 7.0 if size.y < 500 else 12.0
+	var button_height := clampf((available.y - 90 - gap * 4) / 5, 44, 72)
+	var index := 0
+	for id in page_buttons:
+		var button: Button = page_buttons[id]
+		button.position = Vector2(16, 63 + index * (button_height + gap))
+		button.size = Vector2(side_width - 32, button_height)
+		index += 1
+	panel.position = Vector2(margin + side_width + 14, margin)
+	panel.size = Vector2(available.x - side_width - 14, available.y)
+	close_button.position = Vector2(panel.size.x - 100, 17)
+	close_button.size = Vector2(80, 44)
+	title_label.position = Vector2(26, 15)
+	title_label.size = Vector2(panel.size.x - 140, 34)
+	subtitle_label.position = Vector2(26, 49)
+	subtitle_label.size = Vector2(panel.size.x - 54, 22)
+	var footer := 38.0 if not notice.text.is_empty() else 0.0
+	body_scroll.position = Vector2(22, 80)
+	body_scroll.size = Vector2(panel.size.x - 44, maxf(80, panel.size.y - 102 - footer))
+	notice.position = Vector2(26, panel.size.y - 54)
+	notice.size = Vector2(panel.size.x - 52, 40)
+	_portrait_height = clampf(body_scroll.size.y - 58, 190, 430)
+	if is_instance_valid(portrait_stage):
+		portrait_stage.custom_minimum_size.y = _portrait_height
+		_place_avatar()
+
+func show_page(id: String) -> void:
+	if id == "quests": id = "quest_log"
+	if not PAGES.has(id) and id != "menu": id = "character"
+	page = id
+	if not is_node_ready():
+		initial_page = id
+		return
+	dropdown.visible = page == "menu"
+	sidebar.visible = page != "menu"
+	panel.visible = page != "menu"
+	_dim.color.a = 0.15 if page == "menu" else 0.78
+	if page == "menu":
+		dropdown_scroll.scroll_vertical = 0
+		_layout()
+		return
+	_clear_body()
+	notice.text = ""
+	title_label.text = PAGES[page].to_upper()
+	subtitle_label.text = _identity_summary() if page == "character" else "Saved on this device"
+	for key in page_buttons:
+		_set_active(page_buttons[key], key == page)
+	match page:
+		"character": _build_character()
+		"inventory": _build_inventory()
+		"stats": _build_stats()
+		"quest_log": _build_quests()
+		"settings": _build_settings()
+	body_scroll.scroll_vertical = 0
+	_layout()
+
+func refresh_state() -> void:
+	# Rebuild from the authoritative object, never a local inventory copy.
+	var previous_notice := notice.text if is_instance_valid(notice) else ""
+	var previous_error := is_instance_valid(notice) and notice.get_theme_color("font_color") == Color("9c3027")
+	var previous_scroll := body_scroll.scroll_vertical if is_instance_valid(body_scroll) else 0
+	show_page(page)
+	set_notice(previous_notice, previous_error)
+	body_scroll.set_deferred("scroll_vertical", previous_scroll)
+
+func set_notice(message: String, is_error: bool = false) -> void:
+	if not is_instance_valid(notice): return
+	notice.text = message
+	notice.add_theme_color_override("font_color", Color("9c3027") if is_error else Color("346b61"))
+	_layout()
+
+func _clear_body() -> void:
+	_release_touch_owners()
+	_touch_buttons = _touch_buttons.filter(func(button): return is_instance_valid(button) and not body.is_ancestor_of(button))
+	avatar = null
+	portrait_stage = null
+	fixed_button = null
+	floating_button = null
+	handed_button = null
+	for child in body.get_children():
+		body.remove_child(child)
+		child.queue_free()
+
+func _character() -> Dictionary:
+	return state.character if state != null else {}
+
+func _identity_summary() -> String:
+	var character := _character()
+	return "%s  ·  %s" % [character.get("username", "No local character"), character.get("class", "Class unavailable")]
+
+func _build_character() -> void:
+	var tabs := HBoxContainer.new()
+	tabs.add_theme_constant_override("separation", 10)
+	body.add_child(tabs)
+	for id in ["equipment", "details"]:
+		var tab := _button(id.capitalize(), tabs)
+		tab.name = "CharacterTab_" + id
+		tab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_set_active(tab, id == character_tab)
+		tab.pressed.connect(func():
+			character_tab = id
+			show_page("character")
+		)
+	var columns := HBoxContainer.new()
+	columns.add_theme_constant_override("separation", 14)
+	body.add_child(columns)
+	if character_tab == "equipment":
+		var armor_side := VBoxContainer.new()
+		armor_side.name = "ArmorSide"
+		armor_side.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		armor_side.custom_minimum_size.x = 140
+		armor_side.size_flags_stretch_ratio = 0.7
+		columns.add_child(armor_side)
+		var armor := _card(armor_side, "ARMOR", _armor_label())
+		_label("Equipped starting outfit", armor, 13).modulate = MUTED
+		_make_portrait(columns)
+		var weapon_side := VBoxContainer.new()
+		weapon_side.name = "WeaponSide"
+		weapon_side.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		weapon_side.custom_minimum_size.x = 140
+		weapon_side.size_flags_stretch_ratio = 0.7
+		columns.add_child(weapon_side)
+		var weapon_id := str(state.equipped_weapon) if state != null else ""
+		var weapon := _card(weapon_side, "WEAPON", _weapon_label(weapon_id))
+		_label("Equipped" if not weapon_id.is_empty() else "No weapon equipped", weapon, 13).modulate = MUTED
+		_label("Manage equipment in Inventory.", weapon_side, 14).modulate = MUTED
+	else:
+		_make_portrait(columns)
+		var character := _character()
+		var details := VBoxContainer.new()
+		details.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		details.custom_minimum_size.x = 200
+		details.add_theme_constant_override("separation", 10)
+		columns.add_child(details)
+		var identity := _card(details, "IDENTITY", str(character.get("username", "Unavailable")))
+		_label("Class: " + str(character.get("class", "Unavailable")), identity, 14)
+		_label("Body: " + str(character.get("base", "Unavailable")).capitalize(), identity, 14)
+		_label("Name, class and body are fixed for this character.", identity, 13).modulate = MUTED
+		var values := _card(details, "COMBAT DETAILS", "Attack power: Unavailable")
+		_label("Luck: Unavailable", values, 14)
+		_label("These values have not been defined yet.", values, 13).modulate = MUTED
+
+func _make_portrait(parent: Node) -> void:
+	portrait_stage = Ornate.new()
+	portrait_stage.name = "SavedAvatarStage"
+	portrait_stage.custom_minimum_size = Vector2(180, _portrait_height)
+	portrait_stage.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	portrait_stage.size_flags_stretch_ratio = 1.3
+	portrait_stage.clip_contents = true
+	parent.add_child(portrait_stage)
+	portrait_stage.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var character := _character()
+	if character.is_empty(): return
+	avatar = Avatar.new()
+	avatar.name = "SavedLayeredAvatar"
+	portrait_stage.add_child(avatar)
+	avatar.configure(str(character.get("base", "")), str(character.get("class", "")), character)
+	avatar.set_equipped_weapon(str(state.equipped_weapon))
+	avatar.advance(0, false, 0)
+	portrait_stage.resized.connect(_place_avatar)
+	_place_avatar()
+	if not avatar.artwork_ready:
+		var missing := _label("Character artwork unavailable", portrait_stage)
+		missing.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		missing.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		missing.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+
+func _place_avatar() -> void:
+	if not is_instance_valid(avatar) or not is_instance_valid(portrait_stage): return
+	var usable := portrait_stage.size - Vector2(30, 30)
+	var factor := minf(usable.x / 256.0, usable.y / 256.0)
+	factor = maxf(0.1, factor)
+	avatar.scale = Vector2.ONE * factor
+	avatar.position = Vector2(portrait_stage.size.x * 0.5, portrait_stage.size.y * 0.5 + 104 * factor)
+
+func _build_inventory() -> void:
+	var equipped := _card(body, "EQUIPPED WEAPON", _weapon_label(str(state.equipped_weapon) if state != null else ""))
+	if state != null and not str(state.equipped_weapon).is_empty():
+		var unequip := _button("Unequip to bag", equipped)
+		unequip.name = "UnequipWeapon"
+		unequip.pressed.connect(func(): unequip_requested.emit())
+	if state == null:
+		_label("No local character is available.", body)
+		return
+	var owned: Array[String] = []
+	for id in Inventory.LABELS:
+		if int(state.bag.get(id, 0)) > 0: owned.append(id)
+	if owned.is_empty():
+		_card(body, "YOUR BAG", "Your bag is empty. Collect supplies from your storage chest.")
+		return
+	if selected_item not in owned: selected_item = owned[0]
+	_label("YOUR BAG", body, 18, true)
+	for id in owned:
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 10)
+		body.add_child(row)
+		var inspect := _button("%s  × %d" % [Inventory.LABELS[id], int(state.bag[id])], row)
+		inspect.name = "Inspect_" + id
+		inspect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		inspect.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		_set_active(inspect, selected_item == id)
+		inspect.pressed.connect(func():
+			selected_item = id
+			refresh_state()
+		)
+		if Inventory.WEAPONS.has(id):
+			var equip := _button("Equip", row)
+			equip.name = "Equip_" + id
+			equip.custom_minimum_size.x = 90
+			equip.disabled = not Inventory.can_equip(id, str(_character().get("class", ""))) or not str(state.equipped_weapon).is_empty()
+			equip.pressed.connect(func(): equip_requested.emit(id))
+	_build_item_details()
+
+func _build_item_details() -> void:
+	var info := _card(body, "ITEM DETAILS", Inventory.LABELS.get(selected_item, "Unknown item"))
+	if not Inventory.WEAPONS.has(selected_item):
+		_label("Stored in your bag. This item has no equipment slot.", info, 14)
+		return
+	var definition: Dictionary = Inventory.WEAPONS[selected_item]
+	_label("%s only  ·  %s" % [definition.class_id, str(definition.type).capitalize()], info, 14)
+	if not Inventory.can_equip(selected_item, str(_character().get("class", ""))):
+		_label("Your class cannot equip this weapon.", info, 14).modulate = Color("9c3027")
+	elif not str(state.equipped_weapon).is_empty():
+		_label("Unequip your current weapon before equipping another.", info, 14)
+	_label("Current: " + _weapon_label(str(state.equipped_weapon)), info, 14)
+	_label("Attack power and luck comparisons are unavailable. This equipment has no defined numeric stats yet.", info, 14).modulate = MUTED
+
+func _build_stats() -> void:
+	_card(body, "CHARACTER ATTRIBUTES", "Attribute progression is planned. There are no values or points to allocate in this build.")
+	for attribute in [["STR", "Strength"], ["AGI", "Agility"], ["VIT", "Vitality"], ["INT", "Intelligence"], ["WIS", "Wisdom"]]:
+		var row := _card(body, attribute[0] + "  ·  " + attribute[1], "Unavailable · Planned")
+		row.name = "Stat_" + attribute[0]
+	var combat := _card(body, "OTHER VALUES", "Attack power: Unavailable")
+	_label("Luck: Unavailable", combat, 14)
+
+func _build_quests() -> void:
+	_card(body, "QUEST LOG", "Quest tracking is not available in this build.")
+	_label("There are no active quests or rewards recorded to display yet.", body, 16).modulate = MUTED
+
+func _build_settings() -> void:
+	var controls := _card(body, "MOVEMENT CONTROLS", "Choose how the joystick appears.")
+	var modes := HBoxContainer.new()
+	modes.add_theme_constant_override("separation", 10)
+	controls.add_child(modes)
+	fixed_button = _button("Fixed", modes)
+	fixed_button.name = "FixedJoystick"
+	floating_button = _button("Floating", modes)
+	floating_button.name = "FloatingJoystick"
+	for button in [fixed_button, floating_button]:
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	fixed_button.pressed.connect(func(): _request_settings("fixed", _left_handed()))
+	floating_button.pressed.connect(func(): _request_settings("floating", _left_handed()))
+	_label("Fixed stays in one place. Floating begins where you touch the movement area.", controls, 14).modulate = MUTED
+	var layout := _card(body, "CONTROL LAYOUT", "Handedness is independent of joystick mode.")
+	handed_button = _button("", layout)
+	handed_button.name = "LeftHandedToggle"
+	handed_button.pressed.connect(func(): _request_settings(_control_mode(), not _left_handed()))
+	_label("Left-handed layout puts movement on the right and actions on the left.", layout, 14).modulate = MUTED
+	var session := _card(body, "LOCAL ADVENTURE", "Control preferences are saved separately from your character.")
+	var leave := _button("Save and return to title", session)
+	leave.name = "SaveAndTitle"
+	leave.pressed.connect(func(): title_requested.emit())
+	sync_preferences()
+
+func sync_preferences() -> void:
+	if not is_instance_valid(fixed_button): return
+	_set_active(fixed_button, _control_mode() == "fixed")
+	_set_active(floating_button, _control_mode() == "floating")
+	handed_button.text = "Left-handed: " + ("On" if _left_handed() else "Off")
+	_set_active(handed_button, _left_handed())
+
+func _control_mode() -> String:
+	return str(preferences.mode) if preferences != null else "fixed"
+
+func _left_handed() -> bool:
+	return bool(preferences.left_handed) if preferences != null else false
+
+func _request_settings(mode: String, left_handed: bool) -> void:
+	settings_changed.emit(mode, left_handed)
+	# A synchronous parent may already have saved or rejected this request.
+	# Either way, redraw from the authoritative preference values.
+	sync_preferences()
+
+func _armor_label() -> String:
+	if state == null or str(state.equipped_armor).is_empty(): return "None equipped"
+	var selected_class := str(_character().get("class", ""))
+	if Inventory.armor_allowed(str(state.equipped_armor), selected_class):
+		return selected_class + " starting outfit"
+	return "Equipment unavailable"
+
+func _weapon_label(id: String) -> String:
+	return "None equipped" if id.is_empty() else str(Inventory.LABELS.get(id, "Equipment unavailable"))
+
+func _card(parent: Node, heading: String, description: String) -> VBoxContainer:
+	var card := PanelContainer.new()
+	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("f5ecd9")
+	style.border_color = Color("c7ae75")
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(5)
+	style.content_margin_left = 16
+	style.content_margin_right = 16
+	style.content_margin_top = 12
+	style.content_margin_bottom = 12
+	card.add_theme_stylebox_override("panel", style)
+	parent.add_child(card)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 8)
+	card.add_child(column)
+	_label(heading, column, 16, true).modulate = Color("7b5b2b")
+	if not description.is_empty(): _label(description, column, 16)
+	return column
+
+func _label(value: String, parent: Node, font_size: int = 16, heading: bool = false) -> Label:
+	var label := Label.new()
+	label.text = value
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_font_size_override("font_size", font_size)
+	if heading: label.add_theme_font_override("font", preload("res://assets/fonts/title.ttf"))
+	parent.add_child(label)
+	return label
+
+func _button(value: String, parent: Node) -> Button:
+	var button := Button.new()
+	button.text = value
+	button.custom_minimum_size.y = 44
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	parent.add_child(button)
+	_bind_extra_touch(button)
+	button.focus_entered.connect(func():
+		if _keyboard_navigation and body_scroll.is_ancestor_of(button): body_scroll.ensure_control_visible(button)
+	)
+	return button
+
+func _bind_extra_touch(button: Button) -> void:
+	_touch_buttons.append(button)
+	button.gui_input.connect(func(event: InputEvent):
+		if event is InputEventScreenTouch and event.index > 0:
+			if event.pressed and not event.canceled and not button.disabled and not _dismiss_pending:
+				if not button.has_meta("touch_owner"):
+					button.set_meta("touch_owner", event.index)
+					button.set_meta("touch_start", button.get_global_transform_with_canvas() * event.position)
+					button.set_meta("touch_dragged", false)
+			elif button.get_meta("touch_owner", -1) == event.index:
+				var dragged := bool(button.get_meta("touch_dragged", false))
+				_clear_touch_owner(button)
+				if not dragged and not event.canceled and not button.disabled and not _dismiss_pending and Rect2(Vector2.ZERO, button.size).has_point(event.position):
+					button.pressed.emit()
+			button.accept_event()
+	)
+
+func _clear_touch_owner(button: Button) -> void:
+	for key in ["touch_owner", "touch_start", "touch_dragged"]:
+		if button.has_meta(key): button.remove_meta(key)
+
+func _release_touch_owners() -> void:
+	for button in _touch_buttons:
+		if is_instance_valid(button): _clear_touch_owner(button)
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT or what == NOTIFICATION_PAUSED:
+		_release_touch_owners()
+
+func _set_active(button: Button, active: bool) -> void:
+	button.add_theme_stylebox_override("normal", Ornate.make_button_style(active))
+
+func _input(event: InputEvent) -> void:
+	if not is_visible_in_tree() or _dismiss_pending: return
+	if event is InputEventScreenDrag and event.index > 0:
+		for button in _touch_buttons:
+			if is_instance_valid(button) and button.get_meta("touch_owner", -1) == event.index:
+				if Vector2(button.get_meta("touch_start", event.position)).distance_to(event.position) > 12:
+					button.set_meta("touch_dragged", true)
+	if event is InputEventScreenTouch and event.index > 0 and not event.pressed:
+		for button in _touch_buttons.duplicate():
+			if is_instance_valid(button) and button.get_meta("touch_owner", -1) == event.index:
+				var dragged := bool(button.get_meta("touch_dragged", false))
+				_clear_touch_owner(button)
+				var point: Vector2 = button.get_global_transform_with_canvas().affine_inverse() * event.position
+				if not dragged and not event.canceled and not button.disabled and button.is_visible_in_tree() and Rect2(Vector2.ZERO, button.size).has_point(point):
+					button.pressed.emit()
+				get_viewport().set_input_as_handled()
+				return
+	if page == "menu" and ((event is InputEventScreenTouch and event.pressed) or (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT)):
+		if not dropdown.get_global_rect().has_point(event.position):
+			get_viewport().set_input_as_handled()
+			_dismiss()
+			return
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_ESCAPE or event.is_action_pressed("ui_cancel"):
+			get_viewport().set_input_as_handled()
+			_dismiss()
+			return
+		if event.keycode == KEY_TAB:
+			_keyboard_navigation = true
+	elif event is InputEventScreenTouch or event is InputEventMouseButton:
+		_keyboard_navigation = false
+
+func _dismiss() -> void:
+	if _dismiss_pending: return
+	_dismiss_pending = true
+	_release_touch_owners()
+	dismissed.emit()
