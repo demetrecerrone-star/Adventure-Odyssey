@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "id": "west_forest_patrol",
+  "label": "Western Forest patrol",
+  "enemy_label": "Forest wolf",
+  "stage": "forest_patrol_active",
+  "event": "forest_patrol_completed",
+  "renderer": "res://src/forest_wolf.gd",
+  "spawns": [
+    [
+      660,
+      950
+    ],
+    [
+      700,
+      1110
+    ]
+  ],
+  "retry_point": [
+    850,
+    1230
+  ],
+  "max_enemy_hp": 48,
+  "damage": 18,
+  "speed": 90.0,
+  "windup": 0.8,
+  "leash": 260.0,
+  "detection_radius": 195.0,
+  "attack_range": 68.0,
+  "attack_cooldown": 1.45,
+  "route_points": [
+    [
+      850,
+      1230
+    ],
+    [
+      750,
+      1190
+    ],
+    [
+      700,
+      1110
+    ],
+    [
+      660,
+      1030
+    ],
+    [
+      660,
+      950
+    ]
+  ],
+  "placements": [
+    {
+      "file": "scenery/birch.png",
+      "display_size": [
+        172.984,
+        261.716
+      ],
+      "anchor": [
+        0.521414342629482,
+        0.910427913100724
+      ],
+      "id": "forest_patrol_0",
+      "asset_id": "birch",
+      "region": "west_forest_patrol",
+      "position": [
+        920,
+        1130
+      ],
+      "depth_sort": true,
+      "collision": [
+        904.0,
+        1121.0,
+        32,
+        18
+      ],
+      "source_sha256": "64dac6df2e4f82cbd566170d4cb10da179695b4b928fffe4ce9c9b7500eafc99"
+    },
+    {
+      "file": "scenery/mossy-boulder.png",
+      "display_size": [
+        112.8,
+        112.71
+      ],
+      "anchor": [
+        0.526485,
+        0.753671
+      ],
+      "id": "forest_patrol_1",
+      "asset_id": "mossy-boulder",
+      "region": "west_forest_patrol",
+      "position": [
+        420,
+        980
+      ],
+      "depth_sort": true,
+      "collision": [
+        387.0,
+        966.0,
+        66,
+        28
+      ],
+      "source_sha256": "0f839ca3a46e8e3d6d4f75610f6766ace15651a559941bee69f959a74757ba52"
+    },
+    {
+      "file": "scenery/fern.png",
+      "display_size": [
+        79.937,
+        52.784
+      ],
+      "anchor": [
+        0.48981603153745074,
+        0.7981691542288557
+      ],
+      "id": "forest_patrol_2",
+      "asset_id": "fern",
+      "region": "west_forest_patrol",
+      "position": [
+        850,
+        1000
+      ],
+      "depth_sort": false,
+      "source_sha256": "fa4c8f9f60dc01408d71792d2fa878259b738ce9b9ae0beb277366d43b914dc7"
+    },
+    {
+      "file": "scenery/mushroom-cluster.png",
+      "display_size": [
+        54.22,
+        53.25
+      ],
+      "anchor": [
+        0.537344,
+        0.73962
+      ],
+      "id": "forest_patrol_3",
+      "asset_id": "mushroom-cluster",
+      "region": "west_forest_patrol",
+      "position": [
+        740,
+        880
+      ],
+      "depth_sort": false,
+      "source_sha256": "410689b558c4c3d9305e540a4fa445bd1321c4aa299a41d47e1975a9202f52dd"
+    },
+    {
+      "file": "scenery/grass_tuft.png",
+      "display_size": [
+        54.761,
+        36.52
+      ],
+      "anchor": [
+        0.497153024911032,
+        0.8338740661686231
+      ],
+      "id": "forest_patrol_4",
+      "asset_id": "grass_tuft",
+      "region": "west_forest_patrol",
+      "position": [
+        600,
+        1200
+      ],
+      "depth_sort": false,
+      "source_sha256": "0842d81cfaa9c8e371ef147f9afbf4f62f4ec6cfb8a6f9c475a8c8c6852730ec"
+    },
+    {
+      "file": "scenery/flowers_white.png",
+      "display_size": [
+        83.611,
+        56.401
+      ],
+      "anchor": [
+        0.5171277997364954,
+        0.778427734375
+      ],
+      "id": "forest_patrol_5",
+      "asset_id": "flowers_white",
+      "region": "west_forest_patrol",
+      "position": [
+        620,
+        1010
+      ],
+      "depth_sort": false,
+      "source_sha256": "5cfcf258ab39afb8803f923bd610694ab57401137f77165ccb0df005a1a0b3cc"
+    }
+  ]
+}

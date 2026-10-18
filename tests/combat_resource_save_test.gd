@@ -1,0 +1,50 @@
+extends "res://tests/tutorial_save_test.gd"
+func run() -> void:
+	for selected_class in ["Warrior","Ranger","Mage","Necromancer","Assassin","Paladin"]:
+		var state = fixture(selected_class)
+		var original := snap(state)
+		var legacy := original.duplicate(true); legacy.version = 9; legacy.erase("combat"); legacy.erase("consumption_receipts")
+		write_json(state.path,legacy)
+		check(state.load_saved() and state.combat.hp == 100 and state.combat.mana == 50,"v9 gains initial resources once")
+		check(state.item_ledger == original.item_ledger and state.stats == original.stats,"Migration preserves inventory and Luck")
+		check(state.transfer("healing_potion",false),"Carry healing potion")
+		check(state.receive_item("mana_potion",2,"npc_purchase","supply-test"),"Carry bound mana potions")
+		var resources: Dictionary = state.combat.duplicate(true)
+		resources.hp = 45; resources.mana = 5; resources.skills = [4.5,7.0,15.0]
+		check(state.commit_combat_resources(resources),"Save damaged resources")
+		check(state.load_saved() and state.combat.hp == 45 and state.combat.mana == 5 and state.combat.skills == resources.skills,"No free recovery on reload")
+		var damaged := snap(state)
+		fail_write(state,func(): return state.consume_combat_potion("healing_potion","heal-1",state.combat),"potion heal")
+		check(snap(state) == damaged and state.bag.healing_potion == 1,"No consumed potion on save failure")
+		var result: Dictionary = state.consume_combat_potion("healing_potion","heal-1",state.combat)
+		check(result.ok and not result.duplicate and state.combat.hp == 85 and state.bag.healing_potion == 0,"Atomic restore and decrement")
+		var healed := snap(state)
+		check(state.consume_combat_potion("healing_potion","heal-1",state.combat).duplicate and snap(state) == healed,"Identical receipt cannot restore twice")
+		check(state.load_saved() and state.bag.healing_potion == 0 and state.combat.hp == 85,"Consumption persists")
+		check(not state.consume_combat_potion("mana_potion","mana-1",state.combat).ok,"Shared potion cooldown enforced")
+		resources = state.combat.duplicate(true); resources.potion = 0
+		check(state.commit_combat_resources(resources),"Expire cooldown")
+		check(state.consume_combat_potion("mana_potion","mana-1",state.combat).ok and state.combat.mana == 30 and state.bag.mana_potion == 1,"Mana restores25 and consumes once")
+		resources = state.combat.duplicate(true); resources.potion = 0; resources.mana = 49
+		check(state.commit_combat_resources(resources),"Near full mana")
+		check(state.consume_combat_potion("mana_potion","mana-2",state.combat).ok and state.combat.mana == 50,"Potion clamp")
+		check(state.receive_item("mana_potion",1,"npc_purchase","supply-extra"),"Additional supply")
+		resources = state.combat.duplicate(true); resources.potion = 0
+		check(state.commit_combat_resources(resources),"Expire cooldown2")
+		var full := snap(state)
+		check(not state.consume_combat_potion("mana_potion","full",state.combat).ok and snap(state) == full,"Full resource consumes nothing")
+		resources = state.combat.duplicate(true); resources.hp = 0
+		check(state.commit_combat_resources(resources),"Defeat persisted")
+		check(not state.consume_combat_potion("mana_potion","dead",state.combat).ok,"Cannot drink while defeated")
+		var restored: Dictionary = Save.Resources.initial_state(state.stats); restored.revision = state.combat.revision
+		check(state.commit_combat_resources(restored) and state.load_saved(),"Free retry recovery persists")
+		check(state.bag.healing_potion == 0 and state.bag.mana_potion == 1,"Retry does not refund consumed potions")
+		var good := snap(state)
+		var bad := good.duplicate(true); bad.combat.hp = 101; reject_corrupt(state,bad,"Over max HP")
+		bad = good.duplicate(true); bad.consumption_receipts["heal-1"].quantity = 2; reject_corrupt(state,bad,"Forged consumed count")
+		bad = good.duplicate(true); bad.erase("combat"); reject_corrupt(state,bad,"Missing v10 resources")
+		bad = good.duplicate(true); bad.consumption_receipts.erase("mana-1"); reject_corrupt(state,bad,"Missing consumption receipt")
+		check(state.stats == original.stats,"Potion/retry never grants XP or points")
+	for path in paths: DirAccess.remove_absolute(path)
+	print("COMBAT RESOURCE SAVE CHECKS: %d; failures: %d" % [checks,failures])
+	quit(1 if failures else 0)

@@ -27,7 +27,7 @@ func run() -> void:
 		world._process_encounter(0)
 		check(is_instance_valid(world.overlay) and not world.joystick.input_enabled, "Defeat is modal")
 		world.cancel_overlay()
-		check(world.encounter.hp == 100 and world.encounter.living_count() == 3 and snap(state) == before, "Retry restores encounter and preserves belongings")
+		check(world.encounter.hp == 100 and world.encounter.living_count() == 3 and snap(state).bag == before.bag and snap(state).item_ledger == before.item_ledger and state.wallet_gold == before.wallet_gold, "Retry restores encounter and preserves belongings")
 		world.open_menu()
 		var first_hp: int = world.encounter.enemies[0].hp
 		world.player = world.encounter.enemies[0].position
@@ -73,7 +73,7 @@ func run() -> void:
 		room.overlay.action_requested.emit("guild_complete_first_combat")
 		await process_frame
 		check(state.wallet_gold == 25 and state.tutorial.stage == "tutorial_complete", "Scene turn-in pays once")
-		check(room.overlay._view.choices.is_empty(), "Completed guild cannot offer reward again")
+		check(room.overlay._view.choices.size() == 1 and room.overlay._view.choices[0].id == "guild_assign_forest_patrol", "Completed guild offers next assignment, never repeats reward")
 		if selected_class == "Warrior" and "--capture" in OS.get_cmdline_user_args():
 			for tick in 3: await process_frame
 			await RenderingServer.frame_post_draw

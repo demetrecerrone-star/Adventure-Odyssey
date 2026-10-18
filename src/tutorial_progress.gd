@@ -7,7 +7,8 @@ const STAGES := [
 	"awaiting_letter", "visit_guild", "visit_blacksmith", "upgrade_blacksmith",
 	"return_guild_blacksmith", "visit_apothecary", "return_guild_apothecary",
 	"visit_general_store", "return_guild_general_store", "first_combat_pending",
-	"first_combat_active", "return_guild_first_combat", "tutorial_complete"
+	"first_combat_active", "return_guild_first_combat", "tutorial_complete",
+	"forest_patrol_active", "return_guild_forest", "forest_patrol_complete"
 ]
 const STEPS := [
 	{"id":"read_envelope", "kind":"action", "rewards":[]},
@@ -21,7 +22,10 @@ const STEPS := [
 	{"id":"guild_after_general_store", "kind":"action", "rewards":[]},
 	{"id":"guild_assign_first_combat", "kind":"action", "rewards":[]},
 	{"id":"first_combat_completed", "kind":"event", "rewards":[]},
-	{"id":"guild_complete_first_combat", "kind":"action", "rewards":["tutorial.guild.first_combat_gold"]}
+	{"id":"guild_complete_first_combat", "kind":"action", "rewards":["tutorial.guild.first_combat_gold"]},
+	{"id":"guild_assign_forest_patrol", "kind":"action", "rewards":[]},
+	{"id":"forest_patrol_completed", "kind":"event", "rewards":[]},
+	{"id":"guild_complete_forest_patrol", "kind":"action", "rewards":["guild.west_forest_patrol.gold"]}
 ]
 const OBJECTIVES := {
 	"awaiting_letter":"Read the envelope at your doorstep.",
@@ -36,7 +40,10 @@ const OBJECTIVES := {
 	"first_combat_pending":"Speak to the guild receptionist to accept your first field assignment.",
 	"first_combat_active":"Clear the three slimes in the South Meadow. Cross the west bridge, then follow the south branch.",
 	"return_guild_first_combat":"The South Meadow is clear. Return to the guild receptionist for your reward.",
-	"tutorial_complete":"Training complete. Explore the meadow or visit the town shops. More guild assignments will come later."
+	"tutorial_complete":"Training complete. Speak to the guild receptionist about the Western Forest patrol.",
+	"forest_patrol_active":"Clear two wolves from the Western Forest trail. Cross the west bridge, follow the northern branch, and search just east of the first wooded bend.",
+	"return_guild_forest":"The Western Forest trail is clear. Return to the guild receptionist for 40 gold.",
+	"forest_patrol_complete":"Western Forest patrol complete. Your 40 gold reward is paid. Visit the shops or explore the cleared paths."
 }
 
 static func initial_state() -> Dictionary:
@@ -134,6 +141,11 @@ static func _plan(value: Dictionary, kind: String, id: String, receipt_id: Strin
 	elif id == "first_combat_completed":
 		if context.get("encounter_id") != "south_meadow_slimes":
 			return _failure(value, "invalid_encounter", "Clear the assigned South Meadow encounter first.")
+	elif id == "forest_patrol_completed":
+		if context.get("encounter_id") != "west_forest_patrol":
+			return _failure(value, "invalid_encounter", "Clear the assigned Western Forest wolves first.")
+	elif id == "guild_complete_forest_patrol":
+		rewards = [{"receipt_id":"guild.west_forest_patrol.gold", "kind":"gold", "count":40, "binding":"character", "source":"guild"}]
 	elif id == "guild_complete_first_combat":
 		rewards = [{"receipt_id":"tutorial.guild.first_combat_gold", "kind":"gold", "count":25, "binding":"character", "source":"tutorial"}]
 	elif id == "apothecary_claim_gift":

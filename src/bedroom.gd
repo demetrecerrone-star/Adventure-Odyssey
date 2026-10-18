@@ -388,6 +388,11 @@ func _refresh_hud() -> void:
 	if is_instance_valid(hud):
 		hud.set_character(state.character)
 		hud.set_progression(state.get_stat_summary())
+		if not state.combat.is_empty():
+			var limits: Dictionary = state.Resources.limits(state.stats)
+			hud.hp_label.text = "HP %d / %d" % [state.combat.hp,limits.hp]
+			hud.mp_label.text = "MP %d / %d" % [int(state.combat.mana),limits.mana]
+			hud.combat_status.text = "Combat and supplies in the field"
 		if state.get("tutorial") is Dictionary:
 			hud.set_tutorial_objective(load("res://src/tutorial_progress.gd").objective(state.tutorial))
 		_refresh_hud_location()

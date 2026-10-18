@@ -2,24 +2,27 @@ extends RefCounted
 # Permanent local guest slot. Counts are compatibility views of the v9 ledger.
 const Draft = preload("res://src/creator/character_draft.gd")
 const Progress = preload("res://src/tutorial_progress.gd")
+const Resources = preload("res://src/combat_resources.gd")
 const Stats = preload("res://src/character_stats.gd")
 const APPEARANCE = ["hair", "hair_color", "eyes", "skin"]
 const Inventory = preload("res://src/inventory_catalog.gd")
 const ShopCatalog = preload("res://src/shop_catalog.gd")
 const ITEMS = Inventory.LABELS
-const VERSION := 9
+const VERSION := 10
 const MAX_COUNT := 999
 const ACTION_SCENES = {
 	"read_envelope":"starter_region", "guild_assign_blacksmith":"guild_interior",
 	"blacksmith_claim_starter":"blacksmith_interior", "guild_after_blacksmith":"guild_interior",
 	"apothecary_claim_gift":"apothecary_interior", "guild_after_apothecary":"guild_interior",
 	"general_store_claim_keepsake":"general_store_interior", "guild_after_general_store":"guild_interior",
-	"guild_assign_first_combat":"guild_interior", "guild_complete_first_combat":"guild_interior"
+	"guild_assign_first_combat":"guild_interior", "guild_complete_first_combat":"guild_interior",
+	"guild_assign_forest_patrol":"guild_interior", "guild_complete_forest_patrol":"guild_interior"
 }
 const SUPPLIES := "tutorial.blacksmith.upgrade_supplies"
 const MANA_GIFT := "tutorial.apothecary.mana_potions"
 const RING_GIFT := "tutorial.general_store.keepsake_ring"
 const COMBAT_REWARD := "tutorial.guild.first_combat_gold"
+const FOREST_REWARD := "guild.west_forest_patrol.gold"
 const FIRST_ENCOUNTER := "south_meadow_slimes"
 const COMBAT_EVENT := "first_combat_completed"
 const UPGRADE_EVENT := "blacksmith_upgrade_applied"
@@ -40,6 +43,8 @@ var acquisition_receipts: Dictionary = {}
 var purchase_receipts: Dictionary = {}
 var tutorial := Progress.initial_state()
 var stats := Stats.initial_state()
+var combat := Resources.initial_state(stats)
+var consumption_receipts: Dictionary = {}
 var awake := true
 var location := {"scene":"bedroom", "position":[535.0,670.0]}
 var error := ""
@@ -67,6 +72,8 @@ func create(value: Dictionary) -> bool:
 	purchase_receipts = {}
 	tutorial = Progress.initial_state()
 	stats = Stats.initial_state()
+	combat = Resources.initial_state(stats)
+	consumption_receipts = {}
 	chest_gold = 100
 	wallet_gold = 0
 	gold_seeded = true
@@ -140,6 +147,42 @@ func _stat_failure(code: String, message: String) -> Dictionary:
 	result.code = code
 	result.message = message
 	return result
+
+# Gameplay checkpoint: HP/MP and cooldowns survive scene changes/reload. Failed
+# writes restore the entire previous snapshot; the controller rolls back its model.
+func commit_combat_resources(value: Dictionary) -> bool:
+	if not _valid_live_state() or not Resources.valid(value,stats) or value.revision != combat.revision:
+		error = "Combat state changed. Reload before trying again."
+		return false
+	var previous := snapshot()
+	combat = value.duplicate(true)
+	combat.revision += 1
+	return _commit(previous)
+
+func consume_combat_potion(item_id: String, transaction_id: String, value: Dictionary) -> Dictionary:
+	if not _valid_live_state() or not _valid_id(transaction_id): return _failure("invalid_save","Potion use could not be saved safely.")
+	if consumption_receipts.has(transaction_id):
+		return {"ok":consumption_receipts[transaction_id].item_id == item_id,"duplicate":true,"message":"Potion use was already saved."}
+	if item_id not in ["healing_potion","mana_potion"] or not Resources.valid(value,stats) or value.revision != combat.revision: return _failure("invalid_resources","Combat state changed. Try again.")
+	if value.hp <= 0: return _failure("defeated","Retry the encounter before using a potion.")
+	if value.potion > 0: return _failure("cooldown","Potions are cooling down.")
+	var cap := Resources.limits(stats)
+	var field := "hp" if item_id == "healing_potion" else "mana"
+	if value[field] >= cap[field]: return _failure("full","Your %s is already full. No potion used." % field.to_upper())
+	var index := _find_stack(item_id,"bag")
+	if index < 0: return _failure("empty","Carry this potion in your bag first.")
+	var entry: Dictionary = item_ledger[index]
+	var previous := snapshot()
+	consumption_receipts[transaction_id] = {"item_id":item_id,"quantity":1,"source":entry.source,"source_id":entry.source_id}
+	entry.quantity -= 1
+	if entry.quantity == 0: item_ledger.remove_at(index)
+	combat = value.duplicate(true)
+	combat[field] = minf(cap[field],combat[field] + (40 if field == "hp" else 25))
+	combat.potion = 3.0
+	combat.revision += 1
+	_sync_views()
+	if not _commit(previous): return _failure("save_failed",error)
+	return {"ok":true,"duplicate":false,"message":"Restored %s. Potion used." % field.to_upper()}
 
 func apply_appearance(value: Dictionary) -> bool:
 	if character.is_empty(): return false
@@ -269,21 +312,23 @@ func perform_tutorial_action(action: String) -> Dictionary:
 # assigned enemies die. Dialogue has no event dispatch path. The event and clear
 # flag are the same persisted receipt, so a crash/reload cannot pay twice.
 func encounter_is_complete(encounter_id: String) -> bool:
-	return encounter_id == FIRST_ENCOUNTER and tutorial.event_receipts.has(COMBAT_EVENT)
+	var event: String = {FIRST_ENCOUNTER:COMBAT_EVENT,"west_forest_patrol":"forest_patrol_completed"}.get(encounter_id,"")
+	return not event.is_empty() and tutorial.event_receipts.has(event)
 
 func record_encounter_victory(encounter_id: String) -> bool:
 	error = ""
 	if character.is_empty() or not _valid_live_state():
 		error = "Your local save is not ready to record this encounter."
 		return false
-	if encounter_id != FIRST_ENCOUNTER:
+	if encounter_id not in [FIRST_ENCOUNTER,"west_forest_patrol"]:
 		error = "That encounter is not part of your assignment."
 		return false
 	if encounter_is_complete(encounter_id): return true
 	if location.scene != "starter_region":
 		error = "Return to the South Meadow to finish this assignment."
 		return false
-	var plan := Progress.plan_event(tutorial, COMBAT_EVENT, _receipt(COMBAT_EVENT), {"encounter_id":encounter_id})
+	var event := COMBAT_EVENT if encounter_id == FIRST_ENCOUNTER else "forest_patrol_completed"
+	var plan := Progress.plan_event(tutorial, event, _receipt(event), {"encounter_id":encounter_id})
 	if not plan.ok:
 		error = plan.message
 		return false
@@ -342,7 +387,7 @@ func snapshot() -> Dictionary:
 	return {"version":VERSION, "tutorial_chest_seeded":true, "character":character.duplicate(true), "character_id":character_id,
 		"bag":bag.duplicate(true), "chest":chest.duplicate(true), "equipped_weapon":equipped_weapon, "equipped_armor":equipped_armor, "equipped_ring":equipped_ring,
 		"chest_gold":chest_gold, "wallet_gold":wallet_gold, "gold_seeded":gold_seeded, "item_ledger":item_ledger.duplicate(true),
-		"upgrade_entitlements":upgrade_entitlements.duplicate(true), "acquisition_receipts":acquisition_receipts.duplicate(true), "purchase_receipts":purchase_receipts.duplicate(true), "tutorial":tutorial.duplicate(true), "stats":stats.duplicate(true), "awake":awake, "location":location.duplicate(true)}
+		"upgrade_entitlements":upgrade_entitlements.duplicate(true), "acquisition_receipts":acquisition_receipts.duplicate(true), "purchase_receipts":purchase_receipts.duplicate(true), "tutorial":tutorial.duplicate(true), "stats":stats.duplicate(true), "combat":combat.duplicate(true), "consumption_receipts":consumption_receipts.duplicate(true), "awake":awake, "location":location.duplicate(true)}
 
 func save() -> bool:
 	error = ""
@@ -440,7 +485,12 @@ func _receipt(action: String) -> String:
 	return "tutorial:" + character_id + ":" + action
 
 func _apply_reward(reward: Dictionary) -> bool:
-	if reward.get("binding") != "character" or reward.get("source") != "tutorial": return false
+	if reward.get("binding") != "character": return false
+	if reward.get("receipt_id") == FOREST_REWARD:
+		if reward.get("source") != "guild" or reward.get("kind") != "gold" or reward.get("count") != 40 or tutorial.reward_receipts.has(FOREST_REWARD): return false
+		wallet_gold += 40
+		return true
+	if reward.get("source") != "tutorial": return false
 	if reward.get("receipt_id") == COMBAT_REWARD:
 		if reward.get("kind") != "gold" or reward.get("count") != 25 or tutorial.reward_receipts.has(COMBAT_REWARD): return false
 		wallet_gold += 25
@@ -477,7 +527,7 @@ func _write_snapshot(data: Dictionary) -> bool:
 	return true
 
 func _restore(data: Dictionary) -> void:
-	for key in ["character", "character_id", "bag", "chest", "equipped_weapon", "equipped_armor", "equipped_ring", "chest_gold", "wallet_gold", "gold_seeded", "item_ledger", "upgrade_entitlements", "acquisition_receipts", "purchase_receipts", "tutorial", "stats", "awake", "location"]:
+	for key in ["character", "character_id", "bag", "chest", "equipped_weapon", "equipped_armor", "equipped_ring", "chest_gold", "wallet_gold", "gold_seeded", "item_ledger", "upgrade_entitlements", "acquisition_receipts", "purchase_receipts", "tutorial", "stats", "combat", "consumption_receipts", "awake", "location"]:
 		var value = data[key]
 		set(key, value.duplicate(true) if value is Dictionary or value is Array else value)
 
@@ -505,12 +555,13 @@ func _valid_snapshot(data: Dictionary) -> bool:
 	var hero = data.get("character")
 	if not hero is Dictionary or hero.get("base", "") not in ["male", "female"] or not draft_from(hero).validate().is_empty(): return false
 	if not _valid_id(data.get("character_id")) or not valid_location(data.get("location")) or data.get("awake") != true: return false
-	if not _whole(data.get("chest_gold"), 0, 100) or not _whole(data.get("wallet_gold"), 0, 125): return false
+	if not _whole(data.get("chest_gold"), 0, 100) or not _whole(data.get("wallet_gold"), 0, 165): return false
 	var gold_spent := _verified_purchase_total(data)
 	if not data.get("tutorial") is Dictionary or not Progress.validate_state(data.tutorial): return false
-	var earned_gold := 25 if data.tutorial.reward_receipts.has(COMBAT_REWARD) else 0
+	var earned_gold := (25 if data.tutorial.reward_receipts.has(COMBAT_REWARD) else 0) + (40 if data.tutorial.reward_receipts.has(FOREST_REWARD) else 0)
 	if gold_spent < 0 or data.chest_gold + data.wallet_gold + gold_spent != 100 + earned_gold: return false
-	if not Stats.validate_state(data.get("stats")): return false
+	if not Stats.validate_state(data.get("stats")) or not Resources.valid(data.get("combat"), data.stats): return false
+	if not data.get("consumption_receipts") is Dictionary: return false
 	for receipt_kind in ["action_receipts", "event_receipts"]:
 		for action in data.tutorial[receipt_kind]:
 			if data.tutorial[receipt_kind][action].id != "tutorial:" + data.character_id + ":" + action: return false
@@ -559,6 +610,23 @@ func _valid_snapshot(data: Dictionary) -> bool:
 		else: return false
 		var key: String = entry.source + ":" + entry.source_id
 		source_totals[key] = source_totals.get(key, 0) + entry.quantity
+	for consumption_id in data.consumption_receipts:
+		var used = data.consumption_receipts[consumption_id]
+		if not _valid_id(consumption_id) or not used is Dictionary or used.size() != 4: return false
+		if used.get("item_id") not in ["healing_potion","mana_potion"] or used.get("quantity") != 1 or used.quantity is bool or not _valid_id(used.get("source_id")): return false
+		var source = used.get("source")
+		if source == "starter":
+			if used.source_id != "starter.healing" or used.item_id != "healing_potion": return false
+		elif source == MANA_GIFT:
+			if used.source_id != MANA_GIFT or used.item_id != "mana_potion": return false
+		elif source == "legacy_unattributed":
+			if used.source_id != "legacy:" + used.item_id: return false
+		elif source in ["world_drop","trade","npc_purchase"]:
+			var grant = data.acquisition_receipts.get(used.source_id,{})
+			if grant.get("item_id") != used.item_id or grant.get("source") != source: return false
+		else: return false
+		var key: String = source + ":" + used.source_id
+		source_totals[key] = source_totals.get(key,0) + 1
 	for field in expected:
 		if field in ["bag", "chest"]:
 			for item in ITEMS:
@@ -599,7 +667,7 @@ func _verified_purchase_total(data: Dictionary) -> int:
 		if not acquisition is Dictionary or not acquisition.get("source") is String or not acquisition.get("item_id") is String or not _whole(acquisition.get("quantity"), 1, MAX_COUNT): return -1
 		if acquisition.source != "npc_purchase" or acquisition.item_id != receipt.item_id or acquisition.quantity != receipt.quantity: return -1
 		spent += int(receipt.total_price_gold)
-		if spent > 125: return -1
+		if spent > 165: return -1
 	return spent
 
 func _valid_counts(value, required: Array, exact: bool) -> bool:
@@ -614,6 +682,7 @@ func _valid_counts(value, required: Array, exact: bool) -> bool:
 func _migrate(data: Dictionary) -> Dictionary:
 	# v8 already required stats. Missing metadata is corruption, not a fresh slot.
 	if int(data.version) >= 8 and not data.has("stats"): return {}
+	if int(data.version) >= 9 and not Stats.validate_state(data.stats): return {}
 	var migrated_stats := Stats.initial_state()
 	if data.has("stats"):
 		migrated_stats = Stats.migrate_legacy_state(data.stats)
@@ -629,6 +698,8 @@ func _migrate(data: Dictionary) -> Dictionary:
 		# Prior Luck free points become unspent; other stats and genuine, validated
 		# XP metadata are retained. Migration never manufactures earned Luck XP.
 		preserved.stats = migrated_stats.duplicate(true)
+		if not preserved.has("combat"): preserved.combat = Resources.initial_state(preserved.stats)
+		if not preserved.has("consumption_receipts"): preserved.consumption_receipts = {}
 		return preserved if _valid_snapshot(preserved) else {}
 	var hero = data.get("character")
 	if not hero is Dictionary or hero.get("base", "") not in ["male", "female"] or not draft_from(hero).validate().is_empty(): return {}
@@ -647,6 +718,7 @@ func _migrate(data: Dictionary) -> Dictionary:
 	var candidate = get_script().new()
 	candidate.character = hero.duplicate(true)
 	candidate.stats = migrated_stats.duplicate(true)
+	candidate.combat = Resources.initial_state(candidate.stats)
 	candidate.character_id = _new_id()
 	candidate.location = point.duplicate(true)
 	candidate.gold_seeded = true

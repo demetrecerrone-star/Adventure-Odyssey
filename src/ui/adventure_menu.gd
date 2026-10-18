@@ -366,7 +366,7 @@ func _build_character() -> void:
 		_label("Strength · Agility · Vitality · Intelligence · Wisdom · Luck", attributes, 13).modulate = MUTED
 		_label("All six start at 10. Level-ups grant 5 points for STR, AGI, VIT, INT and WIS. Luck grows only through XP.", attributes, 14).modulate = MUTED
 		var values := _card(details, "PLANNED COMBAT VALUES", "View provisional bonuses in Stats.")
-		_label("Combat is not implemented. These planned effects do not affect gameplay yet.", values, 13).modulate = MUTED
+		_label("HP/MP caps and mana recovery are active in the field. Basic attacks gain +1 per weapon upgrade and half of STR above 10. Other displayed effects remain planned.", values, 13).modulate = MUTED
 
 func _make_portrait(parent: Node) -> void:
 	portrait_stage = Ornate.new()
@@ -672,7 +672,7 @@ func _build_stat_review() -> void:
 	_label("Confirm permanently spends these points. Cancel keeps your saved stats.", review, 14).modulate = MUTED
 
 func _build_planned_effects() -> void:
-	var section := _card(body, "PLANNED EFFECTS · PREVIEW ONLY", "Combat is not implemented. These provisional values have no gameplay effect yet.")
+	var section := _card(body, "STAT EFFECTS · PARTIAL", "HP/MP caps and mana recovery are active. Basic strike uses STR above 10 and the starter weapon upgrade. Other damage/chance values below remain previews.")
 	section.name = "PlannedStatEffects"
 	var grid := GridContainer.new()
 	grid.columns = 2
@@ -843,11 +843,13 @@ func _build_quests() -> void:
 		_card(body, "TUTORIAL", "No character loaded.")
 		return
 	var progress = load("res://src/tutorial_progress.gd")
-	_card(body, "TUTORIAL · COMPLETE" if state.tutorial.stage == "tutorial_complete" else "TUTORIAL · IN PROGRESS", progress.objective(state.tutorial))
-	_label("First assignment reward received: 25 gold. Progress is saved for this character." if state.tutorial.stage == "tutorial_complete" else "Progress and rewards are saved for this character. Complete the South Meadow assignment, then report to the guild.", body, 16).modulate = MUTED
+	var forest_stages := ["forest_patrol_active", "return_guild_forest", "forest_patrol_complete"]
+	var heading := "WESTERN FOREST · COMPLETE" if state.tutorial.stage == "forest_patrol_complete" else ("WESTERN FOREST · IN PROGRESS" if state.tutorial.stage in forest_stages else ("TUTORIAL · COMPLETE" if state.tutorial.stage == "tutorial_complete" else "TUTORIAL · IN PROGRESS"))
+	_card(body, heading, progress.objective(state.tutorial))
+	_label("Guild assignments reward you once, when you report back. Progress and rewards are saved for this character.", body, 16).modulate = MUTED
 	var receipts: Dictionary = state.tutorial.get("reward_receipts", {})
 	for reward in receipts:
-		var names := {"tutorial.blacksmith.upgrade_supplies":"Blacksmith upgrade supplies", "tutorial.apothecary.mana_potions":"Five mana potions", "tutorial.general_store.keepsake_ring":"Keepsake ring", "tutorial.guild.first_combat_gold":"First assignment · 25 gold"}
+		var names := {"tutorial.blacksmith.upgrade_supplies":"Blacksmith upgrade supplies", "tutorial.apothecary.mana_potions":"Five mana potions", "tutorial.general_store.keepsake_ring":"Keepsake ring", "tutorial.guild.first_combat_gold":"First assignment · 25 gold", "guild.west_forest_patrol.gold":"Western Forest patrol · 40 gold"}
 		_card(body, "RECEIVED", names.get(reward, reward))
 
 func _build_settings() -> void:

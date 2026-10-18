@@ -20,8 +20,9 @@ func run() -> void:
 				assert(root.get_texture().get_image().save_png("res://screenshots/quest_%s_%d.png" % [state.stage, resolution.x]) == OK)
 		if index == Progress.STEPS.size(): break
 		var step: Dictionary = Progress.STEPS[index]
+		context.encounter_id = "west_forest_patrol" if step.id == "forest_patrol_completed" else "south_meadow_slimes"
 		var result := Progress.plan_event(state, step.id, "capture_%d" % index, context) if step.kind == "event" else Progress.plan_action(state, step.id, "capture_%d" % index, context)
 		assert(result.ok)
 		state = result.next_state
-	print("FIRST COMBAT QUEST SCREENSHOTS: 8 native dialogue views saved")
+	print("GUILD QUEST SCREENSHOTS: %d native dialogue views saved" % ((Progress.STEPS.size()-8)*2))
 	quit()

@@ -60,7 +60,7 @@ func finish_errands(state) -> void:
 	check(state.receive_item("mana_potion", 2, "world_drop", "saved-stat-drop"), "Preserve independent acquisition")
 
 func run() -> void:
-	check(Save.VERSION == 9 and Save.new().path == "user://bedroom_guest_v1.json", "v9 stays in existing permanent slot")
+	check(Save.VERSION == 10 and Save.new().path == "user://bedroom_guest_v1.json", "v9 stays in existing permanent slot")
 	var empty = Save.new()
 	check(empty.get_stat_summary().code == "invalid_save" and empty.preview_stat_allocation({"STR":1}, 0).code == "invalid_save" and empty.allocate_stat_points({"STR":1}, 0).code == "invalid_save" and empty.advance_character_level(2, 0).code == "invalid_save", "No operations before character creation")
 	for selected_class in Catalog.CLASSES:
@@ -156,7 +156,7 @@ func run() -> void:
 	DirAccess.remove_absolute(state.path + ".tmp")
 	check(state.load_saved(), "v7 full-progress save migrates")
 	var migrated := snap(state)
-	var expected := legacy.duplicate(true); expected.version = 9; expected.stats = normalized(Stats.initial_state())
+	var expected := legacy.duplicate(true); expected.version = Save.VERSION; expected.stats = normalized(Stats.initial_state())
 	check(migrated == normalized(expected), "v7 migration only adds baseline stats and version")
 	check(state.tutorial.stage == "first_combat_pending" and state.weapon_upgrade_level() == 1 and state.equipped_ring == "keepsake_ring" and state.wallet_gold == 80, "Migration retains tutorial, upgrade, equipment and spent gold")
 	check(state.load_saved() and snap(state) == migrated, "Migration does not repeat or reset on next load")
@@ -257,7 +257,7 @@ func luck_save_cases() -> void:
 	check(state.load_saved(), "Valid v8 stat schema migrates")
 	var refunded := snap(state); var view: Dictionary = state.get_stat_summary()
 	check(view.attributes.LUK == 10 and view.luck_total_xp == 0 and view.unspent_points == 8 and view.spent_points == 7 and view.earned_points == 15 and view.revision == 7, "Five previous Luck points refunded into unspent, never interpreted as XP")
-	var expected := old.duplicate(true); expected.version = 9; expected.stats = normalized(Stats.migrate_legacy_state(old.stats))
+	var expected := old.duplicate(true); expected.version = Save.VERSION; expected.stats = normalized(Stats.migrate_legacy_state(old.stats))
 	check(refunded == normalized(expected), "Refund preserves all other stats, tutorial, purchases, equipment, gold, identity and location")
 	check(state.load_saved() and snap(state) == refunded, "Reload cannot repeat refund")
 	check(state.allocate_stat_points({"STR":8}, 7).ok and state.get_stat_summary().unspent_points == 0 and state.get_stat_summary().attributes.LUK == 10, "Refunded points freely available to eligible five stats")

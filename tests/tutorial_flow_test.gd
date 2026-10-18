@@ -25,7 +25,9 @@ func apply_step(state: Dictionary, index: int, selected_class: String = "Warrior
 	var step: Dictionary = Progress.STEPS[index]
 	var request := "receipt_" + str(index) if receipt.is_empty() else receipt
 	if step.kind == "event":
-		return Progress.plan_event(state, step.id, request, context_for(selected_class))
+		var context := context_for(selected_class)
+		if step.id == "forest_patrol_completed": context.encounter_id = "west_forest_patrol"
+		return Progress.plan_event(state, step.id, request, context)
 	return Progress.plan_action(state, step.id, request, context_for(selected_class))
 
 func state_at(index: int, selected_class: String = "Warrior") -> Dictionary:
@@ -51,7 +53,7 @@ func run() -> void:
 			for reward in first.rewards:
 				check(not delivered.has(reward.receipt_id), "A stable reward is planned only once")
 				delivered[reward.receipt_id] = reward
-				check(reward.binding == "character" and reward.source == "tutorial", "Tutorial rewards are character-bound")
+				check(reward.binding == "character" and reward.source in ["tutorial","guild"], "Tutorial rewards are character-bound")
 				check(not reward.has("damage") and not reward.has("price") and not reward.has("restoration"), "No undefined numeric balance data is invented")
 			state = first.next_state
 			for retry_id in ["receipt_" + str(index), "fresh_retry_" + str(index)]:
@@ -60,14 +62,14 @@ func run() -> void:
 				check(retry.next_state == state, "A duplicate keeps the latest state")
 			var reloaded = JSON.parse_string(JSON.stringify(state))
 			check(Progress.validate_state(reloaded), "JSON numeric normalization and receipt round trip validate")
-		check(delivered.size() == 4, "Supplies, mana, keepsake and final guild payment are granted")
+		check(delivered.size() == 5, "Supplies, mana, keepsake and final guild payment are granted")
 		check(not delivered.has("tutorial.blacksmith.weapon"), "Blacksmith never duplicates the starter chest weapon")
 		var supplies: Dictionary = delivered["tutorial.blacksmith.upgrade_supplies"]
 		check(supplies.kind == "upgrade_entitlement" and supplies.uses == 1 and supplies.target_level == 1, "The free upgrade entitlement permits one +1 lesson")
 		check(supplies.target_item_id == Inventory.starter_weapon(selected_class), "Supplies target the existing class-matched starter weapon")
 		check(delivered["tutorial.apothecary.mana_potions"].count == 5, "Apothecary gift is exactly five mana potions")
 		check(delivered["tutorial.general_store.keepsake_ring"].item_id == "keepsake_ring", "General store gift is the keepsake ring")
-		check(state.stage == "tutorial_complete", "Verified field assignment and guild return finish training")
+		check(state.stage == "forest_patrol_complete", "Verified field assignment and guild return finish training")
 		for fake_context in [{}, {"verified":true}, {"combat_available":true, "victory":true, "source":"combat_system"}]:
 			var active := state_at(10)
 			var blocked := Progress.plan_event(active, "first_combat_completed", "fake_combat", fake_context)

@@ -54,10 +54,15 @@ func run() -> void:
 				if world.player.distance_to(waypoint) < 2: break
 				world.move_player((waypoint-world.player).limit_length(7.75))
 			check(world.player.distance_to(waypoint) < 2,"Swept meadow access to "+str(waypoint))
-	check(world.wilderness_nodes.size() == 8,"Eight approved wilderness accents")
+	check(world.wilderness_nodes.size() == 14,"Fourteen approved wilderness accents")
 	for rect in world.wilderness_footprints: check(not world.can_stand(rect.get_center()),"New solid footprint")
 	for enemy in world.enemy_nodes: check(not enemy.visible,"No ambush before guild assignment")
-	world.state.tutorial.stage = "first_combat_active"
+	check(world.state.transfer("warrior_01_weapon",false),"Collect starter for valid assignment")
+	var helper = preload("res://tests/tutorial_save_test.gd").new()
+	for action in ["read_envelope","guild_assign_blacksmith","blacksmith_claim_starter","upgrade","guild_after_blacksmith","apothecary_claim_gift","guild_after_apothecary","general_store_claim_keepsake","guild_after_general_store","guild_assign_first_combat"]:
+		helper.take_step(world.state,action)
+	world.state.set_location("starter_region",Vector2(1000,2020))
+	helper.free()
 	world._process_encounter(0)
 	for enemy in world.enemy_nodes: check(enemy.visible,"Assigned encounter spawns")
 	# Exercise actual terrain collision throughout a pursuit, then leash home.

@@ -267,6 +267,7 @@ func _process(delta: float) -> void:
 		if not state.set_location("starter_region",player): message.text = state.error
 func interact() -> void:
 	if is_instance_valid(overlay) or sleeping: return
+	if not _checkpoint_combat(): return
 	if resident_ids.has(nearest_prop()):
 		open_tutorial_dialogue(nearest_prop())
 	elif nearest_prop() == "envelope":
@@ -320,6 +321,12 @@ var wilderness_nodes: Array[Sprite2D] = []
 var wilderness_footprints: Array[Rect2] = []
 var combat_fx: Node2D
 var defeat_panel: Control
+var combat_data: Dictionary = {}
+var combat_checkpoint_elapsed := 0.0
+var pending_combat: Dictionary = {}
+var pending_combat_retry := 0.0
+var combat_touch_buttons: Array[Button] = []
+const SupplyPanel = preload("res://src/ui/combat_supply_panel.gd")
 
 class CombatFX:
 	extends Node2D
@@ -332,10 +339,41 @@ class CombatFX:
 			draw_arc(player+Vector2(0,-25),65,target.angle()-0.65,target.angle()+0.65,16,Color("fff0bb"),5,true)
 		if encounter.hit_flash > 0:
 			draw_arc(player,24,0,TAU,24,Color("ff8064"),3,true)
+		if encounter.shield_timer > 0 and encounter.shield_charges > 0:
+			draw_arc(player+Vector2(0,-30),48,0,TAU,40,Color("a8d7ff"),4,true)
+		if encounter.buff_timer > 0:
+			draw_arc(player,30,0,TAU,24,Color("ffbe61"),3,true)
+		if encounter.trap_timer > 0:
+			draw_arc(encounter.trap_position,80,0,TAU,32,Color("80dfbb"),3,true)
+			draw_line(encounter.trap_position-Vector2(15,15),encounter.trap_position+Vector2(15,15),Color("80dfbb"),3,true)
+		if encounter.summon_timer > 0:
+			var at: Vector2 = encounter.summon_position
+			var bone := Color("d5eadb")
+			draw_circle(at-Vector2(0,35),10,bone)
+			draw_circle(at-Vector2(4,37),2,Color("26352e")); draw_circle(at-Vector2(-4,37),2,Color("26352e"))
+			draw_line(at-Vector2(0,25),at-Vector2(0,6),bone,4,true)
+			for y in [17,22]: draw_line(at-Vector2(9,y),at-Vector2(-9,y),bone,3,true)
+			for side in [-1,1]:
+				draw_line(at-Vector2(0,21),at+Vector2(side*16,-13),bone,3,true)
+				draw_line(at-Vector2(0,6),at+Vector2(side*11,6),bone,3,true)
+		if encounter.skill_flash > 0:
+			var color: Color = {"burn":Color("ff975a"),"nova":Color("8edbff"),"poison":Color("98dc73"),"drain":Color("c392e8"),"holy":Color("ffec9b"),"heal":Color("9be4b1")}.get(encounter.skill_kind,Color("c8c4ff"))
+			if encounter.skill_kind in ["ranged","burn","drain","holy"]: draw_line(encounter.skill_origin-Vector2(0,25),encounter.strike_target-Vector2(0,15),color,5,true)
+			else: draw_arc(encounter.skill_origin,35+(0.6-encounter.skill_flash)*140,0,TAU,40,color,4,true)
+		for enemy in encounter.enemies:
+			if enemy.hp <= 0: continue
+			var at: Vector2 = enemy.position
+			if enemy.stun > 0: draw_arc(at-Vector2(0,50),13,0,TAU,16,Color("ffdd7a"),3,true)
+			if enemy.slow > 0: draw_arc(at,28,0,TAU,24,Color("91deef"),3,true)
+			if enemy.burn > 0 or enemy.poison > 0: draw_circle(at-Vector2(18,35),5,Color("ff9355") if enemy.burn > 0 else Color("99df65"))
 
 func _load_wilderness() -> void:
 	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/wilderness.json"))
-	for item in data.placements:
+	var placements: Array = data.placements.duplicate(true)
+	if FileAccess.file_exists("res://assets/starter-region/forest_patrol.json"):
+		var forest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/forest_patrol.json"))
+		placements.append_array(forest.get("placements",[]))
+	for item in placements:
 		var sprite := Sprite2D.new()
 		sprite.texture = load("res://assets/starter-region/"+item.file)
 		sprite.centered = false
@@ -348,8 +386,14 @@ func _load_wilderness() -> void:
 		if item.has("collision"):
 			var r: Array = item.collision
 			wilderness_footprints.append(Rect2(r[0],r[1],r[2],r[3]))
+	combat_data = {}
+	if state.tutorial.stage in ["forest_patrol_active","return_guild_forest","forest_patrol_complete"] and FileAccess.file_exists("res://assets/starter-region/forest_patrol.json"):
+		combat_data = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/forest_patrol.json"))
+	encounter.configure(combat_data,state.character["class"],state.get_stat_summary(),state.weapon_upgrade_level())
+	encounter.apply_resources(state.combat)
 	for enemy in encounter.enemies:
-		var node = Slime.new()
+		var renderer = load(combat_data.get("renderer","res://src/wilderness_slime.gd"))
+		var node = renderer.new()
 		stage.add_child(node)
 		node.sync(enemy)
 		node.hide()
@@ -359,51 +403,155 @@ func _load_wilderness() -> void:
 	combat_fx.z_index = 1900
 	stage.add_child(combat_fx)
 	hud.attack_button.pressed.connect(attack_nearby)
-	# Same secondary-finger release semantics as the established interaction button.
-	hud.attack_button.gui_input.connect(func(event: InputEvent):
+	_bind_combat_touch(hud.attack_button,attack_nearby)
+	for slot in 3:
+		hud.skill_buttons[slot].pressed.connect(use_class_skill.bind(slot))
+		_bind_combat_touch(hud.skill_buttons[slot],use_class_skill.bind(slot))
+	hud.potion_button.pressed.connect(open_field_supplies)
+	_bind_combat_touch(hud.potion_button,open_field_supplies)
+
+func _bind_combat_touch(control: Button, action: Callable) -> void:
+	combat_touch_buttons.append(control)
+	control.set_meta("combat_action",action)
+	control.gui_input.connect(func(event: InputEvent):
 		if event is InputEventScreenTouch and event.index > 0:
-			if event.pressed and not event.canceled and not hud.attack_button.disabled: hud.attack_button.set_meta("combat_touch",event.index)
-			elif hud.attack_button.get_meta("combat_touch",-1) == event.index:
-				hud.attack_button.remove_meta("combat_touch")
-				if not event.canceled and not hud.attack_button.disabled and Rect2(Vector2.ZERO,hud.attack_button.size).has_point(event.position): attack_nearby()
-			hud.attack_button.accept_event()
+			if event.pressed and not event.canceled and not control.disabled:
+				control.set_meta("combat_touch",event.index)
+				control.set_meta("combat_start",control.get_global_transform_with_canvas()*event.position)
+				control.set_meta("combat_dragged",false)
+			control.accept_event()
 	)
 
 func _combat_active() -> bool:
-	return state.tutorial.get("stage","") == "first_combat_active" and not encounter_saved
+	return state.tutorial.get("stage","") in ["first_combat_active","forest_patrol_active"] and not encounter_saved
 
 func attack_nearby() -> void:
-	if not _combat_active() or is_instance_valid(overlay) or encounter.defeated or state.equipped_weapon.is_empty(): return
+	if not _combat_active() or is_instance_valid(overlay) or encounter.defeated or state.equipped_weapon.is_empty() or not pending_combat.is_empty(): return
 	if encounter.attack(player,can_stand):
-		message.text = "Keep moving. Amber ring means a slime is about to strike."
+		message.text = "Keep moving. Amber ring means an enemy is about to strike."
 	elif encounter.attack_cooldown <= 0:
-		message.text = "Move closer to a slime to attack. [F] or Attack."
+		message.text = "Move closer to an enemy to attack. [F] or Attack."
 	_sync_encounter_visuals()
 
-func _process_encounter(delta: float) -> void:
+func _checkpoint_combat() -> bool:
+	if not pending_combat.is_empty(): return false
+	var current := encounter.resource_state(int(state.combat.revision))
+	if current.hp == state.combat.hp and current.mana == state.combat.mana and current.skills == state.combat.skills and current.potion == state.combat.potion: return true
+	if state.commit_combat_resources(current):
+		combat_checkpoint_elapsed = 0.0
+		return true
+	message.text = "Progress could not save. " + state.error
+	return false
+
+func use_class_skill(slot: int) -> void:
+	if not _combat_active() or is_instance_valid(overlay) or encounter.defeated or not pending_combat.is_empty(): return
+	var before: Dictionary = encounter.capture()
+	var result: Dictionary = encounter.use_skill(slot,player,can_stand)
+	message.text = result.message
+	if not result.ok: return
+	if not _checkpoint_combat():
+		encounter.restore(before)
+		message.text = "Skill was not used because progress could not save. " + state.error
+		return
+	player = result.position
+	_update_actor()
+	_process_encounter(0)
+
+func open_field_supplies() -> void:
+	if is_instance_valid(overlay) or encounter.defeated or not pending_combat.is_empty(): return
+	var panel = SupplyPanel.new()
+	panel.z_index = 2100
+	panel.configure_supplies(state,encounter)
+	panel.dismissed.connect(_close_overlay)
+	panel.action_requested.connect(_use_field_potion)
+	overlay = panel
+	add_child(panel)
+	_sync_modal_input()
+
+func _use_field_potion(item: String) -> void:
+	if not is_instance_valid(overlay) or not overlay is SupplyPanel: return
+	var result: Dictionary = state.consume_combat_potion(item, "potion:"+state._new_id(), encounter.resource_state(int(state.combat.revision)))
+	if not result.ok:
+		overlay.show_error(result.message)
+		return
+	encounter.apply_resources(state.combat)
+	overlay.configure_supplies(state,encounter)
+	overlay.notice_label.text = result.message
+	_refresh_hud()
+	_update_combat_hud()
+
+func _uses_touch_hints() -> bool:
+	return OS.has_feature("mobile") or DisplayServer.is_touchscreen_available() or get_viewport_rect().size.x <= 900
+
+func _update_combat_hud() -> void:
 	var active := _combat_active()
-	var paused := is_instance_valid(overlay) or sleeping
-	# Keep the center of the fight clear; contextual Use returns near real targets.
+	var paused := is_instance_valid(overlay) or sleeping or not pending_combat.is_empty()
 	interact_button.visible = not active or not nearest_prop().is_empty()
 	hud.attack_button.disabled = not active or paused or encounter.defeated or state.equipped_weapon.is_empty() or encounter.attack_cooldown > 0
-	hud.combat_status.text = "Skills / potions pending" if active else "Guild field assignment"
-	hud.attack_button.tooltip_text = "Basic training strike [F] • move within 108 world pixels" if active else "Accept your field assignment at the guild."
+	hud.combat_status.text = "Tap skills • Bag: potions" if _uses_touch_hints() else "Skills [1–3] • Supplies [P]"
+	hud.attack_button.tooltip_text = "Basic strike [F]. Equip your weapon." if active else "Accept a field assignment at the guild."
+	hud.hp_label.text = "HP %d / %d" % [encounter.hp,encounter.max_hp]
+	hud.mp_label.text = "MP %d / %d" % [int(encounter.mana),int(encounter.max_mana)]
+	hud.potion_button.disabled = paused or encounter.defeated
+	hud.potion_button.tooltip_text = "Choose healing or mana potion [P]"
+	var skills := Encounter.Abilities.for_class(encounter.hero_class)
+	for slot in 3:
+		var button: Button = hud.skill_buttons[slot]
+		var skill: Dictionary = skills[slot]
+		button.text = str(ceili(encounter.skill_cooldowns[slot])) if encounter.skill_cooldowns[slot] > 0 else skill.short
+		button.tooltip_text = "%s • %d MP • %.1fs cooldown" % [skill.name,skill.mana,skill.cd]
+		button.disabled = not active or paused or encounter.defeated or encounter.skill_cooldowns[slot] > 0 or encounter.mana < skill.mana
+		button.queue_redraw()
 	if active:
-		hud.set_tutorial_objective("South meadow: %d slimes remaining." % encounter.living_count() if player.distance_to(Encounter.RETRY_POINT) < 700 else "West bridge, then south path to the meadow.")
-		hud.hp_label.text = "Trial HP %d / %d" % [encounter.hp,Encounter.MAX_HP]
-		if not paused:
+		var label_text: String = combat_data.get("label","South meadow")
+		hud.set_tutorial_objective("%s: %d remaining." % [label_text,encounter.living_count()] if player.distance_to(encounter.retry_point) < 700 else ("West bridge, then north trail to the forest." if encounter.encounter_id != Encounter.ID else "West bridge, then south path to the meadow."))
+
+func _process_encounter(delta: float) -> void:
+	encounter.refresh_stats(state.get_stat_summary(),state.weapon_upgrade_level())
+	if not pending_combat.is_empty():
+		pending_combat_retry -= delta
+		if pending_combat_retry <= 0:
+			pending_combat_retry = 2.0
+			var pending_resources: Dictionary = pending_combat.resources
+			pending_resources.revision = state.combat.revision
+			if state.commit_combat_resources(pending_resources):
+				encounter.restore(pending_combat.simulation)
+				pending_combat = {}
+				message.text = "Progress saved. You can continue."
+		_update_combat_hud()
+		return
+	var active := _combat_active()
+	var paused := is_instance_valid(overlay) or sleeping
+	if not paused:
+		var before: Dictionary = encounter.capture()
+		if active:
 			encounter.tick(delta,player,can_stand)
-			if encounter.defeated: _show_encounter_defeat()
-			elif encounter.victory:
-				encounter_save_retry -= delta
-				if encounter_save_retry <= 0:
-					encounter_save_retry = 2.0
-					if state.has_method("record_encounter_victory") and state.record_encounter_victory(Encounter.ID):
-						encounter_saved = true
-						_refresh_hud()
-						message.text = "Meadow cleared! Return to the guild for your reward."
-					else: message.text = "Meadow cleared; progress could not save. Keep this area open to retry. " + state.error
-	else: hud.hp_label.text = "HP unavailable"
+		else:
+			# Safe in-town resource recovery; no inactive enemy/summon simulation.
+			var dt := clampf(delta,0,0.05)
+			encounter.mana = minf(encounter.max_mana,encounter.mana+encounter.mana_recovery*dt)
+			for slot in 3: encounter.skill_cooldowns[slot] = maxf(0,encounter.skill_cooldowns[slot]-dt)
+			encounter.potion_cooldown = maxf(0,encounter.potion_cooldown-dt)
+		combat_checkpoint_elapsed += delta
+		if encounter.hp != before.hp or combat_checkpoint_elapsed >= 5.0:
+			if not _checkpoint_combat():
+				pending_combat = {"resources":encounter.resource_state(int(state.combat.revision)),"simulation":encounter.capture()}
+				encounter.restore(before)
+				pending_combat_retry = 2.0
+				message.text = "Combat paused until progress can save. " + state.error
+				_update_combat_hud()
+				return
+		if active and encounter.defeated: _show_encounter_defeat()
+		elif active and encounter.victory:
+			encounter_save_retry -= delta
+			if encounter_save_retry <= 0:
+				encounter_save_retry = 2.0
+				if state.record_encounter_victory(encounter.encounter_id):
+					encounter_saved = true
+					_refresh_hud()
+					message.text = "Area cleared! Return to the guild for your reward."
+				else: message.text = "Area cleared; progress could not save. Keep this area open to retry. " + state.error
+	_update_combat_hud()
 	_sync_encounter_visuals()
 
 func _sync_encounter_visuals() -> void:
@@ -447,8 +595,8 @@ func _show_encounter_defeat() -> void:
 	content.add_theme_constant_override("separation",14)
 	margin.add_child(content)
 	label("You were overwhelmed",content)
-	label("No items or gold were lost.\nRetry restores trial HP and all three slimes.",content)
-	var retry := button("Retry from the meadow path",content)
+	label("No extra items or gold were lost. Used potions stay consumed.\nRetry restores HP, mana and all enemies.",content)
+	var retry := button("Retry from the safe path",content)
 	for appearance in ["normal","hover","pressed","focus","disabled"]:
 		retry.add_theme_stylebox_override(appearance,preload("res://src/ui/ornate_panel.gd").make_button_style(appearance in ["hover","pressed"]))
 	retry.add_theme_color_override("font_color",Color("362c21"))
@@ -456,11 +604,16 @@ func _show_encounter_defeat() -> void:
 	_sync_modal_input()
 
 func _retry_encounter() -> void:
+	if not encounter.defeated: return
+	var before: Dictionary = encounter.capture()
 	encounter.reset()
-	player = Encounter.RETRY_POINT
+	if not _checkpoint_combat():
+		encounter.restore(before)
+		return
+	player = encounter.retry_point
 	_close_overlay()
 	_update_actor()
-	message.text = "Trial restarted. Use Attack [F], then step out of amber strikes."
+	message.text = "Recovered. Use Attack [F] or skills [1–3]; step out of amber strikes."
 	_process_encounter(0)
 
 func cancel_overlay() -> void:
@@ -468,8 +621,10 @@ func cancel_overlay() -> void:
 	else: super.cancel_overlay()
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F:
-		attack_nearby()
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode in [KEY_F,KEY_1,KEY_2,KEY_3,KEY_P]:
+		if event.keycode == KEY_F: attack_nearby()
+		elif event.keycode == KEY_P: open_field_supplies()
+		else: use_class_skill(int(event.keycode-KEY_1))
 		get_viewport().set_input_as_handled()
 	else: super._unhandled_key_input(event)
 
@@ -481,21 +636,29 @@ func _update_wilderness_depth() -> void:
 		sprite.self_modulate.a = 0.38 if sprite.z_index > actor.z_index and visual.intersects(actor_rect) and _opaque_over_player(sprite) else 1.0
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventScreenTouch and event.index > 0 and not event.pressed and is_instance_valid(hud):
-		var attack: Button = hud.attack_button
-		if attack.get_meta("combat_touch",-1) == event.index:
-			attack.remove_meta("combat_touch")
-			var point: Vector2 = attack.get_global_transform_with_canvas().affine_inverse()*event.position
-			if not event.canceled and not attack.disabled and not is_instance_valid(overlay) and Rect2(Vector2.ZERO,attack.size).has_point(point): attack_nearby()
-			get_viewport().set_input_as_handled()
+	if event is InputEventScreenDrag and event.index > 0:
+		for control in combat_touch_buttons:
+			if control.get_meta("combat_touch",-1) == event.index and Vector2(control.get_meta("combat_start",event.position)).distance_to(event.position) > 14:
+				control.set_meta("combat_dragged",true)
+	if event is InputEventScreenTouch and event.index > 0 and not event.pressed:
+		for control in combat_touch_buttons:
+			if control.get_meta("combat_touch",-1) == event.index:
+				control.remove_meta("combat_touch")
+				var point: Vector2 = control.get_global_transform_with_canvas().affine_inverse()*event.position
+				if not event.canceled and not control.get_meta("combat_dragged",false) and not control.disabled and not is_instance_valid(overlay) and Rect2(Vector2.ZERO,control.size).has_point(point): control.get_meta("combat_action").call()
+				get_viewport().set_input_as_handled()
+
+func _clear_combat_touch() -> void:
+	for control in combat_touch_buttons:
+		if is_instance_valid(control) and control.has_meta("combat_touch"): control.remove_meta("combat_touch")
 
 func _sync_modal_input() -> void:
 	super._sync_modal_input()
 	if is_instance_valid(overlay) and is_instance_valid(hud):
-		hud.attack_button.disabled = true
-		if hud.attack_button.has_meta("combat_touch"): hud.attack_button.remove_meta("combat_touch")
+		for control in combat_touch_buttons: control.disabled = true
+		_clear_combat_touch()
 
 func _notification(what: int) -> void:
 	super._notification(what)
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_WINDOW_FOCUS_OUT,NOTIFICATION_PAUSED] and is_instance_valid(hud):
-		if hud.attack_button.has_meta("combat_touch"): hud.attack_button.remove_meta("combat_touch")
+		_clear_combat_touch()

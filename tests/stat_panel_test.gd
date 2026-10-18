@@ -69,7 +69,7 @@ func run() -> void:
 	preview(menu)
 	confirm(menu)
 	check(before_disk == FileAccess.get_file_as_string(state.path) and before_state == JSON.stringify(state.snapshot()), "Opening stats and disabled-event injection never change save")
-	check(labels(menu.body).contains("Combat is not implemented") and labels(menu.body).contains("no gameplay effect yet"), "Planned effects cannot be mistaken for implemented combat")
+	check(labels(menu.body).contains("HP/MP caps and mana recovery are active") and labels(menu.body).contains("remain previews"), "Planned effects cannot be mistaken for implemented combat")
 	check(labels(menu.body).contains("Physical power: 20") and labels(menu.body).contains("Maximum HP: 100") and labels(menu.body).contains("Accuracy: 90.00%"), "Planned numbers are computed from configured values")
 	check(labels(menu.body).contains("XP earning is not available yet"), "Luck XP source is clearly marked unavailable")
 	menu.show_page("character")
