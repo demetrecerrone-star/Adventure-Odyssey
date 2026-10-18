@@ -1,0 +1,35 @@
+name: Publish approved v0.10 build 343 APK
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-preview-343.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish-approved-apk:
+    if: contains(github.event.head_commit.message, '[publish-preview-343]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download the exact previously verified build
+        uses: actions/download-artifact@v4
+        with:
+          name: Adventure-Odyssey-Android-APK
+          run-id: 39110654530
+          github-token: ${{ github.token }}
+          path: verified-apk
+      - name: Verify and publish this one approved APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: demetrecerrone-star/Adventure-Odyssey
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd verified-apk
+          echo '7115896eb86a71be8df681ec325aa81bb4270fce5f0a6ea1c5d23721d82e5a99  Adventure-Odyssey-release.apk' | sha256sum -c -
+          gh release create ao-preview-v0.10-build343 Adventure-Odyssey-release.apk \
+            --target 5276febb0111a7ffd7ef25a721bc37b27295b1ed \
+            --title 'Adventure Odyssey v0.10 test preview' \
+            --notes 'Android ARM64 test preview, version code 10. Build 343 from 5276febb. Adds the ivory/gold adventure HUD, hamburger menu, centered saved-character equipment screen, real inventory equip/unequip, and saved fixed/floating plus left-handed controls across bedroom, world and interiors. Existing town, walks, appearance and saves remain compatible. Combat, levels, numeric stats, minimap and quest systems are clearly unavailable in this checkpoint; tutorial/shop improvements are the next stage. Install as an update to retain local saves. Same permanent certificate. SHA-256: 7115896eb86a71be8df681ec325aa81bb4270fce5f0a6ea1c5d23721d82e5a99' \
+            --prerelease
