@@ -1,0 +1,35 @@
+name: Publish approved v0.13 build 366 APK
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-preview-366.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish-approved-apk:
+    if: contains(github.event.head_commit.message, '[publish-preview-366]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download the exact previously verified build
+        uses: actions/download-artifact@v4
+        with:
+          name: Adventure-Odyssey-Android-APK
+          run-id: 39174422119
+          github-token: ${{ github.token }}
+          path: verified-apk
+      - name: Verify and publish this one approved APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: demetrecerrone-star/Adventure-Odyssey
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd verified-apk
+          echo '3ed9223e5753a3dc31de57e7fe7de7ca5c397c2a7788d924f468d9d4ed6996af  Adventure-Odyssey-release.apk' | sha256sum -c -
+          gh release create ao-preview-v0.13-build366 Adventure-Odyssey-release.apk \
+            --target 26f4b30a4f51d94eefff532e7bda7bacb3e46933 \
+            --title 'Adventure Odyssey v0.13 test preview' \
+            --notes 'Android ARM64 and x86_64 preview, version code 13. Build 366 from 26f4b30. Equipment now swaps occupied slots atomically, with organized item inspection, tappable equipment icons and honest green/red weapon comparisons. Slimes and wolves live in bounded groups independently of quests, respawn after 45 seconds and award repeat gold/XP; original first-discovery Sigils are preserved. Main roads and town remain protected. Existing saves migrate without resetting inventory or completed quests. All 56 source and 54 packaged suites passed, with native desktop phone-layout captures reviewed. Same permanent release certificate and package; update without uninstalling to retain local saves. No Android permissions added. Physical Android performance and live device save-upgrade testing remain unverified. SHA-256: 3ed9223e5753a3dc31de57e7fe7de7ca5c397c2a7788d924f468d9d4ed6996af' \
+            --prerelease
