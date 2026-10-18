@@ -49,7 +49,8 @@ func run()->void:
  root.size=Vector2i(1000,600)
  var canvas:=ColorRect.new();canvas.color=Color("f5ecd9");canvas.size=Vector2(1000,600);root.add_child(canvas)
  var ids:Array=Save.Inventory.LABELS.keys()
- for c in Save.Inventory.WEAPONS.values():ids.append(Save.Inventory.starter_armor(c.class_id))
+ for c in Save.Inventory.WEAPONS.values():
+  if c.class_id != "All": ids.append(Save.Inventory.starter_armor(c.class_id))
  for index in ids.size():
   var icon=Icon.new();canvas.add_child(icon);icon.configure(ids[index]);icon.position=Vector2(30+(index%5)*195,20+int(index/5)*190);icon.size=Vector2(110,110)
   var label:=Label.new();label.text=Save.Inventory.LABELS.get(ids[index],str(ids[index]).replace("_01_armor"," armor").capitalize());label.add_theme_color_override("font_color",Color("362c21"));label.add_theme_font_size_override("font_size",15);label.position=icon.position+Vector2(-10,116);label.size=Vector2(180,50);label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;canvas.add_child(label)

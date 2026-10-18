@@ -45,92 +45,104 @@ static func describe(id: String, value: Dictionary, _selected_class: String = ""
 	var stage: String = value.stage
 	match id:
 		"envelope":
-			result.body = "Your application has been approved. Please visit the Adventurer Guild and introduce yourself to the receptionist."
+			result.body = "The envelope bears the guild seal, but someone has added a line by hand: ‘You don't have to know every road before taking the first step.’ Your application is approved. The receptionist is expecting you."
 			if stage == "awaiting_letter":
 				result.choices.append(_choice("read_envelope", "Read the letter"))
 		"guild_receptionist":
 			match stage:
 				"awaiting_letter":
-					result.body = "If an envelope has arrived at your doorstep, read it before we begin."
+					result.body = "Your first assignment unlocks after the training errands. Start by reading the envelope outside your home, then return here."
 				"visit_guild":
-					result.body = "Welcome to the Adventurer Guild. Let's get you ready, one errand at a time. First, visit the blacksmith for a free upgrade lesson. Come back to me when you're done."
+					result.body = "You came. I kept your application on top of the pile. Before I send you beyond the gates, let's make sure you can come home again. The blacksmith owes us a free upgrade lesson. Will you visit him, then come back?"
 					result.choices.append(_choice("guild_assign_blacksmith", "Begin the blacksmith errand"))
 				"visit_blacksmith", "upgrade_blacksmith":
-					result.body = "The blacksmith is expecting you. Finish the weapon upgrade lesson, then come back here."
+					result.body = "Before I can offer the slime assignment, finish the blacksmith's free +1 lesson. Bring your class weapon from the home chest, collect the lesson supplies, then select and confirm its upgrade. Return here afterward."
 				"return_guild_blacksmith":
-					result.body = "Your first upgrade is done. Next, visit the apothecary for some supplies, then return to me."
+					result.body = "That edge looks better already. The smith doesn't praise people easily, but he sent word you listened. Next, the apothecary has supplies for you. Take them, then come back here."
 					result.choices.append(_choice("guild_after_blacksmith", "Begin the apothecary errand"))
 				"visit_apothecary":
 					result.body = "The apothecary has your first supply gift. Come back after you've collected it."
 				"return_guild_apothecary":
-					result.body = "Supplies collected. There's one more stop before your first assignment: visit the general store, then return here."
+					result.body = "Good. Keep those supplies where you can reach them. There's one last stop: the general store. The keeper asked for you specifically. I think you should hear it from them. Come back afterward."
 					result.choices.append(_choice("guild_after_apothecary", "Begin the general store errand"))
 				"visit_general_store":
 					result.body = "Visit the general store for your last errand. I'll be here when you return."
 				"return_guild_general_store":
-					result.body = "You've finished your errands. A group of slimes has gathered in the South Meadow. Let's talk about your first field assignment."
+					result.body = "You're quieter than when you first came in. Whatever the storekeeper gave you, keep it safe. When you're ready, there's a small job in the South Meadow. We can talk it through before you decide."
 					result.choices.append(_choice("guild_after_general_store", "Ask about the first assignment"))
 				"first_combat_pending":
-					result.body = "Three slimes are blocking the South Meadow. Equip your weapon, cross the west bridge, and follow the south branch. Clear the group east of the trail. Return here afterward for 25 gold. If you fall, you can retry without an extra item or gold penalty. Potions you use stay consumed."
+					result.body = "The herb gatherers need the South Meadow back. Will you clear three slimes for 25 gold? Equip your weapon, then follow gold marks across the west bridge, past home, down the south branch. We can talk about supplies before you go."
 					result.choices.append(_choice("guild_assign_first_combat", "Accept: clear the South Meadow"))
+					result.choices.append(_choice("field_advice", "What should I know before I leave?", "local"))
 				"first_combat_active":
-					result.body = "Cross the west bridge, then follow the south branch into the South Meadow. Defeat the three slimes east of the trail. Equip your weapon from your inventory before fighting, then use Attack when a slime is close. Your class skills and carried potions can help. Return when the meadow is clear."
+					result.body = "Follow the gold road marks across the west bridge, past home, and down the south branch. They lead to the three South Meadow slimes east of the trail. Equip your weapon from your inventory before fighting, then use Attack when a slime is close. Your class skills and carried potions can help. Return when the meadow is clear."
 				"return_guild_first_combat":
-					result.body = "The road is clear again. Well done. Your first assignment is complete, and your 25 gold reward is ready."
+					result.body = "You made it back. That's the part I was waiting for. The herb gatherers can use the meadow again because of you. Your first assignment is complete; you've earned these 25 gold."
 					result.choices.append(_choice("guild_complete_first_combat", "Complete training • Collect 25 gold"))
 				"tutorial_complete":
-					result.body = "Two wolves are keeping travelers off the Western Forest trail. Cross the west bridge, take the northern branch, and look east of the first wooded bend. Clear both and return for 40 gold. Bring healing supplies."
+					result.body = "There's another road that needs you, if you're ready. Two wolves have trapped travelers on the Western Forest trail. Cross the west bridge, take the northern branch, then look east of the wooded bend. Clear both for 40 gold. Bring healing supplies."
 					result.choices.append(_choice("guild_assign_forest_patrol", "Accept: Western Forest patrol"))
 				"forest_patrol_active":
 					result.body = "The Western Forest patrol is still open. Cross the west bridge, follow the northern branch, and look east of the first wooded bend. Clear both wolves, then report back. Step away from their amber attack rings, and use your class skills when you have enough mana. Used potions stay consumed, even if you retry."
 				"return_guild_forest":
-					result.body = "The forest trail is open again. Travelers can use the western road safely, and your patrol reward is ready."
+					result.body = "A traveler came through before you. Said someone finally opened the forest road. I had a feeling it was you. Your 40 gold is ready. Sit a moment before you take on the whole world."
 					result.choices.append(_choice("guild_complete_forest_patrol", "Finish patrol • Collect 40 gold"))
 				"forest_patrol_complete":
 					result.body = "Both the meadow and the western forest route are clear. Your 40 gold patrol reward has been paid. Your earned Sigils can buy dyes and blankets at home. Visit your bed to preview them; combat stats stay the same."
 		"blacksmith":
 			if stage == "visit_blacksmith":
-				result.body = "The guild sent you? Bring the class weapon from your starter chest. I'll supply what you need for its first +1 upgrade. Accept the lesson supplies, then open the upgrade service and perform the upgrade yourself."
+				result.body = "Let me see your hands. New to this, then. Good; you haven't learned bad habits yet. Bring your class weapon from the home chest. I'll provide a free +1 lesson. Take the supplies, then select and confirm the upgrade yourself. A weapon deserves a patient hand."
 				result.choices.append(_choice("blacksmith_claim_starter", "Receive free lesson supplies"))
 			elif stage == "upgrade_blacksmith":
 				result.body = "Your lesson supplies are ready. Open the upgrade service, select your tutorial weapon, and confirm its +1 upgrade. Then report back to the guild."
 				result.choices.append(_choice("tutorial_upgrade", "Open upgrade service", "service"))
 			elif value.event_receipts.has("blacksmith_upgrade_applied"):
-				result.body = "Your first upgrade is complete. Take good care of that weapon."
+				result.body = "There. Your first upgrade, done by your own hand. Remember the feel of it. A fine weapon won't make every choice for you, but caring for it is a good place to start."
 			else:
 				result.body = "Welcome. Speak to the guild receptionist when you're ready to begin your training."
 			result.choices.append(_choice("blacksmith_shop", "Browse blacksmith services", "service"))
 		"apothecary":
 			if stage == "visit_apothecary":
-				result.body = "The guild sent word. Your first gift is five mana potions. Collect them, then return to the receptionist."
+				result.body = "The guild sent word. You look as though you forgot to breathe on the way here. Here are five mana potions, on us. Take them, then check back with the receptionist. You don't have to prove anything by going without help."
 				result.choices.append(_choice("apothecary_claim_gift", "Receive five mana potions"))
 			elif value.action_receipts.has("apothecary_claim_gift"):
-				result.body = "You already have your first supply gift. Travel safely."
+				result.body = "You've already collected your first supply gift. I can't give it twice, but I'm glad you came back in one piece. If you need more, we can look through the shelves together."
 			else:
 				result.body = "Welcome to the apothecary. The guild will send you here when it's time for your supply errand."
 			result.choices.append(_choice("apothecary_shop", "Browse apothecary supplies", "service"))
 		"shopkeeper":
 			if stage == "visit_general_store":
-				result.body = "I've been holding this until you were ready. It's a keepsake ring, and it's yours now."
+				result.body = "I've been holding this until you were ready. The keeper opens a small cloth bundle, then hesitates. It's a keepsake ring. Not merchandise. It's yours now, if you'd like to take it."
 				result.choices.append(_choice("general_store_claim_keepsake", "Receive the keepsake ring"))
 				result.choices.append(_choice("keepsake_origin", "Who left it?", "local"))
 			elif value.action_receipts.has("general_store_claim_keepsake"):
-				result.body = "Keep that ring close. I've been holding it until you were ready."
+				result.body = "Keep that ring close. I know an object can't answer all your questions. Still, someone wanted you to have it. That much I can tell you."
 				result.choices.append(_choice("keepsake_origin", "Who left it?", "local"))
 			else:
 				result.body = "Welcome. Have a look around, and speak to the guild receptionist about your training."
 			result.choices.append(_choice("general_store_shop", "Browse general store goods", "service"))
 		"resident_north_yard":
-			result.body = "The Adventurer Guild is just west of these homes, beside the plaza. You'll recognize its blue roofs."
+			result.body = "Off to the guild? I used to take the long way when I was nervous, too. It's just west of these homes, beside the plaza. Look for the blue roofs. They'll be glad you came."
 		"resident_plaza_home":
-			result.body = "The general store is on the southwest side of the plaza. The apothecary is the shop with the green roof."
+			result.body = "The storekeeper has been watching the door all morning. If you're looking for them, the general store is southwest of the plaza. The green roof belongs to the apothecary. Easy to mix them up on your first day."
 		"resident_well":
-			result.body = "This little green is a quiet place to rest beside the well. The main paths run around it."
+			result.body = "When the town gets too loud, I come here and listen to the well. You can stay a moment. The roads will still be there when you stand up."
 		"guard_northeast_verge":
-			result.body = "The northeast gate leads toward the rocky foothills. Keep to the paths through the town gates."
+			result.body = "The northeast gate faces the rocky foothills. No guild work out that way yet. If this is your first day, stay with the marked paths. I'd rather wave you home than go looking for you."
 		_:
 			result.body = "There is no conversation available here."
+	if id in ["guild_receptionist", "blacksmith", "apothecary", "shopkeeper"]:
+		result.choices.append(_choice("personal_question", {"guild_receptionist":"What if I'm not ready?", "blacksmith":"Why teach me for free?", "apothecary":"Do you worry about everyone?", "shopkeeper":"Does this ring mean something?"}[id], "local"))
+		result.choices.append(_choice("not_now", "Not right now. I'll come back.", "dismiss"))
 	return result
+
+static func personal_reply(id: String) -> String:
+	match id:
+		"guild_receptionist": return "Then we wait. The guild needs people, not promises made out of fear. You can ask questions, prepare at home, or come back later. I'll keep your place. Take the next step when you're ready."
+		"blacksmith": return "Someone showed me once. I was all hurry and no sense, and they let me try again. This is how a town keeps going: we teach the next pair of hands."
+		"apothecary": return "Only the ones who walk through my door. That's quite enough work. Drink when you need to, step back when you must, and let coming home count as courage too."
+		"shopkeeper": return "It meant enough for someone to ask me to keep it safe. I won't pretend I can give you the whole story. You don't have to decide what it means today."
+	return ""
 
 static func _choice(id: String, label: String, kind: String = "action") -> Dictionary:
 	return {"id":id, "label":label, "kind":kind}
@@ -172,6 +184,8 @@ func _ready() -> void:
 	choices = VBoxContainer.new()
 	choices.add_theme_constant_override("separation", 10)
 	content.add_child(choices)
+	# Keep the next action ahead of repeated objective text on short phones.
+	content.move_child(choices, 1)
 	notice_label = _label(content, 16)
 	notice_label.name = "TutorialNotice"
 	notice_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -237,6 +251,7 @@ func _layout() -> void:
 func _render() -> void:
 	_view = describe(npc_id, tutorial_state, character_class)
 	title_label.text = _view.title
+	close_button.text = "Not right now" if _view.choices.any(func(entry): return entry.kind == "action") else "Leave"
 	body_label.text = _view.body
 	objective_label.text = ("Status: " if tutorial_state.get("stage") in ["tutorial_complete","forest_patrol_complete"] else "Current errand: ") + _view.objective
 	notice_label.text = ""
@@ -258,6 +273,25 @@ func _choose(choice: Dictionary) -> void:
 		"local":
 			if choice.id == "keepsake_origin":
 				body_label.text = "I'll let them tell you that."
+			elif choice.id == "field_advice":
+				body_label.text = "Equip a weapon from your inventory, and use Attack when a creature is close. Skills cost mana; carried potions can help. If you're defeated, a free retry restores health and mana. Used potions stay consumed. Take your time. I'll be here when you return."
+			elif choice.id == "personal_question":
+				body_label.text = personal_reply(npc_id)
+			elif choice.id == "resume_conversation":
+				_render()
+				return
+			# Optional conversation never sends a transactional action. Keep an
+			# explicit route back to the briefing without closing the speaker.
+			if not _view.choices.any(func(entry): return entry.id == "resume_conversation"):
+				var back := _choice("resume_conversation", "Back to what we were discussing", "local")
+				_view.choices.append(back)
+				var button := _button(back.label, choices)
+				button.name = "Choice_resume_conversation"
+				button.pressed.connect(_choose.bind(back))
+				choices.move_child(button, 0)
+			scroll.scroll_vertical = 0
+		"dismiss":
+			_dismiss()
 		"service":
 			set_pending(true)
 			service_requested.emit(choice.id)

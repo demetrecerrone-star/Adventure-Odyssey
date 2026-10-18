@@ -259,7 +259,7 @@ func _test_dialogue_controls() -> void:
 	view._choose(service_choice)
 	check(service_count == 1 and view.pending, "Service requests are single-flight and contain no gameplay result")
 	view.configure("guild_receptionist", state_at(9), "Warrior")
-	check(view.choices.get_child_count() == 1 and view._view.choices[0].id == "guild_assign_first_combat", "Only assignment acceptance is exposed before combat")
+	check(view._view.choices.filter(func(choice): return choice.kind == "action").size() == 1 and view._view.choices[0].id == "guild_assign_first_combat", "Only assignment acceptance can advance progress before combat")
 	if "--capture" in OS.get_cmdline_user_args():
 		root.size = Vector2i(1280, 720)
 		view.configure("shopkeeper", state_at(7), "Warrior")

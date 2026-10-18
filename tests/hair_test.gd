@@ -19,7 +19,7 @@ func run() -> void:
 				check(avatar.hair_renderer.ready, "Fitted style exists: " + id)
 				check(avatar.hair_renderer.rear.get_index() < avatar.body.get_index(), "Rear hair is behind body")
 				check(avatar.hair_renderer.front.get_index() > avatar.armor.get_index(), "Front hair is over outfit")
-				check(avatar.hair_renderer.front.material != avatar.body.material and avatar.armor.material == null, "Hair color is isolated")
+				check(avatar.hair_renderer.front.material != avatar.body.material and float(avatar.armor.material.get_shader_parameter("dye_strength")) == 0.0, "Hair color is isolated")
 				for direction in range(4):
 					avatar.advance(direction,false,0)
 					check(avatar.hair_renderer.ready and avatar.hair_renderer.front.frame == direction, "All four idle directions")

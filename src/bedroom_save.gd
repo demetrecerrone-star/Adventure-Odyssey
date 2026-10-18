@@ -10,7 +10,8 @@ const APPEARANCE = ["hair", "hair_color", "eyes", "skin"]
 const Inventory = preload("res://src/inventory_catalog.gd")
 const ShopCatalog = preload("res://src/shop_catalog.gd")
 const ITEMS = Inventory.LABELS
-const VERSION := 11
+const VERSION := 12
+const Relic = preload("res://src/hidden_relic.gd")
 const MAX_COUNT := 999
 const ACTION_SCENES = {
 	"read_envelope":"starter_region", "guild_assign_blacksmith":"guild_interior",
@@ -42,6 +43,7 @@ var wallet_sigils := 0
 var progression := Rewards.initial()
 var cosmetics := Cosmetics.initial()
 var cosmetic_receipts: Dictionary = {}
+var hidden_relic: Dictionary = {}
 var gold_seeded := false
 var item_ledger: Array = []
 var upgrade_entitlements: Dictionary = {}
@@ -72,6 +74,7 @@ func create(value: Dictionary) -> bool:
 	var previous := snapshot()
 	character = value.duplicate(true)
 	character_id = _new_id()
+	hidden_relic = Relic.initial()
 	item_ledger = []
 	upgrade_entitlements = {}
 	acquisition_receipts = {}
@@ -236,6 +239,7 @@ func claim_chest_gold() -> bool:
 # It does not execute a purchase or debit gold; the shop UI must use
 # purchase_shop_item(), never this hook. Legacy npc_purchase grants stay bound.
 func receive_item(item_id: String, quantity: int, source: String, acquisition_id: String) -> bool:
+	if item_id == Relic.ITEM: return false
 	if character.is_empty() or not ITEMS.has(item_id) or quantity < 1 or quantity > MAX_COUNT or source not in ["world_drop", "trade", "npc_purchase"] or not _valid_id(acquisition_id): return false
 	var receipt := {"item_id":item_id, "quantity":quantity, "source":source}
 	if acquisition_receipts.has(acquisition_id):
@@ -395,7 +399,7 @@ func can_transfer_instance(instance_id: String, recipient_character_id: String) 
 	return false
 
 func snapshot() -> Dictionary:
-	return {"version":VERSION, "tutorial_chest_seeded":true, "character":character.duplicate(true), "character_id":character_id,
+	return {"version":VERSION, "hidden_relic":hidden_relic.duplicate(true), "tutorial_chest_seeded":true, "character":character.duplicate(true), "character_id":character_id,
 		"bag":bag.duplicate(true), "chest":chest.duplicate(true), "equipped_weapon":equipped_weapon, "equipped_armor":equipped_armor, "equipped_ring":equipped_ring,
 		"chest_gold":chest_gold, "wallet_gold":wallet_gold, "wallet_sigils":wallet_sigils, "progression":progression.duplicate(true), "cosmetics":cosmetics.duplicate(true), "cosmetic_receipts":cosmetic_receipts.duplicate(true), "gold_seeded":gold_seeded, "item_ledger":item_ledger.duplicate(true),
 		"upgrade_entitlements":upgrade_entitlements.duplicate(true), "acquisition_receipts":acquisition_receipts.duplicate(true), "purchase_receipts":purchase_receipts.duplicate(true), "tutorial":tutorial.duplicate(true), "stats":stats.duplicate(true), "combat":combat.duplicate(true), "consumption_receipts":consumption_receipts.duplicate(true), "awake":awake, "location":location.duplicate(true)}
@@ -538,7 +542,7 @@ func _write_snapshot(data: Dictionary) -> bool:
 	return true
 
 func _restore(data: Dictionary) -> void:
-	for key in ["character", "character_id", "bag", "chest", "equipped_weapon", "equipped_armor", "equipped_ring", "chest_gold", "wallet_gold", "wallet_sigils", "progression", "cosmetics", "cosmetic_receipts", "gold_seeded", "item_ledger", "upgrade_entitlements", "acquisition_receipts", "purchase_receipts", "tutorial", "stats", "combat", "consumption_receipts", "awake", "location"]:
+	for key in ["hidden_relic", "character", "character_id", "bag", "chest", "equipped_weapon", "equipped_armor", "equipped_ring", "chest_gold", "wallet_gold", "wallet_sigils", "progression", "cosmetics", "cosmetic_receipts", "gold_seeded", "item_ledger", "upgrade_entitlements", "acquisition_receipts", "purchase_receipts", "tutorial", "stats", "combat", "consumption_receipts", "awake", "location"]:
 		var value = data[key]
 		set(key, value.duplicate(true) if value is Dictionary or value is Array else value)
 
@@ -562,6 +566,7 @@ static func _whole(value, minimum: int, maximum: int) -> bool:
 	return (value is int or value is float) and is_finite(float(value)) and value >= minimum and value <= maximum and value == floor(float(value))
 
 func _valid_snapshot(data: Dictionary) -> bool:
+	if not Relic.valid(data.get("hidden_relic")): return false
 	if not _whole(data.get("version"), VERSION, VERSION) or data.get("tutorial_chest_seeded") != true or data.get("gold_seeded") != true: return false
 	var hero = data.get("character")
 	if not hero is Dictionary or hero.get("base", "") not in ["male", "female"] or not draft_from(hero).validate().is_empty(): return false
@@ -613,6 +618,8 @@ func _valid_snapshot(data: Dictionary) -> bool:
 			if entry.upgrade_level > 0:
 				if entry.source_id != "starter.weapon": return false
 				upgraded_starters += int(entry.quantity)
+		elif entry.source == Relic.SOURCE:
+			if entry.item_id != Relic.ITEM or entry.source_id != Relic.SOURCE_ID or entry.quantity != 1 or entry.upgrade_level != 0: return false
 		elif entry.source == "legacy_unattributed":
 			if entry.source_id != "legacy:" + entry.item_id or entry.upgrade_level != 0 or entry.container == "equipped_armor": return false
 		elif entry.source in [MANA_GIFT, RING_GIFT]:
@@ -621,6 +628,7 @@ func _valid_snapshot(data: Dictionary) -> bool:
 			var acquisition = data.acquisition_receipts.get(entry.source_id)
 			if not acquisition is Dictionary or acquisition.get("item_id") != entry.item_id or acquisition.get("source") != entry.source or entry.upgrade_level != 0: return false
 		else: return false
+		if entry.item_id == Relic.ITEM and entry.source != Relic.SOURCE: return false
 		var key: String = entry.source + ":" + entry.source_id
 		source_totals[key] = source_totals.get(key, 0) + entry.quantity
 	for consumption_id in data.consumption_receipts:
@@ -650,6 +658,7 @@ func _valid_snapshot(data: Dictionary) -> bool:
 		var receipt = data.acquisition_receipts[acquisition_id]
 		if not _valid_id(acquisition_id) or not receipt is Dictionary or receipt.size() != 3 or not ITEMS.has(receipt.get("item_id")) or receipt.get("source") not in ["world_drop", "trade", "npc_purchase"] or not _whole(receipt.get("quantity"), 1, MAX_COUNT): return false
 		if source_totals.get(receipt.source + ":" + acquisition_id, 0) != receipt.quantity: return false
+	if source_totals.get(Relic.SOURCE+":"+Relic.SOURCE_ID,0) != (1 if data.hidden_relic.claimed else 0): return false
 	var rewards: Dictionary = data.tutorial.reward_receipts
 	if source_totals.get(MANA_GIFT + ":" + MANA_GIFT, 0) != (5 if rewards.has(MANA_GIFT) else 0): return false
 	if source_totals.get(RING_GIFT + ":" + RING_GIFT, 0) != (1 if rewards.has(RING_GIFT) else 0): return false
@@ -711,6 +720,9 @@ func _migrate(data: Dictionary) -> Dictionary:
 	if data.has("item_ledger") or data.has("character_id") or data.has("tutorial"):
 		var preserved := data.duplicate(true)
 		preserved.version = VERSION
+		if not preserved.has("hidden_relic"): preserved.hidden_relic = Relic.initial()
+		for container in ["bag","chest"]:
+			if preserved.get(container) is Dictionary and not preserved[container].has(Relic.ITEM): preserved[container][Relic.ITEM] = 0
 		preserved.awake = true
 		# v6 already owned its gold and grants; migration adds no new value.
 		if not preserved.has("purchase_receipts"): preserved.purchase_receipts = {}
@@ -757,6 +769,7 @@ func _migrate(data: Dictionary) -> Dictionary:
 	candidate.progression = Rewards.initial(int(candidate.stats.level))
 	candidate.combat = Resources.initial_state(candidate.stats)
 	candidate.character_id = _new_id()
+	candidate.hidden_relic = Relic.initial()
 	candidate.location = point.duplicate(true)
 	candidate.gold_seeded = true
 	candidate.chest_gold = 100
@@ -879,3 +892,16 @@ func equip_cosmetic(id: String) -> bool:
 	var previous := snapshot()
 	cosmetics.equipped[item.slot] = id
 	return _commit(previous)
+
+func claim_hidden_stick(tree_id: String) -> bool:
+	if not _valid_live_state(): error = "Your save is not ready."; return false
+	if hidden_relic.claimed: return true
+	if tree_id != hidden_relic.tree_id or location.scene != "starter_region" or Vector2(location.position[0],location.position[1]).distance_to(Relic.point(hidden_relic)) > 36:
+		error = "Search closer to the roots."; return false
+	var previous := snapshot()
+	hidden_relic.claimed = true
+	_add_stack(Relic.ITEM,1,"bag",Relic.SOURCE,Relic.SOURCE_ID)
+	_sync_views()
+	return _commit(previous)
+func basic_weapon_bonus() -> int:
+	return Relic.BONUS_DAMAGE if equipped_weapon == Relic.ITEM else weapon_upgrade_level()

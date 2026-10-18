@@ -16,11 +16,14 @@ func run()->void:
  root.content_scale_mode=Window.CONTENT_SCALE_MODE_DISABLED
  for base in ["male","female"]:
   var ids:Array=Save.Inventory.LABELS.keys()
-  for selected_class in Save.Inventory.WEAPONS.values():ids.append(Save.Inventory.starter_armor(selected_class.class_id))
+  for selected_class in Save.Inventory.WEAPONS.values():
+   if selected_class.class_id != "All": ids.append(Save.Inventory.starter_armor(selected_class.class_id))
   for id in ids:
    var icon=Icon.new();root.add_child(icon);icon.configure(id,base)
    check(icon.artwork_ready,base+" actual item icon "+id)
-   if Save.Inventory.WEAPONS.has(id):
+   if id == "hidden_old_stick":
+    check(icon.textures.size()==1 and icon.textures[0] is AtlasTexture,"Original transparent stick illustration")
+   elif Save.Inventory.WEAPONS.has(id):
     check(icon.textures.size()==1 and icon.textures[0].get_width()==128,"Dedicated unoccluded inventory illustration")
    check(icon.mouse_filter==Control.MOUSE_FILTER_IGNORE,"Icon never steals inspection touch")
    icon.free()

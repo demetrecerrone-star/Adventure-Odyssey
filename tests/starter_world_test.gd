@@ -87,19 +87,19 @@ func run()->void:
 		for i in range(1,route.points.size()):
 			var destination := Vector2(route.points[i][0],route.points[i][1])
 			var distance:float = world.player.distance_to(destination)
-			for step in range(int(ceil(distance/7.75))):
-				world.move_player((destination-world.player).limit_length(7.75))
+			for step in range(int(ceil(distance/9.3))):
+				world.move_player((destination-world.player).limit_length(9.3))
 			check(world.player.distance_to(destination) < 0.01,"Actual swept movement follows %s target %s got %s delta %.6f" % [route.id,destination,world.player,world.player.distance_to(destination)])
 	world.player = Vector2(2000,1370)
 	world._update_actor()
 	var before:Vector2 = world.player
 	world.touch_direction = Vector2.RIGHT
 	world._process(0.05)
-	check(is_equal_approx(world.player.x-before.x,7.75),"155 px/s full analog")
+	check(is_equal_approx(world.player.x-before.x,9.3),"186 px/s full analog")
 	before = world.player
 	world.touch_direction = Vector2(0.5,0)
 	world._process(0.05)
-	check(is_equal_approx(world.player.x-before.x,3.875),"Half analog")
+	check(is_equal_approx(world.player.x-before.x,4.65),"Half analog")
 	world._reset_movement()
 	before = world.player
 	world._process(0.05)

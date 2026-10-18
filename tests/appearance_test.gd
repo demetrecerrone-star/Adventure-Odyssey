@@ -17,7 +17,7 @@ func run() -> void:
 			for skin in Catalog.SKINS:
 				check(avatar.configure(base, selected_class, {"skin":skin.id, "eyes":"Violet"}), "Dressed outfit remains available")
 				check(avatar.palette_ready, "Idle palette mask is available")
-				check(avatar.body.material == avatar.palette_material and avatar.armor.material == null, "Only body receives pigment material")
+				check(avatar.body.material == avatar.palette_material and float(avatar.armor.material.get_shader_parameter("dye_strength")) == 0.0, "Only body receives pigment material")
 				check(avatar.palette_material.get_shader_parameter("skin_color") == Color(skin.color), "Selected skin reaches renderer")
 				for direction in range(4):
 					avatar.advance(direction, true, 0.125)

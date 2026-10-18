@@ -73,7 +73,7 @@ func run() -> void:
 		room.overlay.action_requested.emit("guild_complete_first_combat")
 		await process_frame
 		check(state.wallet_gold == 34 and state.tutorial.stage == "tutorial_complete", "Scene turn-in pays once")
-		check(room.overlay._view.choices.size() == 1 and room.overlay._view.choices[0].id == "guild_assign_forest_patrol", "Completed guild offers next assignment, never repeats reward")
+		check(room.overlay._view.choices.filter(func(choice): return choice.kind == "action").size() == 1 and room.overlay._view.choices[0].id == "guild_assign_forest_patrol", "Completed guild offers next assignment, never repeats reward")
 		if selected_class == "Warrior" and "--capture" in OS.get_cmdline_user_args():
 			for tick in 3: await process_frame
 			await RenderingServer.frame_post_draw

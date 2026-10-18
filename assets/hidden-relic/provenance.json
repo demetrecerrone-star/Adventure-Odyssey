@@ -1,0 +1,8 @@
+{
+ "asset": "old-stick.png",
+ "source": "Original image generated with the built-in image generation tool for Adventure Odyssey on 2026-10-18",
+ "sha256": "46274b68f497009d5a21a276437a438dd9c244f11d74e6dd3d2ff9e9a8b04113",
+ "description": "Single warm hand-painted oak twig with broken branch stubs, transparent background. No glow, marker, text, ground shadow or borrowed artwork.",
+ "processing": "Original PNG unchanged. Runtime AtlasTexture crops transparent margins; sprites scale the same image for the hidden pickup, held weapon and inventory icon.",
+ "review": "Inspected full source and native outdoor pickup/held views in all four directions. Item is intentionally ordinary-looking."
+}

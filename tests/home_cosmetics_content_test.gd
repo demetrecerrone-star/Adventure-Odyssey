@@ -32,9 +32,9 @@ func run() -> void:
      for frame in range(6):
       avatar.advance(face,true,1.0/9.0)
       check(avatar.artwork_ready,"Six-frame animation remains valid")
-      check((avatar.armor.material==null)==(id=="armor_original"),"Dye persists across direction/frame")
+      check((float(avatar.armor.material.get_shader_parameter("dye_strength"))==0.0)==(id=="armor_original"),"Dye persists across direction/frame")
     check(avatar.configure(base,selected_class),"Reconfigure remains safe")
-    check((avatar.armor.material==null)==(id=="armor_original"),"Gear reconfigure preserves cosmetic")
+    check((float(avatar.armor.material.get_shader_parameter("dye_strength"))==0.0)==(id=="armor_original"),"Gear reconfigure preserves cosmetic")
    avatar.set_cosmetic_dye("bed_riverside")
    check(avatar.cosmetic_dye=="armor_original","Wrong-slot ID defaults safely")
    avatar.queue_free()

@@ -67,7 +67,7 @@ func _start_character() -> void:
   var p:Array = state.location.position
   var candidate := Vector2(p[0],p[1])
   if can_stand(candidate): player = candidate
- movement_speed = 155.0
+ movement_speed = 186.0
  _update_actor()
 func can_stand(point:Vector2) -> bool:
  var floor_points := PackedVector2Array()

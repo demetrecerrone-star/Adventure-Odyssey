@@ -67,7 +67,7 @@ func run() -> void:
   room.cancel_overlay()
   check(state.equip_cosmetic("armor_original") and state.equip_cosmetic("bed_oak_green"),"Free defaults at zero Sigils")
   room._apply_cosmetics()
-  check(room.actor.armor.material==null and room.prop_nodes.bed.material==null,"Restores byte-original assets without palette")
+  check(float(room.actor.armor.material.get_shader_parameter("dye_strength"))==0.0 and room.prop_nodes.bed.material==null,"Restores original pigments with posture registration retained")
   room.queue_free(); await process_frame
  for path in paths: DirAccess.remove_absolute(path)
  print("HOME COSMETICS INTEGRATION CHECKS: %d; failures: %d" % [checks,failures])

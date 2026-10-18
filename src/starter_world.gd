@@ -19,7 +19,10 @@ var chunk_loads := 0
 var chunk_evictions := 0
 var autosave_elapsed := 0.0
 var world_ready := false
+const Relic = preload("res://src/hidden_relic.gd")
+var relic_node: Sprite2D
 var last_level_up := 0
+var quest_trail: Node2D
 var combat_stats_revision := -1
 var combat_weapon_upgrade := -1
 var scenery_nodes := {}
@@ -51,9 +54,10 @@ func _ready() -> void:
 	_load_fortifications()
 	_load_envelope()
 	_load_wilderness()
+	_load_hidden_relic()
 	if not can_stand(player): player = HOME
 	_update_actor()
-	message.text = "Explore the paths. Return home here with [E]. Enter the guild and shops from their doors."
+	message.text = "" if _combat_active() else "Open Quest Log for your next errand. Use each building’s door to enter."
 func _load_layout() -> void:
 	prop_rects = {}
 	anchors = {"home":HOME, "envelope":ENVELOPE}
@@ -64,7 +68,7 @@ func _start_character() -> void:
 		var p: Array = state.location.position
 		var candidate := Vector2(p[0],p[1])
 		if can_stand(candidate): player = candidate
-	movement_speed = 155.0
+	movement_speed = 186.0
 func _layout() -> void:
 	if not is_instance_valid(stage): return
 	stage.scale = Vector2.ONE * camera_zoom
@@ -262,7 +266,7 @@ func _process(delta: float) -> void:
 	super._process(delta)
 	if world_ready and not state.character.is_empty(): _process_encounter(delta)
 	var nearby := nearest_prop()
-	if is_instance_valid(interact_button) and not nearby.is_empty(): interact_button.text = entrance_labels.get(nearby,nearby.capitalize())+" [E]"
+	if is_instance_valid(interact_button) and not nearby.is_empty(): interact_button.text = ("Search roots" if nearby == "search_roots" else entrance_labels.get(nearby,nearby.capitalize())) + ("" if size.x < 1000 or DisplayServer.is_touchscreen_available() else " [E]")
 	if not world_ready or state.character.is_empty() or is_instance_valid(overlay): return
 	autosave_elapsed += delta
 	if autosave_elapsed >= 10.0:
@@ -271,7 +275,9 @@ func _process(delta: float) -> void:
 func interact() -> void:
 	if is_instance_valid(overlay) or sleeping: return
 	if not _checkpoint_combat(): return
-	if resident_ids.has(nearest_prop()):
+	if nearest_prop() == "search_roots":
+		_search_roots()
+	elif resident_ids.has(nearest_prop()):
 		open_tutorial_dialogue(nearest_prop())
 	elif nearest_prop() == "envelope":
 		open_tutorial_dialogue("envelope")
@@ -293,6 +299,30 @@ func _exit() -> void:
 	if state.set_location("starter_region",player): exited.emit()
 	else: message.text = state.error
 
+func _nearby_root() -> String:
+	for tree_id in Relic.TREES:
+		if player.distance_to(Relic.TREES[tree_id]) <= 32: return tree_id
+	return ""
+func _load_hidden_relic() -> void:
+	relic_node = Sprite2D.new()
+	relic_node.name = "HiddenOldStick"
+	relic_node.texture = Relic.texture()
+	relic_node.scale = Vector2.ONE * (24.0/relic_node.texture.get_height())
+	relic_node.rotation = 0.65
+	relic_node.position = Relic.point(state.hidden_relic)
+	relic_node.z_index = int(relic_node.position.y*0.4)-1
+	relic_node.visible = not state.hidden_relic.claimed
+	stage.add_child(relic_node)
+func _search_roots() -> void:
+	var tree_id := _nearby_root()
+	if tree_id != state.hidden_relic.tree_id:
+		message.text = "Only bark and fallen leaves."
+		return
+	if not state.set_location("starter_region",player) or not state.claim_hidden_stick(tree_id):
+		message.text = state.error
+		return
+	relic_node.hide()
+	message.text = "Found a suspiciously ordinary stick. Check your bag."
 func _load_envelope() -> void:
 	envelope_node = Sprite2D.new()
 	envelope_node.name = "GuildEnvelope"
@@ -303,6 +333,7 @@ func _load_envelope() -> void:
 	stage.add_child(envelope_node)
 
 func nearest_prop() -> String:
+	if not state.character.is_empty() and not state.hidden_relic.claimed and not _nearby_root().is_empty(): return "search_roots"
 	var result := ""
 	var closest := 135.0
 	for id in anchors:
@@ -392,7 +423,7 @@ func _load_wilderness() -> void:
 	combat_data = {}
 	if state.tutorial.stage in ["forest_patrol_active","return_guild_forest","forest_patrol_complete"] and FileAccess.file_exists("res://assets/starter-region/forest_patrol.json"):
 		combat_data = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/forest_patrol.json"))
-	encounter.configure(combat_data,state.character["class"],state.get_stat_summary(),state.weapon_upgrade_level())
+	encounter.configure(combat_data,state.character["class"],state.get_stat_summary(),state.basic_weapon_bonus())
 	encounter.apply_resources(state.combat)
 	_restore_defeated_spawns()
 	for enemy in encounter.enemies:
@@ -406,6 +437,9 @@ func _load_wilderness() -> void:
 	combat_fx.encounter = encounter
 	combat_fx.z_index = 1900
 	stage.add_child(combat_fx)
+	quest_trail = preload("res://src/quest_trail.gd").new()
+	quest_trail.z_index = 2
+	stage.add_child(quest_trail)
 	hud.attack_button.pressed.connect(attack_nearby)
 	_bind_combat_touch(hud.attack_button,attack_nearby)
 	for slot in 3:
@@ -537,12 +571,12 @@ func _update_combat_hud() -> void:
 		button.queue_redraw()
 	if active:
 		var label_text: String = combat_data.get("label","South meadow")
-		hud.set_tutorial_objective("%s: %d remaining." % [label_text,encounter.living_count()] if player.distance_to(encounter.retry_point) < 700 else ("West bridge, then north trail to the forest." if encounter.encounter_id != Encounter.ID else "West bridge, then south path to the meadow."))
+		hud.set_tutorial_objective("%s: %d remaining." % [label_text,encounter.living_count()] if player.distance_to(encounter.retry_point) < 700 else ("Follow the gold road marks to the forest." if encounter.encounter_id != Encounter.ID else "Follow the gold road marks to the South Meadow."))
 
 func _process_encounter(delta: float) -> void:
 	# Stat allocation and weapon upgrades are infrequent; avoid validating the
 	# complete save ledger on every rendered frame. Transactions still validate.
-	var upgrade: int = state.weapon_upgrade_level()
+	var upgrade: int = state.basic_weapon_bonus()
 	if combat_stats_revision != int(state.stats.revision) or combat_weapon_upgrade != upgrade:
 		encounter.refresh_stats(state.get_stat_summary(),upgrade)
 		combat_stats_revision = int(state.stats.revision)
@@ -598,6 +632,7 @@ func _process_encounter(delta: float) -> void:
 	_sync_encounter_visuals()
 
 func _sync_encounter_visuals() -> void:
+	if is_instance_valid(quest_trail): quest_trail.update_quest(state.tutorial.stage,player,encounter.enemies)
 	for i in enemy_nodes.size():
 		enemy_nodes[i].sync(encounter.enemies[i])
 		enemy_nodes[i].visible = _combat_active() and encounter.enemies[i].hp > 0

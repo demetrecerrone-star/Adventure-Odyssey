@@ -502,6 +502,8 @@ func _build_item_details() -> void:
 	back.name = "BackToBag"
 	back.pressed.connect(func(): inventory_scroll.scroll_vertical = 0)
 	var item: Dictionary = state.get_item_details(selected_item, "bag")
+	if selected_item == "hidden_old_stick":
+		_label("Basic strike: 1,000 base damage + Strength. Unique character-bound find.", info, 14)
 	if selected_item == "keepsake_ring":
 		var ring_button := _button("Equip ring", info)
 		ring_button.name = "EquipRing"
@@ -523,13 +525,13 @@ func _build_item_details() -> void:
 		_label("Stored in your bag. This item has no equipment slot.", info, 14)
 		return
 	var definition: Dictionary = Inventory.WEAPONS[selected_item]
-	_label("%s only  ·  %s" % [definition.class_id, str(definition.type).capitalize()], info, 14)
+	_label("%s  ·  %s" % ["All classes" if definition.class_id == "All" else str(definition.class_id)+" only", str(definition.type).capitalize()], info, 14)
 	if not Inventory.can_equip(selected_item, str(_character().get("class", ""))):
 		_label("Your class cannot equip this weapon.", info, 14).modulate = Color("9c3027")
 	elif not str(state.equipped_weapon).is_empty():
 		_label("Unequip your current weapon before equipping another.", info, 14)
 	_label("Current: " + _weapon_label(str(state.equipped_weapon)), info, 14)
-	_label("Equipment comparisons are not yet configured. This equipment has no defined numeric attributes or derived combat values yet.", info, 14).modulate = MUTED
+	_label("Equipment comparisons are not yet configured. Basic strikes use this weapon, its upgrade rank and Strength. Class skills have separate damage values.", info, 14).modulate = MUTED
 
 func _reset_stat_draft() -> void:
 	_stat_snapshot = {}
@@ -849,6 +851,17 @@ func _build_quests() -> void:
 	var forest_stages := ["forest_patrol_active", "return_guild_forest", "forest_patrol_complete"]
 	var heading := "WESTERN FOREST · COMPLETE" if state.tutorial.stage == "forest_patrol_complete" else ("WESTERN FOREST · IN PROGRESS" if state.tutorial.stage in forest_stages else ("TUTORIAL · COMPLETE" if state.tutorial.stage == "tutorial_complete" else "TUTORIAL · IN PROGRESS"))
 	_card(body, heading, progress.objective(state.tutorial))
+	if progress.STAGES.find(state.tutorial.stage) < progress.STAGES.find("first_combat_active"):
+		var tasks := [
+			["read_envelope", "Read the envelope outside home."],
+			["blacksmith_upgrade_applied", "Finish the blacksmith’s free +1 lesson."],
+			["apothecary_claim_gift", "Collect the apothecary’s gift."],
+			["general_store_claim_keepsake", "Collect the general store keepsake."]]
+		var lines := ""
+		for task in tasks:
+			var done: bool = state.tutorial.action_receipts.has(task[0]) or state.tutorial.event_receipts.has(task[0])
+			lines += ("Done: " if done else "Pending: ") + task[1] + "\n"
+		_card(body, "UNLOCK THE FIRST MONSTER ASSIGNMENT", lines + "Report to the guild between errands. After the keepsake, speak to the receptionist and choose Accept: clear the South Meadow.")
 	_label("Guild assignments reward you once, when you report back. Progress and rewards are saved for this character.", body, 16).modulate = MUTED
 	var receipts: Dictionary = state.tutorial.get("reward_receipts", {})
 	for reward in receipts:

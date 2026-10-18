@@ -4,7 +4,7 @@ signal world_requested
 const Save = preload("res://src/bedroom_save.gd")
 const Creator = preload("res://src/creator/creator_panel.gd")
 const ROOM_SIZE = Vector2(1536, 1024)
-const PLAYER_SPEED_MULTIPLIER := 155.0 / 60.0
+const PLAYER_SPEED_MULTIPLIER := 186.0 / 60.0
 var state = Save.new()
 var stage: Node2D
 var actor: Node2D
@@ -221,7 +221,7 @@ func _process(delta: float) -> void:
 	# Keep the approved cadence while increasing travel speed. Actual distance
 	# still scales analog input, blocked movement and the movement frame-time cap.
 	var distance_moved := player.distance_to(previous_position)
-	actor.advance(facing, distance_moved > 0, distance_moved / actor.cadence_speed(facing))
+	actor.advance(facing, distance_moved > 0, distance_moved / (actor.cadence_speed(facing) * 1.2))
 	var id := nearest_prop()
 	interact_button.text = (id.capitalize() + ("" if size.x < 1000 or DisplayServer.is_touchscreen_available() else " [E]")) if not id.is_empty() else "Walk closer"
 func _gui_input(event: InputEvent) -> void:

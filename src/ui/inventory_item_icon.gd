@@ -27,6 +27,9 @@ func _ready() -> void:
  custom_minimum_size = Vector2(52, 52)
  resized.connect(queue_redraw)
 func _load_gear(id: String, selected_base: String) -> Dictionary:
+ if id == "hidden_old_stick":
+  var stick = preload("res://src/hidden_relic.gd").texture()
+  return {"textures":[stick], "bounds":Rect2(Vector2.ZERO,stick.get_size())}
  var paths: Array = []
  if Catalog.WEAPONS.has(id):
   paths = ["res://assets/inventory-icons/" + id + ".png"]

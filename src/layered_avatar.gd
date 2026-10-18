@@ -1,6 +1,7 @@
 extends Node2D
 # Body and armor always switch as a validated pair. Missing outfits never expose underwear.
 var hair_renderer = preload("res://src/character_hair.gd").new()
+var relic_sprite: Sprite2D
 var weapon_back: Sprite2D
 var weapon_front: Sprite2D
 var weapon_outfit: Dictionary = {}
@@ -22,6 +23,11 @@ var painted_directions: Dictionary = {}
 var palette_material: ShaderMaterial
 var palette_ready := false
 var cosmetic_dye := "armor_original"
+# Authored feet/weapon poses remain untouched. The head moves by less than one
+# extra source pixel, with a short neck transition instead of a whole-body bob.
+var head_lift := 4.0
+func head_offset() -> Vector2:
+	return Vector2(0, -head_lift)
 const Catalog = preload("res://src/creator/catalog.gd")
 const EYE_COLORS := {"Brown":"704127", "Hazel":"8b813e", "Green":"448653", "Blue":"3d83be", "Gray":"87939b", "Amber":"c78b2e", "Violet":"9564b9"}
 func _ready() -> void:
@@ -37,6 +43,12 @@ func _ready() -> void:
 	armor = get_node("Armor")
 	hair = get_node("Hair")
 	hair_renderer.attach(self, body, armor)
+	relic_sprite = Sprite2D.new()
+	relic_sprite.name = "HeldHiddenStick"
+	relic_sprite.texture = preload("res://src/hidden_relic.gd").texture()
+	relic_sprite.scale = Vector2.ONE * (100.0/relic_sprite.texture.get_height())
+	relic_sprite.hide()
+	add_child(relic_sprite)
 func configure(base: String, selected_class: String, selected_appearance: Dictionary = {}) -> bool:
 	character_class = selected_class
 	painted_pilot = {}
@@ -84,6 +96,7 @@ func configure(base: String, selected_class: String, selected_appearance: Dictio
 	artwork_ready = _valid_pair(outfit.get("idle", {}), 4)
 	visible = artwork_ready
 	if artwork_ready:
+		set_cosmetic_dye(cosmetic_dye)
 		advance(facing, false, 0)
 	return artwork_ready
 func set_cosmetic_dye(id: String) -> void:
@@ -91,7 +104,16 @@ func set_cosmetic_dye(id: String) -> void:
 	if not catalog.ITEMS.has(id) or catalog.ITEMS[id].slot != "armor_dye":
 		id = "armor_original"
 	cosmetic_dye = id
-	if is_instance_valid(armor): armor.material = catalog.material(id)
+	if is_instance_valid(armor):
+		armor.material = catalog.material(id)
+		if armor.material == null:
+			var neutral := ShaderMaterial.new()
+			neutral.shader = preload("res://src/cosmetic_palette.gdshader")
+			neutral.set_shader_parameter("dye_strength", 0.0)
+			armor.material = neutral
+		armor.material.set_shader_parameter("dye_strength", 0.0 if id == "armor_original" else 1.0)
+		armor.material.set_shader_parameter("head_lift", head_lift)
+		armor.material.set_shader_parameter("sheet_frames", float(maxi(1,armor.hframes)))
 func _painted_manifest_path(base: String, selected_class: String) -> String:
 	var path := "res://assets/painted-walks/catalog.json"
 	if not FileAccess.file_exists(path): return ""
@@ -172,6 +194,17 @@ func advance(direction: int, moving: bool, delta: float) -> void:
 	else:
 		# Missing or malformed masks never trigger whole-body/armor tinting.
 		body.material = null
+	head_lift = 4.0
+	if animation != "idle":
+		head_lift += 0.8 * sin(elapsed * fps / float(frames) * TAU * 2.0)
+	if not palette_ready:
+		head_lift = 0.0 # Never separate paired layers when an appearance mask is unavailable.
+	if palette_ready:
+		palette_material.set_shader_parameter("head_lift", head_lift)
+		palette_material.set_shader_parameter("sheet_frames", float(frames))
+	if armor.material != null:
+		armor.material.set_shader_parameter("head_lift", head_lift)
+		armor.material.set_shader_parameter("sheet_frames", float(frames))
 	armor.texture = _texture(pair.armor)
 	for sprite in [body, armor, hair]:
 		sprite.hframes = frames
@@ -195,6 +228,8 @@ func advance(direction: int, moving: bool, delta: float) -> void:
 				sprite.position = _pilot_offset("hair_offsets")
 	else:
 		hair_renderer.advance(current_animation, body.hframes, body.frame)
+	for sprite in [hair_renderer.rear, hair_renderer.front]:
+		sprite.position += head_offset()
 	_update_weapon()
 
 func uses_painted_pilot() -> bool:
@@ -213,10 +248,18 @@ func set_equipped_weapon(item: String) -> void:
 	equipped_weapon = item if preload("res://src/inventory_catalog.gd").can_equip(item, character_class) else ""
 	_update_weapon()
 func _update_weapon() -> void:
+	if is_instance_valid(relic_sprite): relic_sprite.hide()
 	for sprite in [weapon_back, weapon_front]:
 		sprite.visible = false
 		sprite.position = Vector2.ZERO
 	if not preload("res://src/inventory_catalog.gd").can_equip(equipped_weapon, character_class) or not artwork_ready:
+		return
+	if equipped_weapon == "hidden_old_stick":
+		relic_sprite.visible = true
+		relic_sprite.z_index = -1 if facing == 3 else 1
+		var side := -1.0 if facing == 1 or facing == 3 else 1.0
+		relic_sprite.position = Vector2(36*side,-85) + (_pilot_offset("weapon_offsets") if uses_painted_pilot() else Vector2.ZERO)
+		relic_sprite.rotation = side * 0.12
 		return
 	var key := current_animation.replace("walk_", "walk-")
 	var entry: Dictionary = weapon_outfit.get("idle" if uses_painted_pilot() else key, {})

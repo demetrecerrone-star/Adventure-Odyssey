@@ -10,7 +10,7 @@ func _render() -> void:
  title_label.text = "Blacksmith upgrade"
  close_button.text = "Back"
  body_label.text = "Select your carried starter weapon, then confirm its free +1 lesson upgrade. The blacksmith supplies the materials."
- objective_label.text = "No gold is charged. Numeric combat benefits are not defined yet."
+ objective_label.text = "No gold is charged. The +1 upgrade adds 1 damage to your basic strike."
  notice_label.text = ""
  for child in choices.get_children():
   choices.remove_child(child); child.queue_free()
