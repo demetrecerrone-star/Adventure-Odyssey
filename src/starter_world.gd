@@ -216,7 +216,7 @@ func _opaque_over_player(sprite:Sprite2D) -> bool:
 		occlusion_masks[key] = mask
 	var mask:BitMap = occlusion_masks[key]
 	var bounds := Rect2i(Vector2i.ZERO,mask.get_size())
-	for source_point in [Vector2(128,64),Vector2(128,100),Vector2(110,120),Vector2(146,120),Vector2(128,160),Vector2(128,200)]:
+	for source_point in [Vector2(128,64),Vector2(128,100),Vector2(110,120),Vector2(146,120),Vector2(128,160),Vector2(128,200),Vector2(76,120),Vector2(180,120),Vector2(88,180),Vector2(168,180),Vector2(92,212),Vector2(164,212)]:
 		var world_point:Vector2 = player+(source_point-Vector2(128,232))*actor.scale
 		var pixel := Vector2i((world_point-sprite.position)/sprite.scale)
 		if bounds.has_point(pixel) and mask.get_bitv(pixel): return true

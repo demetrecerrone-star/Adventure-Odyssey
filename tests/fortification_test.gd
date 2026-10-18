@@ -40,6 +40,8 @@ func run()->void:
 		check(is_equal_approx(world.fortification_nodes[id].self_modulate.a,1.0),"Transparent source padding beside south gate does not fade " + id)
 	world.player = Vector2(2502.0,1519.8)
 	world._update_actor()
+	for id in ["south_west_04_02","south_west_03_00"]:
+		check(world.fortification_nodes[id].self_modulate.a < 0.5,"Outer arm and boot overlap also reveals player: " + id)
 	var visible_relief := 0
 	for node in world.fortification_nodes.values():
 		if node.self_modulate.a < 0.5:visible_relief += 1
