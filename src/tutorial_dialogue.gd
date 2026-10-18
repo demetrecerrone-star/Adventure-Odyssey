@@ -87,7 +87,7 @@ static func describe(id: String, value: Dictionary, _selected_class: String = ""
 					result.body = "The forest trail is open again. Travelers can use the western road safely, and your patrol reward is ready."
 					result.choices.append(_choice("guild_complete_forest_patrol", "Finish patrol • Collect 40 gold"))
 				"forest_patrol_complete":
-					result.body = "Both the meadow and the western forest route are clear. Your 40 gold patrol reward has been paid. Restock in town whenever you need supplies. Thank you for seeing the patrol through."
+					result.body = "Both the meadow and the western forest route are clear. Your 40 gold patrol reward has been paid. Your earned Sigils can buy dyes and blankets at home. Visit your bed to preview them; combat stats stay the same."
 		"blacksmith":
 			if stage == "visit_blacksmith":
 				result.body = "The guild sent you? Bring the class weapon from your starter chest. I'll supply what you need for its first +1 upgrade. Accept the lesson supplies, then open the upgrade service and perform the upgrade yourself."

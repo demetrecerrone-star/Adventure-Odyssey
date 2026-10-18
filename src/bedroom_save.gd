@@ -2,13 +2,15 @@ extends RefCounted
 # Permanent local guest slot. Counts are compatibility views of the v9 ledger.
 const Draft = preload("res://src/creator/character_draft.gd")
 const Progress = preload("res://src/tutorial_progress.gd")
+const Rewards = preload("res://src/monster_rewards.gd")
+const Cosmetics = preload("res://src/cosmetic_catalog.gd")
 const Resources = preload("res://src/combat_resources.gd")
 const Stats = preload("res://src/character_stats.gd")
 const APPEARANCE = ["hair", "hair_color", "eyes", "skin"]
 const Inventory = preload("res://src/inventory_catalog.gd")
 const ShopCatalog = preload("res://src/shop_catalog.gd")
 const ITEMS = Inventory.LABELS
-const VERSION := 10
+const VERSION := 11
 const MAX_COUNT := 999
 const ACTION_SCENES = {
 	"read_envelope":"starter_region", "guild_assign_blacksmith":"guild_interior",
@@ -36,6 +38,10 @@ var equipped_armor := ""
 var equipped_ring := ""
 var chest_gold := 0
 var wallet_gold := 0
+var wallet_sigils := 0
+var progression := Rewards.initial()
+var cosmetics := Cosmetics.initial()
+var cosmetic_receipts: Dictionary = {}
 var gold_seeded := false
 var item_ledger: Array = []
 var upgrade_entitlements: Dictionary = {}
@@ -76,6 +82,10 @@ func create(value: Dictionary) -> bool:
 	consumption_receipts = {}
 	chest_gold = 100
 	wallet_gold = 0
+	wallet_sigils = 0
+	progression = Rewards.initial()
+	cosmetics = Cosmetics.initial()
+	cosmetic_receipts = {}
 	gold_seeded = true
 	location = {"scene":"bedroom", "position":[535.0,670.0]}
 	awake = true
@@ -118,6 +128,7 @@ func advance_character_level(target_level, expected_revision) -> Dictionary:
 	if not plan.ok or plan.get("duplicate", false): return plan
 	var previous := snapshot()
 	stats = plan.next_state.duplicate(true)
+	progression.base_level = int(target_level)
 	if not _commit(previous): return _stat_failure("save_failed", error)
 	var result := Stats.summary(stats)
 	result.code = "level_recorded"
@@ -386,7 +397,7 @@ func can_transfer_instance(instance_id: String, recipient_character_id: String) 
 func snapshot() -> Dictionary:
 	return {"version":VERSION, "tutorial_chest_seeded":true, "character":character.duplicate(true), "character_id":character_id,
 		"bag":bag.duplicate(true), "chest":chest.duplicate(true), "equipped_weapon":equipped_weapon, "equipped_armor":equipped_armor, "equipped_ring":equipped_ring,
-		"chest_gold":chest_gold, "wallet_gold":wallet_gold, "gold_seeded":gold_seeded, "item_ledger":item_ledger.duplicate(true),
+		"chest_gold":chest_gold, "wallet_gold":wallet_gold, "wallet_sigils":wallet_sigils, "progression":progression.duplicate(true), "cosmetics":cosmetics.duplicate(true), "cosmetic_receipts":cosmetic_receipts.duplicate(true), "gold_seeded":gold_seeded, "item_ledger":item_ledger.duplicate(true),
 		"upgrade_entitlements":upgrade_entitlements.duplicate(true), "acquisition_receipts":acquisition_receipts.duplicate(true), "purchase_receipts":purchase_receipts.duplicate(true), "tutorial":tutorial.duplicate(true), "stats":stats.duplicate(true), "combat":combat.duplicate(true), "consumption_receipts":consumption_receipts.duplicate(true), "awake":awake, "location":location.duplicate(true)}
 
 func save() -> bool:
@@ -527,7 +538,7 @@ func _write_snapshot(data: Dictionary) -> bool:
 	return true
 
 func _restore(data: Dictionary) -> void:
-	for key in ["character", "character_id", "bag", "chest", "equipped_weapon", "equipped_armor", "equipped_ring", "chest_gold", "wallet_gold", "gold_seeded", "item_ledger", "upgrade_entitlements", "acquisition_receipts", "purchase_receipts", "tutorial", "stats", "combat", "consumption_receipts", "awake", "location"]:
+	for key in ["character", "character_id", "bag", "chest", "equipped_weapon", "equipped_armor", "equipped_ring", "chest_gold", "wallet_gold", "wallet_sigils", "progression", "cosmetics", "cosmetic_receipts", "gold_seeded", "item_ledger", "upgrade_entitlements", "acquisition_receipts", "purchase_receipts", "tutorial", "stats", "combat", "consumption_receipts", "awake", "location"]:
 		var value = data[key]
 		set(key, value.duplicate(true) if value is Dictionary or value is Array else value)
 
@@ -555,13 +566,15 @@ func _valid_snapshot(data: Dictionary) -> bool:
 	var hero = data.get("character")
 	if not hero is Dictionary or hero.get("base", "") not in ["male", "female"] or not draft_from(hero).validate().is_empty(): return false
 	if not _valid_id(data.get("character_id")) or not valid_location(data.get("location")) or data.get("awake") != true: return false
-	if not _whole(data.get("chest_gold"), 0, 100) or not _whole(data.get("wallet_gold"), 0, 165): return false
+	if not _whole(data.get("chest_gold"), 0, 100) or not _whole(data.get("wallet_gold"), 0, 190): return false
 	var gold_spent := _verified_purchase_total(data)
 	if not data.get("tutorial") is Dictionary or not Progress.validate_state(data.tutorial): return false
+	if not Rewards.valid(data.get("progression")) or not _valid_cosmetics(data): return false
 	var earned_gold := (25 if data.tutorial.reward_receipts.has(COMBAT_REWARD) else 0) + (40 if data.tutorial.reward_receipts.has(FOREST_REWARD) else 0)
-	if gold_spent < 0 or data.chest_gold + data.wallet_gold + gold_spent != 100 + earned_gold: return false
+	if gold_spent < 0 or data.chest_gold + data.wallet_gold + gold_spent != 100 + earned_gold + Rewards.totals(data.progression).gold: return false
 	if not Stats.validate_state(data.get("stats")) or not Resources.valid(data.get("combat"), data.stats): return false
 	if not data.get("consumption_receipts") is Dictionary: return false
+	if data.stats.level != Rewards.summary(data.progression).level: return false
 	for receipt_kind in ["action_receipts", "event_receipts"]:
 		for action in data.tutorial[receipt_kind]:
 			if data.tutorial[receipt_kind][action].id != "tutorial:" + data.character_id + ":" + action: return false
@@ -667,7 +680,7 @@ func _verified_purchase_total(data: Dictionary) -> int:
 		if not acquisition is Dictionary or not acquisition.get("source") is String or not acquisition.get("item_id") is String or not _whole(acquisition.get("quantity"), 1, MAX_COUNT): return -1
 		if acquisition.source != "npc_purchase" or acquisition.item_id != receipt.item_id or acquisition.quantity != receipt.quantity: return -1
 		spent += int(receipt.total_price_gold)
-		if spent > 165: return -1
+		if spent > 190: return -1
 	return spent
 
 func _valid_counts(value, required: Array, exact: bool) -> bool:
@@ -683,6 +696,12 @@ func _migrate(data: Dictionary) -> Dictionary:
 	# v8 already required stats. Missing metadata is corruption, not a fresh slot.
 	if int(data.version) >= 8 and not data.has("stats"): return {}
 	if int(data.version) >= 9 and not Stats.validate_state(data.stats): return {}
+	if int(data.version) >= 10 and (not data.has("combat") or not data.has("consumption_receipts")): return {}
+	if data.has("combat") != data.has("consumption_receipts"): return {}
+	var economy_fields := 0
+	for field in ["progression","wallet_sigils","cosmetics","cosmetic_receipts"]:
+		if data.has(field): economy_fields += 1
+	if economy_fields not in [0,4]: return {}
 	var migrated_stats := Stats.initial_state()
 	if data.has("stats"):
 		migrated_stats = Stats.migrate_legacy_state(data.stats)
@@ -700,6 +719,23 @@ func _migrate(data: Dictionary) -> Dictionary:
 		preserved.stats = migrated_stats.duplicate(true)
 		if not preserved.has("combat"): preserved.combat = Resources.initial_state(preserved.stats)
 		if not preserved.has("consumption_receipts"): preserved.consumption_receipts = {}
+		if not preserved.has("progression"):
+			preserved.progression = Rewards.initial(int(preserved.stats.level))
+			preserved.wallet_sigils = 0
+			preserved.cosmetics = Cosmetics.initial()
+			preserved.cosmetic_receipts = {}
+			if not Progress.validate_state(preserved.tutorial): return {}
+			for encounter_id in Rewards.ENCOUNTERS:
+				var event: String = Rewards.ENCOUNTERS[encounter_id].event
+				if preserved.tutorial.event_receipts.has(event):
+					for index in Rewards.ENCOUNTERS[encounter_id].count:
+						preserved.progression.kills[Rewards.key(encounter_id,index)] = Rewards.receipt(encounter_id,index)
+			var totals := Rewards.totals(preserved.progression)
+			preserved.wallet_gold += totals.gold
+			preserved.wallet_sigils = totals.sigils
+			var earned := Rewards.summary(preserved.progression)
+			if earned.level > preserved.stats.level:
+				preserved.stats = Stats.plan_level_advance(preserved.stats,earned.level,preserved.stats.revision).next_state
 		return preserved if _valid_snapshot(preserved) else {}
 	var hero = data.get("character")
 	if not hero is Dictionary or hero.get("base", "") not in ["male", "female"] or not draft_from(hero).validate().is_empty(): return {}
@@ -718,6 +754,7 @@ func _migrate(data: Dictionary) -> Dictionary:
 	var candidate = get_script().new()
 	candidate.character = hero.duplicate(true)
 	candidate.stats = migrated_stats.duplicate(true)
+	candidate.progression = Rewards.initial(int(candidate.stats.level))
 	candidate.combat = Resources.initial_state(candidate.stats)
 	candidate.character_id = _new_id()
 	candidate.location = point.duplicate(true)
@@ -771,3 +808,74 @@ func _near_interaction(scene: String) -> bool:
 			var anchor = npc.get("interaction_anchor")
 			return anchor is Array and anchor.size() == 2 and position.distance_to(Vector2(anchor[0], anchor[1])) <= 90.0
 	return false
+
+func get_progression_summary() -> Dictionary:
+	return Rewards.summary(progression)
+
+func enemy_is_defeated(encounter_id: String, index: int) -> bool:
+	return progression.kills.has(Rewards.key(encounter_id,index))
+
+# Called only by the encounter controller with its verified dead spawn indexes.
+# Unique quest incarnations make reward replay idempotent across retry/reload.
+func record_enemy_defeats(encounter_id: String, indexes: Array, resources: Dictionary) -> bool:
+	if not _valid_live_state() or not Rewards.ENCOUNTERS.has(encounter_id):
+		error = "Monster rewards are unavailable here."; return false
+	if not Resources.valid(resources,stats) or resources.revision != combat.revision: return false
+	var row: Dictionary = Rewards.ENCOUNTERS[encounter_id]
+	var pending: Array = []
+	for index in indexes:
+		if not Rewards.whole(index,0,int(row.count)-1): return false
+		if not enemy_is_defeated(encounter_id,int(index)) and not pending.has(int(index)): pending.append(int(index))
+	if pending.is_empty(): return true
+	if tutorial.stage != row.stage or location.scene != "starter_region": error = "Accept this guild assignment and return to the field first."; return false
+	var previous := snapshot()
+	for index in pending:
+		progression.kills[Rewards.key(encounter_id,index)] = Rewards.receipt(encounter_id,index)
+		wallet_gold += int(row.gold)
+		wallet_sigils += int(row.sigils)
+	var earned := Rewards.summary(progression)
+	if earned.level > stats.level:
+		var plan := Stats.plan_level_advance(stats,earned.level,stats.revision)
+		if not plan.ok: _restore(previous); return false
+		stats = plan.next_state.duplicate(true)
+	combat = resources.duplicate(true); combat.revision += 1
+	return _commit(previous)
+
+func _valid_cosmetics(data: Dictionary) -> bool:
+	if not Rewards.whole(data.get("wallet_sigils"),0,7) or not data.get("cosmetics") is Dictionary or not data.get("cosmetic_receipts") is Dictionary: return false
+	var value: Dictionary = data.cosmetics
+	if value.size() != 2 or not value.get("owned") is Array or not value.get("equipped") is Dictionary or value.equipped.size() != 2: return false
+	var expected: Array = Cosmetics.initial().owned
+	var spent := 0
+	for id in data.cosmetic_receipts:
+		var item := Cosmetics.item(id)
+		var receipt = data.cosmetic_receipts[id]
+		if item.is_empty() or item.price <= 0 or not receipt is Dictionary or receipt.size() != 2 or receipt.get("item_id") != id or receipt.get("price") != item.price or receipt.price is bool: return false
+		expected.append(id); spent += int(item.price)
+	if value.owned.size() != expected.size(): return false
+	for id in expected:
+		if value.owned.count(id) != 1: return false
+	for slot in Cosmetics.DEFAULTS:
+		var id = value.equipped.get(slot)
+		if not id is String or not value.owned.has(id) or Cosmetics.item(id).get("slot") != slot: return false
+	return data.wallet_sigils + spent == Rewards.totals(data.progression).sigils
+
+func purchase_cosmetic(id: String) -> bool:
+	if not _valid_live_state(): error = "Your save is not ready."; return false
+	var item := Cosmetics.item(id)
+	if item.is_empty(): error = "Unknown cosmetic."; return false
+	if cosmetics.owned.has(id): return true
+	if wallet_sigils < int(item.price): error = "You need %d Sigils." % item.price; return false
+	var previous := snapshot()
+	wallet_sigils -= int(item.price)
+	cosmetics.owned.append(id)
+	cosmetic_receipts[id] = {"item_id":id,"price":int(item.price)}
+	return _commit(previous)
+
+func equip_cosmetic(id: String) -> bool:
+	if not _valid_live_state() or not cosmetics.owned.has(id): error = "Own this cosmetic before equipping it."; return false
+	var item := Cosmetics.item(id)
+	if cosmetics.equipped[item.slot] == id: return true
+	var previous := snapshot()
+	cosmetics.equipped[item.slot] = id
+	return _commit(previous)

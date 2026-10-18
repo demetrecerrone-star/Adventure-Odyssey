@@ -42,8 +42,8 @@ const OBJECTIVES := {
 	"return_guild_first_combat":"The South Meadow is clear. Return to the guild receptionist for your reward.",
 	"tutorial_complete":"Training complete. Speak to the guild receptionist about the Western Forest patrol.",
 	"forest_patrol_active":"Clear two wolves from the Western Forest trail. Cross the west bridge, follow the northern branch, and search just east of the first wooded bend.",
-	"return_guild_forest":"The Western Forest trail is clear. Return to the guild receptionist for 40 gold.",
-	"forest_patrol_complete":"Western Forest patrol complete. Your 40 gold reward is paid. Visit the shops or explore the cleared paths."
+	"return_guild_forest":"Forest clear. Return to the guild for 40 gold.",
+	"forest_patrol_complete":"Patrol complete. Spend Sigils on home dyes and decor."
 }
 
 static func initial_state() -> Dictionary:

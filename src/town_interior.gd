@@ -32,7 +32,7 @@ func _ready() -> void:
   npc_nodes[item.id] = _layer(item,item.asset_file)
  _update_actor()
  message.text = "Explore the room. Speak to the attendant with [E], or return through the door."
- status.text = state.character.get("username","")+" • "+ROOMS[room_id].label
+ hud.set_wallets(state.wallet_gold,state.wallet_sigils)
 func _asset(file:String) -> String:
  if file.begins_with("res://assets/"): return file
  return "res://assets/town-interiors/"+room_id+"/"+file

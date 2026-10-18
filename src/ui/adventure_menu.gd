@@ -356,6 +356,8 @@ func _build_character() -> void:
 		var identity := _card(details, "IDENTITY", str(character.get("username", "Unavailable")))
 		_label("Class: " + str(character.get("class", "Unavailable")), identity, 14)
 		_label("Body: " + str(character.get("base", "Unavailable")).capitalize(), identity, 14)
+		var earned: Dictionary = state.get_progression_summary()
+		_label("Level %d · XP %d / %d" % [earned.level,earned.xp,earned.xp_required],identity,14)
 		_label("Name, class and body are fixed for this character.", identity, 13).modulate = MUTED
 		var stat_summary: Dictionary = state.get_stat_summary() if state != null and state.has_method("get_stat_summary") else {}
 		var current_stats: Array[String] = []
@@ -384,6 +386,7 @@ func _make_portrait(parent: Node) -> void:
 	portrait_stage.add_child(avatar)
 	avatar.configure(str(character.get("base", "")), str(character.get("class", "")), character)
 	avatar.set_equipped_weapon(str(state.equipped_weapon))
+	avatar.set_cosmetic_dye(str(state.cosmetics.equipped.armor_dye))
 	avatar.advance(0, false, 0)
 	portrait_stage.resized.connect(_place_avatar)
 	_place_avatar()
@@ -423,7 +426,7 @@ func _build_inventory() -> void:
 	if state == null:
 		_label("No local character is available.", inventory_content)
 		return
-	_label("Wallet: %d gold" % state.wallet_gold, inventory_content, 16, true)
+	_label("Wallet: %d gold · %d Sigils" % [state.wallet_gold,state.wallet_sigils], inventory_content, 16, true)
 	var owned: Array[String] = []
 	for id in Inventory.LABELS:
 		if int(state.bag.get(id, 0)) > 0: owned.append(id)
@@ -512,7 +515,7 @@ func _build_item_details() -> void:
 		equip.pressed.connect(func(): equip_requested.emit(selected_item))
 	_label("Character-bound" if item.get("binding", "") == "character" else "Binding: " + str(item.get("binding", "Unbound")), info, 14)
 	if int(item.get("upgrade_level", 0)) > 0:
-		_label("Upgrade: +%d · Combat benefit is not defined yet." % int(item.upgrade_level), info, 14)
+		_label("Upgrade: +%d · Each rank adds 1 basic strike damage." % int(item.upgrade_level), info, 14)
 	if selected_item == "keepsake_ring":
 		_label("A personal keepsake. Ring slot; no defined numeric bonus.", info, 14)
 		return
@@ -612,7 +615,7 @@ func _build_stat_grid() -> void:
 	var help := _label("Use + / − to plan your points. Only Confirm saves them.", body, 14)
 	help.name = "StatHelp"
 	help.modulate = MUTED
-	_label("Luck grows through XP. XP earning is not available yet.", body, 13).modulate = MUTED
+	_label("Luck grows through XP. XP earning is not available yet. Monster XP advances character level.", body, 13).modulate = MUTED
 
 func _build_luck_progress(row: HBoxContainer) -> void:
 	row.add_theme_constant_override("separation", 14)

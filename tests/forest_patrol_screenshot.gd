@@ -57,7 +57,7 @@ func run() -> void:
 	room.interact(); await process_frame
 	await capture("forest_patrol_actual_turnin.png")
 	room.overlay.action_requested.emit("guild_complete_forest_patrol"); await process_frame
-	assert(state.wallet_gold == 65 and state.tutorial.stage == "forest_patrol_complete")
+	assert(state.wallet_gold == 81 and state.tutorial.stage == "forest_patrol_complete")
 	await capture("forest_patrol_actual_complete.png")
 	room.cancel_overlay(); room.open_menu(); room.overlay.show_page("quest_log")
 	await capture("forest_patrol_completed_journal.png")

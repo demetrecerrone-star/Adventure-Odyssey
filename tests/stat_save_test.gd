@@ -60,7 +60,7 @@ func finish_errands(state) -> void:
 	check(state.receive_item("mana_potion", 2, "world_drop", "saved-stat-drop"), "Preserve independent acquisition")
 
 func run() -> void:
-	check(Save.VERSION == 10 and Save.new().path == "user://bedroom_guest_v1.json", "v9 stays in existing permanent slot")
+	check(Save.VERSION == 11 and Save.new().path == "user://bedroom_guest_v1.json", "v9 stays in existing permanent slot")
 	var empty = Save.new()
 	check(empty.get_stat_summary().code == "invalid_save" and empty.preview_stat_allocation({"STR":1}, 0).code == "invalid_save" and empty.allocate_stat_points({"STR":1}, 0).code == "invalid_save" and empty.advance_character_level(2, 0).code == "invalid_save", "No operations before character creation")
 	for selected_class in Catalog.CLASSES:
@@ -77,7 +77,7 @@ func run() -> void:
 	# Future progression hook is tested with explicit earned levels, never a UI control.
 	var advanced: Dictionary = state.advance_character_level(4, 0)
 	check(advanced.ok and advanced.points_awarded == 15 and advanced.unspent_points == 15 and advanced.revision == 1, "Skipping three earned levels gives exactly 15 points")
-	var unchanged := before.duplicate(true); unchanged.stats = snap(state).stats
+	var unchanged := before.duplicate(true); unchanged.stats = snap(state).stats; unchanged.progression = snap(state).progression
 	check(snap(state) == unchanged, "Level updates preserve every inventory, tutorial, class, location, gold and shop field")
 	before = snap(state); bytes = FileAccess.get_file_as_string(state.path)
 	advanced = state.advance_character_level(4, 1)
@@ -95,7 +95,7 @@ func run() -> void:
 	reject(state, {"STR":1}, 0, "stale_revision")
 	var allocated: Dictionary = state.allocate_stat_points({"STR":2, "VIT":4, "INT":3, "WIS":1}, 1)
 	check(allocated.ok and allocated.code == "allocated" and allocated.points_assigned == 10 and allocated.unspent_points == 5 and allocated.revision == 2, "Explicit atomic allocation succeeds")
-	unchanged = before.duplicate(true); unchanged.stats = snap(state).stats
+	unchanged = before.duplicate(true); unchanged.stats = snap(state).stats; unchanged.progression = snap(state).progression
 	check(snap(state) == unchanged, "Allocation changes only validated stats")
 	reject(state, {"STR":2, "VIT":4, "INT":3, "WIS":1}, 1, "stale_revision")
 	check(state.load_saved() and state.get_stat_summary().attributes.INT == 13 and state.get_stat_summary().unspent_points == 5, "All assigned and unspent values survive restart")
@@ -149,14 +149,14 @@ func run() -> void:
 	check(state.get_stat_summary().code == "invalid_save" and state.allocate_stat_points({"STR":1}, 6).code == "invalid_save" and not state.save(), "Invalid live stat state cannot authorize mutations or overwrite valid slot")
 	check(snap(state) == before and FileAccess.get_file_as_string(state.path) == bytes and state.load_saved() and snap(state) == good, "Rejected invalid live state stays unchanged and may reload good slot")
 	# v7 migration preserves the complete pre-stat save, including paid receipts.
-	var legacy := good.duplicate(true); legacy.version = 7; legacy.erase("stats")
+	var legacy := good.duplicate(true); legacy.version = 7; legacy.erase("stats"); legacy.erase("progression"); legacy.erase("wallet_sigils"); legacy.erase("cosmetics"); legacy.erase("cosmetic_receipts")
 	write_json(state.path, legacy); bytes = FileAccess.get_file_as_string(state.path); before = snap(state)
 	DirAccess.make_dir_absolute(state.path + ".tmp")
 	check(not state.load_saved() and snap(state) == before and FileAccess.get_file_as_string(state.path) == bytes, "v7 migration write failure preserves live session and original slot")
 	DirAccess.remove_absolute(state.path + ".tmp")
 	check(state.load_saved(), "v7 full-progress save migrates")
 	var migrated := snap(state)
-	var expected := legacy.duplicate(true); expected.version = Save.VERSION; expected.stats = normalized(Stats.initial_state())
+	var expected := legacy.duplicate(true); expected.version = Save.VERSION; expected.stats = normalized(Stats.initial_state()); expected.progression = Save.Rewards.initial(); expected.wallet_sigils = 0; expected.cosmetics = Save.Cosmetics.initial(); expected.cosmetic_receipts = {}
 	check(migrated == normalized(expected), "v7 migration only adds baseline stats and version")
 	check(state.tutorial.stage == "first_combat_pending" and state.weapon_upgrade_level() == 1 and state.equipped_ring == "keepsake_ring" and state.wallet_gold == 80, "Migration retains tutorial, upgrade, equipment and spent gold")
 	check(state.load_saved() and snap(state) == migrated, "Migration does not repeat or reset on next load")
@@ -211,7 +211,7 @@ func luck_save_cases() -> void:
 	DirAccess.remove_absolute(state.path + ".tmp")
 	event = state.record_luck_event("first", "future-chest-a", "first_discovery", "", 1)
 	check(event.ok and event.luck_xp_awarded == 25 and event.luck_total_xp == 25 and event.unspent_points == 15, "Future verified discovery saves independent Luck XP")
-	var unchanged := before.duplicate(true); unchanged.stats = snap(state).stats
+	var unchanged := before.duplicate(true); unchanged.stats = snap(state).stats; unchanged.progression = snap(state).progression
 	check(snap(state) == unchanged, "Luck receipt only changes stats, preserving every other save field")
 	check(state.load_saved() and state.get_stat_summary().luck_xp == 25, "Luck XP and receipt persist on reload")
 	before = snap(state); bytes = FileAccess.get_file_as_string(state.path)

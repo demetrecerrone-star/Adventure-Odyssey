@@ -416,3 +416,12 @@ func set_tutorial_objective(value: String) -> void:
 	if is_instance_valid(quest_label):
 		quest_label.text = value
 		quest_label.tooltip_text = value
+
+# Monster XP is separate from Luck discovery experience.
+func set_monster_progression(summary: Dictionary) -> void:
+	if _built:
+		progression_label.text = "Level %d · XP %d / %d" % [summary.level,summary.xp,summary.xp_required]
+
+func set_wallets(gold: int, sigils: int) -> void:
+	if _built:
+		status.text = "%d gold · %d Sigils" % [gold,sigils]

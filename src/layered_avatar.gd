@@ -21,6 +21,7 @@ var painted_pilot: Dictionary = {}
 var painted_directions: Dictionary = {}
 var palette_material: ShaderMaterial
 var palette_ready := false
+var cosmetic_dye := "armor_original"
 const Catalog = preload("res://src/creator/catalog.gd")
 const EYE_COLORS := {"Brown":"704127", "Hazel":"8b813e", "Green":"448653", "Blue":"3d83be", "Gray":"87939b", "Amber":"c78b2e", "Violet":"9564b9"}
 func _ready() -> void:
@@ -85,6 +86,12 @@ func configure(base: String, selected_class: String, selected_appearance: Dictio
 	if artwork_ready:
 		advance(facing, false, 0)
 	return artwork_ready
+func set_cosmetic_dye(id: String) -> void:
+	var catalog = preload("res://src/cosmetic_catalog.gd")
+	if not catalog.ITEMS.has(id) or catalog.ITEMS[id].slot != "armor_dye":
+		id = "armor_original"
+	cosmetic_dye = id
+	if is_instance_valid(armor): armor.material = catalog.material(id)
 func _painted_manifest_path(base: String, selected_class: String) -> String:
 	var path := "res://assets/painted-walks/catalog.json"
 	if not FileAccess.file_exists(path): return ""

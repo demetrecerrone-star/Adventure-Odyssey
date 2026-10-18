@@ -51,7 +51,7 @@ func run() -> void:
 		check(state.tutorial.stage == "first_combat_active" and world.message.text.contains("could not save"), "Failed save visibly retains victory retry")
 		DirAccess.remove_absolute(state.path + ".tmp")
 		world._process_encounter(2.1)
-		check(state.tutorial.stage == "return_guild_first_combat" and state.wallet_gold == 0, "Real encounter event advances quest without payment")
+		check(state.tutorial.stage == "return_guild_first_combat" and state.wallet_gold == 9, "Real encounter event advances quest without payment")
 		check(state.load_saved() and state.encounter_is_complete("south_meadow_slimes"), "Real victory persists")
 		world.queue_free()
 		await process_frame
@@ -72,7 +72,7 @@ func run() -> void:
 		check(is_instance_valid(room.overlay) and room.overlay._view.choices[0].id == "guild_complete_first_combat", "Guild offers earned turn-in")
 		room.overlay.action_requested.emit("guild_complete_first_combat")
 		await process_frame
-		check(state.wallet_gold == 25 and state.tutorial.stage == "tutorial_complete", "Scene turn-in pays once")
+		check(state.wallet_gold == 34 and state.tutorial.stage == "tutorial_complete", "Scene turn-in pays once")
 		check(room.overlay._view.choices.size() == 1 and room.overlay._view.choices[0].id == "guild_assign_forest_patrol", "Completed guild offers next assignment, never repeats reward")
 		if selected_class == "Warrior" and "--capture" in OS.get_cmdline_user_args():
 			for tick in 3: await process_frame
@@ -80,7 +80,7 @@ func run() -> void:
 			check(root.get_texture().get_image().save_png("res://screenshots/quest_completed_guild_scene_844.png") == OK, "Capture actual completed guild scene")
 		room._close_overlay(); room.open_menu(); room.overlay.show_page("quest_log")
 		await process_frame
-		check(state.load_saved() and state.wallet_gold == 25, "Completed scene state reloads")
+		check(state.load_saved() and state.wallet_gold == 34, "Completed scene state reloads")
 		if selected_class == "Warrior" and "--capture" in OS.get_cmdline_user_args():
 			for tick in 3: await process_frame
 			await RenderingServer.frame_post_draw

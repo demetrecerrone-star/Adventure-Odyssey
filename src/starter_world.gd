@@ -19,6 +19,9 @@ var chunk_loads := 0
 var chunk_evictions := 0
 var autosave_elapsed := 0.0
 var world_ready := false
+var last_level_up := 0
+var combat_stats_revision := -1
+var combat_weapon_upgrade := -1
 var scenery_nodes := {}
 var resident_ids := {}
 var building_nodes := {}
@@ -103,7 +106,7 @@ func _update_actor() -> void:
 	_update_wilderness_depth()
 	_layout()
 	if is_instance_valid(status) and not state.character.is_empty():
-		status.text = "Local save • Starter region"
+		hud.set_wallets(state.wallet_gold,state.wallet_sigils)
 func update_chunks() -> void:
 	var needed := Rect2(camera_position-size/camera_zoom/2,size/camera_zoom).grow(128)
 	for i in world_layout.chunks.size():
@@ -391,6 +394,7 @@ func _load_wilderness() -> void:
 		combat_data = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/forest_patrol.json"))
 	encounter.configure(combat_data,state.character["class"],state.get_stat_summary(),state.weapon_upgrade_level())
 	encounter.apply_resources(state.combat)
+	_restore_defeated_spawns()
 	for enemy in encounter.enemies:
 		var renderer = load(combat_data.get("renderer","res://src/wilderness_slime.gd"))
 		var node = renderer.new()
@@ -422,18 +426,45 @@ func _bind_combat_touch(control: Button, action: Callable) -> void:
 			control.accept_event()
 	)
 
+func _restore_defeated_spawns() -> void:
+	for index in encounter.enemies.size():
+		if state.enemy_is_defeated(encounter.encounter_id,index):
+			encounter.enemies[index].hp = 0
+			encounter.enemies[index].mode = "dead"
+	encounter.victory = encounter.living_count() == 0
+
+func _save_monster_rewards() -> bool:
+	var dead: Array = []
+	for index in encounter.enemies.size():
+		if encounter.enemies[index].hp <= 0 and not state.enemy_is_defeated(encounter.encounter_id,index): dead.append(index)
+	if dead.is_empty(): return true
+	var old_level: int = state.stats.level
+	if not state.record_enemy_defeats(encounter.encounter_id,dead,encounter.resource_state(int(state.combat.revision))):
+		message.text = "Rewards could not save. Combat paused; keep this area open to retry. " + state.error
+		return false
+	var reward: Dictionary = state.Rewards.ENCOUNTERS[encounter.encounter_id]
+	message.text = "+%d gold · +%d XP · +%d Sigils" % [dead.size()*reward.gold,dead.size()*reward.xp,dead.size()*reward.sigils]
+	if state.stats.level > old_level:
+		last_level_up = int(state.stats.level)
+		message.text += " · Level %d! 5 stat points ready." % state.stats.level
+	_refresh_hud()
+	return true
+
 func _combat_active() -> bool:
 	return state.tutorial.get("stage","") in ["first_combat_active","forest_patrol_active"] and not encounter_saved
 
 func attack_nearby() -> void:
+	if _combat_active() and not _save_monster_rewards(): return
 	if not _combat_active() or is_instance_valid(overlay) or encounter.defeated or state.equipped_weapon.is_empty() or not pending_combat.is_empty(): return
 	if encounter.attack(player,can_stand):
 		message.text = "Keep moving. Amber ring means an enemy is about to strike."
 	elif encounter.attack_cooldown <= 0:
 		message.text = "Move closer to an enemy to attack. [F] or Attack."
+	if not _save_monster_rewards(): return
 	_sync_encounter_visuals()
 
 func _checkpoint_combat() -> bool:
+	if _combat_active() and not _save_monster_rewards(): return false
 	if not pending_combat.is_empty(): return false
 	var current := encounter.resource_state(int(state.combat.revision))
 	if current.hp == state.combat.hp and current.mana == state.combat.mana and current.skills == state.combat.skills and current.potion == state.combat.potion: return true
@@ -444,6 +475,7 @@ func _checkpoint_combat() -> bool:
 	return false
 
 func use_class_skill(slot: int) -> void:
+	if _combat_active() and not _save_monster_rewards(): return
 	if not _combat_active() or is_instance_valid(overlay) or encounter.defeated or not pending_combat.is_empty(): return
 	var before: Dictionary = encounter.capture()
 	var result: Dictionary = encounter.use_skill(slot,player,can_stand)
@@ -458,6 +490,7 @@ func use_class_skill(slot: int) -> void:
 	_process_encounter(0)
 
 func open_field_supplies() -> void:
+	if _combat_active() and not _save_monster_rewards(): return
 	if is_instance_valid(overlay) or encounter.defeated or not pending_combat.is_empty(): return
 	var panel = SupplyPanel.new()
 	panel.z_index = 2100
@@ -486,7 +519,7 @@ func _uses_touch_hints() -> bool:
 func _update_combat_hud() -> void:
 	var active := _combat_active()
 	var paused := is_instance_valid(overlay) or sleeping or not pending_combat.is_empty()
-	interact_button.visible = not active or not nearest_prop().is_empty()
+	interact_button.visible = not nearest_prop().is_empty()
 	hud.attack_button.disabled = not active or paused or encounter.defeated or state.equipped_weapon.is_empty() or encounter.attack_cooldown > 0
 	hud.combat_status.text = "Tap skills • Bag: potions" if _uses_touch_hints() else "Skills [1–3] • Supplies [P]"
 	hud.attack_button.tooltip_text = "Basic strike [F]. Equip your weapon." if active else "Accept a field assignment at the guild."
@@ -507,7 +540,13 @@ func _update_combat_hud() -> void:
 		hud.set_tutorial_objective("%s: %d remaining." % [label_text,encounter.living_count()] if player.distance_to(encounter.retry_point) < 700 else ("West bridge, then north trail to the forest." if encounter.encounter_id != Encounter.ID else "West bridge, then south path to the meadow."))
 
 func _process_encounter(delta: float) -> void:
-	encounter.refresh_stats(state.get_stat_summary(),state.weapon_upgrade_level())
+	# Stat allocation and weapon upgrades are infrequent; avoid validating the
+	# complete save ledger on every rendered frame. Transactions still validate.
+	var upgrade: int = state.weapon_upgrade_level()
+	if combat_stats_revision != int(state.stats.revision) or combat_weapon_upgrade != upgrade:
+		encounter.refresh_stats(state.get_stat_summary(),upgrade)
+		combat_stats_revision = int(state.stats.revision)
+		combat_weapon_upgrade = upgrade
 	if not pending_combat.is_empty():
 		pending_combat_retry -= delta
 		if pending_combat_retry <= 0:
@@ -522,6 +561,9 @@ func _process_encounter(delta: float) -> void:
 		return
 	var active := _combat_active()
 	var paused := is_instance_valid(overlay) or sleeping
+	if active and not _save_monster_rewards():
+		for control in combat_touch_buttons: control.disabled = true
+		return
 	if not paused:
 		var before: Dictionary = encounter.capture()
 		if active:
@@ -541,6 +583,7 @@ func _process_encounter(delta: float) -> void:
 				message.text = "Combat paused until progress can save. " + state.error
 				_update_combat_hud()
 				return
+		if active and not _save_monster_rewards(): return
 		if active and encounter.defeated: _show_encounter_defeat()
 		elif active and encounter.victory:
 			encounter_save_retry -= delta
@@ -549,7 +592,7 @@ func _process_encounter(delta: float) -> void:
 				if state.record_encounter_victory(encounter.encounter_id):
 					encounter_saved = true
 					_refresh_hud()
-					message.text = "Area cleared! Return to the guild for your reward."
+					message.text = "Level %d! +5 stat points. Area cleared; return to the guild." % last_level_up if last_level_up > 0 else "Area cleared! Return to the guild for your reward."
 				else: message.text = "Area cleared; progress could not save. Keep this area open to retry. " + state.error
 	_update_combat_hud()
 	_sync_encounter_visuals()
@@ -595,7 +638,7 @@ func _show_encounter_defeat() -> void:
 	content.add_theme_constant_override("separation",14)
 	margin.add_child(content)
 	label("You were overwhelmed",content)
-	label("No extra items or gold were lost. Used potions stay consumed.\nRetry restores HP, mana and all enemies.",content)
+	label("No extra items or gold were lost. Used potions stay consumed.\nRetry restores HP and mana. Defeated monsters stay cleared.",content)
 	var retry := button("Retry from the safe path",content)
 	for appearance in ["normal","hover","pressed","focus","disabled"]:
 		retry.add_theme_stylebox_override(appearance,preload("res://src/ui/ornate_panel.gd").make_button_style(appearance in ["hover","pressed"]))
@@ -607,6 +650,7 @@ func _retry_encounter() -> void:
 	if not encounter.defeated: return
 	var before: Dictionary = encounter.capture()
 	encounter.reset()
+	_restore_defeated_spawns()
 	if not _checkpoint_combat():
 		encounter.restore(before)
 		return

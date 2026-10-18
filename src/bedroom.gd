@@ -141,16 +141,32 @@ func _layout() -> void:
 	stage.position = (size - ROOM_SIZE * factor) * 0.5
 	if is_instance_valid(overlay):
 		overlay.size = size
+func _apply_cosmetics() -> void:
+	if state.get("cosmetics") == null: return
+	if is_instance_valid(hud): hud.set_wallets(state.wallet_gold, state.wallet_sigils)
+	actor.set_cosmetic_dye(str(state.cosmetics.equipped.get("armor_dye", "armor_original")))
+	if prop_nodes.has("bed"):
+		prop_nodes.bed.material = preload("res://src/cosmetic_catalog.gd").material(str(state.cosmetics.equipped.get("bed", "bed_oak_green")))
+func open_cosmetics() -> void:
+	_close_overlay()
+	var panel = preload("res://src/ui/home_cosmetics.gd").new()
+	panel.state = state
+	panel.closed.connect(_close_overlay)
+	panel.changed.connect(_apply_cosmetics)
+	overlay = panel
+	add_child(panel)
+	_sync_modal_input()
 func _start_character() -> void:
 	actor.configure(state.character.base, state.character["class"], state.character)
 	actor.set_equipped_weapon(state.equipped_weapon)
+	_apply_cosmetics()
 	_refresh_hud()
 	movement_speed = actor.suggested_speed * PLAYER_SPEED_MULTIPLIER
 	sleeping = false
 	player = wake_spawn
 	actor.visible = actor.artwork_ready
-	message.text = "Move with the joystick or WASD / arrows. Your chest holds supplies."
-	status.text = "Local save • " + state.character.username
+	message.text = "Chest: supplies • Bed: dyes & decor."
+	hud.set_wallets(state.wallet_gold, state.wallet_sigils)
 	_update_actor()
 func can_stand(point: Vector2) -> bool:
 	if not Geometry2D.is_point_in_polygon(point, PackedVector2Array([Vector2(235, 385), Vector2(1305, 385), Vector2(1455, 925), Vector2(80, 925)])):
@@ -207,7 +223,7 @@ func _process(delta: float) -> void:
 	var distance_moved := player.distance_to(previous_position)
 	actor.advance(facing, distance_moved > 0, distance_moved / actor.cadence_speed(facing))
 	var id := nearest_prop()
-	interact_button.text = (id.capitalize() + " [E]") if not id.is_empty() else "Walk closer"
+	interact_button.text = (id.capitalize() + ("" if size.x < 1000 or DisplayServer.is_touchscreen_available() else " [E]")) if not id.is_empty() else "Walk closer"
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed and not is_instance_valid(overlay) and not sleeping:
 		target = stage.to_local(event.position)
@@ -227,7 +243,7 @@ func interact() -> void:
 	match nearest_prop():
 		"mirror": open_creator(true)
 		"chest": open_chest()
-		"bed": message.text = "Your own bed. You are rested and ready for the day."
+		"bed": open_cosmetics()
 		"door":
 			_reset_movement()
 			if state.set_location("starter_region", Vector2(1644,1333)):
@@ -255,6 +271,7 @@ func open_creator(mirror: bool) -> void:
 		if mirror:
 			actor.configure(state.character.base, state.character["class"], state.character)
 			actor.set_equipped_weapon(state.equipped_weapon)
+			_apply_cosmetics()
 			_refresh_hud()
 			message.text = "Appearance saved locally. Your base, class and username are unchanged."
 		else:
@@ -302,6 +319,8 @@ func open_chest(show_storage: bool = true) -> void:
 	scroll.add_child(box)
 	label(("STORAGE CHEST" if show_storage else "BAG") + " • Saved on this device", box)
 	label("Personal wallet: %d gold" % state.wallet_gold, box)
+	if show_storage:
+		button("Dyes & decor • Adventure Odyssey Sigils", box).pressed.connect(open_cosmetics)
 	if show_storage and state.chest_gold > 0:
 		var gold_button := button("Take %d gold" % state.chest_gold, box)
 		gold_button.name = "TakeChestGold"
@@ -388,6 +407,9 @@ func _refresh_hud() -> void:
 	if is_instance_valid(hud):
 		hud.set_character(state.character)
 		hud.set_progression(state.get_stat_summary())
+		if hud.has_method("set_monster_progression") and state.has_method("get_progression_summary"):
+			hud.set_monster_progression(state.get_progression_summary())
+			hud.set_wallets(state.wallet_gold, state.wallet_sigils)
 		if not state.combat.is_empty():
 			var limits: Dictionary = state.Resources.limits(state.stats)
 			hud.hp_label.text = "HP %d / %d" % [state.combat.hp,limits.hp]

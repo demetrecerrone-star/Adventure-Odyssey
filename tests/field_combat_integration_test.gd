@@ -1,6 +1,7 @@
 extends "res://tests/tutorial_save_test.gd"
 
 func run() -> void:
+	if "--capture" in OS.get_cmdline_user_args(): DirAccess.make_dir_recursive_absolute("res://screenshots")
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	root.size = Vector2i(844,390)
 	var capture := "--capture" in OS.get_cmdline_user_args()
