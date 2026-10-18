@@ -218,7 +218,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          LIBGL_ALWAYS_SOFTWARE=1 timeout 240 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --script res://tests/avatar_turn_screenshot.gd 2>&1 | tee /tmp/ao_avatar_turn.log
+          LIBGL_ALWAYS_SOFTWARE=1 timeout 240 xvfb-run -a -s '-screen 0 1280x900x24' godot --path . --script res://tests/avatar_turn_screenshot.gd 2>&1 | tee /tmp/ao_avatar_turn.log
           ! grep -Eq 'SCRIPT ERROR|TEST FAILED|Failed to load script|Parse Error' /tmp/ao_avatar_turn.log
           test -s screenshots/avatar_turn_review_143.png
           ffmpeg -y -loglevel error -framerate 36 -i screenshots/avatar_turn_motion_%03d.png -c:v libx264 -pix_fmt yuv420p -movflags +faststart screenshots/avatar_turn_comparison.mp4

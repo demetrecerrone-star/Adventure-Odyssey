@@ -4,6 +4,8 @@ extends SceneTree
 const Avatar = preload("res://src/layered_avatar.gd")
 var subjects: Array = []
 var phase_label: Label
+var opaque_bounds: Dictionary = {}
+var bounds_checks := 0
 func _initialize() -> void: call_deferred("run")
 func label_at(parent: Node, text: String, at: Vector2, font_size := 16) -> Label:
 	var label := Label.new()
@@ -17,14 +19,31 @@ func capture(path: String) -> void:
 	for unused in range(2): await process_frame
 	await RenderingServer.frame_post_draw
 	assert(root.get_texture().get_image().save_png(path) == OK)
+func check_actor_bounds(avatar: Node2D, row: int, column: int) -> void:
+	for sprite in avatar.find_children("*", "Sprite2D", true, false):
+		if not sprite.is_visible_in_tree() or sprite.texture == null: continue
+		var key := "%s:%d:%d" % [sprite.texture.resource_path, sprite.hframes, sprite.frame]
+		if not opaque_bounds.has(key):
+			var size: Vector2i = sprite.texture.get_size() / Vector2(sprite.hframes, sprite.vframes)
+			var cell := Rect2i(Vector2i(sprite.frame_coords) * size, size)
+			opaque_bounds[key] = sprite.texture.get_image().get_region(cell).get_used_rect()
+		var used: Rect2i = opaque_bounds[key]
+		if not used.has_area(): continue
+		var local_start: Vector2 = sprite.get_rect().position + Vector2(used.position)
+		var first: Vector2 = sprite.to_global(local_start)
+		var last: Vector2 = sprite.to_global(local_start + Vector2(used.size))
+		assert(first.y >= 84 + row * 200, "Actor overlaps row label")
+		assert(last.y <= 252 + row * 200, "Actor overlaps next row")
+		assert(first.x >= column * 213 + 4 and last.x <= column * 213 + 209, "Actor leaves column")
+		bounds_checks += 1
 func run() -> void:
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
-	root.size = Vector2i(1280, 720)
+	root.size = Vector2i(1280, 900)
 	DirAccess.make_dir_recursive_absolute("res://screenshots")
 	var canvas := Control.new()
 	root.add_child(canvas)
 	var bg := ColorRect.new()
-	bg.size = Vector2(1280, 720)
+	bg.size = Vector2(1280, 900)
 	bg.color = Color("eee5d2")
 	canvas.add_child(bg)
 	label_at(canvas, "Same approved art, 6 drawings, 9 fps, 155 px/s | Turning stride continuity", Vector2(16, 6), 20)
@@ -41,11 +60,11 @@ func run() -> void:
 			assert(avatar.configure(base, cls, appearance))
 			avatar.set_equipped_weapon(cls.to_lower() + "_01_weapon")
 			avatar.scale = Vector2.ONE * (96.0 / 190.0)
-			var origin := Vector2(105 + column * 213, 156 + row * 155)
+			var origin := Vector2(105 + column * 213, 208 + row * 200)
 			avatar.position = origin
 			avatar.advance(0, false, 0)
-			label_at(canvas, ("Before " if legacy else "After ") + base + " " + cls, Vector2(8 + column * 213, 60 + row * 155), 14)
-			subjects.append({"actor":avatar, "legacy":legacy, "origin":origin})
+			label_at(canvas, ("Before " if legacy else "After ") + base + " " + cls, Vector2(8 + column * 213, 60 + row * 200), 14)
+			subjects.append({"actor":avatar, "legacy":legacy, "origin":origin, "row":row, "column":column})
 	for tick in range(144):
 		var direction: int = [0, 1, 3, 2][(tick / 9) % 4]
 		var strength := 1.0 if tick < 72 else 0.5
@@ -59,9 +78,12 @@ func run() -> void:
 			avatar.advance(direction, moving, strength / 36.0 if moving else 0.0)
 			if moving:
 				avatar.position += [Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT, Vector2.UP][direction] * (155.0 * strength / 36.0)
+			check_actor_bounds(avatar, subject.row, subject.column)
+		if "--bounds-only" in OS.get_cmdline_user_args(): continue
 		await capture("res://screenshots/avatar_turn_motion_%03d.png" % tick)
 		if tick in [8, 9, 17, 18, 35, 80, 107, 119, 120, 143]:
 			assert(root.get_texture().get_image().save_png("res://screenshots/avatar_turn_review_%03d.png" % tick) == OK)
+	print("Avatar capture bounds: %d visible layer checks" % bounds_checks)
 	canvas.queue_free()
 	await process_frame
 	quit()
