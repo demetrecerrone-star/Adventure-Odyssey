@@ -90,7 +90,7 @@ func run()->void:
 						room.joystick.reset()
 
 					check((room.joystick.position.x > room.size.x/2) == left,context+" thumb side matches handedness")
-					for key in ["identity_panel","map_panel","quest_panel","vitals_panel","action_cluster","message"]:
+					for key in ["identity_panel","map_panel","quest_panel","vitals_panel","action_cluster","interaction_panel","message"]:
 						check(viewport_contains(room.hud.get(key)),context+" HUD panel within viewport "+key)
 					for control in controls(room.hud):
 						if control is BaseButton and control.is_visible_in_tree():
@@ -160,7 +160,7 @@ func run()->void:
 			inset_room._apply_control_layout(); await settle()
 			var safe:Rect2 = inset_room._control_safe_rect()
 			check(safe.encloses(inset_room.joystick.get_global_rect()),"Inset safe rectangle contains thumb zone "+mode+str(left))
-			for key in ["identity_panel","map_panel","quest_panel","vitals_panel","action_cluster","message"]:
+			for key in ["identity_panel","map_panel","quest_panel","vitals_panel","action_cluster","interaction_panel","message"]:
 				check(safe.encloses(inset_room.hud.get(key).get_global_rect()),"Inset safe rectangle contains HUD "+key)
 			for control in controls(inset_room.hud):
 				if control is BaseButton and control.is_visible_in_tree():

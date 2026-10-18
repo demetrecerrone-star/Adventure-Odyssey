@@ -79,6 +79,10 @@ func run() -> void:
 				check(button.size.x >= 44 and button.size.y >= 44, "%s %s: 44px touch target %s" % [dimensions, page, button.name])
 			for button in menu.page_buttons.values():
 				check(menu.sidebar.get_global_rect().encloses(button.get_global_rect()), "%s: sidebar button accessible" % dimensions)
+			if page == "stats":
+				for attribute in Menu.CORE_ATTRIBUTES:
+					var row = menu.body.find_child("Stat_" + attribute[0], true, false)
+					check(row != null and menu.body_scroll.get_global_rect().grow(1).encloses(row.get_global_rect()), "%s: core stat visible without scrolling %s" % [dimensions, attribute[0]])
 			var close_before: Rect2 = menu.close_button.get_global_rect()
 			var side_before: Rect2 = menu.sidebar.get_global_rect()
 			menu.body_scroll.scroll_vertical = 10000
@@ -91,7 +95,7 @@ func run() -> void:
 	menu.selected_item = "warrior_01_weapon"
 	menu.show_page("inventory")
 	await settle()
-	check(labels(menu.body).contains("Attack power and luck comparisons are unavailable"), "No invented item comparison values")
+	check(labels(menu.body).contains("Equipment comparisons are not yet configured"), "No invented item comparison values")
 	var equip: Button = menu.find_child("Equip_warrior_01_weapon", true, false)
 	var wrong_class: Button = menu.find_child("Equip_mage_01_weapon", true, false)
 	check(not equip.disabled and wrong_class.disabled, "Equip keeps actual catalog class restrictions")
@@ -120,13 +124,14 @@ func run() -> void:
 	await settle()
 	var detail_text := labels(menu.body)
 	check(detail_text.contains("MenuTester") and detail_text.contains("Class: Warrior") and detail_text.contains("Body: Female"), "Details show actual immutable identity")
-	check(detail_text.contains("Attack power: Unavailable") and detail_text.contains("Luck: Unavailable"), "Character details never invent combat values")
+	check(detail_text.contains("Attack power: Not yet configured") and detail_text.contains("Wisdom · Luck"), "Character details never invent combat values")
 	menu.show_page("stats")
 	await settle()
 	var stats_text := labels(menu.body)
-	for key in ["STR", "AGI", "VIT", "INT", "WIS"]:
+	for key in ["STR", "AGI", "VIT", "INT", "WIS", "LUK"]:
 		check(stats_text.contains(key), "Planned attribute exists: " + key)
-	check(stats_text.count("Unavailable · Planned") == 5, "All five attributes are explicitly unavailable")
+	check(stats_text.count("Not yet configured") == 7, "Six core attributes and derived attack power remain explicitly unconfigured")
+	check(stats_text.find("Luck") < stats_text.find("DERIVED COMBAT VALUES"), "Luck belongs to core attributes, before derived combat")
 	menu.show_page("quest_log")
 	check(labels(menu.body).contains("Read the envelope") and labels(menu.body).contains("Combat remains unavailable"), "Quest log shows actual tutorial and honest combat boundary")
 	menu.show_page("settings")

@@ -22,6 +22,34 @@ func all_buttons(hud) -> Array[Button]:
 	var result: Array[Button] = [hud.menu_button, hud.interact_button, hud.attack_button, hud.potion_button]
 	result.append_array(hud.skill_buttons)
 	return result
+func thumb_zone(safe: Rect2, left: bool, mode: String) -> Rect2:
+	var extent := Vector2(244, clampf(safe.size.y - 190, 176, 200)) if mode == "floating" else Vector2(164, 164)
+	var x := safe.end.x - extent.x - 18 if left else safe.position.x + 18
+	return Rect2(Vector2(x, maxf(safe.position.y + 100, safe.end.y - extent.y - 16)), extent)
+func check_layout(hud, safe: Rect2, left: bool, mode: String, context: String) -> void:
+	var thumb := thumb_zone(safe, left, mode)
+	for panel in [hud.identity_panel, hud.map_panel, hud.quest_panel, hud.vitals_panel, hud.action_cluster, hud.interaction_panel, hud.message]:
+		check(contains(safe, panel), context + " panel fits safe area " + panel.name)
+	for button in all_buttons(hud):
+		check(button.mouse_filter == Control.MOUSE_FILTER_STOP, context + " button stops pointer " + button.name)
+		check(button.size.x >= 44 and button.size.y >= 44, context + " minimum touch target " + button.name)
+		check(contains(safe, button), context + " button fits safe area " + button.name)
+		check(not button.get_global_rect().intersects(thumb), context + " button clears thumb zone " + button.name)
+		for header in [hud.identity_panel, hud.map_panel, hud.quest_panel]:
+			check(not button.get_global_rect().intersects(header.get_global_rect()), context + " button clears header " + button.name + "/" + header.name)
+	for first in all_buttons(hud):
+		for second in all_buttons(hud):
+			if first.get_instance_id() < second.get_instance_id():
+				check(not first.get_global_rect().intersects(second.get_global_rect()), context + " distinct buttons do not overlap " + first.name + "/" + second.name)
+	check(hud.attack_button.size == Vector2(96, 96), context + " attack target is enlarged from 76 to 96 px")
+	for skill in hud.skill_buttons:
+		check(skill.size == Vector2(64, 64), context + " skill target is enlarged from 46 to 64 px " + skill.name)
+	check(not hud.message.get_global_rect().intersects(thumb), context + " message clears thumb zone")
+	for center_control in [hud.message, hud.vitals_panel, hud.interaction_panel]:
+		check(not center_control.get_global_rect().intersects(hud.action_cluster.get_global_rect()), context + " center control clears combat cluster " + center_control.name)
+	check(not hud.interaction_panel.get_global_rect().intersects(hud.vitals_panel.get_global_rect()), context + " interaction clears vitals")
+	check(not hud.interaction_panel.get_global_rect().intersects(hud.message.get_global_rect()), context + " interaction clears message")
+	check(hud.interaction_panel.get_global_rect().end.y + 8 <= hud.vitals_panel.get_global_rect().position.y, context + " interaction has a separate lane above vitals")
 func secondary_touch(hud, button: Button, down: bool, point: Vector2, canceled: bool = false) -> void:
 	var event := InputEventScreenTouch.new()
 	event.index = 3
@@ -53,6 +81,8 @@ func run() -> void:
 	await settle()
 	check(hud.mouse_filter == Control.MOUSE_FILTER_IGNORE, "full-screen root does not block world input")
 	check(hud.action_cluster.mouse_filter == Control.MOUSE_FILTER_IGNORE, "empty areas between action buttons pass world input")
+	check(hud.interaction_panel.mouse_filter == Control.MOUSE_FILTER_IGNORE, "interaction wrapper passes through empty space")
+	check(hud.interact_button.get_parent() == hud.interaction_panel and not hud.action_cluster.is_ancestor_of(hud.interact_button), "contextual interaction is separate from the combat cluster")
 	check(hud.portrait.clip_contents, "actual portrait clips to its small head frame")
 	check(hud.portrait_avatar.get_script().resource_path == "res://src/layered_avatar.gd", "portrait uses original layered game character")
 	check(hud.portrait_avatar.artwork_ready and hud.portrait_avatar.visible, "saved Ranger portrait artwork is available")
@@ -79,32 +109,28 @@ func run() -> void:
 		var original_identity: Rect2 = hud.identity_panel.get_rect()
 		var original_map: Rect2 = hud.map_panel.get_rect()
 		var original_message: Rect2 = hud.message.get_rect()
+		var original_interaction: Rect2 = hud.interaction_panel.get_rect()
 		for left in [false, true]:
 			hud.set_left_handed(left)
 			await settle()
 			var context := "%s left=%s" % [resolution, left]
 			check(hud.identity_panel.get_rect() == original_identity and hud.map_panel.get_rect() == original_map and hud.message.get_rect() == original_message, context + " handedness changes actions only")
-			var pad_x := float(resolution.x - 18 - 176) if left else 18.0
-			var thumb := Rect2(pad_x, resolution.y - 16 - 176, 176, 176)
-			for panel in [hud.identity_panel, hud.map_panel, hud.quest_panel, hud.vitals_panel, hud.action_cluster, hud.message]:
-				check(contains(viewport_rect, panel), context + " panel fits screen " + panel.name)
-			for button in all_buttons(hud):
-				check(button.mouse_filter == Control.MOUSE_FILTER_STOP, context + " button stops pointer " + button.name)
-				check(button.size.x >= 44 and button.size.y >= 44, context + " minimum touch target " + button.name)
-				check(contains(viewport_rect, button), context + " button fits screen " + button.name)
-				check(not button.get_global_rect().intersects(thumb), context + " button clears thumb zone " + button.name)
-			for first in all_buttons(hud):
-				for second in all_buttons(hud):
-					if first.get_instance_id() < second.get_instance_id():
-						check(not first.get_global_rect().intersects(second.get_global_rect()), context + " distinct buttons do not overlap " + first.name + "/" + second.name)
-			check(not hud.message.get_global_rect().intersects(thumb), context + " message clears thumb zone")
-			check(not hud.message.get_global_rect().intersects(hud.action_cluster.get_global_rect()), context + " message clears action cluster")
-			check(not hud.vitals_panel.get_global_rect().intersects(hud.action_cluster.get_global_rect()), context + " vitals clear action cluster")
+			check(hud.interaction_panel.get_rect() == original_interaction, context + " contextual interaction stays centered when combat swaps sides")
+			for mode in ["fixed", "floating"]:
+				check_layout(hud, viewport_rect, left, mode, context + " " + mode)
 	var safe := Rect2(32, 10, 780, 366)
 	hud.set_safe_rect(safe)
 	await settle()
-	for panel in [hud.identity_panel, hud.map_panel, hud.quest_panel, hud.vitals_panel, hud.action_cluster, hud.message]:
-		check(contains(safe, panel), "safe area contains " + panel.name)
+	for left in [false, true]:
+		hud.set_left_handed(left)
+		await settle()
+		for mode in ["fixed", "floating"]:
+			check_layout(hud, safe, left, mode, "inset safe area left=%s %s" % [left, mode])
+	var interaction_rect: Rect2 = hud.interact_button.get_global_rect()
+	hud.interact_button.text = "Enter the Adventurer Guild [E]"
+	await settle()
+	check(hud.interact_button.get_global_rect() == interaction_rect, "long contextual caption does not enlarge the target into other controls")
+	hud.interact_button.text = "Use [E]"
 	hud.set_safe_rect(Rect2())
 	hud.interact_button.disabled = false
 	secondary_touch(hud, hud.menu_button, true, Vector2(20, 20))

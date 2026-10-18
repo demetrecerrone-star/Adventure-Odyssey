@@ -21,6 +21,7 @@ var quest_label: Label
 var _quest_objective := "Read the envelope at your doorstep."
 var vitals_panel: Control
 var action_cluster: Control
+var interaction_panel: Control
 var username_label: Label
 var class_label: Label
 var progression_label: Label
@@ -215,10 +216,17 @@ func _build() -> void:
 	action_cluster.name = "ActionMedallions"
 	action_cluster.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(action_cluster)
+	# Contextual actions have a dedicated center lane, away from combat targets.
+	interaction_panel = Control.new()
+	interaction_panel.name = "ContextualInteraction"
+	interaction_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(interaction_panel)
 	interact_button = Button.new()
 	interact_button.name = "InteractButton"
 	interact_button.text = "Interact [E]"
-	interact_button.custom_minimum_size = Vector2(134, 48)
+	interact_button.custom_minimum_size = Vector2(160, 52)
+	interact_button.clip_text = true
+	interact_button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	interact_button.mouse_filter = Control.MOUSE_FILTER_STOP
 	interact_button.focus_mode = Control.FOCUS_NONE
 	interact_button.add_theme_font_size_override("font_size", 16)
@@ -228,23 +236,22 @@ func _build() -> void:
 	interact_button.add_theme_color_override("font_disabled_color", MUTED)
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		interact_button.add_theme_stylebox_override(state, OrnatePanel.make_button_style(state in ["hover", "pressed"], state == "disabled"))
-	action_cluster.add_child(interact_button)
+	interaction_panel.add_child(interact_button)
 	_bind_extra_touch(interact_button)
-	_place(interact_button, Rect2(106, 112, 138, 48))
-	attack_button = _medallion("\nAttack", "AttackButton", "attack", Rect2(159, 20, 76, 76))
+	attack_button = _medallion("\nAttack", "AttackButton", "attack", Rect2(160, 68, 96, 96))
 	attack_button.add_theme_constant_override("outline_size", 0)
 	for index in range(3):
-		var positions := [Vector2(107, 8), Vector2(79, 60), Vector2(54, 112)]
-		var skill := _medallion(["I", "II", "III"][index], "Skill%d" % (index + 1), "skill", Rect2(positions[index], Vector2(46, 46)))
+		var positions := [Vector2(168, 0), Vector2(88, 30), Vector2(78, 98)]
+		var skill := _medallion(["I", "II", "III"][index], "Skill%d" % (index + 1), "skill", Rect2(positions[index], Vector2(64, 64)))
 		skill.tooltip_text = "Skill %d unavailable. No skill system yet." % (index + 1)
 		skill_buttons.append(skill)
-	potion_button = _medallion("", "PotionUnavailable", "potion", Rect2(0, 112, 46, 46))
+	potion_button = _medallion("", "PotionUnavailable", "potion", Rect2(14, 114, 48, 48))
 	potion_button.tooltip_text = "Potion use unavailable. No combat system yet."
 	var unavailable := _label("Combat unavailable", action_cluster, 12, Color("f0e4c9"))
 	unavailable.add_theme_color_override("font_shadow_color", Color("201b13"))
 	unavailable.add_theme_constant_override("shadow_offset_y", 1)
 	unavailable.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	_place(unavailable, Rect2(54, 162, 190, 18))
+	_place(unavailable, Rect2(54, 166, 202, 18))
 	message = _label("", self, 14, Color("fff3d7"))
 	message.name = "AdventureMessage"
 	message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -378,18 +385,21 @@ func _layout() -> void:
 	_place(map_panel, Rect2(available.position + Vector2(available.size.x - margin - 210, margin), Vector2(210, 87)))
 	_place(location_label, Rect2(26, 11, 158, 23))
 	_place(quest_panel, Rect2(available.position + Vector2(available.size.x - margin - 210, 105), Vector2(210, 40)))
-	var action_size := Vector2(244, 182)
+	var action_size := Vector2(256, 184)
 	var action_x := margin if left_handed else available.size.x - margin - action_size.x
 	_place(action_cluster, Rect2(available.position + Vector2(action_x, available.size.y - margin - action_size.y), action_size))
-	# Both control corners stay reserved. Only the action cluster moves with
-	# handedness; the portrait, world, location and message never mirror.
+	# Both control corners stay reserved, including the 244 px floating joystick.
+	# Only combat moves with handedness; context actions stay in the center lane.
 	var center_width := clampf(available.size.x - 2.0 * (action_size.x + margin + 12), 140, 340)
 	var center_x := available.position.x + (available.size.x - center_width) * 0.5
 	_place(vitals_panel, Rect2(center_x, available.end.y - margin - 42, center_width, 42))
 	_place(hp_label, Rect2(9, 10, (center_width - 18) * 0.5, 22))
 	_place(mp_label, Rect2(center_width * 0.5, 10, (center_width - 18) * 0.5, 22))
-	var message_width := maxf(160, available.size.x - 2.0 * 266)
-	_place(message, Rect2(available.position.x + (available.size.x - message_width) * 0.5, available.end.y - margin - 108, message_width, 58))
+	var interaction_width := minf(200, center_width)
+	_place(interaction_panel, Rect2(available.position.x + (available.size.x - interaction_width) * 0.5, available.end.y - margin - 106, interaction_width, 52))
+	_place(interact_button, Rect2(Vector2.ZERO, interaction_panel.size))
+	var message_width := maxf(160, available.size.x - 2.0 * (action_size.x + margin + 12))
+	_place(message, Rect2(available.position.x + (available.size.x - message_width) * 0.5, available.end.y - margin - 174, message_width, 58))
 
 func set_tutorial_objective(value: String) -> void:
 	_quest_objective = value

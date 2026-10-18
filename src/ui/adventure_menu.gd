@@ -14,6 +14,7 @@ const Ornate = preload("res://src/ui/ornate_panel.gd")
 const Avatar = preload("res://src/layered_avatar.gd")
 const Inventory = preload("res://src/inventory_catalog.gd")
 const Catalog = preload("res://src/creator/catalog.gd")
+const CORE_ATTRIBUTES := [["STR", "Strength"], ["AGI", "Agility"], ["VIT", "Vitality"], ["INT", "Intelligence"], ["WIS", "Wisdom"], ["LUK", "Luck"]]
 const PAGES := {"character":"Character", "inventory":"Inventory", "stats":"Stats", "quest_log":"Quest Log", "settings":"Settings"}
 const INK := Color("35291d")
 const MUTED := Color("76664e")
@@ -305,9 +306,10 @@ func _build_character() -> void:
 		_label("Class: " + str(character.get("class", "Unavailable")), identity, 14)
 		_label("Body: " + str(character.get("base", "Unavailable")).capitalize(), identity, 14)
 		_label("Name, class and body are fixed for this character.", identity, 13).modulate = MUTED
-		var values := _card(details, "COMBAT DETAILS", "Attack power: Unavailable")
-		_label("Luck: Unavailable", values, 14)
-		_label("These values have not been defined yet.", values, 13).modulate = MUTED
+		var attributes := _card(details, "CORE ATTRIBUTES", "Strength · Agility · Vitality · Intelligence · Wisdom · Luck")
+		_label("Starting values are not yet configured. View all six in Stats.", attributes, 14).modulate = MUTED
+		var values := _card(details, "DERIVED COMBAT VALUES", "Attack power: Not yet configured")
+		_label("Combat formulas have not been defined yet.", values, 13).modulate = MUTED
 
 func _make_portrait(parent: Node) -> void:
 	portrait_stage = Ornate.new()
@@ -411,15 +413,27 @@ func _build_item_details() -> void:
 	elif not str(state.equipped_weapon).is_empty():
 		_label("Unequip your current weapon before equipping another.", info, 14)
 	_label("Current: " + _weapon_label(str(state.equipped_weapon)), info, 14)
-	_label("Attack power and luck comparisons are unavailable. This equipment has no defined numeric stats yet.", info, 14).modulate = MUTED
+	_label("Equipment comparisons are not yet configured. This equipment has no defined numeric attributes or derived combat values yet.", info, 14).modulate = MUTED
 
 func _build_stats() -> void:
-	_card(body, "CHARACTER ATTRIBUTES", "Attribute progression is planned. There are no values or points to allocate in this build.")
-	for attribute in [["STR", "Strength"], ["AGI", "Agility"], ["VIT", "Vitality"], ["INT", "Intelligence"], ["WIS", "Wisdom"]]:
-		var row := _card(body, attribute[0] + "  ·  " + attribute[1], "Unavailable · Planned")
+	# Existing saves have no numeric attribute model. An absent value remains
+	# explicitly unconfigured, including Luck; opening this view never writes defaults.
+	var core := _card(body, "CORE ATTRIBUTES", "")
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid.add_theme_constant_override("h_separation", 18)
+	grid.add_theme_constant_override("v_separation", 10)
+	core.add_child(grid)
+	for attribute in CORE_ATTRIBUTES:
+		var row := VBoxContainer.new()
 		row.name = "Stat_" + attribute[0]
-	var combat := _card(body, "OTHER VALUES", "Attack power: Unavailable")
-	_label("Luck: Unavailable", combat, 14)
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		grid.add_child(row)
+		_label(attribute[0] + " · " + attribute[1], row, 16)
+		_label("Not yet configured", row, 14).modulate = MUTED
+	var combat := _card(body, "DERIVED COMBAT VALUES", "Attack power: Not yet configured")
+	_label("Starting attributes, progression and combat formulas are not yet defined. No points or effects are applied.", combat, 14).modulate = MUTED
 
 func _build_quests() -> void:
 	if state == null:
