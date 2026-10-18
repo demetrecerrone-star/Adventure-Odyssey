@@ -19,7 +19,7 @@ func _initialize() -> void:
 	call_deferred("run")
 
 func context_for(selected_class: String) -> Dictionary:
-	return {"character_class":selected_class, "item_id":Inventory.starter_weapon(selected_class), "from_level":0, "to_level":1, "supplies_consumed":true}
+	return {"character_class":selected_class, "item_id":Inventory.starter_weapon(selected_class), "from_level":0, "to_level":1, "supplies_consumed":true, "encounter_id":"south_meadow_slimes"}
 
 func apply_step(state: Dictionary, index: int, selected_class: String = "Warrior", receipt: String = "") -> Dictionary:
 	var step: Dictionary = Progress.STEPS[index]
@@ -60,17 +60,18 @@ func run() -> void:
 				check(retry.next_state == state, "A duplicate keeps the latest state")
 			var reloaded = JSON.parse_string(JSON.stringify(state))
 			check(Progress.validate_state(reloaded), "JSON numeric normalization and receipt round trip validate")
-		check(delivered.size() == 3, "Only upgrade supplies, mana potions, and keepsake are granted")
+		check(delivered.size() == 4, "Supplies, mana, keepsake and final guild payment are granted")
 		check(not delivered.has("tutorial.blacksmith.weapon"), "Blacksmith never duplicates the starter chest weapon")
 		var supplies: Dictionary = delivered["tutorial.blacksmith.upgrade_supplies"]
 		check(supplies.kind == "upgrade_entitlement" and supplies.uses == 1 and supplies.target_level == 1, "The free upgrade entitlement permits one +1 lesson")
 		check(supplies.target_item_id == Inventory.starter_weapon(selected_class), "Supplies target the existing class-matched starter weapon")
 		check(delivered["tutorial.apothecary.mana_potions"].count == 5, "Apothecary gift is exactly five mana potions")
 		check(delivered["tutorial.general_store.keepsake_ring"].item_id == "keepsake_ring", "General store gift is the keepsake ring")
-		check(state.stage == "first_combat_pending", "Errands end at pending combat, never tutorial completion")
+		check(state.stage == "tutorial_complete", "Verified field assignment and guild return finish training")
 		for fake_context in [{}, {"verified":true}, {"combat_available":true, "victory":true, "source":"combat_system"}]:
-			var blocked := Progress.plan_event(state, "first_combat_completed", "fake_combat", fake_context)
-			check(not blocked.ok and blocked.code == "combat_unavailable" and blocked.next_state == state, "Fake combat cannot complete the tutorial")
+			var active := state_at(10)
+			var blocked := Progress.plan_event(active, "first_combat_completed", "fake_combat", fake_context)
+			check(not blocked.ok and blocked.code == "invalid_encounter" and blocked.next_state == active, "Fake combat cannot complete the tutorial")
 		for index in range(Progress.STEPS.size()):
 			var retry := apply_step(state, index, selected_class, "late_retry_" + str(index))
 			check(retry.ok and retry.duplicate and retry.next_state == state and retry.rewards.is_empty(), "Late retries preserve the final current state")
@@ -151,6 +152,9 @@ func _test_dialogue_content() -> void:
 	var ring_view := Dialogue.describe("shopkeeper", state_at(7))
 	check(ring_view.body.contains("I've been holding this until you were ready"), "Keepsake introduction uses the approved line")
 	check(ring_view.choices.any(func(choice): return choice.id == "keepsake_origin"), "Player can ask who left the ring")
+	for index in [9,10]:
+		var briefing := Dialogue.describe("guild_receptionist", state_at(index))
+		check(briefing.body.contains("west bridge") and briefing.body.contains("south branch"), "Field directions match the playable west-bridge route")
 	var invalid := Dialogue.describe("guild_receptionist", {})
 	check(invalid.choices.is_empty(), "Unreadable state exposes no actions")
 
@@ -253,7 +257,7 @@ func _test_dialogue_controls() -> void:
 	view._choose(service_choice)
 	check(service_count == 1 and view.pending, "Service requests are single-flight and contain no gameplay result")
 	view.configure("guild_receptionist", state_at(9), "Warrior")
-	check(view.choices.get_child_count() == 0, "No fake combat completion button is exposed")
+	check(view.choices.get_child_count() == 1 and view._view.choices[0].id == "guild_assign_first_combat", "Only assignment acceptance is exposed before combat")
 	if "--capture" in OS.get_cmdline_user_args():
 		root.size = Vector2i(1280, 720)
 		view.configure("shopkeeper", state_at(7), "Warrior")

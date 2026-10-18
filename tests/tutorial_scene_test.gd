@@ -89,7 +89,7 @@ func run()->void:
   room._close_overlay(); room.open_menu(); await settle(); room.overlay.show_page("quest_log"); await settle()
   check(is_instance_valid(room.overlay.body), "Quest log opens with saved progress")
   room._close_overlay(); root.remove_child(room); room.free()
- check(state.tutorial.stage == "first_combat_pending", "Errands stop at unavailable combat boundary")
+ check(state.tutorial.stage == "first_combat_pending", "Errands lead to first assignment briefing")
  check(state.bag.mana_potion == 5 and state.bag.keepsake_ring == 1, "Exact once-only quest gifts")
  var reload = Save.new(); reload.path = state.path
  var loaded:bool = reload.load_saved()

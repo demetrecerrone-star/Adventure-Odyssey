@@ -6,7 +6,8 @@ const VERSION := 1
 const STAGES := [
 	"awaiting_letter", "visit_guild", "visit_blacksmith", "upgrade_blacksmith",
 	"return_guild_blacksmith", "visit_apothecary", "return_guild_apothecary",
-	"visit_general_store", "return_guild_general_store", "first_combat_pending"
+	"visit_general_store", "return_guild_general_store", "first_combat_pending",
+	"first_combat_active", "return_guild_first_combat", "tutorial_complete"
 ]
 const STEPS := [
 	{"id":"read_envelope", "kind":"action", "rewards":[]},
@@ -17,7 +18,10 @@ const STEPS := [
 	{"id":"apothecary_claim_gift", "kind":"action", "rewards":["tutorial.apothecary.mana_potions"]},
 	{"id":"guild_after_apothecary", "kind":"action", "rewards":[]},
 	{"id":"general_store_claim_keepsake", "kind":"action", "rewards":["tutorial.general_store.keepsake_ring"]},
-	{"id":"guild_after_general_store", "kind":"action", "rewards":[]}
+	{"id":"guild_after_general_store", "kind":"action", "rewards":[]},
+	{"id":"guild_assign_first_combat", "kind":"action", "rewards":[]},
+	{"id":"first_combat_completed", "kind":"event", "rewards":[]},
+	{"id":"guild_complete_first_combat", "kind":"action", "rewards":["tutorial.guild.first_combat_gold"]}
 ]
 const OBJECTIVES := {
 	"awaiting_letter":"Read the envelope at your doorstep.",
@@ -29,7 +33,10 @@ const OBJECTIVES := {
 	"return_guild_apothecary":"Return to the guild receptionist after visiting the apothecary.",
 	"visit_general_store":"Visit the general store for a keepsake.",
 	"return_guild_general_store":"Return to the guild receptionist with your keepsake.",
-	"first_combat_pending":"Your first combat assignment is pending. Combat is not available yet."
+	"first_combat_pending":"Speak to the guild receptionist to accept your first field assignment.",
+	"first_combat_active":"Clear the three slimes in the South Meadow. Cross the west bridge, then follow the south branch.",
+	"return_guild_first_combat":"The South Meadow is clear. Return to the guild receptionist for your reward.",
+	"tutorial_complete":"Training complete. Explore the meadow or visit the town shops. More guild assignments will come later."
 }
 
 static func initial_state() -> Dictionary:
@@ -92,8 +99,6 @@ static func _plan(value: Dictionary, kind: String, id: String, receipt_id: Strin
 		return _failure(value, "invalid_state", "Tutorial progress could not be read. Your save has not been changed.")
 	if not _valid_receipt_id(receipt_id):
 		return _failure(value, "invalid_receipt", "A valid transaction receipt is required.")
-	if id == "first_combat_completed":
-		return _failure(value, "combat_unavailable", "Combat is not available yet. The tutorial remains in progress.")
 	var step_index := -1
 	for index in range(STEPS.size()):
 		if STEPS[index].id == id and STEPS[index].kind == kind:
@@ -126,6 +131,11 @@ static func _plan(value: Dictionary, kind: String, id: String, receipt_id: Strin
 			return _failure(value, "invalid_upgrade", "The upgrade system must confirm a completed +1 lesson.")
 		if context.from_level != 0 or context.to_level != 1 or (not context.get("supplies_consumed") is bool or context.supplies_consumed != true):
 			return _failure(value, "invalid_upgrade", "The upgrade system must confirm a completed +1 lesson.")
+	elif id == "first_combat_completed":
+		if context.get("encounter_id") != "south_meadow_slimes":
+			return _failure(value, "invalid_encounter", "Clear the assigned South Meadow encounter first.")
+	elif id == "guild_complete_first_combat":
+		rewards = [{"receipt_id":"tutorial.guild.first_combat_gold", "kind":"gold", "count":25, "binding":"character", "source":"tutorial"}]
 	elif id == "apothecary_claim_gift":
 		rewards = [{"receipt_id":"tutorial.apothecary.mana_potions", "kind":"item", "item_id":"mana_potion", "count":5, "binding":"character", "source":"tutorial"}]
 	elif id == "general_store_claim_keepsake":

@@ -1,0 +1,19 @@
+{
+  "source": "origin/archive/pre-rebuild-2026-10-16 payload archive",
+  "source_archive_sha256": "861c1871c327126a1321ef0107341dbe3510cfa60cf1f0f00abac14592edb568",
+  "notes": "Original historical tutorial slime artwork, exact unchanged PNG bytes. Four directional idle/squash/stretch poses; attack uses telegraphed squash, lunge and recovery, not a claimed dedicated attack sheet.",
+  "files": {
+    "assets/monsters/green_slime_bounce/down_00.png": "addc08f188f86d4eaf416f42d49bc79c353629ed5a01840689f3bc1efe95c2c8",
+    "assets/monsters/green_slime_bounce/down_01.png": "b208d87817157a90973d89e3691c0eb493719eef49715085df1931c9a62cb04c",
+    "assets/monsters/green_slime_bounce/down_02.png": "1ca782b36b858cea36f4aa855a825fa58d830cdac1e536f7f502912e1df50b6d",
+    "assets/monsters/green_slime_bounce/left_00.png": "68211c5df84c219448147589f3721057d92ee4f2362a110699f3829db058f3e9",
+    "assets/monsters/green_slime_bounce/left_01.png": "14a8e9602e896be65d3d9a60a288191b2af0e2db8382b6ac5949318565e8d436",
+    "assets/monsters/green_slime_bounce/left_02.png": "e617f312d35a26e9a9ce2065c9ff48af1b29b58e529c5d21a09cd13fd5e4aa61",
+    "assets/monsters/green_slime_bounce/right_00.png": "7ae56821eb6b74c19517e134d860ae9874b0ae49eaac33215f75e92b59a400d2",
+    "assets/monsters/green_slime_bounce/right_01.png": "818d49d4f9b72c092fcefa1b728cb00e7b99a83956b37ee6e66fc9edabb1e875",
+    "assets/monsters/green_slime_bounce/right_02.png": "364dfa33fab52b67237c47d94d367732925703113f5eaad60afa313c883d0492",
+    "assets/monsters/green_slime_bounce/up_00.png": "f4b48310e577fa4b9566134ecc702b62b56b81311fcad6dd1fd714843683d825",
+    "assets/monsters/green_slime_bounce/up_01.png": "6637a46f593a8af598dff7c5fc665e5affb463ebf13f4dca6ec186cb2db20d88",
+    "assets/monsters/green_slime_bounce/up_02.png": "29491a2c14b7a95cdd79aa7e6674087cbabbd0fe83ee139776224d82cbf122eb"
+  }
+}

@@ -13,11 +13,15 @@ const ACTION_SCENES = {
 	"read_envelope":"starter_region", "guild_assign_blacksmith":"guild_interior",
 	"blacksmith_claim_starter":"blacksmith_interior", "guild_after_blacksmith":"guild_interior",
 	"apothecary_claim_gift":"apothecary_interior", "guild_after_apothecary":"guild_interior",
-	"general_store_claim_keepsake":"general_store_interior", "guild_after_general_store":"guild_interior"
+	"general_store_claim_keepsake":"general_store_interior", "guild_after_general_store":"guild_interior",
+	"guild_assign_first_combat":"guild_interior", "guild_complete_first_combat":"guild_interior"
 }
 const SUPPLIES := "tutorial.blacksmith.upgrade_supplies"
 const MANA_GIFT := "tutorial.apothecary.mana_potions"
 const RING_GIFT := "tutorial.general_store.keepsake_ring"
+const COMBAT_REWARD := "tutorial.guild.first_combat_gold"
+const FIRST_ENCOUNTER := "south_meadow_slimes"
+const COMBAT_EVENT := "first_combat_completed"
 const UPGRADE_EVENT := "blacksmith_upgrade_applied"
 var path := "user://bedroom_guest_v1.json"
 var character: Dictionary = {}
@@ -261,6 +265,32 @@ func perform_tutorial_action(action: String) -> Dictionary:
 	if not _commit(previous): return _failure("save_failed", error)
 	return plan
 
+# Trusted gameplay boundary: called only by the encounter controller after all
+# assigned enemies die. Dialogue has no event dispatch path. The event and clear
+# flag are the same persisted receipt, so a crash/reload cannot pay twice.
+func encounter_is_complete(encounter_id: String) -> bool:
+	return encounter_id == FIRST_ENCOUNTER and tutorial.event_receipts.has(COMBAT_EVENT)
+
+func record_encounter_victory(encounter_id: String) -> bool:
+	error = ""
+	if character.is_empty() or not _valid_live_state():
+		error = "Your local save is not ready to record this encounter."
+		return false
+	if encounter_id != FIRST_ENCOUNTER:
+		error = "That encounter is not part of your assignment."
+		return false
+	if encounter_is_complete(encounter_id): return true
+	if location.scene != "starter_region":
+		error = "Return to the South Meadow to finish this assignment."
+		return false
+	var plan := Progress.plan_event(tutorial, COMBAT_EVENT, _receipt(COMBAT_EVENT), {"encounter_id":encounter_id})
+	if not plan.ok:
+		error = plan.message
+		return false
+	var previous := snapshot()
+	tutorial = plan.next_state.duplicate(true)
+	return _commit(previous)
+
 func apply_tutorial_weapon_upgrade() -> Dictionary:
 	if character.is_empty() or not _valid_live_state(): return _failure("invalid_save", "Your local save is not ready for this action.")
 	if tutorial.event_receipts.has(UPGRADE_EVENT):
@@ -411,6 +441,10 @@ func _receipt(action: String) -> String:
 
 func _apply_reward(reward: Dictionary) -> bool:
 	if reward.get("binding") != "character" or reward.get("source") != "tutorial": return false
+	if reward.get("receipt_id") == COMBAT_REWARD:
+		if reward.get("kind") != "gold" or reward.get("count") != 25 or tutorial.reward_receipts.has(COMBAT_REWARD): return false
+		wallet_gold += 25
+		return true
 	if reward.get("receipt_id") == SUPPLIES:
 		if reward.get("kind") != "upgrade_entitlement" or reward.get("entitlement_id") != "tutorial_weapon_plus_one" or reward.get("uses") != 1 or reward.get("target_item_id") != Inventory.starter_weapon(character["class"]) or reward.get("target_level") != 1 or upgrade_entitlements.has(SUPPLIES): return false
 		upgrade_entitlements[SUPPLIES] = {"owner_id":character_id, "uses":1, "target_item_id":reward.target_item_id, "target_level":1}
@@ -471,10 +505,11 @@ func _valid_snapshot(data: Dictionary) -> bool:
 	var hero = data.get("character")
 	if not hero is Dictionary or hero.get("base", "") not in ["male", "female"] or not draft_from(hero).validate().is_empty(): return false
 	if not _valid_id(data.get("character_id")) or not valid_location(data.get("location")) or data.get("awake") != true: return false
-	if not _whole(data.get("chest_gold"), 0, 100) or not _whole(data.get("wallet_gold"), 0, 100): return false
+	if not _whole(data.get("chest_gold"), 0, 100) or not _whole(data.get("wallet_gold"), 0, 125): return false
 	var gold_spent := _verified_purchase_total(data)
-	if gold_spent < 0 or data.chest_gold + data.wallet_gold + gold_spent != 100: return false
 	if not data.get("tutorial") is Dictionary or not Progress.validate_state(data.tutorial): return false
+	var earned_gold := 25 if data.tutorial.reward_receipts.has(COMBAT_REWARD) else 0
+	if gold_spent < 0 or data.chest_gold + data.wallet_gold + gold_spent != 100 + earned_gold: return false
 	if not Stats.validate_state(data.get("stats")): return false
 	for receipt_kind in ["action_receipts", "event_receipts"]:
 		for action in data.tutorial[receipt_kind]:
@@ -564,7 +599,7 @@ func _verified_purchase_total(data: Dictionary) -> int:
 		if not acquisition is Dictionary or not acquisition.get("source") is String or not acquisition.get("item_id") is String or not _whole(acquisition.get("quantity"), 1, MAX_COUNT): return -1
 		if acquisition.source != "npc_purchase" or acquisition.item_id != receipt.item_id or acquisition.quantity != receipt.quantity: return -1
 		spent += int(receipt.total_price_gold)
-		if spent > 100: return -1
+		if spent > 125: return -1
 	return spent
 
 func _valid_counts(value, required: Array, exact: bool) -> bool:

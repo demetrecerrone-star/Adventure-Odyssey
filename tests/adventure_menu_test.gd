@@ -135,7 +135,7 @@ func run() -> void:
 	check(menu.stat_rows.LUK.xp_label.text == "0 / 100 XP", "Luck shows actual baseline XP progress")
 	check(stats_text.find("Luck") < stats_text.find("PLANNED EFFECTS"), "Luck belongs to core attributes, before planned effects")
 	menu.show_page("quest_log")
-	check(labels(menu.body).contains("Read the envelope") and labels(menu.body).contains("Combat remains unavailable"), "Quest log shows actual tutorial and honest combat boundary")
+	check(labels(menu.body).contains("Read the envelope") and labels(menu.body).contains("South Meadow"), "Quest log shows actual tutorial and field assignment")
 	menu.show_page("settings")
 	await settle()
 	menu.floating_button.pressed.emit()

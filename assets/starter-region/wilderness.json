@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "encounter_id": "south_meadow_slimes",
+  "placements": [
+    {
+      "file": "scenery/oak_young.png",
+      "display_size": [
+        218.709,
+        196.438
+      ],
+      "anchor": [
+        0.5023866348448688,
+        0.936651904340124
+      ],
+      "id": "wilderness_0",
+      "asset_id": "oak_young",
+      "region": "first_meadow_encounter",
+      "position": [
+        890,
+        2250
+      ],
+      "depth_sort": true,
+      "collision": [
+        874.0,
+        2241.0,
+        32,
+        18
+      ],
+      "source_sha256": "d8af5236edc4e4202174248f9812806e589dc5c8bbf668446010781f7b471d77"
+    },
+    {
+      "file": "scenery/birch.png",
+      "display_size": [
+        172.984,
+        261.716
+      ],
+      "anchor": [
+        0.521414342629482,
+        0.910427913100724
+      ],
+      "id": "wilderness_1",
+      "asset_id": "birch",
+      "region": "first_meadow_encounter",
+      "position": [
+        1440,
+        2360
+      ],
+      "depth_sort": true,
+      "collision": [
+        1424.0,
+        2351.0,
+        32,
+        18
+      ],
+      "source_sha256": "64dac6df2e4f82cbd566170d4cb10da179695b4b928fffe4ce9c9b7500eafc99"
+    },
+    {
+      "file": "scenery/mossy-boulder.png",
+      "display_size": [
+        112.8,
+        112.71
+      ],
+      "anchor": [
+        0.526485,
+        0.753671
+      ],
+      "id": "wilderness_2",
+      "asset_id": "mossy-boulder",
+      "region": "first_meadow_encounter",
+      "position": [
+        1330,
+        2080
+      ],
+      "depth_sort": true,
+      "collision": [
+        1297.0,
+        2066.0,
+        66,
+        28
+      ],
+      "source_sha256": "0f839ca3a46e8e3d6d4f75610f6766ace15651a559941bee69f959a74757ba52"
+    },
+    {
+      "file": "scenery/small-rock-cluster.png",
+      "display_size": [
+        99.18,
+        97.69
+      ],
+      "anchor": [
+        0.495004,
+        0.657566
+      ],
+      "id": "wilderness_3",
+      "asset_id": "small-rock-cluster",
+      "region": "first_meadow_encounter",
+      "position": [
+        900,
+        2500
+      ],
+      "depth_sort": true,
+      "collision": [
+        873.5,
+        2487.5,
+        53,
+        25
+      ],
+      "source_sha256": "e2a807caa270eaad777aa7f6600d48a5a26ff5ca1801442fa84ee787b3e61a3e"
+    },
+    {
+      "file": "scenery/fern.png",
+      "display_size": [
+        79.937,
+        52.784
+      ],
+      "anchor": [
+        0.48981603153745074,
+        0.7981691542288557
+      ],
+      "id": "wilderness_4",
+      "asset_id": "fern",
+      "region": "first_meadow_encounter",
+      "position": [
+        920,
+        2290
+      ],
+      "depth_sort": false,
+      "source_sha256": "fa4c8f9f60dc01408d71792d2fa878259b738ce9b9ae0beb277366d43b914dc7"
+    },
+    {
+      "file": "scenery/flowers_white.png",
+      "display_size": [
+        83.611,
+        56.401
+      ],
+      "anchor": [
+        0.5171277997364954,
+        0.778427734375
+      ],
+      "id": "wilderness_5",
+      "asset_id": "flowers_white",
+      "region": "first_meadow_encounter",
+      "position": [
+        1280,
+        2400
+      ],
+      "depth_sort": false,
+      "source_sha256": "5cfcf258ab39afb8803f923bd610694ab57401137f77165ccb0df005a1a0b3cc"
+    },
+    {
+      "file": "scenery/mushroom-cluster.png",
+      "display_size": [
+        54.22,
+        53.25
+      ],
+      "anchor": [
+        0.537344,
+        0.73962
+      ],
+      "id": "wilderness_6",
+      "asset_id": "mushroom-cluster",
+      "region": "first_meadow_encounter",
+      "position": [
+        850,
+        2210
+      ],
+      "depth_sort": false,
+      "source_sha256": "410689b558c4c3d9305e540a4fa445bd1321c4aa299a41d47e1975a9202f52dd"
+    },
+    {
+      "file": "scenery/grass_tuft.png",
+      "display_size": [
+        54.761,
+        36.52
+      ],
+      "anchor": [
+        0.497153024911032,
+        0.8338740661686231
+      ],
+      "id": "wilderness_7",
+      "asset_id": "grass_tuft",
+      "region": "first_meadow_encounter",
+      "position": [
+        1370,
+        2210
+      ],
+      "depth_sort": false,
+      "source_sha256": "0842d81cfaa9c8e371ef147f9afbf4f62f4ec6cfb8a6f9c475a8c8c6852730ec"
+    }
+  ]
+}

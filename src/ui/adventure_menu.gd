@@ -843,11 +843,11 @@ func _build_quests() -> void:
 		_card(body, "TUTORIAL", "No character loaded.")
 		return
 	var progress = load("res://src/tutorial_progress.gd")
-	_card(body, "TUTORIAL · IN PROGRESS", progress.objective(state.tutorial))
-	_label("Progress and gifts are saved for this character. Combat remains unavailable.", body, 16).modulate = MUTED
+	_card(body, "TUTORIAL · COMPLETE" if state.tutorial.stage == "tutorial_complete" else "TUTORIAL · IN PROGRESS", progress.objective(state.tutorial))
+	_label("First assignment reward received: 25 gold. Progress is saved for this character." if state.tutorial.stage == "tutorial_complete" else "Progress and rewards are saved for this character. Complete the South Meadow assignment, then report to the guild.", body, 16).modulate = MUTED
 	var receipts: Dictionary = state.tutorial.get("reward_receipts", {})
 	for reward in receipts:
-		var names := {"tutorial.blacksmith.upgrade_supplies":"Blacksmith upgrade supplies", "tutorial.apothecary.mana_potions":"Five mana potions", "tutorial.general_store.keepsake_ring":"Keepsake ring"}
+		var names := {"tutorial.blacksmith.upgrade_supplies":"Blacksmith upgrade supplies", "tutorial.apothecary.mana_potions":"Five mana potions", "tutorial.general_store.keepsake_ring":"Keepsake ring", "tutorial.guild.first_combat_gold":"First assignment · 25 gold"}
 		_card(body, "RECEIVED", names.get(reward, reward))
 
 func _build_settings() -> void:

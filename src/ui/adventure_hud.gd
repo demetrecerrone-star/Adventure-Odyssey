@@ -30,6 +30,7 @@ var coordinates_label: Label
 var hp_label: Label
 var mp_label: Label
 var attack_button: Button
+var combat_status: Label
 var skill_buttons: Array[Button] = []
 var potion_button: Button
 var layout_safe_rect := Rect2()
@@ -251,6 +252,7 @@ func _build() -> void:
 	potion_button = _medallion("", "PotionUnavailable", "potion", Rect2(14, 114, 48, 48))
 	potion_button.tooltip_text = "Potion use unavailable. No combat system yet."
 	var unavailable := _label("Combat unavailable", action_cluster, 12, Color("f0e4c9"))
+	combat_status = unavailable
 	unavailable.add_theme_color_override("font_shadow_color", Color("201b13"))
 	unavailable.add_theme_constant_override("shadow_offset_y", 1)
 	unavailable.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT

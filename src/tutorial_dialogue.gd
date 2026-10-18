@@ -68,10 +68,18 @@ static func describe(id: String, value: Dictionary, _selected_class: String = ""
 				"visit_general_store":
 					result.body = "Visit the general store for your last errand. I'll be here when you return."
 				"return_guild_general_store":
-					result.body = "You've finished your errands. Your first combat assignment is next. Combat isn't available yet, so your training remains in progress."
+					result.body = "You've finished your errands. A group of slimes has gathered in the South Meadow. Let's talk about your first field assignment."
 					result.choices.append(_choice("guild_after_general_store", "Ask about the first assignment"))
 				"first_combat_pending":
-					result.body = "Your first combat assignment is pending. Combat isn't available yet, and your tutorial is still in progress."
+					result.body = "Three slimes are blocking the South Meadow. Equip your weapon, cross the west bridge, and follow the south branch. Clear the group east of the trail. Return here afterward for 25 gold. If you fall, you can retry the encounter without losing your belongings."
+					result.choices.append(_choice("guild_assign_first_combat", "Accept: clear the South Meadow"))
+				"first_combat_active":
+					result.body = "Cross the west bridge, then follow the south branch into the South Meadow. Defeat the three slimes east of the trail. Equip your weapon from your inventory before fighting, then use Attack when a slime is close. Return when the meadow is clear."
+				"return_guild_first_combat":
+					result.body = "The road is clear again. Well done. Your first assignment is complete, and your 25 gold reward is ready."
+					result.choices.append(_choice("guild_complete_first_combat", "Complete training • Collect 25 gold"))
+				"tutorial_complete":
+					result.body = "Welcome to the guild, adventurer. Your training is complete and your reward has been paid. Explore the meadow or stock up in town. I'll have more work for you in a future update."
 		"blacksmith":
 			if stage == "visit_blacksmith":
 				result.body = "The guild sent you? Bring the class weapon from your starter chest. I'll supply what you need for its first +1 upgrade. Accept the lesson supplies, then open the upgrade service and perform the upgrade yourself."
@@ -222,7 +230,7 @@ func _render() -> void:
 	_view = describe(npc_id, tutorial_state, character_class)
 	title_label.text = _view.title
 	body_label.text = _view.body
-	objective_label.text = "Current errand: " + _view.objective
+	objective_label.text = ("Status: " if tutorial_state.get("stage") == "tutorial_complete" else "Current errand: ") + _view.objective
 	notice_label.text = ""
 	for child in choices.get_children():
 		choices.remove_child(child)

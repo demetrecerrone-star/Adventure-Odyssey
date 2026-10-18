@@ -1816,13 +1816,13 @@
       "asset_id": "bush_round",
       "region": "meadow_southwest",
       "position": [
-        1252,
-        2329
+        1452,
+        2529
       ],
       "depth_sort": true,
       "collision": [
-        1229.5,
-        2317.0,
+        1429.5,
+        2517,
         45,
         24
       ],
