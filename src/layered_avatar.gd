@@ -138,12 +138,23 @@ func advance(direction: int, moving: bool, delta: float) -> void:
 			pair = walk
 			frames = count
 			animation = "walk_" + names[facing]
+	var fps := clampf(float(pair.get("fps", 8)), 1, 20)
 	if animation != current_animation:
-		elapsed = 0
+		if animation.begins_with("walk_") and current_animation.begins_with("walk_"):
+			# Steering changes the view of the current stride, not its timing.
+			# Keep fractional progress too, so frequent turns cannot pin the feet
+			# to the first pose. Mixed fallback cycles retain normalized phase.
+			var previous: Dictionary = outfit.get("walk", {}).get(current_animation.trim_prefix("walk_"), {})
+			var previous_fps := clampf(float(previous.get("fps", 8)), 1, 20)
+			if body.hframes != frames or not is_equal_approx(previous_fps, fps):
+				var phase := fposmod(elapsed * previous_fps / float(body.hframes), 1.0)
+				elapsed = phase * float(frames) / fps
+		else:
+			elapsed = 0
 		current_animation = animation
 	elapsed += delta
 	if animation != "idle":
-		frame = int(elapsed * clampf(float(pair.get("fps", 8)), 1, 20)) % frames
+		frame = int(elapsed * fps) % frames
 	body.texture = _texture(pair.body)
 	var mask_path: String = str(pair.get("appearance_mask", str(pair.body).replace("character-outfits/", "character-appearance/").replace("-body.png", "-mask.png")))
 	var mask_texture := _texture(mask_path)
