@@ -1,0 +1,35 @@
+name: Publish approved v0.12 build 364 APK
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-preview-364.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish-approved-apk:
+    if: contains(github.event.head_commit.message, '[publish-preview-364]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download the exact previously verified build
+        uses: actions/download-artifact@v4
+        with:
+          name: Adventure-Odyssey-Android-APK
+          run-id: 39168699021
+          github-token: ${{ github.token }}
+          path: verified-apk
+      - name: Verify and publish this one approved APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: demetrecerrone-star/Adventure-Odyssey
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd verified-apk
+          echo '2e78386413d5fb08e447fb2981db4ad445f11b9051389746862e82be10b4080a  Adventure-Odyssey-release.apk' | sha256sum -c -
+          gh release create ao-preview-v0.12-build364 Adventure-Odyssey-release.apk \
+            --target 3fbd89a077e72b25787abbdb59a25ace142b190a \
+            --title 'Adventure Odyssey v0.12 test preview' \
+            --notes 'Android ARM64 and x86_64 preview, version code 12. Build 364 from 3fbd89a. Includes the hidden character-bound overpowered stick, 20% faster indoor/outdoor travel, road-aware guidance to the first monster quest, more personal NPC conversations with accept/defer/resume choices, and a restrained neck/head-motion refinement across all twelve character identities. Existing quests, class skills, potions, XP, gold, Sigils and home cosmetics are retained. All 51 source and 49 packaged suites passed, with native phone layouts and character motion reviewed. Same permanent release certificate and package; install as an update without uninstalling to retain local saves. Physical Android performance and live device save-upgrade testing remain unverified. SHA-256: 2e78386413d5fb08e447fb2981db4ad445f11b9051389746862e82be10b4080a' \
+            --prerelease
