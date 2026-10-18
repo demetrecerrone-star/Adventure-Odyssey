@@ -1,0 +1,35 @@
+name: Publish approved v0.11 build 362 APK
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-preview-362.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish-approved-apk:
+    if: contains(github.event.head_commit.message, '[publish-preview-362]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download the exact previously verified build
+        uses: actions/download-artifact@v4
+        with:
+          name: Adventure-Odyssey-Android-APK
+          run-id: 39161173989
+          github-token: ${{ github.token }}
+          path: verified-apk
+      - name: Verify and publish this one approved APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: demetrecerrone-star/Adventure-Odyssey
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd verified-apk
+          echo 'e652aa96604de18f1b6f9184d5b0912582a5ae70e72c00f65811b6460c90d767  Adventure-Odyssey-release.apk' | sha256sum -c -
+          gh release create ao-preview-v0.11-build362 Adventure-Odyssey-release.apk \
+            --target ee5888ea5a0e7df3b77158ecef52902e798202d7 \
+            --title 'Adventure Odyssey v0.11 test preview' \
+            --notes 'Android ARM64 and x86_64 adventure preview, version code 11. Build 362 from ee5888e. Includes tutorial and guild quests, slime and wolf encounters, all 18 class skills, saved health/mana and real potions, monster gold/XP and five stat points per level, earned Sigils and four home cosmetics. Source, native-render and packaged gameplay tests passed. Same permanent release certificate and package; install as an update to preserve local saves. Current quest monsters are one-time encounters. Physical Android performance and live old-save upgrade testing remain unverified. SHA-256: e652aa96604de18f1b6f9184d5b0912582a5ae70e72c00f65811b6460c90d767' \
+            --prerelease
