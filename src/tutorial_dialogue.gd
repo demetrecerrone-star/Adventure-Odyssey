@@ -10,7 +10,7 @@ const Progress = preload("res://src/tutorial_progress.gd")
 const Ornate = preload("res://src/ui/ornate_panel.gd")
 const INK := Color("35291d")
 const MUTED := Color("76664e")
-const TITLES := {"envelope":"Guild letter", "guild_receptionist":"Guild receptionist", "blacksmith":"Blacksmith", "apothecary":"Apothecary", "shopkeeper":"General store"}
+const TITLES := {"resident_north_yard":"Town resident", "resident_plaza_home":"Town resident", "resident_well":"Town resident", "guard_northeast_verge":"Town guard", "envelope":"Guild letter", "guild_receptionist":"Guild receptionist", "blacksmith":"Blacksmith", "apothecary":"Apothecary", "shopkeeper":"General store"}
 var npc_id := "guild_receptionist"
 var tutorial_state: Dictionary = Progress.initial_state()
 var character_class := ""
@@ -23,6 +23,7 @@ var close_button: Button
 var scroll: ScrollContainer
 var content: VBoxContainer
 var choices: VBoxContainer
+var _touch_buttons: Array[Button] = []
 var pending := false
 var _dismiss_pending := false
 var _view: Dictionary = {}
@@ -103,6 +104,14 @@ static func describe(id: String, value: Dictionary, _selected_class: String = ""
 			else:
 				result.body = "Welcome. Have a look around, and speak to the guild receptionist about your training."
 			result.choices.append(_choice("general_store_shop", "Browse general store goods", "service"))
+		"resident_north_yard":
+			result.body = "The Adventurer Guild is just west of these homes, beside the plaza. You'll recognize its blue roofs."
+		"resident_plaza_home":
+			result.body = "The general store is on the southwest side of the plaza. The apothecary is the shop with the green roof."
+		"resident_well":
+			result.body = "This little green is a quiet place to rest beside the well. The main paths run around it."
+		"guard_northeast_verge":
+			result.body = "The northeast gate leads toward the rocky foothills. Keep to the paths through the town gates."
 		_:
 			result.body = "There is no conversation available here."
 	return result
@@ -188,6 +197,7 @@ func _button(text: String, parent: Node) -> Button:
 	button.custom_minimum_size.y = 52
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	parent.add_child(button)
+	_bind_extra_touch(button)
 	return button
 
 func _layout() -> void:
@@ -256,6 +266,7 @@ func _dismiss() -> void:
 	if _dismiss_pending:
 		return
 	_dismiss_pending = true
+	_release_touch_owners()
 	dismissed.emit()
 
 func _unhandled_key_input(event: InputEvent) -> void:
@@ -264,5 +275,50 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _notification(what: int) -> void:
+	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT, NOTIFICATION_WM_WINDOW_FOCUS_OUT, NOTIFICATION_PAUSED]: _release_touch_owners()
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		_dismiss()
+
+func _bind_extra_touch(button: Button) -> void:
+	_touch_buttons.append(button)
+	button.gui_input.connect(func(event: InputEvent):
+		if event is InputEventScreenTouch and event.index > 0:
+			if event.pressed and not event.canceled and not button.disabled and not _dismiss_pending:
+				if not button.has_meta("touch_owner"):
+					button.set_meta("touch_owner", event.index)
+					button.set_meta("touch_start", button.get_global_transform_with_canvas() * event.position)
+					button.set_meta("touch_dragged", false)
+			elif button.get_meta("touch_owner", -1) == event.index:
+				var dragged := bool(button.get_meta("touch_dragged", false))
+				_clear_touch_owner(button)
+				if not dragged and not event.canceled and not button.disabled and not _dismiss_pending and Rect2(Vector2.ZERO, button.size).has_point(event.position):
+					button.pressed.emit()
+			button.accept_event()
+	)
+
+func _clear_touch_owner(button: Button) -> void:
+	for key in ["touch_owner", "touch_start", "touch_dragged"]:
+		if button.has_meta(key): button.remove_meta(key)
+
+func _release_touch_owners() -> void:
+	for button in _touch_buttons:
+		if is_instance_valid(button): _clear_touch_owner(button)
+
+
+func _input(event: InputEvent) -> void:
+	if not is_visible_in_tree() or _dismiss_pending: return
+	if event is InputEventScreenDrag and event.index > 0:
+		for button in _touch_buttons:
+			if is_instance_valid(button) and button.get_meta("touch_owner", -1) == event.index:
+				if Vector2(button.get_meta("touch_start", event.position)).distance_to(event.position) > 12:
+					button.set_meta("touch_dragged", true)
+	if event is InputEventScreenTouch and event.index > 0 and not event.pressed:
+		for button in _touch_buttons.duplicate():
+			if is_instance_valid(button) and button.get_meta("touch_owner", -1) == event.index:
+				var dragged := bool(button.get_meta("touch_dragged", false))
+				_clear_touch_owner(button)
+				var point: Vector2 = button.get_global_transform_with_canvas().affine_inverse() * event.position
+				if not dragged and not event.canceled and not button.disabled and button.is_visible_in_tree() and Rect2(Vector2.ZERO, button.size).has_point(point):
+					button.pressed.emit()
+				get_viewport().set_input_as_handled()
+				return

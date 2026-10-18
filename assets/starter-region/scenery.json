@@ -3389,6 +3389,392 @@
         23
       ],
       "source_sha256": "4987f942db1e999e00d59e2517f87f4f1935ce020e80d2c6e06768d8e52e875b"
+    },
+    {
+      "id": "home_a_firewood",
+      "kind": "prop",
+      "position": [
+        2860,
+        728
+      ],
+      "display_size": [
+        130.97,
+        87.28
+      ],
+      "anchor": [
+        0.621711,
+        0.941757
+      ],
+      "depth_sort": true,
+      "depth_anchor_world": [
+        2860,
+        728
+      ],
+      "group": "north_home_a",
+      "purpose": "A small fuel store differentiates the western home without changing its architecture.",
+      "collision": [
+        2794,
+        674,
+        103,
+        54
+      ],
+      "file": "scenery/stacked-firewood.png"
+    },
+    {
+      "id": "home_a_flowers",
+      "kind": "prop",
+      "position": [
+        2932,
+        714
+      ],
+      "display_size": [
+        83.611,
+        56.401
+      ],
+      "anchor": [
+        0.5171277997364954,
+        0.778427734375
+      ],
+      "depth_sort": false,
+      "depth_anchor_world": [
+        2932,
+        714
+      ],
+      "group": "north_home_a",
+      "purpose": "Low ground flowers soften the yard edge; no new fence or obstruction.",
+      "file": "scenery/flowers_white.png"
+    },
+    {
+      "id": "home_c_blue_flowers",
+      "kind": "prop",
+      "position": [
+        3480,
+        794
+      ],
+      "display_size": [
+        70.446,
+        58.036
+      ],
+      "anchor": [
+        0.5051813471502591,
+        0.7307187780772686
+      ],
+      "depth_sort": false,
+      "depth_anchor_world": [
+        3480,
+        794
+      ],
+      "group": "north_home_c",
+      "purpose": "Low blue flowers mark the eastern home; its tight doorway lane stays open.",
+      "file": "scenery/flowers_blue.png"
+    },
+    {
+      "id": "home_c_yellow_flowers",
+      "kind": "prop",
+      "position": [
+        3572,
+        738
+      ],
+      "display_size": [
+        59.846,
+        49.461
+      ],
+      "anchor": [
+        0.5110294117647058,
+        0.7459697508896797
+      ],
+      "depth_sort": false,
+      "depth_anchor_world": [
+        3572,
+        738
+      ],
+      "group": "north_home_c",
+      "purpose": "One small side-garden accent; no tall tree or duplicate building.",
+      "file": "scenery/flowers_yellow.png"
+    },
+    {
+      "id": "plaza_home_planter",
+      "kind": "prop",
+      "position": [
+        3410,
+        954
+      ],
+      "display_size": [
+        127.95,
+        84.13
+      ],
+      "anchor": [
+        0.514745,
+        0.716616
+      ],
+      "depth_sort": true,
+      "depth_anchor_world": [
+        3410,
+        954
+      ],
+      "group": "home_north_plaza",
+      "purpose": "Single front-side planter distinguishes the plaza-facing home.",
+      "collision": [
+        3358,
+        937,
+        104,
+        17
+      ],
+      "file": "scenery/flower-planter.png"
+    },
+    {
+      "id": "plaza_home_flowers",
+      "kind": "prop",
+      "position": [
+        3378,
+        1004
+      ],
+      "display_size": [
+        83.611,
+        56.401
+      ],
+      "anchor": [
+        0.5171277997364954,
+        0.778427734375
+      ],
+      "depth_sort": false,
+      "depth_anchor_world": [
+        3378,
+        1004
+      ],
+      "group": "home_north_plaza",
+      "purpose": "A low second garden accent stays away from the home interaction stand.",
+      "file": "scenery/flowers_white.png"
+    },
+    {
+      "id": "neighborhood_well",
+      "kind": "prop",
+      "position": [
+        3575,
+        1115
+      ],
+      "display_size": [
+        170.01,
+        154.65
+      ],
+      "anchor": [
+        0.512251,
+        0.939394
+      ],
+      "depth_sort": true,
+      "depth_anchor_world": [
+        3575,
+        1115
+      ],
+      "group": "east_plaza_green",
+      "purpose": "Shared water point on the grass lot east of the plaza; leaves the plaza center empty.",
+      "collision": [
+        3521,
+        1057,
+        108,
+        58
+      ],
+      "file": "scenery/stone-well.png"
+    },
+    {
+      "id": "neighborhood_bench",
+      "kind": "prop",
+      "position": [
+        3610,
+        1190
+      ],
+      "display_size": [
+        142.37,
+        93.89
+      ],
+      "anchor": [
+        0.501953,
+        0.901283
+      ],
+      "depth_sort": true,
+      "depth_anchor_world": [
+        3610,
+        1190
+      ],
+      "group": "east_plaza_green",
+      "purpose": "One resting place beside the well, fully north of the protected east-west route.",
+      "collision": [
+        3554,
+        1164,
+        112,
+        26
+      ],
+      "file": "scenery/wooden-bench-ew.png"
+    },
+    {
+      "id": "west_plaza_lamp",
+      "kind": "prop",
+      "position": [
+        2780,
+        1100
+      ],
+      "display_size": [
+        124.99,
+        194.65
+      ],
+      "anchor": [
+        0.392893,
+        0.943937
+      ],
+      "depth_sort": true,
+      "depth_anchor_world": [
+        2780,
+        1100
+      ],
+      "group": "west_plaza_edge",
+      "purpose": "Single plaza-edge lamp, clear of the guild sightline and western entry route.",
+      "collision": [
+        2773,
+        1094,
+        14,
+        8
+      ],
+      "file": "scenery/wooden-lamp-post.png"
+    },
+    {
+      "id": "resident_north_yard",
+      "kind": "npc",
+      "position": [
+        2940,
+        802
+      ],
+      "display_size": [
+        119.301,
+        119.301
+      ],
+      "anchor": [
+        0.5,
+        0.9375
+      ],
+      "depth_sort": true,
+      "depth_anchor_world": [
+        2940,
+        802
+      ],
+      "group": "north_home_a",
+      "purpose": "A resident just below the western home yard looks toward the shared lane; does not stand in its door.",
+      "collision": [
+        2928,
+        795,
+        24,
+        14
+      ],
+      "file": "residents/npc_resident_idle_left.png",
+      "interaction_stand": [
+        2892,
+        812
+      ],
+      "facing": "left"
+    },
+    {
+      "id": "resident_plaza_home",
+      "kind": "npc",
+      "position": [
+        3300,
+        1036
+      ],
+      "display_size": [
+        119.301,
+        119.301
+      ],
+      "anchor": [
+        0.5,
+        0.9375
+      ],
+      "depth_sort": true,
+      "depth_anchor_world": [
+        3300,
+        1036
+      ],
+      "group": "home_north_plaza",
+      "purpose": "A resident at the plaza-facing garden edge makes the house feel occupied while keeping the door approach empty.",
+      "collision": [
+        3288,
+        1029,
+        24,
+        14
+      ],
+      "file": "residents/npc_resident_idle_down.png",
+      "interaction_stand": [
+        3300,
+        1092
+      ],
+      "facing": "down"
+    },
+    {
+      "id": "resident_well",
+      "kind": "npc",
+      "position": [
+        3685,
+        1133
+      ],
+      "display_size": [
+        119.301,
+        119.301
+      ],
+      "anchor": [
+        0.5,
+        0.9375
+      ],
+      "depth_sort": true,
+      "depth_anchor_world": [
+        3685,
+        1133
+      ],
+      "group": "east_plaza_green",
+      "purpose": "A resident faces the shared well from its east side, separate from the resting bench.",
+      "collision": [
+        3673,
+        1126,
+        24,
+        14
+      ],
+      "file": "residents/npc_resident_idle_left.png",
+      "interaction_stand": [
+        3733,
+        1133
+      ],
+      "facing": "left"
+    },
+    {
+      "id": "guard_northeast_verge",
+      "kind": "npc",
+      "position": [
+        3970,
+        1110
+      ],
+      "display_size": [
+        112.7339,
+        112.7339
+      ],
+      "anchor": [
+        0.5,
+        0.9375
+      ],
+      "depth_sort": true,
+      "depth_anchor_world": [
+        3970,
+        1110
+      ],
+      "group": "northeast_gate",
+      "purpose": "A single guard watches the northeast entry from an inside verge, away from the gate centerline.",
+      "collision": [
+        3958,
+        1103,
+        24,
+        14
+      ],
+      "file": "residents/npc_guard_idle_right.png",
+      "interaction_stand": [
+        3918,
+        1110
+      ],
+      "facing": "right"
     }
   ],
   "notes": [

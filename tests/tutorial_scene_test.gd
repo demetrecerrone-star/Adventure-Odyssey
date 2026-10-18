@@ -57,9 +57,31 @@ func run()->void:
    for point in polygon: middle += point
    middle /= polygon.size()
    check(not room.can_stand(middle), step[0]+" counter footprint is solid")
+  var original:Vector2 = room.player
+  var below_attendant := Vector2(npc.position[0],npc.position[1])+Vector2(0,80)
+  if room.can_stand(below_attendant):
+   room.player = below_attendant; room._update_actor()
+   check(room.npc_nodes[npc.id].z_index < room.actor.z_index, step[0]+" player below attendant draws in front of attendant")
+   room.player = original; room._update_actor()
   room.interact(); await settle()
   check(is_instance_valid(room.overlay),step[0]+" opens tutorial conversation")
-  if step[1] == "tutorial_upgrade": room.overlay.service_requested.emit(step[1])
+  if step[1] == "tutorial_upgrade":
+   room.overlay.service_requested.emit(step[1]); await settle()
+   check(room.overlay.confirm_button.disabled, "Upgrade requires explicit weapon selection")
+   check(state.tutorial.stage == "upgrade_blacksmith", "Opening upgrade panel never grants upgrade")
+   var saved_before:String = JSON.stringify(state.snapshot())
+   room.overlay._dismiss(); await settle()
+   check(JSON.stringify(state.snapshot()) == saved_before, "Back cancels upgrade without mutation")
+   room.overlay.service_requested.emit(step[1]); await settle()
+   room.overlay.select_weapon()
+   check(not room.overlay.confirm_button.disabled, "Selection enables confirmation")
+   var good_path:String = state.path
+   state.path = "user://missing_tutorial_directory/save.json"
+   room.overlay.confirm_upgrade(); await settle()
+   check(state.tutorial.stage == "upgrade_blacksmith" and not room.overlay.notice_label.text.is_empty(), "Failed upgrade save remains on retryable panel")
+   check(not room.overlay.confirm_button.disabled, "Save failure preserves explicit selection for retry")
+   state.path = good_path
+   room.overlay.confirm_upgrade()
   else: room.overlay.action_requested.emit(step[1])
   await settle()
   check(room.overlay.notice_label.text.is_empty(), step[1]+" saves without an error")

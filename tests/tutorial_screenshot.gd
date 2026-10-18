@@ -33,7 +33,10 @@ func run()->void:
   await snap("tutorial_%02d_%s_room.png" % [index,step[0]])
   room.interact(); await snap("tutorial_%02d_dialogue.png" % index)
   root.size = Vector2i(844,390); await snap("tutorial_%02d_phone.png" % index)
-  if step[1] == "tutorial_upgrade": room.overlay.service_requested.emit(step[1])
+  if step[1] == "tutorial_upgrade":
+   room.overlay.service_requested.emit(step[1]); await snap("tutorial_smith_selection_phone.png")
+   room.overlay.select_weapon(); await snap("tutorial_smith_confirm_phone.png")
+   room.overlay.confirm_upgrade()
   else: room.overlay.action_requested.emit(step[1])
   await snap("tutorial_%02d_after.png" % index)
   room._close_overlay()

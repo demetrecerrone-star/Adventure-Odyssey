@@ -187,6 +187,24 @@ func _test_dialogue_controls() -> void:
 	view._choose(origin)
 	check(view.body_label.text == "I'll let them tell you that.", "Origin question gives the approved discreet reply")
 	check(view.tutorial_state == snapshot and action_count == 2, "Lore question grants nothing and advances nothing")
+	# A second finger must work even if the movement finger remains held.
+	var lore_button:Button = view.choices.get_node("Choice_keepsake_origin")
+	view.body_label.text = "Before touch"
+	var touch := InputEventScreenTouch.new(); touch.index = 2; touch.position = lore_button.size * 0.5; touch.pressed = true
+	lore_button.gui_input.emit(touch)
+	touch = InputEventScreenTouch.new(); touch.index = 2; touch.position = lore_button.size * 0.5; touch.pressed = false
+	lore_button.gui_input.emit(touch)
+	check(view.body_label.text == "I'll let them tell you that.", "Secondary finger activates dialogue choice")
+	for reason in ["cancel", "drag", "focus"]:
+		view.body_label.text = "Unchanged"
+		touch = InputEventScreenTouch.new(); touch.index = 3; touch.position = lore_button.size * 0.5; touch.pressed = true
+		lore_button.gui_input.emit(touch)
+		if reason == "focus": view._notification(Control.NOTIFICATION_APPLICATION_FOCUS_OUT)
+		elif reason == "drag":
+			var drag := InputEventScreenDrag.new(); drag.index = 3; drag.position = lore_button.get_global_transform_with_canvas() * (lore_button.size * 0.5 + Vector2(40,0)); view._input(drag)
+		touch = InputEventScreenTouch.new(); touch.index = 3; touch.position = lore_button.size * 0.5; touch.pressed = false; touch.canceled = reason == "cancel"
+		lore_button.gui_input.emit(touch)
+		check(view.body_label.text == "Unchanged", "Dialogue " + reason + " gesture does not activate choice")
 	# Production uses canvas_items stretch: get_global_rect is in logical canvas
 	# coordinates, not root.size's physical window pixels. Check that mode first,
 	# then explicitly disable scaling to exercise genuinely compact phone layouts.

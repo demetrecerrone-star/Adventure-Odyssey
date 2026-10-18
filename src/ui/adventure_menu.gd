@@ -280,7 +280,8 @@ func _build_character() -> void:
 		armor_side.size_flags_stretch_ratio = 0.7
 		columns.add_child(armor_side)
 		var armor := _card(armor_side, "ARMOR", _armor_label())
-		_label("Equipped starting outfit", armor, 13).modulate = MUTED
+		_label("Equipped starting outfit · Character-bound", armor, 13).modulate = MUTED
+		_card(armor_side, "RING", "Keepsake ring · Character-bound" if state != null and not state.equipped_ring.is_empty() else "No ring equipped")
 		_make_portrait(columns)
 		var weapon_side := VBoxContainer.new()
 		weapon_side.name = "WeaponSide"
@@ -484,7 +485,12 @@ func _armor_label() -> String:
 	return "Equipment unavailable"
 
 func _weapon_label(id: String) -> String:
-	return "None equipped" if id.is_empty() else str(Inventory.LABELS.get(id, "Equipment unavailable"))
+	if id.is_empty(): return "None equipped"
+	var value := str(Inventory.LABELS.get(id, "Equipment unavailable"))
+	if state != null and id == state.equipped_weapon:
+		var level: int = state.weapon_upgrade_level("equipped_weapon")
+		if level > 0: value += " +%d" % level
+	return value
 
 func _card(parent: Node, heading: String, description: String) -> VBoxContainer:
 	var card := PanelContainer.new()

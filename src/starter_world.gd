@@ -20,6 +20,7 @@ var chunk_evictions := 0
 var autosave_elapsed := 0.0
 var world_ready := false
 var scenery_nodes := {}
+var resident_ids := {}
 var building_nodes := {}
 var building_data: Array = []
 var fortification_nodes := {}
@@ -138,6 +139,10 @@ func _load_scenery() -> void:
 		sprite.z_index = int(item.position[1] * 0.4) if item.get("depth_sort",true) else 1
 		stage.add_child(sprite)
 		scenery_nodes[item.id] = sprite
+		if item.get("kind", "") == "npc":
+			resident_ids[item.id] = true
+			anchors[item.id] = Vector2(item.interaction_stand[0],item.interaction_stand[1])
+			entrance_labels[item.id] = "Town guard" if item.id.begins_with("guard_") else "Town resident"
 		if item.has("collision"):
 			var r: Array = item.collision
 			prop_rects[item.id] = Rect2(r[0],r[1],r[2],r[3])
@@ -234,7 +239,9 @@ func _process(delta: float) -> void:
 		if not state.set_location("starter_region",player): message.text = state.error
 func interact() -> void:
 	if is_instance_valid(overlay) or sleeping: return
-	if nearest_prop() == "envelope":
+	if resident_ids.has(nearest_prop()):
+		open_tutorial_dialogue(nearest_prop())
+	elif nearest_prop() == "envelope":
 		open_tutorial_dialogue("envelope")
 	elif nearest_prop() == "home":
 		_reset_movement()
@@ -262,3 +269,14 @@ func _load_envelope() -> void:
 	envelope_node.scale = Vector2.ONE * 0.7
 	envelope_node.z_index = int(ENVELOPE.y * 0.4) - 4
 	stage.add_child(envelope_node)
+
+func nearest_prop() -> String:
+	var result := ""
+	var closest := 135.0
+	for id in anchors:
+		var radius := 72.0 if resident_ids.has(id) else (90.0 if id == "envelope" else 135.0)
+		var distance: float = player.distance_to(anchors[id])
+		if distance <= radius and distance < closest:
+			closest = distance
+			result = id
+	return result

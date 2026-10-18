@@ -134,7 +134,7 @@ func _update_actor() -> void:
    var npc_bounds := Rect2(sprite.position+sprite.offset*sprite.scale,sprite.texture.get_size()*sprite.scale)
    sprite.z_index = int(npc.depth_y)
    if npc.get("draw_before_prop_id", "") == item.id:
-    sprite.z_index = prop.z_index-1
+    sprite.z_index = mini(int(npc.depth_y), prop.z_index-1)
    elif npc_bounds.intersects(bounds):
     sprite.z_index = prop.z_index+1 if sprite.position.y >= _front_edge_y(item,sprite.position.x) else prop.z_index-1
 

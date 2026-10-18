@@ -496,12 +496,30 @@ func open_tutorial_dialogue(npc_id: String) -> void:
 	)
 	dialogue.service_requested.connect(func(service: String):
 		if service == "tutorial_upgrade":
-			var result: Dictionary = state.apply_tutorial_weapon_upgrade()
-			if result.get("ok", false):
-				dialogue.configure(npc_id, state.tutorial, state.character["class"])
-				_refresh_hud()
-			else: dialogue.show_error(str(result.get("message", state.error)))
+			open_tutorial_upgrade()
 		else:
 			dialogue.show_error("Trading services are being prepared. No gold or items have changed.")
+	)
+	_sync_modal_input()
+
+func open_tutorial_upgrade() -> void:
+	_close_overlay()
+	var upgrade = preload("res://src/ui/tutorial_upgrade_panel.gd").new()
+	upgrade.save_state = state
+	upgrade.z_index = 2100
+	overlay = upgrade
+	add_child(upgrade)
+	upgrade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	upgrade.dismissed.connect(func():
+		_close_overlay()
+		open_tutorial_dialogue("blacksmith")
+	)
+	upgrade.confirm_requested.connect(func():
+		var result: Dictionary = state.apply_tutorial_weapon_upgrade()
+		if result.get("ok", false):
+			_close_overlay()
+			_refresh_hud()
+			open_tutorial_dialogue("blacksmith")
+		else: upgrade.show_error(str(result.get("message", state.error)))
 	)
 	_sync_modal_input()

@@ -22,3 +22,5 @@ This work is a source/native-QA checkpoint. It does not create another APK or al
 
 ## Source result
 All 21 regression suites pass: 39708 checks, plus title geometry272 (total39980). New actual scene sequence67 checks; tutorial planner/dialogue885; transactional Save2682. Four sideways layouts pass native-engine headless reachability and player/counter/attendant ordering assertions. Native pixel review remains pending until the QA-only CI capture completes.
+
+Follow-up: the smith now has explicit weapon selection and confirmation rather than a one-click service action. The scene controller preserves the old state on Back and on save failure. The player carries the actual starter weapon; nothing is granted by opening the panel.

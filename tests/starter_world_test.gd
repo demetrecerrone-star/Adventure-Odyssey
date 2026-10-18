@@ -22,7 +22,7 @@ func run()->void:
 	check(world.actor.artwork_ready and world.actor.hair_renderer.ready and world.actor.palette_ready,"Saved layered appearance in world")
 	check(world.actor.equipped_weapon == "ranger_01_weapon","Equipped bow retained")
 	check(world.player == world.HOME and world.can_stand(world.HOME),"Home spawn navigable")
-	check(world.scenery_nodes.size() == 142 and world.prop_rects.size() == 90,"All approved scenery placements and colliders loaded")
+	check(world.scenery_nodes.size() == 155 and world.prop_rects.size() == 99,"All approved scenery placements and colliders loaded")
 	for id in world.scenery_nodes:
 		var sprite:Sprite2D = world.scenery_nodes[id]
 		check(sprite.texture != null and maxf(sprite.texture.get_width(),sprite.texture.get_height()) <= 512,"Bounded runtime texture "+id)
