@@ -54,6 +54,7 @@ func run()->void:
 		await settle()
 		room._sync_modal_input()
 		check(room.hud.get_script().resource_path == "res://src/ui/adventure_hud.gd",id+" uses shared HUD")
+		check(room.hud.progression_label.text == "Level 1 · XP unavailable", id+" HUD reports persisted level without invented XP")
 		check(room.hud.coordinates_label.text == "X %d  ·  Y %d" % [roundi(room.player.x),roundi(room.player.y)], id+" first frame coordinates match actual player")
 		check(room.control_preferences.mode == "floating" and room.control_preferences.left_handed and room.joystick.mode == "floating",id+" saved preferences applied on scene load")
 		for resolution in [Vector2i(1280,720),Vector2i(844,390)]:

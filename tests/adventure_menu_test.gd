@@ -40,14 +40,14 @@ func labels(node: Node) -> String:
 func run() -> void:
 	root.size = Vector2i(1280, 720)
 	var state = Save.new()
+	state.path = "user://menu_test_save_%s.json" % Time.get_ticks_usec()
 	var draft = Draft.new()
 	draft.username = "MenuTester"
 	draft.set_base("female")
-	state.character = draft.payload()
-	state.equipped_armor = Save.Inventory.starter_armor("Warrior")
-	state.bag.healing_potion = 3
-	state.bag.warrior_01_weapon = 1
-	state.bag.mage_01_weapon = 1
+	check(state.create(draft.payload()), "Create a valid persistent menu fixture")
+	for _i in range(3): check(state.transfer("healing_potion", false), "Seed potion through save authority")
+	check(state.transfer("warrior_01_weapon", false), "Seed starter weapon through save authority")
+	check(state.receive_item("mage_01_weapon", 1, "world_drop", "menu.fixture.mage"), "Seed wrong-class fixture weapon")
 	var before := JSON.stringify({"character":state.character, "bag":state.bag, "chest":state.chest, "armor":state.equipped_armor, "weapon":state.equipped_weapon})
 	var preferences = Preferences.new()
 	preferences.path = "user://menu_test_controls_%s.json" % Time.get_ticks_usec()
@@ -108,8 +108,7 @@ func run() -> void:
 	check(labels(menu.body).contains("Your class cannot equip this weapon"), "Inspection explains wrong-class restriction")
 	check(before == JSON.stringify({"character":state.character, "bag":state.bag, "chest":state.chest, "armor":state.equipped_armor, "weapon":state.equipped_weapon}), "Opening all pages and inspection never mutate guest save")
 	# Simulate the owner succeeding, then refresh from the authoritative object.
-	state.equipped_weapon = "warrior_01_weapon"
-	state.bag.warrior_01_weapon = 0
+	check(state.equip("warrior_01_weapon"), "Fixture owner equips using authoritative save")
 	menu.refresh_state()
 	await settle()
 	var unequip: Button = menu.find_child("UnequipWeapon", true, false)
@@ -124,14 +123,14 @@ func run() -> void:
 	await settle()
 	var detail_text := labels(menu.body)
 	check(detail_text.contains("MenuTester") and detail_text.contains("Class: Warrior") and detail_text.contains("Body: Female"), "Details show actual immutable identity")
-	check(detail_text.contains("Attack power: Not yet configured") and detail_text.contains("Wisdom · Luck"), "Character details never invent combat values")
+	check(detail_text.contains("STR 10") and detail_text.contains("LUK 10") and detail_text.contains("Combat is not implemented"), "Character details show configured stats and honest planned-combat boundary")
 	menu.show_page("stats")
 	await settle()
 	var stats_text := labels(menu.body)
 	for key in ["STR", "AGI", "VIT", "INT", "WIS", "LUK"]:
 		check(stats_text.contains(key), "Planned attribute exists: " + key)
-	check(stats_text.count("Not yet configured") == 7, "Six core attributes and derived attack power remain explicitly unconfigured")
-	check(stats_text.find("Luck") < stats_text.find("DERIVED COMBAT VALUES"), "Luck belongs to core attributes, before derived combat")
+	check(stats_text.count("10") >= 6 and menu.subtitle_label.text.contains("No points available"), "Six configured core stats and actual zero balance are shown")
+	check(stats_text.find("Luck") < stats_text.find("PLANNED EFFECTS"), "Luck belongs to core attributes, before planned effects")
 	menu.show_page("quest_log")
 	check(labels(menu.body).contains("Read the envelope") and labels(menu.body).contains("Combat remains unavailable"), "Quest log shows actual tutorial and honest combat boundary")
 	menu.show_page("settings")
@@ -232,6 +231,6 @@ func run() -> void:
 		await settle()
 	check(dismissals == 4, "Every freshly opened menu dismisses exactly once")
 	for path in DirAccess.get_files_at("user://"):
-		if path.begins_with("menu_test_controls_"): DirAccess.remove_absolute("user://" + path)
+		if path.begins_with("menu_test_controls_") or path.begins_with("menu_test_save_"): DirAccess.remove_absolute("user://" + path)
 	print("ADVENTURE MENU TEST: %d checks, %d failures" % [checks, failures])
 	quit(1 if failures else 0)

@@ -387,6 +387,7 @@ func _load_layout() -> void:
 func _refresh_hud() -> void:
 	if is_instance_valid(hud):
 		hud.set_character(state.character)
+		hud.set_progression(state.get_stat_summary())
 		if state.get("tutorial") is Dictionary:
 			hud.set_tutorial_objective(load("res://src/tutorial_progress.gd").objective(state.tutorial))
 		_refresh_hud_location()

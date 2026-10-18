@@ -35,6 +35,7 @@ var potion_button: Button
 var layout_safe_rect := Rect2()
 var left_handed := false
 var _character: Dictionary = {}
+var _level := 0
 var _scene := "Bedroom"
 var _world_position := Vector2.ZERO
 var _modal_active := false
@@ -295,12 +296,17 @@ func set_character(character: Dictionary) -> void:
 		return
 	username_label.text = str(character.get("username", "Guest"))
 	class_label.text = str(character.get("class", "Class unavailable"))
-	# The local save has no progression model; never invent a level or XP value.
-	progression_label.text = "Level / XP unavailable"
+	# Level is supplied separately by the validated save; XP is not implemented.
+	progression_label.text = "Level %d · XP unavailable" % _level if _level > 0 else "Level / XP unavailable"
 	if character.is_empty():
 		portrait_avatar.hide()
 	else:
 		portrait_avatar.configure(str(character.get("base", "")), str(character.get("class", "")), character)
+
+func set_progression(summary: Dictionary) -> void:
+	_level = int(summary.get("level", 0)) if summary.get("ok", false) else 0
+	if _built:
+		progression_label.text = "Level %d · XP unavailable" % _level if _level > 0 else "Level / XP unavailable"
 
 func configure(character: Dictionary) -> void:
 	set_character(character)

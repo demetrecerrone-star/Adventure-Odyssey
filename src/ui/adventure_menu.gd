@@ -1,6 +1,6 @@
 extends Control
-# A read-only view of the existing save. Scene owners perform every save/equip
-# operation and refresh this view only after the authoritative operation returns.
+# Reads authoritative save state. Equipment requests remain scene-owned; stat
+# allocation uses the save service only after an explicit preview and confirmation.
 signal dismissed
 signal inventory_requested
 signal equip_requested(item: String)
@@ -45,6 +45,25 @@ var dropdown: Control
 var dropdown_scroll: ScrollContainer
 var _dim: ColorRect
 var _touch_buttons: Array[Button] = []
+var stat_footer: HBoxContainer
+var stat_primary: Button
+var stat_cancel: Button
+var stat_edit: Button
+var stat_rows := {}
+var stat_effect_labels := {}
+var _stat_snapshot: Dictionary = {}
+var _stat_deltas: Dictionary = {}
+var _stat_preview: Dictionary = {}
+var _stat_reviewing := false
+var _stat_committing := false
+const PLANNED_EFFECTS := [
+	["physical_power", "Physical power", "number"], ["spell_power", "Spell power", "number"],
+	["max_hp", "Maximum HP", "number"], ["max_mana", "Maximum mana", "number"],
+	["mana_recovery_per_second", "Mana recovery / sec", "decimal"], ["accuracy_chance", "Accuracy", "percent"],
+	["auto_dodge_chance", "Auto-dodge", "percent"], ["resilience", "Resilience", "percent"],
+	["critical_chance", "Critical chance", "percent"], ["rare_drop_multiplier", "Rare-drop multiplier", "multiplier"]
+]
+
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -86,6 +105,11 @@ func _ready() -> void:
 	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	body.add_theme_constant_override("separation", 12)
 	body_scroll.add_child(body)
+	stat_footer = HBoxContainer.new()
+	stat_footer.name = "StatActions"
+	stat_footer.add_theme_constant_override("separation", 10)
+	stat_footer.visible = false
+	panel.add_child(stat_footer)
 	notice = _label("", panel, 14)
 	notice.name = "Notice"
 	notice.max_lines_visible = 2
@@ -184,9 +208,12 @@ func _layout() -> void:
 	subtitle_label.position = Vector2(26, 49)
 	subtitle_label.size = Vector2(panel.size.x - 54, 22)
 	var footer := 38.0 if not notice.text.is_empty() else 0.0
+	if page == "stats": footer += 54
+	stat_footer.position = Vector2(22, panel.size.y - 66)
+	stat_footer.size = Vector2(panel.size.x - 44, 44)
 	body_scroll.position = Vector2(22, 80)
 	body_scroll.size = Vector2(panel.size.x - 44, maxf(80, panel.size.y - 102 - footer))
-	notice.position = Vector2(26, panel.size.y - 54)
+	notice.position = Vector2(26, panel.size.y - (108 if page == "stats" else 54))
 	notice.size = Vector2(panel.size.x - 52, 40)
 	_portrait_height = clampf(body_scroll.size.y - 58, 190, 430)
 	if is_instance_valid(portrait_stage):
@@ -196,10 +223,12 @@ func _layout() -> void:
 func show_page(id: String) -> void:
 	if id == "quests": id = "quest_log"
 	if not PAGES.has(id) and id != "menu": id = "character"
+	_reset_stat_draft()
 	page = id
 	if not is_node_ready():
 		initial_page = id
 		return
+	stat_footer.visible = page == "stats"
 	dropdown.visible = page == "menu"
 	sidebar.visible = page != "menu"
 	panel.visible = page != "menu"
@@ -246,6 +275,8 @@ func _clear_body() -> void:
 	fixed_button = null
 	floating_button = null
 	handed_button = null
+	stat_rows = {}
+	stat_effect_labels = {}
 	for child in body.get_children():
 		body.remove_child(child)
 		child.queue_free()
@@ -306,10 +337,16 @@ func _build_character() -> void:
 		_label("Class: " + str(character.get("class", "Unavailable")), identity, 14)
 		_label("Body: " + str(character.get("base", "Unavailable")).capitalize(), identity, 14)
 		_label("Name, class and body are fixed for this character.", identity, 13).modulate = MUTED
-		var attributes := _card(details, "CORE ATTRIBUTES", "Strength · Agility · Vitality · Intelligence · Wisdom · Luck")
-		_label("Starting values are not yet configured. View all six in Stats.", attributes, 14).modulate = MUTED
-		var values := _card(details, "DERIVED COMBAT VALUES", "Attack power: Not yet configured")
-		_label("Combat formulas have not been defined yet.", values, 13).modulate = MUTED
+		var stat_summary: Dictionary = state.get_stat_summary() if state != null and state.has_method("get_stat_summary") else {}
+		var current_stats: Array[String] = []
+		if stat_summary.get("ok", false):
+			for attribute in CORE_ATTRIBUTES:
+				current_stats.append("%s %d" % [attribute[0], int(stat_summary.attributes[attribute[0]])])
+		var attributes := _card(details, "CORE ATTRIBUTES", "  ·  ".join(current_stats) if not current_stats.is_empty() else "Stats unavailable")
+		_label("Strength · Agility · Vitality · Intelligence · Wisdom · Luck", attributes, 13).modulate = MUTED
+		_label("All six start at 10. Level-ups grant 5 points to allocate in Stats.", attributes, 14).modulate = MUTED
+		var values := _card(details, "PLANNED COMBAT VALUES", "View provisional bonuses in Stats.")
+		_label("Combat is not implemented. These planned effects do not affect gameplay yet.", values, 13).modulate = MUTED
 
 func _make_portrait(parent: Node) -> void:
 	portrait_stage = Ornate.new()
@@ -415,25 +452,259 @@ func _build_item_details() -> void:
 	_label("Current: " + _weapon_label(str(state.equipped_weapon)), info, 14)
 	_label("Equipment comparisons are not yet configured. This equipment has no defined numeric attributes or derived combat values yet.", info, 14).modulate = MUTED
 
+func _reset_stat_draft() -> void:
+	_stat_snapshot = {}
+	_stat_deltas = {}
+	_stat_preview = {}
+	_stat_reviewing = false
+	_stat_committing = false
+
+func _stat_total() -> int:
+	var total := 0
+	for value in _stat_deltas.values(): total += int(value)
+	return total
+
 func _build_stats() -> void:
-	# Existing saves have no numeric attribute model. An absent value remains
-	# explicitly unconfigured, including Luck; opening this view never writes defaults.
-	var core := _card(body, "CORE ATTRIBUTES", "")
+	if _stat_snapshot.is_empty():
+		_stat_snapshot = state.get_stat_summary() if state != null and state.has_method("get_stat_summary") else {"ok":false, "message":"No local character is available."}
+	_clear_stat_actions()
+	if not _stat_snapshot.get("ok", false):
+		_card(body, "CORE ATTRIBUTES", str(_stat_snapshot.get("message", "Your local stats are unavailable.")))
+		subtitle_label.text = "No points have been spent"
+		return
+	if _stat_reviewing:
+		_build_stat_review()
+	else:
+		_build_stat_grid()
+	_build_planned_effects()
+	_build_stat_actions()
+	_sync_stat_controls()
+
+func _build_stat_grid() -> void:
+	var grid := GridContainer.new()
+	grid.name = "CoreStatGrid"
+	grid.columns = 2
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 8)
+	body.add_child(grid)
+	for attribute in CORE_ATTRIBUTES:
+		var key: String = attribute[0]
+		var card := PanelContainer.new()
+		card.name = "Stat_" + key
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color("f5ecd9")
+		style.border_color = Color("c7ae75")
+		style.set_border_width_all(1)
+		style.set_corner_radius_all(5)
+		style.content_margin_left = 8
+		style.content_margin_right = 8
+		style.content_margin_top = 4
+		style.content_margin_bottom = 4
+		card.add_theme_stylebox_override("panel", style)
+		grid.add_child(card)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 5)
+		card.add_child(row)
+		var identity := VBoxContainer.new()
+		identity.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		identity.custom_minimum_size.x = 78
+		identity.add_theme_constant_override("separation", 0)
+		row.add_child(identity)
+		_label(key, identity, 18, true)
+		_label(attribute[1], identity, 13).modulate = MUTED
+		var minus := _button("−", row)
+		minus.name = "StatMinus_" + key
+		minus.custom_minimum_size.x = 44
+		minus.tooltip_text = "Remove one draft point from " + attribute[1]
+		minus.pressed.connect(_change_stat.bind(key, -1))
+		var value := _label("", row, 17)
+		value.name = "StatValue_" + key
+		value.custom_minimum_size.x = 48
+		value.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		value.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		var plus := _button("+", row)
+		plus.name = "StatPlus_" + key
+		plus.custom_minimum_size.x = 44
+		plus.tooltip_text = "Add one draft point to " + attribute[1]
+		plus.pressed.connect(_change_stat.bind(key, 1))
+		stat_rows[key] = {"minus":minus, "plus":plus, "value":value}
+	var help := _label("Use + / − to plan your points. Only Confirm saves them.", body, 14)
+	help.name = "StatHelp"
+	help.modulate = MUTED
+
+func _build_stat_review() -> void:
+	var review := _card(body, "REVIEW ALLOCATION", "Spend %d points · %d will remain" % [_stat_total(), int(_stat_preview.get("unspent_points", 0))])
+	review.name = "StatReview"
+	var changes: Array[String] = []
+	for attribute in CORE_ATTRIBUTES:
+		var key: String = attribute[0]
+		if int(_stat_deltas.get(key, 0)) > 0:
+			changes.append("%s  %d → %d (+%d)" % [key, int(_stat_snapshot.attributes[key]), int(_stat_preview.attributes[key]), int(_stat_deltas[key])])
+	_label("   ·   ".join(changes), review, 17)
+	_label("Confirm permanently spends these points. Cancel keeps your saved stats.", review, 14).modulate = MUTED
+
+func _build_planned_effects() -> void:
+	var section := _card(body, "PLANNED EFFECTS · PREVIEW ONLY", "Combat is not implemented. These provisional values have no gameplay effect yet.")
+	section.name = "PlannedStatEffects"
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	grid.add_theme_constant_override("h_separation", 18)
-	grid.add_theme_constant_override("v_separation", 10)
-	core.add_child(grid)
-	for attribute in CORE_ATTRIBUTES:
-		var row := VBoxContainer.new()
-		row.name = "Stat_" + attribute[0]
-		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		grid.add_child(row)
-		_label(attribute[0] + " · " + attribute[1], row, 16)
-		_label("Not yet configured", row, 14).modulate = MUTED
-	var combat := _card(body, "DERIVED COMBAT VALUES", "Attack power: Not yet configured")
-	_label("Starting attributes, progression and combat formulas are not yet defined. No points or effects are applied.", combat, 14).modulate = MUTED
+	grid.add_theme_constant_override("v_separation", 9)
+	section.add_child(grid)
+	for definition in PLANNED_EFFECTS:
+		var value := _label("", grid, 14)
+		value.name = "StatEffect_" + definition[0]
+		value.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		stat_effect_labels[definition[0]] = value
+	_label("All attributes start at 10. Each level after 1 grants 5 points. Chance bonuses use diminishing returns; tuning may change.", section, 13).modulate = MUTED
+
+func _clear_stat_actions() -> void:
+	_release_touch_owners()
+	_touch_buttons = _touch_buttons.filter(func(button): return is_instance_valid(button) and not stat_footer.is_ancestor_of(button))
+	for child in stat_footer.get_children():
+		stat_footer.remove_child(child)
+		child.queue_free()
+	stat_primary = null
+	stat_cancel = null
+	stat_edit = null
+
+func _build_stat_actions() -> void:
+	# Primary action follows the preferred action-hand side, and remains outside
+	# the scroller for both layouts.
+	var order := ["cancel", "edit", "primary"]
+	if _left_handed(): order.reverse()
+	for action in order:
+		if action == "edit" and not _stat_reviewing: continue
+		var button := _button("", stat_footer)
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		match action:
+			"cancel":
+				stat_cancel = button
+				button.name = "StatCancel"
+				button.text = "Cancel"
+				button.pressed.connect(_cancel_stat_draft)
+			"edit":
+				stat_edit = button
+				button.name = "StatEdit"
+				button.text = "Edit points"
+				button.pressed.connect(_edit_stat_draft)
+			"primary":
+				stat_primary = button
+				button.name = "StatConfirm" if _stat_reviewing else "StatPreview"
+				button.pressed.connect(_confirm_stat_draft if _stat_reviewing else _preview_stat_draft)
+				_set_active(button, true)
+
+func _format_stat_effect(value: float, kind: String) -> String:
+	match kind:
+		"percent": return "%.2f%%" % (value * 100.0)
+		"decimal": return "%.1f" % value
+		"multiplier": return "%.3f×" % value
+	return str(int(round(value)))
+
+func _sync_stat_controls() -> void:
+	if not _stat_snapshot.get("ok", false): return
+	var spent := _stat_total()
+	var unspent := int(_stat_snapshot.unspent_points)
+	var remaining := unspent - spent
+	subtitle_label.text = "Level %d  ·  %d unspent  ·  %d in draft" % [int(_stat_snapshot.level), unspent, spent]
+	if unspent == 0: subtitle_label.text = "Level %d  ·  No points available  ·  5 per level-up" % int(_stat_snapshot.level)
+	for key in stat_rows:
+		var row: Dictionary = stat_rows[key]
+		var saved := int(_stat_snapshot.attributes[key])
+		var added := int(_stat_deltas.get(key, 0))
+		row.value.text = "%d" % saved if added == 0 else "%d\n+%d" % [saved, added]
+		row.value.add_theme_color_override("font_color", Color("236f68") if added > 0 else INK)
+		row.minus.disabled = added <= 0 or _stat_committing
+		row.plus.disabled = remaining <= 0 or _stat_committing
+	if is_instance_valid(stat_primary):
+		stat_primary.text = "Confirm %d points" % spent if _stat_reviewing else ("Preview %d points" % spent if spent > 0 else "Preview allocation")
+		stat_primary.disabled = spent <= 0 or _stat_committing
+	if is_instance_valid(stat_cancel): stat_cancel.disabled = spent <= 0 or _stat_committing
+	if is_instance_valid(stat_edit): stat_edit.disabled = _stat_committing
+	var proposed: Dictionary = _stat_snapshot
+	if not _stat_preview.is_empty(): proposed = _stat_preview
+	for definition in PLANNED_EFFECTS:
+		var key: String = definition[0]
+		var current := float(_stat_snapshot.get("planned_effects", {}).get(key, 0))
+		var future := float(proposed.get("planned_effects", {}).get(key, current))
+		var formatted := _format_stat_effect(current, definition[2])
+		if not is_equal_approx(current, future): formatted += " → " + _format_stat_effect(future, definition[2])
+		stat_effect_labels[key].text = definition[1] + ": " + formatted
+
+func _change_stat(key: String, change: int) -> void:
+	if page != "stats" or _stat_reviewing or _stat_committing or _dismiss_pending or not _stat_snapshot.get("ok", false): return
+	if change not in [-1, 1] or not _stat_snapshot.attributes.has(key): return
+	var current := int(_stat_deltas.get(key, 0))
+	if change == -1 and current <= 0: return
+	if change == 1 and _stat_total() >= int(_stat_snapshot.unspent_points): return
+	var candidate := _stat_deltas.duplicate(true)
+	candidate[key] = current + change
+	if int(candidate[key]) == 0: candidate.erase(key)
+	if candidate.is_empty():
+		_stat_deltas = {}
+		_stat_preview = {}
+	else:
+		var result: Dictionary = state.preview_stat_allocation(candidate, int(_stat_snapshot.revision))
+		if not result.get("ok", false):
+			_stat_failure(result)
+			return
+		_stat_deltas = candidate
+		_stat_preview = result
+	if not notice.text.is_empty(): set_notice("")
+	_sync_stat_controls()
+
+func _preview_stat_draft() -> void:
+	if page != "stats" or _stat_reviewing or _stat_committing or _dismiss_pending or _stat_total() <= 0: return
+	var result: Dictionary = state.preview_stat_allocation(_stat_deltas, int(_stat_snapshot.revision))
+	if not result.get("ok", false):
+		_stat_failure(result)
+		return
+	_stat_preview = result
+	_stat_reviewing = true
+	notice.text = ""
+	_redraw_stats(false)
+
+func _edit_stat_draft() -> void:
+	if not _stat_reviewing or _stat_committing or _dismiss_pending: return
+	_stat_reviewing = false
+	_redraw_stats(false)
+
+func _cancel_stat_draft() -> void:
+	if _stat_committing or _dismiss_pending: return
+	_reset_stat_draft()
+	notice.text = ""
+	_redraw_stats(true)
+
+func _confirm_stat_draft() -> void:
+	if page != "stats" or not _stat_reviewing or _stat_committing or _dismiss_pending or _stat_total() <= 0: return
+	_stat_committing = true
+	_sync_stat_controls()
+	var result: Dictionary = state.allocate_stat_points(_stat_deltas.duplicate(true), int(_stat_snapshot.revision))
+	_stat_committing = false
+	if not result.get("ok", false):
+		_stat_failure(result)
+		return
+	_reset_stat_draft()
+	_stat_snapshot = state.get_stat_summary()
+	_redraw_stats(false)
+	set_notice("Points saved. Planned effects are not active in gameplay.")
+
+func _stat_failure(result: Dictionary) -> void:
+	# Reload authority after stale or failed writes. No stale draft can be confirmed
+	# a second time, and failed persistence never changes the displayed saved values.
+	_reset_stat_draft()
+	_redraw_stats(true)
+	set_notice(str(result.get("message", "Points were not saved. Please try again.")), true)
+
+func _redraw_stats(preserve_scroll: bool) -> void:
+	var previous_scroll := body_scroll.scroll_vertical if preserve_scroll else 0
+	_clear_body()
+	_build_stats()
+	_layout()
+	body_scroll.set_deferred("scroll_vertical", previous_scroll)
 
 func _build_quests() -> void:
 	if state == null:
@@ -616,5 +887,6 @@ func _input(event: InputEvent) -> void:
 func _dismiss() -> void:
 	if _dismiss_pending: return
 	_dismiss_pending = true
+	_reset_stat_draft()
 	_release_touch_owners()
 	dismissed.emit()

@@ -1,12 +1,13 @@
 extends RefCounted
-# Permanent local guest slot. Counts are compatibility views of the v7 ledger.
+# Permanent local guest slot. Counts are compatibility views of the v8 ledger.
 const Draft = preload("res://src/creator/character_draft.gd")
 const Progress = preload("res://src/tutorial_progress.gd")
+const Stats = preload("res://src/character_stats.gd")
 const APPEARANCE = ["hair", "hair_color", "eyes", "skin"]
 const Inventory = preload("res://src/inventory_catalog.gd")
 const ShopCatalog = preload("res://src/shop_catalog.gd")
 const ITEMS = Inventory.LABELS
-const VERSION := 7
+const VERSION := 8
 const MAX_COUNT := 999
 const ACTION_SCENES = {
 	"read_envelope":"starter_region", "guild_assign_blacksmith":"guild_interior",
@@ -34,6 +35,7 @@ var upgrade_entitlements: Dictionary = {}
 var acquisition_receipts: Dictionary = {}
 var purchase_receipts: Dictionary = {}
 var tutorial := Progress.initial_state()
+var stats := Stats.initial_state()
 var awake := true
 var location := {"scene":"bedroom", "position":[535.0,670.0]}
 var error := ""
@@ -60,6 +62,7 @@ func create(value: Dictionary) -> bool:
 	acquisition_receipts = {}
 	purchase_receipts = {}
 	tutorial = Progress.initial_state()
+	stats = Stats.initial_state()
 	chest_gold = 100
 	wallet_gold = 0
 	gold_seeded = true
@@ -70,6 +73,53 @@ func create(value: Dictionary) -> bool:
 	_add_stack(Inventory.starter_armor(character["class"]), 1, "equipped_armor", "starter", "starter.armor")
 	_sync_views()
 	return _commit(previous)
+
+# Read-only detached view. Class and equipment do not change the core baseline.
+func get_stat_summary() -> Dictionary:
+	if character.is_empty() or not _valid_live_state(): return _stat_failure("invalid_save", "Your local save is not ready to assign stats.")
+	return Stats.summary(stats)
+
+func preview_stat_allocation(deltas, expected_revision) -> Dictionary:
+	if character.is_empty() or not _valid_live_state(): return _stat_failure("invalid_save", "Your local save is not ready to assign stats.")
+	var result := Stats.preview_allocation(stats, deltas, expected_revision)
+	# Keep candidate state internal; the menu receives detached computed values.
+	result.erase("next_state")
+	return result
+
+func allocate_stat_points(deltas, expected_revision) -> Dictionary:
+	if character.is_empty() or not _valid_live_state(): return _stat_failure("invalid_save", "Your local save is not ready to assign stats.")
+	var plan := Stats.preview_allocation(stats, deltas, expected_revision)
+	if not plan.ok: return plan
+	var previous := snapshot()
+	stats = plan.next_state.duplicate(true)
+	if not _commit(previous): return _stat_failure("save_failed", error)
+	var result := Stats.summary(stats)
+	result.code = "allocated"
+	result.message = "%d stat points assigned." % plan.points_assigned
+	result["points_assigned"] = plan.points_assigned
+	return result
+
+# Future progression/service boundary, never connected to a menu, debug button,
+# tutorial reward, or timer. Only a legitimate earned-level system may call it.
+func advance_character_level(target_level, expected_revision) -> Dictionary:
+	if character.is_empty() or not _valid_live_state(): return _stat_failure("invalid_save", "Your local save is not ready to record a level.")
+	var plan := Stats.plan_level_advance(stats, target_level, expected_revision)
+	if not plan.ok or plan.get("duplicate", false): return plan
+	var previous := snapshot()
+	stats = plan.next_state.duplicate(true)
+	if not _commit(previous): return _stat_failure("save_failed", error)
+	var result := Stats.summary(stats)
+	result.code = "level_recorded"
+	result.message = "Character level recorded."
+	result["points_awarded"] = plan.points_awarded
+	return result
+
+func _stat_failure(code: String, message: String) -> Dictionary:
+	var result := Stats.summary(stats)
+	result.ok = false
+	result.code = code
+	result.message = message
+	return result
 
 func apply_appearance(value: Dictionary) -> bool:
 	if character.is_empty(): return false
@@ -246,12 +296,12 @@ func snapshot() -> Dictionary:
 	return {"version":VERSION, "tutorial_chest_seeded":true, "character":character.duplicate(true), "character_id":character_id,
 		"bag":bag.duplicate(true), "chest":chest.duplicate(true), "equipped_weapon":equipped_weapon, "equipped_armor":equipped_armor, "equipped_ring":equipped_ring,
 		"chest_gold":chest_gold, "wallet_gold":wallet_gold, "gold_seeded":gold_seeded, "item_ledger":item_ledger.duplicate(true),
-		"upgrade_entitlements":upgrade_entitlements.duplicate(true), "acquisition_receipts":acquisition_receipts.duplicate(true), "purchase_receipts":purchase_receipts.duplicate(true), "tutorial":tutorial.duplicate(true), "awake":awake, "location":location.duplicate(true)}
+		"upgrade_entitlements":upgrade_entitlements.duplicate(true), "acquisition_receipts":acquisition_receipts.duplicate(true), "purchase_receipts":purchase_receipts.duplicate(true), "tutorial":tutorial.duplicate(true), "stats":stats.duplicate(true), "awake":awake, "location":location.duplicate(true)}
 
 func save() -> bool:
 	error = ""
 	if not _valid_live_state():
-		error = "Local inventory or tutorial state is invalid. Your previous save is unchanged."
+		error = "Local inventory, tutorial, or stat state is invalid. Your previous save is unchanged."
 		return false
 	return _write_snapshot(snapshot())
 
@@ -377,7 +427,7 @@ func _write_snapshot(data: Dictionary) -> bool:
 	return true
 
 func _restore(data: Dictionary) -> void:
-	for key in ["character", "character_id", "bag", "chest", "equipped_weapon", "equipped_armor", "equipped_ring", "chest_gold", "wallet_gold", "gold_seeded", "item_ledger", "upgrade_entitlements", "acquisition_receipts", "purchase_receipts", "tutorial", "awake", "location"]:
+	for key in ["character", "character_id", "bag", "chest", "equipped_weapon", "equipped_armor", "equipped_ring", "chest_gold", "wallet_gold", "gold_seeded", "item_ledger", "upgrade_entitlements", "acquisition_receipts", "purchase_receipts", "tutorial", "stats", "awake", "location"]:
 		var value = data[key]
 		set(key, value.duplicate(true) if value is Dictionary or value is Array else value)
 
@@ -409,6 +459,7 @@ func _valid_snapshot(data: Dictionary) -> bool:
 	var gold_spent := _verified_purchase_total(data)
 	if gold_spent < 0 or data.chest_gold + data.wallet_gold + gold_spent != 100: return false
 	if not data.get("tutorial") is Dictionary or not Progress.validate_state(data.tutorial): return false
+	if not Stats.validate_state(data.get("stats")): return false
 	for receipt_kind in ["action_receipts", "event_receipts"]:
 		for action in data.tutorial[receipt_kind]:
 			if data.tutorial[receipt_kind][action].id != "tutorial:" + data.character_id + ":" + action: return false
@@ -510,6 +561,8 @@ func _valid_counts(value, required: Array, exact: bool) -> bool:
 	return true
 
 func _migrate(data: Dictionary) -> Dictionary:
+	# Supplied stat metadata is never silently repaired, even in legacy files.
+	if data.has("stats") and not Stats.validate_state(data.stats): return {}
 	# A downgraded test/backup with intact v6 metadata keeps its original ownership
 	# and receipts. Partial ledger metadata must never become a fresh legacy slot.
 	if data.has("item_ledger") or data.has("character_id") or data.has("tutorial"):
@@ -518,6 +571,9 @@ func _migrate(data: Dictionary) -> Dictionary:
 		preserved.awake = true
 		# v6 already owned its gold and grants; migration adds no new value.
 		if not preserved.has("purchase_receipts"): preserved.purchase_receipts = {}
+		# Earlier releases had no levels or allocations. Existing valid stat
+		# metadata in downgraded backups is preserved, never re-awarded/reset.
+		if not preserved.has("stats"): preserved.stats = Stats.initial_state()
 		return preserved if _valid_snapshot(preserved) else {}
 	var hero = data.get("character")
 	if not hero is Dictionary or hero.get("base", "") not in ["male", "female"] or not draft_from(hero).validate().is_empty(): return {}
@@ -535,6 +591,7 @@ func _migrate(data: Dictionary) -> Dictionary:
 	# Build in an isolated instance so migration failure cannot mutate this session.
 	var candidate = get_script().new()
 	candidate.character = hero.duplicate(true)
+	if data.has("stats"): candidate.stats = data.stats.duplicate(true)
 	candidate.character_id = _new_id()
 	candidate.location = point.duplicate(true)
 	candidate.gold_seeded = true
