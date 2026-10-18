@@ -1,13 +1,14 @@
 extends SceneTree
 const ShopPanel = preload("res://src/ui/shop_purchase_panel.gd")
 const Catalog = preload("res://src/shop_catalog.gd")
+const ItemIcon = preload("res://src/ui/inventory_item_icon.gd")
 
 class ReadOnlySave:
 	extends RefCounted
 	var wallet_gold := 100
 	var shop_id := "apothecary"
 	var available := true
-	var bag := {"healing_potion":0, "mana_potion":0}
+	var bag := {"healing_potion":3, "mana_potion":5}
 	func get_shop_catalog() -> Dictionary:
 		return {"ok":available, "code":"ok" if available else "wrong_location", "message":"Return to the shopkeeper.", "shop_id":shop_id, "shop_name":Catalog.shop_name(shop_id), "stock_policy":"unlimited", "offers":Catalog.entries_for(shop_id) if available else [], "max_quantity":10, "wallet_gold":wallet_gold}
 	func snapshot() -> String:
@@ -64,6 +65,16 @@ func assert_layout(panel, dimensions: Vector2) -> void:
 	for button in all_buttons(panel):
 		if button.is_visible_in_tree():
 			check(button.size.x >= 44 and button.size.y >= 44, "%s: %s has a 44px touch target" % [dimensions, button.name])
+	for id in panel.select_buttons:
+		var button: Button = panel.select_buttons[id]
+		var icon = button.find_child("ShopIcon_" + id, false, false)
+		check(icon != null and icon.get_script() == ItemIcon and icon.item_id == id and icon.artwork_ready, "%s: %s reuses the actual catalog item icon" % [dimensions, id])
+		if icon != null:
+			check(icon.mouse_filter == Control.MOUSE_FILTER_IGNORE, "%s: artwork leaves the full row available to touch" % dimensions)
+			check(button.get_global_rect().encloses(icon.get_global_rect()), "%s: %s artwork fits its row" % [dimensions, id])
+			check(icon.get_global_rect().end.x <= button.get_global_rect().position.x + button.get_theme_stylebox("normal").content_margin_left, "%s: icon cannot overlap offer text" % dimensions)
+		check(button.size.y <= 72, "%s: icon rows stay compact at normal text size" % dimensions)
+		check(button.button_pressed == (id == panel.selected_item_id), "%s: offer pressed state matches reviewed selection" % dimensions)
 
 func run() -> void:
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
@@ -77,6 +88,8 @@ func run() -> void:
 	check(labels(panel).contains("Wallet: 100 gold"), "Shop displays the actual wallet")
 	check(labels(panel).contains("Unlimited stock") and labels(panel).contains("Prices are provisional development values"), "Stock and provisional development price are explicit")
 	check(labels(panel).contains("character-bound") and labels(panel).contains("Potion use and effects are unavailable"), "Browsing explains binding and unavailable potion behavior")
+	check(panel.select_buttons.healing_potion.text.contains("In bag: 3") and panel.select_buttons.mana_potion.text.contains("In bag: 5"), "Each offer displays its actual existing bag count")
+	check(not panel.select_buttons.healing_potion.button_pressed and not panel.select_buttons.mana_potion.button_pressed, "Browsing never preselects an offer")
 	panel.confirm_purchase()
 	check(requests.is_empty(), "Direct confirmation cannot bypass selection and review")
 	panel.select_item("keepsake_ring")
@@ -84,21 +97,33 @@ func run() -> void:
 	for dimensions in [Vector2(1280, 720), Vector2(844, 390)]:
 		root.size = Vector2i(dimensions)
 		panel.size = dimensions
+		panel.configure_shop(state, "apothecary")
+		await settle()
+		check(panel.scroll.get_global_rect().encloses(panel.select_buttons.healing_potion.get_global_rect()) and panel.scroll.get_global_rect().encloses(panel.select_buttons.mana_potion.get_global_rect()), "%s: both compact offers are visible before selection" % dimensions)
 		panel.select_item("healing_potion")
 		await settle()
 		assert_layout(panel, dimensions)
+		check(panel.select_buttons.healing_potion.text.contains("Selected · In bag: 3") and not panel.select_buttons.mana_potion.text.contains("Selected"), "Only the chosen offer has a visible selection label")
+		check(panel.select_buttons.healing_potion.get_theme_stylebox("normal").border_color != panel.select_buttons.mana_potion.get_theme_stylebox("normal").border_color, "Chosen offer has a persistent distinct border")
+		check(panel.scroll.get_global_rect().encloses(panel.review_button.get_global_rect()) and panel.scroll.get_global_rect().encloses(panel.quantity_label.get_parent().get_global_rect()), "%s: selecting an offer reveals quantity and Review together" % dimensions)
+		check(panel.quantity_label.text.begins_with("Healing potion\nQuantity:"), "%s: the visible quantity section keeps the actual selected item name" % dimensions)
 		check(panel.quantity == 1 and panel.maximum_quantity() == 10 and panel.total_price() == 10, "Selection starts with one affordable potion")
 		panel.set_quantity(-99)
 		check(panel.quantity == 1 and panel.decrement_button.disabled, "Quantity cannot fall below one")
 		panel.set_quantity(999)
 		check(panel.quantity == 10 and panel.increment_button.disabled and panel.total_price() == 100, "Quantity is capped at ten and total is derived from catalog")
+		var quantity_scroll: int = panel.scroll.scroll_vertical
 		panel.set_quantity(2)
+		await settle()
+		check(panel.scroll.scroll_vertical == quantity_scroll, "%s: quantity adjustment keeps scroll position stable" % dimensions)
+		check(panel.select_buttons.healing_potion.text.contains("In bag: 3") and state.snapshot() == before, "Quantity previews never inflate the saved bag count")
 		panel.confirm_purchase()
 		check(requests.is_empty(), "Selection alone cannot submit a purchase")
 		var close_before: Rect2 = panel.close_button.get_global_rect()
 		panel.scroll.scroll_vertical = 10000
 		await settle()
 		check(panel.close_button.get_global_rect() == close_before, "Scrolling the choices never moves Back")
+		check(panel.scroll.get_global_rect().encloses(panel.review_button.get_global_rect()), "%s: normal scrolling reaches the entire Review button" % dimensions)
 		panel.review_purchase()
 		await settle()
 		check(panel.confirming and panel.select_buttons.is_empty() and panel.review_button == null, "Review is separate from browsing")
@@ -113,7 +138,11 @@ func run() -> void:
 		await settle()
 		panel.select_item("mana_potion")
 		check(panel.quantity == 1 and panel.selected_item_id == "mana_potion", "Changing item resets quantity")
+		check(panel.select_buttons.mana_potion.button_pressed and not panel.select_buttons.healing_potion.button_pressed, "Switching offers moves the single selected state")
+		check(panel.quantity_label.text.begins_with("Mana potion\nQuantity:"), "Changing offers also refreshes the visible selected-item context")
 		panel.select_item("healing_potion")
+		panel.select_buttons.healing_potion.pressed.emit()
+		check(panel.selected_item_id == "healing_potion" and panel.select_buttons.healing_potion.button_pressed, "Selecting the same offer keeps a clear selection")
 	check(state.snapshot() == before and requests.is_empty(), "Browsing, quantities, and review never mutate save or emit transactions")
 	# Secondary finger behavior is inherited for quantity controls and confirmation.
 	panel.set_quantity(1)
@@ -185,11 +214,12 @@ func run() -> void:
 	check(requests.size() == 2 and requests[1] == requests[0], "Retry uses the same ID, item, and quantity")
 	# Simulate only the owning scene applying a durable success.
 	state.wallet_gold = 80
-	state.bag.healing_potion = 2
+	state.bag.healing_potion = 5
 	panel.purchase_succeeded()
 	await settle()
 	check(not panel.pending and not panel.confirming and panel.selected_item_id.is_empty() and panel.transaction_id.is_empty(), "Successful owner callback clears the old intent")
 	check(labels(panel).contains("Wallet: 80 gold") and panel.notice_label.text.contains("Purchase saved"), "Success refreshes actual saved wallet and receipt notice")
+	check(panel.select_buttons.healing_potion.text.contains("In bag: 5") and panel.select_buttons.mana_potion.text.contains("In bag: 5"), "Success refreshes the owner's actual bag counts")
 	panel.select_item("mana_potion")
 	panel.set_quantity(20)
 	check(panel.quantity == 8 and panel.maximum_quantity() == 8, "Quantity is bounded by current wallet affordability")
@@ -215,6 +245,7 @@ func run() -> void:
 	panel = make_panel(state, "general_store")
 	await settle()
 	check(panel.select_buttons.keys() == ["healing_potion"], "General store offers only healing potion")
+	assert_layout(panel, Vector2(844, 390))
 	panel.select_item("mana_potion")
 	check(panel.selected_item_id.is_empty(), "General store cannot select apothecary-only mana")
 	panel.select_item("healing_potion")
@@ -226,6 +257,7 @@ func run() -> void:
 	panel = make_panel(state, "general_store")
 	await settle()
 	check(panel.select_buttons.healing_potion.disabled and labels(panel).contains("need at least 10 gold"), "Empty wallet disables unaffordable selection with explanation")
+	check(panel.select_buttons.healing_potion.text.contains("In bag: 5"), "An unaffordable offer still shows existing supplies")
 	panel.select_item("healing_potion")
 	panel.review_purchase()
 	panel.confirm_purchase()

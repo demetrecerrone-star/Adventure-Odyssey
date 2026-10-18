@@ -28,6 +28,8 @@ func thumb_zone(safe: Rect2, left: bool, mode: String) -> Rect2:
 	return Rect2(Vector2(x, maxf(safe.position.y + 100, safe.end.y - extent.y - 16)), extent)
 func check_layout(hud, safe: Rect2, left: bool, mode: String, context: String) -> void:
 	var thumb := thumb_zone(safe, left, mode)
+	check(hud.quest_label.autowrap_mode == TextServer.AUTOWRAP_WORD_SMART and hud.quest_label.max_lines_visible == 2, context + " objective has two readable lines")
+	check(hud.quest_panel.size.y >= 52 and hud.quest_label.size.x >= 198, context + " objective has expanded reading area")
 	for panel in [hud.identity_panel, hud.map_panel, hud.quest_panel, hud.vitals_panel, hud.action_cluster, hud.interaction_panel, hud.message]:
 		check(contains(safe, panel), context + " panel fits safe area " + panel.name)
 	for button in all_buttons(hud):

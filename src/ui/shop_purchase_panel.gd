@@ -4,6 +4,7 @@ extends "res://src/tutorial_dialogue.gd"
 signal confirm_requested(item_id: String, quantity: int, transaction_id: String)
 
 const Catalog = preload("res://src/shop_catalog.gd")
+const ItemIcon = preload("res://src/ui/inventory_item_icon.gd")
 var save_state
 var shop_id := "apothecary"
 var selected_item_id := ""
@@ -77,13 +78,39 @@ func _render() -> void:
 	scroll.scroll_vertical = 0
 
 func _render_browse() -> void:
-	body_label.text = "Choose supplies and a quantity, then review. Items go to this character's bag and are character-bound. Potion use and effects are unavailable."
+	body_label.text = "Supplies are character-bound. Potion use and effects are unavailable."
 	for offer in _catalog.get("offers", []):
 		var id := str(offer.item_id)
-		var prefix := "Selected: " if id == selected_item_id else "Select: "
-		var button := _button("%s%s · %d gold each" % [prefix, offer.label, offer.unit_price_gold], choices)
+		var selected := id == selected_item_id
+		var bag_count := int(save_state.bag.get(id, 0))
+		var detail := "Selected · In bag: %d" % bag_count if selected else "In bag: %d" % bag_count
+		var button := _button("%s · %d gold each\n%s" % [offer.label, offer.unit_price_gold, detail], choices)
 		button.name = "Select_" + id
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		button.custom_minimum_size.y = 64
+		button.toggle_mode = true
+		button.set_pressed_no_signal(selected)
+		button.tooltip_text = "%s · %d gold each · In bag: %d%s" % [offer.label, offer.unit_price_gold, bag_count, " · Selected" if selected else ""]
+		# A full-row touch target owns the icon too. Reserve the same 52px artwork
+		# used by Inventory without adding a second button or a taller item card.
+		for style_name in ["normal", "hover", "pressed", "focus", "disabled"]:
+			var style: StyleBoxFlat = button.get_theme_stylebox(style_name).duplicate()
+			style.content_margin_left = 68
+			if selected and style_name in ["normal", "hover", "pressed"]:
+				style.bg_color = Color("d9e9df")
+				style.border_color = Color("287a73")
+				style.set_border_width_all(3)
+			button.add_theme_stylebox_override(style_name, style)
+		var icon := ItemIcon.new()
+		icon.name = "ShopIcon_" + id
+		button.add_child(icon)
+		icon.configure(id)
+		icon.set_anchors_and_offsets_preset(Control.PRESET_CENTER_LEFT)
+		icon.offset_left = 8
+		icon.offset_top = -26
+		icon.offset_right = 60
+		icon.offset_bottom = 26
 		button.pressed.connect(select_item.bind(id))
 		select_buttons[id] = button
 	if not selected_item_id.is_empty():
@@ -160,7 +187,7 @@ func _valid_selection() -> bool:
 
 func _update_quantity_text() -> void:
 	if is_instance_valid(quantity_label):
-		quantity_label.text = "Quantity: %d / %d\nTotal: %d gold" % [quantity, maximum_quantity(), total_price()]
+		quantity_label.text = "%s\nQuantity: %d / %d · Total: %d gold" % [_selected_offer().get("label", ""), quantity, maximum_quantity(), total_price()]
 	if is_instance_valid(review_button):
 		review_button.text = "Review purchase · %d gold" % total_price()
 
@@ -197,6 +224,14 @@ func select_item(item_id: String) -> void:
 	selected_item_id = item_id
 	_notice = ""
 	_render()
+	call_deferred("_reveal_quantity_review")
+
+func _reveal_quantity_review() -> void:
+	# Wait for rebuilt container geometry before revealing the next step. The
+	# quantity row immediately precedes Review and fits with it on phone screens.
+	await get_tree().process_frame
+	if not _dismiss_pending and not confirming and is_instance_valid(review_button):
+		scroll.ensure_control_visible(review_button)
 
 func set_quantity(value: int) -> void:
 	if pending or _dismiss_pending or confirming or selected_item_id.is_empty():

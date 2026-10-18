@@ -114,6 +114,8 @@ jobs:
           set -euo pipefail
           LIBGL_ALWAYS_SOFTWARE=1 timeout 140 xvfb-run -a -s '-screen 0 1280x720x24' godot --audio-driver Dummy --path . --script res://tests/shop_screenshot.gd 2>&1 | tee /tmp/ao_shop_capture.log
           test -s screenshots/shop_apothecary_interior_confirmation.png
+          test -s screenshots/shop_apothecary_interior_selected.png
+          test -s screenshots/shop_general_store_interior_selected.png
           test -s screenshots/shop_general_store_interior_purchased.png
           ! grep -E 'SCRIPT ERROR|Parse Error|Assertion failed' /tmp/ao_shop_capture.log
       - name: Capture native stat allocation

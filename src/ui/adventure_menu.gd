@@ -43,6 +43,7 @@ var _portrait_height := 300.0
 var _keyboard_navigation := false
 var dropdown: Control
 var dropdown_scroll: ScrollContainer
+var dropdown_entries: GridContainer
 var _dim: ColorRect
 var _touch_buttons: Array[Button] = []
 var stat_footer: HBoxContainer
@@ -170,9 +171,12 @@ func _create_dropdown() -> void:
 	dropdown_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	dropdown_scroll.scroll_deadzone = 8
 	dropdown.add_child(dropdown_scroll)
-	var entries := VBoxContainer.new()
+	var entries := GridContainer.new()
+	dropdown_entries = entries
+	entries.columns = 1
 	entries.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	entries.add_theme_constant_override("separation", 8)
+	entries.add_theme_constant_override("h_separation", 8)
+	entries.add_theme_constant_override("v_separation", 8)
 	dropdown_scroll.add_child(entries)
 	for id in PAGES:
 		var entry := _button(PAGES[id], entries)
@@ -185,7 +189,8 @@ func _create_dropdown() -> void:
 func _layout() -> void:
 	if not is_instance_valid(panel): return
 	dropdown.position = Vector2(80, 118)
-	dropdown.size = Vector2(242, minf(340, size.y - 130))
+	dropdown_entries.columns = 2 if size.y < 500 else 1
+	dropdown.size = Vector2(minf(410 if size.y < 500 else 242, size.x - 92), minf(188 if size.y < 500 else 340, size.y - 130))
 	dropdown_scroll.position = Vector2(14, 14)
 	dropdown_scroll.size = dropdown.size - Vector2(28, 28)
 	var margin := 12.0 if size.y < 500 else 22.0
@@ -416,7 +421,7 @@ func _build_inventory() -> void:
 	if state == null:
 		_label("No local character is available.", inventory_content)
 		return
-	_label("%d gold · Your bag" % state.wallet_gold, inventory_content, 16, true)
+	_label("Wallet: %d gold" % state.wallet_gold, inventory_content, 16, true)
 	var owned: Array[String] = []
 	for id in Inventory.LABELS:
 		if int(state.bag.get(id, 0)) > 0: owned.append(id)

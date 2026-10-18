@@ -203,10 +203,12 @@ func _build() -> void:
 			quest_requested.emit()
 	)
 	quest_label = _label(_quest_objective, quest_panel, 12, MUTED)
+	quest_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	quest_label.max_lines_visible = 2
 	quest_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	quest_label.tooltip_text = _quest_objective
 	quest_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_place(quest_label, Rect2(26, 8, 158, 23))
+	_place(quest_label, Rect2(26, 8, 198, 36))
 	quest_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	vitals_panel = _panel("VitalsUnavailable")
 	hp_label = _label("HP unavailable", vitals_panel, 13, MUTED)
@@ -390,7 +392,7 @@ func _layout() -> void:
 	_place(menu_button, Rect2(available.position + Vector2(margin + 8, 118), Vector2(52, 52)))
 	_place(map_panel, Rect2(available.position + Vector2(available.size.x - margin - 210, margin), Vector2(210, 87)))
 	_place(location_label, Rect2(26, 11, 158, 23))
-	_place(quest_panel, Rect2(available.position + Vector2(available.size.x - margin - 210, 105), Vector2(210, 40)))
+	_place(quest_panel, Rect2(available.position + Vector2(available.size.x - margin - 250, 105), Vector2(250, 52)))
 	var action_size := Vector2(256, 184)
 	var action_x := margin if left_handed else available.size.x - margin - action_size.x
 	_place(action_cluster, Rect2(available.position + Vector2(action_x, available.size.y - margin - action_size.y), action_size))
