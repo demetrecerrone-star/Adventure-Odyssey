@@ -20,6 +20,8 @@ func run()->void:
   for id in ids:
    var icon=Icon.new();root.add_child(icon);icon.configure(id,base)
    check(icon.artwork_ready,base+" actual item icon "+id)
+   if Save.Inventory.WEAPONS.has(id):
+    check(icon.textures.size()==1 and icon.textures[0].get_width()==128,"Dedicated unoccluded inventory illustration")
    check(icon.mouse_filter==Control.MOUSE_FILTER_IGNORE,"Icon never steals inspection touch")
    icon.free()
  var state=Save.new();state.path="user://inventory_panel_"+str(Time.get_ticks_usec())+".json"

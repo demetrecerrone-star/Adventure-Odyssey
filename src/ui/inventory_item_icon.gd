@@ -1,5 +1,5 @@
 extends Control
-# Native UI icons: unchanged registered gear layers, plus purpose-drawn bottles/ring.
+# Native UI icons: unchanged inventory weapon illustrations and registered armor layers, plus purpose-drawn bottles/ring.
 const Catalog = preload("res://src/inventory_catalog.gd")
 static var gear_cache := {}
 var item_id := ""
@@ -29,10 +29,7 @@ func _ready() -> void:
 func _load_gear(id: String, selected_base: String) -> Dictionary:
  var paths: Array = []
  if Catalog.WEAPONS.has(id):
-  var manifest = JSON.parse_string(FileAccess.get_file_as_string("res://assets/held-weapons/" + str(Catalog.WEAPONS[id].class_id).to_lower() + ".json"))
-  if manifest is Dictionary:
-   var layers: Dictionary = manifest.bases[selected_base].idle.layers
-   paths = [layers.back, layers.front]
+  paths = ["res://assets/inventory-icons/" + id + ".png"]
  elif id.ends_with("_01_armor"):
   var class_name_id := id.trim_suffix("_01_armor")
   var path := "res://assets/character-outfits/" + selected_base + "/" + class_name_id + "/idle-armor.png"
@@ -42,7 +39,7 @@ func _load_gear(id: String, selected_base: String) -> Dictionary:
  for path in paths:
   var texture = load(path)
   if not texture is Texture2D: continue
-  var cell: Image = texture.get_image().get_region(Rect2i(0, 0, 256, 256))
+  var cell: Image = texture.get_image().get_region(Rect2i(0, 0, mini(256, texture.get_width()), mini(256, texture.get_height())))
   var used := cell.get_used_rect()
   if not used.has_area(): continue
   bounds = used if not bounds.has_area() else bounds.merge(used)

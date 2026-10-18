@@ -1,0 +1,107 @@
+{
+  "description": "Unchanged recovered inventory illustrations, same source art as held weapons, without hand-occlusion cuts. Assassin icon represents its paired-dagger item with the original single dagger illustration.",
+  "items": [
+    {
+      "item_id": "warrior_01_weapon",
+      "set_id": "warrior_01",
+      "allowed_class": "Warrior",
+      "slot_art_group": "weapon",
+      "icon_path": "icons-128/warrior_01_weapon.png",
+      "source_path": "source-sheets/warrior_01.png",
+      "source_crop_box": [
+        892,
+        450,
+        1325,
+        866
+      ],
+      "sha256": "edfb91359f315597a215d6112470641deb673386eb29eb1cfc94b39f61646956",
+      "status": "recovered_inventory_review",
+      "body_overlay": false
+    },
+    {
+      "item_id": "ranger_01_weapon",
+      "set_id": "ranger_01",
+      "allowed_class": "Ranger",
+      "slot_art_group": "weapon",
+      "icon_path": "icons-128/ranger_01_weapon.png",
+      "source_path": "source-sheets/ranger_01.png",
+      "source_crop_box": [
+        948,
+        450,
+        1322,
+        872
+      ],
+      "sha256": "f3ba7794b477b2e5b77be93095287295475ec5cc32c8476cdaab1af8ff6c398f",
+      "status": "recovered_inventory_review",
+      "body_overlay": false
+    },
+    {
+      "item_id": "mage_01_weapon",
+      "set_id": "mage_01",
+      "allowed_class": "Mage",
+      "slot_art_group": "weapon",
+      "icon_path": "icons-128/mage_01_weapon.png",
+      "source_path": "source-sheets/mage_01.png",
+      "source_crop_box": [
+        923,
+        450,
+        1287,
+        861
+      ],
+      "sha256": "05930470dbe37a653f4bdb9531be9144a584b0d5549f75c727a55ff88b734165",
+      "status": "recovered_inventory_review",
+      "body_overlay": false
+    },
+    {
+      "item_id": "necromancer_01_weapon",
+      "set_id": "necromancer_01",
+      "allowed_class": "Necromancer",
+      "slot_art_group": "weapon",
+      "icon_path": "icons-128/necromancer_01_weapon.png",
+      "source_path": "source-sheets/necromancer_01.png",
+      "source_crop_box": [
+        900,
+        451,
+        1318,
+        879
+      ],
+      "sha256": "9ec554c09abafa6f0d075f8d5234c82561a41b72b07f47d8ef7c5f98d7c397e1",
+      "status": "recovered_inventory_review",
+      "body_overlay": false
+    },
+    {
+      "item_id": "assassin_01_weapon",
+      "set_id": "assassin_01",
+      "allowed_class": "Assassin",
+      "slot_art_group": "weapon",
+      "icon_path": "icons-128/assassin_01_weapon.png",
+      "source_path": "source-sheets/assassin_01.png",
+      "source_crop_box": [
+        921,
+        486,
+        1292,
+        846
+      ],
+      "sha256": "9a4d54e691644b3ee3adf0abaac2f365d0cade63ef85f4263011235a0d176b09",
+      "status": "recovered_inventory_review",
+      "body_overlay": false
+    },
+    {
+      "item_id": "paladin_01_weapon",
+      "set_id": "paladin_01",
+      "allowed_class": "Paladin",
+      "slot_art_group": "weapon",
+      "icon_path": "icons-128/paladin_01_weapon.png",
+      "source_path": "source-sheets/paladin_01.png",
+      "source_crop_box": [
+        892,
+        445,
+        1317,
+        873
+      ],
+      "sha256": "e5a283f3f70e8ae45656c527cebe0523475054deee3f2ae73b12691200c506e2",
+      "status": "recovered_inventory_review",
+      "body_overlay": false
+    }
+  ]
+}

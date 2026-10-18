@@ -9,3 +9,5 @@ Bag rows show actual counts, names and item-specific icons. Tapping an item reve
 `inventory_panel_test.gd` checks catalog coverage, actual saved appearance, count/ownership, class restrictions, viewport geometry, fixed portrait during list scrolling, read-only inspection and returning to the bag. `inventory_screenshot.gd` renders 13 actual native desktop/phone/handedness states and a 15-item icon sheet. Its fixture only transfers existing starter items; inspection does not equip, and the capture explicitly clicks Equip to verify the real saved avatar update.
 
 No APK is built for this QA-only checkpoint. Native CI screenshots must be inspected before completion. Hardware Android touch/performance remains a separate test.
+
+Native QA351 caught the original held-weapon hand holes in inventory icons. The six weapon icons now use unchanged recovered inventory illustrations from the same source gear sheets, with provenance hashes. These have continuous handles and are independent of character hand occlusion; the Assassin icon is a single dagger symbol for its paired-dagger item. Armor previews still use actual fitted armor.
