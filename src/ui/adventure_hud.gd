@@ -1,6 +1,7 @@
 extends Control
 # Reusable screen-space HUD. Nothing here owns the world, inventory or progression.
 signal menu_requested
+signal quest_requested
 const OrnatePanel = preload("res://src/ui/ornate_panel.gd")
 const Avatar = preload("res://src/layered_avatar.gd")
 const BODY_FONT = preload("res://assets/fonts/body.ttf")
@@ -16,6 +17,8 @@ var portrait_avatar: Node2D
 var identity_panel: Control
 var map_panel: Control
 var quest_panel: Control
+var quest_label: Label
+var _quest_objective := "Read the envelope at your doorstep."
 var vitals_panel: Control
 var action_cluster: Control
 var username_label: Label
@@ -190,7 +193,17 @@ func _build() -> void:
 	map_panel.add_child(placeholder)
 	_place(placeholder, Rect2(153, 30, 40, 40))
 	quest_panel = _panel("QuestTracker")
-	var quest_label := _label("No quest system yet", quest_panel, 12, MUTED)
+	quest_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	quest_panel.gui_input.connect(func(event: InputEvent):
+		if _modal_active: return
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+			quest_panel.accept_event()
+			quest_requested.emit()
+	)
+	quest_label = _label(_quest_objective, quest_panel, 12, MUTED)
+	quest_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	quest_label.tooltip_text = _quest_objective
+	quest_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_place(quest_label, Rect2(26, 8, 158, 23))
 	quest_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	vitals_panel = _panel("VitalsUnavailable")
@@ -377,3 +390,9 @@ func _layout() -> void:
 	_place(mp_label, Rect2(center_width * 0.5, 10, (center_width - 18) * 0.5, 22))
 	var message_width := maxf(160, available.size.x - 2.0 * 266)
 	_place(message, Rect2(available.position.x + (available.size.x - message_width) * 0.5, available.end.y - margin - 108, message_width, 58))
+
+func set_tutorial_objective(value: String) -> void:
+	_quest_objective = value
+	if is_instance_valid(quest_label):
+		quest_label.text = value
+		quest_label.tooltip_text = value

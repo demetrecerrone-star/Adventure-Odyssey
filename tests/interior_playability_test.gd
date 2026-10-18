@@ -69,6 +69,7 @@ func run()->void:
 			check(not room.can_stand(Rect2(r[0],r[1],r[2],r[3]).get_center()),id+" NPC collision blocks feet")
 			room.player = stand; room._update_actor()
 			check(room.nearest_prop() == npc.id,id+" NPC stand targets attendant")
+			check(state.set_location(id, stand),id+" persist conversation approach before nonmutating dialogue check")
 			var disk_before := FileAccess.get_file_as_string(path)
 			for repeat in range(3):
 				room.joystick.set_position_input(room.joystick.size*0.5+Vector2(60,0))

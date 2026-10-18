@@ -128,7 +128,7 @@ func run() -> void:
 		check(stats_text.contains(key), "Planned attribute exists: " + key)
 	check(stats_text.count("Unavailable · Planned") == 5, "All five attributes are explicitly unavailable")
 	menu.show_page("quest_log")
-	check(labels(menu.body).contains("not available"), "Quest log does not invent quests")
+	check(labels(menu.body).contains("Read the envelope") and labels(menu.body).contains("Combat remains unavailable"), "Quest log shows actual tutorial and honest combat boundary")
 	menu.show_page("settings")
 	await settle()
 	menu.floating_button.pressed.emit()

@@ -1,5 +1,5 @@
 {
-  "status": "Proposed art layout, engine integration and native QA pending",
+  "status": "Isolated review package. Visual composition inspected and ground-foot navigation verified; engine integration, native occlusion and APK QA pending.",
   "scene_id": "guild_interior",
   "canvas": [
     1536,
@@ -40,23 +40,114 @@
   "props": [
     {
       "id": "counter",
-      "file": "counter.png",
-      "scale": 0.26346950858496154,
+      "file": "counter-side.png",
+      "scale": 0.27,
       "source_anchor": [
-        887.5,
-        792
+        420,
+        1410
       ],
       "position": [
-        437.5,
-        760
+        435,
+        840
       ],
       "collision_rect": [
-        220,
-        665,
-        435,
-        90
+        375,
+        604,
+        160,
+        232
       ],
-      "depth_y": 760
+      "depth_y": 840,
+      "collision_polygon": [
+        [
+          459,
+          604
+        ],
+        [
+          535,
+          624
+        ],
+        [
+          489,
+          836
+        ],
+        [
+          375,
+          827
+        ]
+      ],
+      "orientation": "north_south; clerk on west side facing east",
+      "ground_base_endpoints": {
+        "rear_edge": [
+          [
+            459,
+            604
+          ],
+          [
+            535,
+            624
+          ]
+        ],
+        "front_edge": [
+          [
+            489,
+            836
+          ],
+          [
+            375,
+            827
+          ]
+        ]
+      },
+      "occlusion_front_chain": [
+        [
+          375,
+          827
+        ],
+        [
+          489,
+          836
+        ],
+        [
+          535,
+          624
+        ]
+      ],
+      "depth_rule": "For moving player, clamp foot x to occlusion_front_chain x range, interpolate y on that sorted polyline, and use that y as this prop sort depth. Keep its assigned fixed attendant immediately before the prop (draw_before_prop_id), regardless of attendant physical foot y. Sort player at physical foot y. If player y equals boundary, player draws on top. depth_y remains static fallback only.",
+      "source_ground_polygon": [
+        [
+          508.889,
+          535.926
+        ],
+        [
+          790.37,
+          610.0
+        ],
+        [
+          620.0,
+          1395.185
+        ],
+        [
+          197.778,
+          1361.852
+        ]
+      ],
+      "source_size": [
+        1024,
+        1536
+      ],
+      "source_rect": [
+        0,
+        0,
+        1024,
+        1536
+      ],
+      "world_draw_rect": [
+        321.6,
+        459.3,
+        276.48,
+        414.72
+      ],
+      "attendant_id": "guild_receptionist"
     },
     {
       "id": "noticeboard",
@@ -71,35 +162,88 @@
         310
       ],
       "depth_y": 2,
-      "collision_rect": null
+      "collision_rect": null,
+      "source_size": [
+        1536,
+        1024
+      ],
+      "source_rect": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "world_draw_rect": [
+        1008.4,
+        117.481,
+        312.589,
+        208.393
+      ]
     }
   ],
   "npcs": [
     {
       "id": "guild_receptionist",
-      "asset_file": "guild_receptionist.png",
+      "asset_file": "npc_guild_clerk_idle_right.png",
       "source_anchor": [
         128,
         240
       ],
       "scale": 0.95,
       "position": [
-        438,
-        630
+        355,
+        680
       ],
-      "depth_y": 630,
+      "depth_y": 680,
       "interaction_anchor": [
-        438,
-        810
+        620,
+        680
       ],
       "interaction_radius": 75,
       "collision_rect": [
-        410,
-        605,
-        56,
-        25
+        335,
+        656,
+        40,
+        24
       ],
-      "note": "Counter in front occludes lower legs; interact anchor is walkable player stand, not clerk foot."
+      "note": "Actual original right-facing clerk. Customer interaction stand is east of north\u2013south counter. Counter depth sorts in front of clerk; central entry lane remains clear.",
+      "source_size": [
+        256,
+        256
+      ],
+      "source_rect": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "world_draw_rect": [
+        233.4,
+        452.0,
+        243.2,
+        243.2
+      ],
+      "draw_before_prop_id": "counter"
     }
-  ]
+  ],
+  "center_clearance_corridor": [
+    700,
+    405,
+    160,
+    525
+  ],
+  "collision_coordinate_system": "room pixels; ground foot positions; polygons authoritative",
+  "draw_contract": {
+    "coordinates": "room pixels, original 1536x1024 plate",
+    "texture_rule": "Use full source image untrimmed. Uniform scale only. Draw top-left = position - source_anchor * scale. Do not resize to bbox, stretch, skew or rotate.",
+    "rotation_degrees": 0,
+    "color_modulate": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "player_foot_clearance_radius": 24
+  },
+  "npc_facing": "right"
 }

@@ -80,6 +80,10 @@ func _ready() -> void:
 	add_child(hud)
 	hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	hud.menu_requested.connect(open_menu)
+	hud.quest_requested.connect(func():
+		open_menu()
+		if is_instance_valid(overlay) and overlay.has_method("show_page"): overlay.show_page("quest_log")
+	)
 	status = hud.status
 	message = hud.message
 	interact_button = hud.interact_button
@@ -287,10 +291,24 @@ func open_chest(show_storage: bool = true) -> void:
 	var center := CenterContainer.new()
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	overlay.add_child(center)
+	var scroll := ScrollContainer.new()
+	scroll.name = "StorageScroll"
+	scroll.custom_minimum_size = Vector2(minf(620, size.x - 48), maxf(150, size.y - 80))
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	center.add_child(scroll)
 	var box := VBoxContainer.new()
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	box.add_theme_constant_override("separation", 16)
-	center.add_child(box)
+	scroll.add_child(box)
 	label(("STORAGE CHEST" if show_storage else "BAG") + " • Saved on this device", box)
+	label("Personal wallet: %d gold" % state.wallet_gold, box)
+	if show_storage and state.chest_gold > 0:
+		var gold_button := button("Take %d gold" % state.chest_gold, box)
+		gold_button.name = "TakeChestGold"
+		gold_button.pressed.connect(func():
+			if not state.claim_chest_gold(): message.text = state.error
+			open_chest(show_storage)
+		)
 	label("Armor: " + state.character["class"] + " starting outfit", box)
 	label("Equipped: " + (Save.ITEMS[state.equipped_weapon] if not state.equipped_weapon.is_empty() else "None"), box)
 	if not state.equipped_weapon.is_empty() and actor.weapon_outfit.is_empty():
@@ -369,6 +387,8 @@ func _load_layout() -> void:
 func _refresh_hud() -> void:
 	if is_instance_valid(hud):
 		hud.set_character(state.character)
+		if state.get("tutorial") is Dictionary:
+			hud.set_tutorial_objective(load("res://src/tutorial_progress.gd").objective(state.tutorial))
 		_refresh_hud_location()
 func _refresh_hud_location() -> void:
 	if not is_instance_valid(hud): return
@@ -421,6 +441,14 @@ func open_menu() -> void:
 		else: actor.set_equipped_weapon(state.equipped_weapon)
 		menu.refresh_state()
 	)
+	menu.ring_equip_requested.connect(func():
+		if not state.equip_ring(): menu.set_notice(state.error, true)
+		menu.refresh_state()
+	)
+	menu.ring_unequip_requested.connect(func():
+		if not state.unequip_ring(): menu.set_notice(state.error, true)
+		menu.refresh_state()
+	)
 	menu.settings_changed.connect(func(mode: String, left_handed: bool):
 		if control_preferences.apply(mode, left_handed):
 			_apply_control_layout()
@@ -439,3 +467,41 @@ func _control_safe_rect() -> Rect2:
 	var ratio := size / window_size
 	var local := Rect2((safe.position - Vector2(DisplayServer.window_get_position())) * ratio, safe.size * ratio).intersection(full)
 	return local if local.size.x >= 640 and local.size.y >= 300 else full
+
+# Scene callbacks only request Save-owned transactions. Dialogue never grants loot.
+func _tutorial_scene_id() -> String:
+	if get_script().resource_path.ends_with("starter_world.gd"): return "starter_region"
+	if get_script().resource_path.ends_with("town_interior.gd"): return str(get("room_id"))
+	return "bedroom"
+
+func open_tutorial_dialogue(npc_id: String) -> void:
+	if is_instance_valid(overlay) or state.character.is_empty(): return
+	_reset_movement()
+	if not state.set_location(_tutorial_scene_id(), player):
+		message.text = state.error
+		return
+	var dialogue = load("res://src/tutorial_dialogue.gd").new()
+	dialogue.configure(npc_id, state.tutorial, state.character["class"])
+	dialogue.z_index = 2100
+	overlay = dialogue
+	add_child(dialogue)
+	dialogue.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dialogue.dismissed.connect(_close_overlay)
+	dialogue.action_requested.connect(func(action: String):
+		var result: Dictionary = state.perform_tutorial_action(action)
+		if result.get("ok", false):
+			dialogue.configure(npc_id, state.tutorial, state.character["class"])
+			_refresh_hud()
+		else: dialogue.show_error(str(result.get("message", state.error)))
+	)
+	dialogue.service_requested.connect(func(service: String):
+		if service == "tutorial_upgrade":
+			var result: Dictionary = state.apply_tutorial_weapon_upgrade()
+			if result.get("ok", false):
+				dialogue.configure(npc_id, state.tutorial, state.character["class"])
+				_refresh_hud()
+			else: dialogue.show_error(str(result.get("message", state.error)))
+		else:
+			dialogue.show_error("Trading services are being prepared. No gold or items have changed.")
+	)
+	_sync_modal_input()

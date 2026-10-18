@@ -1,5 +1,5 @@
 {
-  "status": "Proposed art layout; engine integration and native QA pending",
+  "status": "Isolated review package. Visual composition inspected and ground-foot navigation verified; engine integration, native occlusion and APK QA pending.",
   "scene_id": "general_store_interior",
   "canvas": [
     1536,
@@ -40,24 +40,115 @@
   "props": [
     {
       "id": "counter",
-      "file": "counter.png",
-      "scale": 0.35,
+      "file": "counter-side.png",
+      "scale": 0.27,
       "source_anchor": [
-        627,
-        920
+        680,
+        1388
       ],
       "position": [
         1100,
-        760
+        840
       ],
       "collision_rect": [
-        895,
-        675,
-        410,
-        85
+        980,
+        590,
+        177,
+        250
       ],
-      "depth_y": 760,
-      "note": "Visible width430px,height221px; tabletop+small balance scale included."
+      "depth_y": 840,
+      "note": "Newly painted physical side orientation. Original full-source image, uniform scale, no crop, no rotation or skew. Collision polygon is authoritative; rectangle is conservative bounds for fallback.",
+      "collision_polygon": [
+        [
+          980,
+          604
+        ],
+        [
+          1051,
+          590
+        ],
+        [
+          1157,
+          829
+        ],
+        [
+          1044,
+          840
+        ]
+      ],
+      "orientation": "north_south; attendant east of counter facing west toward center approach",
+      "ground_base_endpoints": {
+        "rear_edge": [
+          [
+            980,
+            604
+          ],
+          [
+            1051,
+            590
+          ]
+        ],
+        "front_edge": [
+          [
+            1157,
+            829
+          ],
+          [
+            1044,
+            840
+          ]
+        ]
+      },
+      "occlusion_front_chain": [
+        [
+          980,
+          604
+        ],
+        [
+          1044,
+          840
+        ],
+        [
+          1157,
+          829
+        ]
+      ],
+      "depth_rule": "For moving player, clamp foot x to occlusion_front_chain x range, interpolate y on that sorted polyline, and use that y as this prop sort depth. Keep its assigned fixed attendant immediately before the prop (draw_before_prop_id), regardless of attendant physical foot y. Sort player at physical foot y. If player y equals boundary, player draws on top. depth_y remains static fallback only.",
+      "source_ground_polygon": [
+        [
+          235.556,
+          513.926
+        ],
+        [
+          498.519,
+          462.074
+        ],
+        [
+          891.111,
+          1347.259
+        ],
+        [
+          472.593,
+          1388.0
+        ]
+      ],
+      "source_size": [
+        1024,
+        1536
+      ],
+      "source_rect": [
+        0,
+        0,
+        1024,
+        1536
+      ],
+      "world_draw_rect": [
+        916.4,
+        465.24,
+        276.48,
+        414.72
+      ],
+      "attendant_id": "shopkeeper"
     },
     {
       "id": "supply_shelf",
@@ -78,35 +169,88 @@
         55
       ],
       "depth_y": 570,
-      "note": "Visible width344px,height299px. All stock part of separate shelf sprite."
+      "note": "Visible width344px,height299px. All stock part of separate shelf sprite.",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_rect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "world_draw_rect": [
+        245.63,
+        224.97,
+        388.74,
+        388.74
+      ]
     }
   ],
   "npcs": [
     {
       "id": "shopkeeper",
-      "asset_file": "shopkeeper.png",
+      "asset_file": "npc_shopkeeper_idle_left.png",
       "source_anchor": [
         128,
         240
       ],
       "scale": 0.98,
       "position": [
-        1100,
-        630
+        1185,
+        680
       ],
-      "depth_y": 630,
+      "depth_y": 680,
       "interaction_anchor": [
-        1100,
-        815
+        895,
+        685
       ],
       "interaction_radius": 75,
       "collision_rect": [
-        1072,
-        605,
-        56,
-        25
+        1161,
+        656,
+        48,
+        24
       ],
-      "note": "Counter occludes lower legs. Engineer validates NPC source foot alignment."
+      "note": "Left-facing attendant; player interaction stand lies west of the lengthwise work surface. NPC, counter and room are separate layers.",
+      "source_size": [
+        256,
+        256
+      ],
+      "source_rect": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "world_draw_rect": [
+        1059.56,
+        444.8,
+        250.88,
+        250.88
+      ],
+      "draw_before_prop_id": "counter"
     }
-  ]
+  ],
+  "center_clearance_corridor": [
+    700,
+    405,
+    160,
+    525
+  ],
+  "collision_coordinate_system": "room pixels; ground foot positions; polygons authoritative; do not block full visible sprite bounds",
+  "draw_contract": {
+    "coordinates": "room pixels, original 1536x1024 plate",
+    "texture_rule": "Use full source image untrimmed. Uniform scale only. Draw top-left = position - source_anchor * scale. Do not resize to bbox, stretch, skew or rotate.",
+    "rotation_degrees": 0,
+    "color_modulate": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "player_foot_clearance_radius": 24
+  },
+  "npc_facing": "left"
 }

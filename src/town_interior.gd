@@ -1,5 +1,5 @@
 extends "res://src/bedroom.gd"
-# Shared room travel and static service-NPC presentation. No economy or quest grants.
+# Shared room travel and NPC presentation. Save owns all tutorial transactions.
 const ROOMS := {
  "guild_interior":{"label":"Adventurer Guild","entrance":"guild","return":[2433.3,1002.45]},
  "blacksmith_interior":{"label":"Blacksmith","entrance":"blacksmith_workyard","return":[3681.25,1737.5]},
@@ -9,6 +9,7 @@ const ROOMS := {
 var room_id := "guild_interior"
 var room_data: Dictionary = {}
 var npc_nodes := {}
+var room_polygons := {}
 var elapsed := 0.0
 static func available(id:String) -> bool:
  return ROOMS.has(id) and FileAccess.file_exists("res://assets/town-interiors/"+id+"/layout.json")
@@ -47,11 +48,16 @@ func _layer(item:Dictionary,file:String) -> Sprite2D:
  return sprite
 func _load_layout() -> void:
  prop_rects = {}
+ room_polygons = {}
  anchors = {"door":Vector2(room_data.exit_anchor[0],room_data.exit_anchor[1])}
  wake_spawn = Vector2(room_data.entry_spawn[0],room_data.entry_spawn[1])
  for item in room_data.props + room_data.npcs:
   var r = item.get("collision_rect")
-  if r is Array: prop_rects[item.id] = Rect2(r[0],r[1],r[2],r[3])
+  if item.get("collision_polygon") is Array:
+   var polygon := PackedVector2Array()
+   for point in item.collision_polygon: polygon.append(Vector2(point[0],point[1]))
+   room_polygons[item.id] = polygon
+  elif r is Array: prop_rects[item.id] = Rect2(r[0],r[1],r[2],r[3])
  for item in room_data.npcs:
   anchors[item.id] = Vector2(item.interaction_anchor[0],item.interaction_anchor[1])
 func _start_character() -> void:
@@ -66,6 +72,10 @@ func can_stand(point:Vector2) -> bool:
  var floor_points := PackedVector2Array()
  for p in room_data.get("floor_polygon",[]): floor_points.append(Vector2(p[0],p[1]))
  if floor_points.size() < 3 or not Geometry2D.is_point_in_polygon(point,floor_points): return false
+ for polygon in room_polygons.values():
+  if Geometry2D.is_point_in_polygon(point,polygon): return false
+  for index in polygon.size():
+   if point.distance_to(Geometry2D.get_closest_point_to_segment(point,polygon[index],polygon[(index+1)%polygon.size()])) < 16.0: return false
  for rect in prop_rects.values():
   if rect.grow(16).has_point(point): return false
  return true
@@ -97,29 +107,45 @@ func interact() -> void:
   else: message.text = state.error
  else: _speak()
 func _speak() -> void:
- overlay = Control.new()
- overlay.z_index = 2100
- overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
- add_child(overlay)
- var dim := ColorRect.new()
- dim.color = Color(0.02,0.03,0.05,0.9)
- dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
- overlay.add_child(dim)
- var center := CenterContainer.new()
- center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
- overlay.add_child(center)
- var box := VBoxContainer.new()
- box.add_theme_constant_override("separation",16)
- center.add_child(box)
- label(ROOMS[room_id].label,box)
- var notice := label("Welcome. Services and tutorial conversations are being prepared.",box)
- notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
- notice.custom_minimum_size.x = minf(460,size.x-48)
- var close := button("Leave conversation",box)
- close.pressed.connect(_close_overlay)
- close.grab_focus()
- _sync_modal_input()
+ var attendant: String = {"guild_interior":"guild_receptionist", "blacksmith_interior":"blacksmith", "apothecary_interior":"apothecary", "general_store_interior":"shopkeeper"}.get(room_id, "")
+ if not attendant.is_empty(): open_tutorial_dialogue(attendant)
 func _exit() -> void:
  _reset_movement()
  if state.set_location(room_id,player): exited.emit()
  else: message.text = state.error
+
+func _update_actor() -> void:
+ super._update_actor()
+ if not is_instance_valid(actor): return
+ var player_rect := Rect2(player-Vector2(128,232)*actor.scale,Vector2(256,256)*actor.scale)
+ for item in room_data.get("props",[]):
+  if not prop_nodes.has(item.id): continue
+  var prop:Sprite2D = prop_nodes[item.id]
+  prop.z_index = int(item.depth_y)
+  if not item.get("occlusion_front_chain") is Array: continue
+  var bounds := Rect2(prop.position+prop.offset*prop.scale,prop.texture.get_size()*prop.scale)
+  if bounds.intersects(player_rect):
+   prop.z_index = actor.z_index-2 if player.y >= _front_edge_y(item,player.x) else actor.z_index+2
+  # Keep the attendant correctly behind their own counter when its depth changes
+  # for the player standing on the opposite long side.
+  for npc in room_data.get("npcs",[]):
+   if not npc_nodes.has(npc.id): continue
+   var sprite:Sprite2D = npc_nodes[npc.id]
+   var npc_bounds := Rect2(sprite.position+sprite.offset*sprite.scale,sprite.texture.get_size()*sprite.scale)
+   sprite.z_index = int(npc.depth_y)
+   if npc.get("draw_before_prop_id", "") == item.id:
+    sprite.z_index = prop.z_index-1
+   elif npc_bounds.intersects(bounds):
+    sprite.z_index = prop.z_index+1 if sprite.position.y >= _front_edge_y(item,sprite.position.x) else prop.z_index-1
+
+func _front_edge_y(item:Dictionary,x:float)->float:
+ var chain:Array = item.occlusion_front_chain
+ if chain.is_empty(): return float(item.depth_y)
+ var sorted := chain.duplicate(true)
+ sorted.sort_custom(func(a,b): return a[0] < b[0])
+ if x <= float(sorted[0][0]): return float(sorted[0][1])
+ for index in range(1,sorted.size()):
+  if x <= float(sorted[index][0]):
+   var a:Array = sorted[index-1]; var b:Array = sorted[index]
+   return lerpf(float(a[1]),float(b[1]),(x-float(a[0]))/maxf(0.001,float(b[0])-float(a[0])))
+ return float(sorted[-1][1])

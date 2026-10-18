@@ -1,5 +1,5 @@
 {
-  "status": "Generated review art, integration/native visual QA pending",
+  "status": "Isolated review package. Visual composition inspected and ground-foot navigation verified; engine integration, native occlusion and APK QA pending.",
   "scene_id": "apothecary_interior",
   "canvas": [
     1536,
@@ -40,23 +40,115 @@
   "props": [
     {
       "id": "counter",
-      "file": "counter.png",
+      "file": "counter-side.png",
       "source_anchor": [
-        768,
-        829
+        710,
+        1418
       ],
       "position": [
-        1120,
-        740
+        1100,
+        845
       ],
-      "scale": 0.3,
-      "depth_y": 740,
+      "scale": 0.265,
+      "depth_y": 845,
       "collision_rect": [
-        900,
-        640,
-        440,
-        100
-      ]
+        950,
+        613,
+        211,
+        232
+      ],
+      "collision_polygon": [
+        [
+          950,
+          633
+        ],
+        [
+          1035,
+          613
+        ],
+        [
+          1161,
+          830
+        ],
+        [
+          1045,
+          845
+        ]
+      ],
+      "orientation": "north_south; attendant east of counter facing west toward center approach",
+      "note": "Newly painted physical side orientation. Original full-source image, uniform scale, no crop, no rotation or skew. Collision polygon is authoritative; rectangle is conservative bounds for fallback.",
+      "ground_base_endpoints": {
+        "rear_edge": [
+          [
+            950,
+            633
+          ],
+          [
+            1035,
+            613
+          ]
+        ],
+        "front_edge": [
+          [
+            1161,
+            830
+          ],
+          [
+            1045,
+            845
+          ]
+        ]
+      },
+      "occlusion_front_chain": [
+        [
+          950,
+          633
+        ],
+        [
+          1045,
+          845
+        ],
+        [
+          1161,
+          830
+        ]
+      ],
+      "depth_rule": "For moving player, clamp foot x to occlusion_front_chain x range, interpolate y on that sorted polyline, and use that y as this prop sort depth. Keep its assigned fixed attendant immediately before the prop (draw_before_prop_id), regardless of attendant physical foot y. Sort player at physical foot y. If player y equals boundary, player draws on top. depth_y remains static fallback only.",
+      "source_ground_polygon": [
+        [
+          143.962,
+          618.0
+        ],
+        [
+          464.717,
+          542.528
+        ],
+        [
+          940.189,
+          1361.396
+        ],
+        [
+          502.453,
+          1418.0
+        ]
+      ],
+      "source_size": [
+        1024,
+        1536
+      ],
+      "source_rect": [
+        0,
+        0,
+        1024,
+        1536
+      ],
+      "world_draw_rect": [
+        911.85,
+        469.23,
+        271.36,
+        407.04
+      ],
+      "attendant_id": "apothecary"
     },
     {
       "id": "shelf",
@@ -76,35 +168,88 @@
         400,
         230,
         35
+      ],
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_rect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "world_draw_rect": [
+        1010.75,
+        141.75,
+        313.5,
+        313.5
       ]
     }
   ],
   "npcs": [
     {
       "id": "apothecary",
-      "asset_file": "apothecary.png",
+      "asset_file": "npc_apothecary_idle_left-source.png",
       "source_anchor": [
-        638,
-        1176
+        640,
+        1207
       ],
       "position": [
-        1120,
-        600
+        1190,
+        680
       ],
-      "scale": 0.1736,
-      "depth_y": 600,
+      "scale": 0.17226528854435832,
+      "depth_y": 680,
       "interaction_anchor": [
-        1120,
-        800
+        865,
+        685
       ],
       "interaction_radius": 75,
       "collision_rect": [
-        1092,
-        575,
-        56,
-        25
+        1166,
+        656,
+        48,
+        24
       ],
-      "note": "New unnamed static down-facing review art; not a four-direction animation. Scale adjusted to engineer-confirmed200px."
+      "note": "Left-facing attendant; player interaction stand lies west of the lengthwise work surface. NPC, counter and room are separate layers.",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_rect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "world_draw_rect": [
+        1079.75,
+        472.076,
+        216.021,
+        216.021
+      ],
+      "draw_before_prop_id": "counter"
     }
-  ]
+  ],
+  "center_clearance_corridor": [
+    700,
+    405,
+    160,
+    525
+  ],
+  "collision_coordinate_system": "room pixels; ground foot positions; polygons authoritative; do not block full visible sprite bounds",
+  "draw_contract": {
+    "coordinates": "room pixels, original 1536x1024 plate",
+    "texture_rule": "Use full source image untrimmed. Uniform scale only. Draw top-left = position - source_anchor * scale. Do not resize to bbox, stretch, skew or rotate.",
+    "rotation_degrees": 0,
+    "color_modulate": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "player_foot_clearance_radius": 24
+  },
+  "npc_facing": "left"
 }

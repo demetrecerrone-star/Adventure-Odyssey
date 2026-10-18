@@ -4,6 +4,8 @@ extends Control
 signal dismissed
 signal inventory_requested
 signal equip_requested(item: String)
+signal ring_equip_requested
+signal ring_unequip_requested
 signal unequip_requested
 signal settings_changed(mode: String, left_handed: bool)
 signal title_requested
@@ -340,6 +342,13 @@ func _place_avatar() -> void:
 	avatar.position = Vector2(portrait_stage.size.x * 0.5, portrait_stage.size.y * 0.5 + 104 * factor)
 
 func _build_inventory() -> void:
+	if state != null:
+		_card(body, "PERSONAL WALLET", "%d gold · This character only" % state.wallet_gold)
+		var ring_card := _card(body, "RING", "Keepsake ring" if not state.equipped_ring.is_empty() else "No ring equipped")
+		if not state.equipped_ring.is_empty():
+			var remove_ring := _button("Unequip ring to bag", ring_card)
+			remove_ring.name = "UnequipRing"
+			remove_ring.pressed.connect(func(): ring_unequip_requested.emit())
 	var equipped := _card(body, "EQUIPPED WEAPON", _weapon_label(str(state.equipped_weapon) if state != null else ""))
 	if state != null and not str(state.equipped_weapon).is_empty():
 		var unequip := _button("Unequip to bag", equipped)
@@ -369,6 +378,11 @@ func _build_inventory() -> void:
 			selected_item = id
 			refresh_state()
 		)
+		if id == "keepsake_ring":
+			var ring_button := _button("Equip ring", row)
+			ring_button.name = "EquipRing"
+			ring_button.disabled = not state.equipped_ring.is_empty()
+			ring_button.pressed.connect(func(): ring_equip_requested.emit())
 		if Inventory.WEAPONS.has(id):
 			var equip := _button("Equip", row)
 			equip.name = "Equip_" + id
@@ -379,6 +393,13 @@ func _build_inventory() -> void:
 
 func _build_item_details() -> void:
 	var info := _card(body, "ITEM DETAILS", Inventory.LABELS.get(selected_item, "Unknown item"))
+	var item: Dictionary = state.get_item_details(selected_item, "bag")
+	_label("Character-bound" if item.get("binding", "") == "character" else "Binding: " + str(item.get("binding", "Unbound")), info, 14)
+	if int(item.get("upgrade_level", 0)) > 0:
+		_label("Upgrade: +%d · Combat benefit is not defined yet." % int(item.upgrade_level), info, 14)
+	if selected_item == "keepsake_ring":
+		_label("A personal keepsake. Ring slot; no defined numeric bonus.", info, 14)
+		return
 	if not Inventory.WEAPONS.has(selected_item):
 		_label("Stored in your bag. This item has no equipment slot.", info, 14)
 		return
@@ -400,8 +421,16 @@ func _build_stats() -> void:
 	_label("Luck: Unavailable", combat, 14)
 
 func _build_quests() -> void:
-	_card(body, "QUEST LOG", "Quest tracking is not available in this build.")
-	_label("There are no active quests or rewards recorded to display yet.", body, 16).modulate = MUTED
+	if state == null:
+		_card(body, "TUTORIAL", "No character loaded.")
+		return
+	var progress = load("res://src/tutorial_progress.gd")
+	_card(body, "TUTORIAL · IN PROGRESS", progress.objective(state.tutorial))
+	_label("Progress and gifts are saved for this character. Combat remains unavailable.", body, 16).modulate = MUTED
+	var receipts: Dictionary = state.tutorial.get("reward_receipts", {})
+	for reward in receipts:
+		var names := {"tutorial.blacksmith.upgrade_supplies":"Blacksmith upgrade supplies", "tutorial.apothecary.mana_potions":"Five mana potions", "tutorial.general_store.keepsake_ring":"Keepsake ring"}
+		_card(body, "RECEIVED", names.get(reward, reward))
 
 func _build_settings() -> void:
 	var controls := _card(body, "MOVEMENT CONTROLS", "Choose how the joystick appears.")

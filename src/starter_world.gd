@@ -6,6 +6,8 @@ const Interior = preload("res://src/town_interior.gd")
 const WORLD_SIZE := Vector2(4608,3072)
 const HOME := Vector2(1644,1333)
 const FOOT_RADIUS := 16.0
+const ENVELOPE := Vector2(1708,1340)
+var envelope_node: Sprite2D
 var world_layout: Dictionary = {}
 var blocked: Array[PackedVector2Array] = []
 var blocked_bounds: Array[Rect2] = []
@@ -22,7 +24,7 @@ var building_nodes := {}
 var building_data: Array = []
 var fortification_nodes := {}
 var fortification_data: Array = []
-var entrance_labels := {"home":"Home", "guild":"Adventurer Guild", "shop_southwest":"General store", "shop_south_plaza":"Apothecary", "blacksmith_workyard":"Blacksmith"}
+var entrance_labels := {"envelope":"Guild letter", "home":"Home", "guild":"Adventurer Guild", "shop_southwest":"General store", "shop_south_plaza":"Apothecary", "blacksmith_workyard":"Blacksmith"}
 func _ready() -> void:
 	world_layout = JSON.parse_string(FileAccess.get_file_as_string("res://assets/starter-region/layout.json"))
 	for block in world_layout.blocked_polygons:
@@ -42,12 +44,13 @@ func _ready() -> void:
 	_load_scenery()
 	_load_buildings()
 	_load_fortifications()
+	_load_envelope()
 	if not can_stand(player): player = HOME
 	_update_actor()
 	message.text = "Explore the paths. Return home here with [E]. Enter the guild and shops from their doors."
 func _load_layout() -> void:
 	prop_rects = {}
-	anchors = {"home":HOME}
+	anchors = {"home":HOME, "envelope":ENVELOPE}
 	wake_spawn = HOME
 func _start_character() -> void:
 	super._start_character()
@@ -231,7 +234,9 @@ func _process(delta: float) -> void:
 		if not state.set_location("starter_region",player): message.text = state.error
 func interact() -> void:
 	if is_instance_valid(overlay) or sleeping: return
-	if nearest_prop() == "home":
+	if nearest_prop() == "envelope":
+		open_tutorial_dialogue("envelope")
+	elif nearest_prop() == "home":
 		_reset_movement()
 		if state.set_location("bedroom",Vector2(780,440)): returned.emit()
 		else: message.text = state.error
@@ -248,3 +253,12 @@ func _exit() -> void:
 	_reset_movement()
 	if state.set_location("starter_region",player): exited.emit()
 	else: message.text = state.error
+
+func _load_envelope() -> void:
+	envelope_node = Sprite2D.new()
+	envelope_node.name = "GuildEnvelope"
+	envelope_node.texture = load("res://assets/ui/guild-envelope.svg")
+	envelope_node.position = ENVELOPE
+	envelope_node.scale = Vector2.ONE * 0.7
+	envelope_node.z_index = int(ENVELOPE.y * 0.4) - 4
+	stage.add_child(envelope_node)
