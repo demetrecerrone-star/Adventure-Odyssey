@@ -206,6 +206,7 @@ func run() -> void:
 	check(Rect2(Vector2.ZERO, menu.size).encloses(menu.dropdown.get_global_rect()), "Small-landscape dropdown stays on screen")
 	for button in all_buttons(menu.dropdown):
 		check(button.size.y >= 44, "Dropdown entries keep touch height")
+		check(button.size.x >= (menu.dropdown_scroll.size.x - 8) / 2 - 2, "Dropdown columns use the available panel width")
 		check(menu.dropdown_scroll.get_global_rect().encloses(button.get_global_rect()), "Every dropdown destination is visible without scrolling")
 	menu.find_child("Dropdown_inventory", true, false).pressed.emit()
 	check(menu.page == "inventory" and menu.panel.visible and not menu.dropdown.visible, "Dropdown entry opens own panel")

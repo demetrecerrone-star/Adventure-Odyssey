@@ -181,9 +181,11 @@ func _create_dropdown() -> void:
 	for id in PAGES:
 		var entry := _button(PAGES[id], entries)
 		entry.name = "Dropdown_" + id
+		entry.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		entry.pressed.connect(show_page.bind(id))
 	var leave := _button("Save & title", entries)
 	leave.name = "DropdownSaveAndTitle"
+	leave.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	leave.pressed.connect(func(): title_requested.emit())
 
 func _layout() -> void:
