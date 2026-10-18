@@ -1,11 +1,12 @@
 extends RefCounted
-# Permanent local guest slot. Counts are compatibility views of the v6 ledger.
+# Permanent local guest slot. Counts are compatibility views of the v7 ledger.
 const Draft = preload("res://src/creator/character_draft.gd")
 const Progress = preload("res://src/tutorial_progress.gd")
 const APPEARANCE = ["hair", "hair_color", "eyes", "skin"]
 const Inventory = preload("res://src/inventory_catalog.gd")
+const ShopCatalog = preload("res://src/shop_catalog.gd")
 const ITEMS = Inventory.LABELS
-const VERSION := 6
+const VERSION := 7
 const MAX_COUNT := 999
 const ACTION_SCENES = {
 	"read_envelope":"starter_region", "guild_assign_blacksmith":"guild_interior",
@@ -31,6 +32,7 @@ var gold_seeded := false
 var item_ledger: Array = []
 var upgrade_entitlements: Dictionary = {}
 var acquisition_receipts: Dictionary = {}
+var purchase_receipts: Dictionary = {}
 var tutorial := Progress.initial_state()
 var awake := true
 var location := {"scene":"bedroom", "position":[535.0,670.0]}
@@ -56,6 +58,7 @@ func create(value: Dictionary) -> bool:
 	item_ledger = []
 	upgrade_entitlements = {}
 	acquisition_receipts = {}
+	purchase_receipts = {}
 	tutorial = Progress.initial_state()
 	chest_gold = 100
 	wallet_gold = 0
@@ -105,8 +108,9 @@ func claim_chest_gold() -> bool:
 	chest_gold = 0
 	return _commit(previous)
 
-# Future gameplay systems may record an actual acquisition here. No shop prices,
-# purchases, trade execution or random-drop generation are implemented here.
+# Trusted compatibility acquisition hook for existing drop/trade/provenance tests.
+# It does not execute a purchase or debit gold; the shop UI must use
+# purchase_shop_item(), never this hook. Legacy npc_purchase grants stay bound.
 func receive_item(item_id: String, quantity: int, source: String, acquisition_id: String) -> bool:
 	if character.is_empty() or not ITEMS.has(item_id) or quantity < 1 or quantity > MAX_COUNT or source not in ["world_drop", "trade", "npc_purchase"] or not _valid_id(acquisition_id): return false
 	var receipt := {"item_id":item_id, "quantity":quantity, "source":source}
@@ -119,6 +123,59 @@ func receive_item(item_id: String, quantity: int, source: String, acquisition_id
 	_add_stack(item_id, quantity, "bag", source, acquisition_id)
 	_sync_views()
 	return _commit(previous)
+
+# The service, not the UI, derives the available shop from persisted location.
+func get_shop_catalog() -> Dictionary:
+	if character.is_empty() or not _valid_live_state(): return _shop_failure("invalid_save", "Your local save is not ready to shop.")
+	var shop_id := _nearby_shop()
+	if shop_id.is_empty(): return _shop_failure("wrong_location", "Speak to the shopkeeper at their counter to shop.")
+	return {"ok":true, "code":"shop_available", "message":"", "shop_id":shop_id, "shop_name":ShopCatalog.shop_name(shop_id),
+		"stock_policy":ShopCatalog.STOCK_POLICY, "offers":ShopCatalog.entries_for(shop_id), "max_quantity":ShopCatalog.MAX_QUANTITY, "wallet_gold":wallet_gold}
+
+# Untyped arguments are intentional: reject fractions, booleans and non-strings
+# rather than accepting GDScript's implicit conversions at this trust boundary.
+func purchase_shop_item(item_id, quantity, transaction_id) -> Dictionary:
+	if character.is_empty() or not _valid_live_state(): return _shop_failure("invalid_save", "Your local save is not ready to shop.")
+	if not item_id is String: return _shop_failure("invalid_item", "That item is not sold here.")
+	if not _whole(quantity, 1, ShopCatalog.MAX_QUANTITY): return _shop_failure("invalid_quantity", "Choose between 1 and %d items." % ShopCatalog.MAX_QUANTITY)
+	if not _valid_id(transaction_id) or transaction_id.length() > ShopCatalog.MAX_TRANSACTION_ID_LENGTH:
+		return _shop_failure("invalid_transaction_id", "The purchase reference is invalid. Reopen the shop and try again.")
+	var shop_id := _nearby_shop()
+	if shop_id.is_empty(): return _shop_failure("wrong_location", "Speak to the shopkeeper at their counter to buy this item.")
+	if purchase_receipts.has(transaction_id):
+		var prior: Dictionary = purchase_receipts[transaction_id]
+		if prior.shop_id != shop_id or prior.item_id != item_id or prior.quantity != quantity:
+			return _shop_failure("transaction_conflict", "That purchase reference already belongs to a different purchase.")
+		return _shop_success(prior, true)
+	var unit_price := ShopCatalog.unit_price(shop_id, item_id)
+	if unit_price <= 0: return _shop_failure("invalid_item", "That item is not sold here.")
+	var acquisition_id: String = "shop:" + transaction_id
+	if acquisition_receipts.has(acquisition_id): return _shop_failure("transaction_conflict", "That purchase reference is already in use. Reopen the shop and try again.")
+	var count := int(quantity)
+	var total_price := unit_price * count
+	if wallet_gold < total_price: return _shop_failure("insufficient_gold", "You need %d gold, but have %d." % [total_price, wallet_gold])
+	if bag[item_id] + count > MAX_COUNT: return _shop_failure("inventory_full", "Your bag cannot hold that many of this item.")
+	var previous := snapshot()
+	var receipt := {"transaction_id":transaction_id, "character_id":character_id, "shop_id":shop_id, "item_id":item_id,
+		"quantity":count, "unit_price_gold":unit_price, "total_price_gold":total_price, "catalog_revision":ShopCatalog.CURRENT_REVISION}
+	wallet_gold -= total_price
+	purchase_receipts[transaction_id] = receipt
+	acquisition_receipts[acquisition_id] = {"item_id":item_id, "quantity":count, "source":"npc_purchase"}
+	_add_stack(item_id, count, "bag", "npc_purchase", acquisition_id)
+	_sync_views()
+	if not _commit(previous): return _shop_failure("save_failed", error)
+	return _shop_success(receipt, false)
+
+func _nearby_shop() -> String:
+	var shop_id := ShopCatalog.shop_for_scene(str(location.get("scene", "")))
+	return shop_id if not shop_id.is_empty() and _near_interaction(ShopCatalog.scene_for(shop_id)) else ""
+
+func _shop_failure(code: String, message: String) -> Dictionary:
+	return {"ok":false, "duplicate":false, "code":code, "message":message, "receipt":{}}
+
+func _shop_success(receipt: Dictionary, duplicate: bool) -> Dictionary:
+	return {"ok":true, "duplicate":duplicate, "code":"already_purchased" if duplicate else "purchased",
+		"message":"This purchase was already saved." if duplicate else "Purchased %d %s for %d gold." % [receipt.quantity, str(ITEMS[receipt.item_id]).to_lower(), receipt.total_price_gold], "receipt":receipt.duplicate(true)}
 
 func perform_tutorial_action(action: String) -> Dictionary:
 	if character.is_empty() or not _valid_live_state(): return _failure("invalid_save", "Your local save is not ready for this action.")
@@ -189,7 +246,7 @@ func snapshot() -> Dictionary:
 	return {"version":VERSION, "tutorial_chest_seeded":true, "character":character.duplicate(true), "character_id":character_id,
 		"bag":bag.duplicate(true), "chest":chest.duplicate(true), "equipped_weapon":equipped_weapon, "equipped_armor":equipped_armor, "equipped_ring":equipped_ring,
 		"chest_gold":chest_gold, "wallet_gold":wallet_gold, "gold_seeded":gold_seeded, "item_ledger":item_ledger.duplicate(true),
-		"upgrade_entitlements":upgrade_entitlements.duplicate(true), "acquisition_receipts":acquisition_receipts.duplicate(true), "tutorial":tutorial.duplicate(true), "awake":awake, "location":location.duplicate(true)}
+		"upgrade_entitlements":upgrade_entitlements.duplicate(true), "acquisition_receipts":acquisition_receipts.duplicate(true), "purchase_receipts":purchase_receipts.duplicate(true), "tutorial":tutorial.duplicate(true), "awake":awake, "location":location.duplicate(true)}
 
 func save() -> bool:
 	error = ""
@@ -320,7 +377,7 @@ func _write_snapshot(data: Dictionary) -> bool:
 	return true
 
 func _restore(data: Dictionary) -> void:
-	for key in ["character", "character_id", "bag", "chest", "equipped_weapon", "equipped_armor", "equipped_ring", "chest_gold", "wallet_gold", "gold_seeded", "item_ledger", "upgrade_entitlements", "acquisition_receipts", "tutorial", "awake", "location"]:
+	for key in ["character", "character_id", "bag", "chest", "equipped_weapon", "equipped_armor", "equipped_ring", "chest_gold", "wallet_gold", "gold_seeded", "item_ledger", "upgrade_entitlements", "acquisition_receipts", "purchase_receipts", "tutorial", "awake", "location"]:
 		var value = data[key]
 		set(key, value.duplicate(true) if value is Dictionary or value is Array else value)
 
@@ -348,7 +405,9 @@ func _valid_snapshot(data: Dictionary) -> bool:
 	var hero = data.get("character")
 	if not hero is Dictionary or hero.get("base", "") not in ["male", "female"] or not draft_from(hero).validate().is_empty(): return false
 	if not _valid_id(data.get("character_id")) or not valid_location(data.get("location")) or data.get("awake") != true: return false
-	if not _whole(data.get("chest_gold"), 0, 100) or not _whole(data.get("wallet_gold"), 0, 100) or data.chest_gold + data.wallet_gold != 100: return false
+	if not _whole(data.get("chest_gold"), 0, 100) or not _whole(data.get("wallet_gold"), 0, 100): return false
+	var gold_spent := _verified_purchase_total(data)
+	if gold_spent < 0 or data.chest_gold + data.wallet_gold + gold_spent != 100: return false
 	if not data.get("tutorial") is Dictionary or not Progress.validate_state(data.tutorial): return false
 	for receipt_kind in ["action_receipts", "event_receipts"]:
 		for action in data.tutorial[receipt_kind]:
@@ -419,6 +478,28 @@ func _valid_snapshot(data: Dictionary) -> bool:
 	var supply = data.upgrade_entitlements.get(SUPPLIES)
 	return supply is Dictionary and supply.size() == 4 and supply.get("owner_id") == data.character_id and _whole(supply.get("uses"), 0, 1) and supply.uses == (0 if upgraded else 1) and supply.get("target_item_id") == Inventory.starter_weapon(hero["class"]) and _whole(supply.get("target_level"), 1, 1)
 
+# Every debit must have a known historical price and a matching bound acquisition.
+# Ledger quantities and owner/binding checks below independently verify the grant.
+func _verified_purchase_total(data: Dictionary) -> int:
+	if not data.get("purchase_receipts") is Dictionary or data.purchase_receipts.size() > 100 or not data.get("acquisition_receipts") is Dictionary: return -1
+	var spent := 0
+	for transaction_id in data.purchase_receipts:
+		var receipt = data.purchase_receipts[transaction_id]
+		if not _valid_id(transaction_id) or transaction_id.length() > ShopCatalog.MAX_TRANSACTION_ID_LENGTH or not receipt is Dictionary or receipt.size() != 8: return -1
+		if not _valid_id(receipt.get("transaction_id")) or not _valid_id(receipt.get("character_id")): return -1
+		if receipt.transaction_id != transaction_id or receipt.character_id != data.character_id: return -1
+		if not receipt.get("shop_id") is String or not receipt.get("item_id") is String: return -1
+		if not _whole(receipt.get("quantity"), 1, ShopCatalog.MAX_QUANTITY) or not _whole(receipt.get("catalog_revision"), 1, 1000000): return -1
+		if not _whole(receipt.get("unit_price_gold"), 1, 100) or not _whole(receipt.get("total_price_gold"), 1, 100): return -1
+		var price := ShopCatalog.unit_price(receipt.shop_id, receipt.item_id, int(receipt.catalog_revision))
+		if price <= 0 or receipt.unit_price_gold != price or receipt.total_price_gold != price * receipt.quantity: return -1
+		var acquisition = data.acquisition_receipts.get("shop:" + transaction_id)
+		if not acquisition is Dictionary or not acquisition.get("source") is String or not acquisition.get("item_id") is String or not _whole(acquisition.get("quantity"), 1, MAX_COUNT): return -1
+		if acquisition.source != "npc_purchase" or acquisition.item_id != receipt.item_id or acquisition.quantity != receipt.quantity: return -1
+		spent += int(receipt.total_price_gold)
+		if spent > 100: return -1
+	return spent
+
 func _valid_counts(value, required: Array, exact: bool) -> bool:
 	if not value is Dictionary or (exact and value.size() != required.size()): return false
 	for item in required:
@@ -430,11 +511,13 @@ func _valid_counts(value, required: Array, exact: bool) -> bool:
 
 func _migrate(data: Dictionary) -> Dictionary:
 	# A downgraded test/backup with intact v6 metadata keeps its original ownership
-	# and receipts. Partial v6 metadata must never be treated as a fresh legacy slot.
+	# and receipts. Partial ledger metadata must never become a fresh legacy slot.
 	if data.has("item_ledger") or data.has("character_id") or data.has("tutorial"):
 		var preserved := data.duplicate(true)
 		preserved.version = VERSION
 		preserved.awake = true
+		# v6 already owned its gold and grants; migration adds no new value.
+		if not preserved.has("purchase_receipts"): preserved.purchase_receipts = {}
 		return preserved if _valid_snapshot(preserved) else {}
 	var hero = data.get("character")
 	if not hero is Dictionary or hero.get("base", "") not in ["male", "female"] or not draft_from(hero).validate().is_empty(): return {}

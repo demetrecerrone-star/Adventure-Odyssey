@@ -497,8 +497,10 @@ func open_tutorial_dialogue(npc_id: String) -> void:
 	dialogue.service_requested.connect(func(service: String):
 		if service == "tutorial_upgrade":
 			open_tutorial_upgrade()
+		elif service in ["apothecary_shop", "general_store_shop"]:
+			open_shop_service(npc_id)
 		else:
-			dialogue.show_error("Trading services are being prepared. No gold or items have changed.")
+			dialogue.show_error("Paid blacksmith services are being prepared. No gold or items have changed.")
 	)
 	_sync_modal_input()
 
@@ -521,5 +523,30 @@ func open_tutorial_upgrade() -> void:
 			_refresh_hud()
 			open_tutorial_dialogue("blacksmith")
 		else: upgrade.show_error(str(result.get("message", state.error)))
+	)
+	_sync_modal_input()
+
+func open_shop_service(npc_id: String) -> void:
+	var catalog: Dictionary = state.get_shop_catalog()
+	if not catalog.get("ok", false):
+		if is_instance_valid(overlay): overlay.show_error(str(catalog.get("message", state.error)))
+		return
+	_close_overlay()
+	var shop = load("res://src/ui/shop_purchase_panel.gd").new()
+	shop.configure_shop(state, str(catalog.shop_id))
+	shop.z_index = 2100
+	overlay = shop
+	add_child(shop)
+	shop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shop.dismissed.connect(func():
+		_close_overlay()
+		open_tutorial_dialogue(npc_id)
+	)
+	shop.confirm_requested.connect(func(item_id: String, quantity: int, transaction_id: String):
+		var result: Dictionary = state.purchase_shop_item(item_id, quantity, transaction_id)
+		if result.get("ok", false):
+			shop.purchase_succeeded()
+			_refresh_hud()
+		else: shop.show_error(str(result.get("message", state.error)))
 	)
 	_sync_modal_input()
