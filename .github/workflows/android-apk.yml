@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-24.04
     container:
       image: barichello/godot-ci:4.7.2
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Check out direct Godot source
         uses: actions/checkout@v4
@@ -344,6 +344,11 @@ jobs:
           "$signer" verify --verbose --print-certs "$APK" | tee build/Release-APK-Signature.txt
           grep -Fq 'Verified using v2 scheme (APK Signature Scheme v2): true' build/Release-APK-Signature.txt
           grep -Fq 'Signer #1 certificate SHA-256 digest: d66e7daf0e5c7c735bf9f1c866afc204e2d0355687ac37d385cf3016e42eac36' build/Release-APK-Signature.txt
+          aapt="$(find /usr/lib/android-sdk/build-tools -maxdepth 3 -type f -name aapt | sort -V | tail -n 1)"
+          test -x "$aapt"
+          "$aapt" dump badging "$APK" > build/Release-APK-Package.txt
+          grep -Eq "package: name='com.demetrecerrone.adventureodyssey' versionCode='11' versionName='0.11-adventure-preview'" build/Release-APK-Package.txt
+          grep -Eq "native-code:.*'arm64-v8a'.*'x86_64'" build/Release-APK-Package.txt
           ls -lh "$APK"
           sha256sum "$APK" | tee build/SHA256SUMS.txt
 
@@ -357,7 +362,7 @@ jobs:
           z = zipfile.ZipFile('build/Adventure-Odyssey-release.apk')
           names = z.namelist()
           assert z.testzip() is None, 'APK ZIP CRC failure'
-          for asset in ('dusk-kingdom-background', 'adventure-odyssey-wordmark', 'by-dabsky', 'goblin-run', 'skeleton-run', 'body.ttf', 'title.ttf', 'textured_panel', 'adventure_hud', 'adventure_menu', 'ornate_panel', 'control_preferences', 'tutorial_progress', 'tutorial_dialogue', 'tutorial_upgrade_panel', 'shop_catalog', 'shop_purchase_panel', 'character_stats', 'inventory_item_icon', 'wilderness_encounter', 'wilderness_slime', 'green_slime_bounce', 'wilderness.json'):
+          for asset in ('dusk-kingdom-background', 'adventure-odyssey-wordmark', 'by-dabsky', 'goblin-run', 'skeleton-run', 'body.ttf', 'title.ttf', 'textured_panel', 'adventure_hud', 'adventure_menu', 'ornate_panel', 'control_preferences', 'tutorial_progress', 'tutorial_dialogue', 'tutorial_upgrade_panel', 'shop_catalog', 'shop_purchase_panel', 'character_stats', 'inventory_item_icon', 'wilderness_encounter', 'wilderness_slime', 'green_slime_bounce', 'wilderness.json', 'class_abilities', 'monster_rewards', 'cosmetic_catalog', 'home_cosmetics', 'cosmetic_palette', 'forest_wolf', 'forest_patrol.json'):
               assert any(asset in n for n in names), 'Missing packaged title dependency: ' + asset
           assert any(n.endswith('.ctex') for n in names), 'No imported textures exported'
           root = pathlib.Path('/tmp/ao-packaged-title')
@@ -392,6 +397,7 @@ jobs:
             build/*.apk
             build/SHA256SUMS.txt
             build/Release-APK-Signature.txt
+            build/Release-APK-Package.txt
           if-no-files-found: error
           retention-days: 30
 
