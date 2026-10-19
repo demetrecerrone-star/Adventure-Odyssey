@@ -1,6 +1,6 @@
-# Adventure Odyssey · bedroom development milestone
+# Adventure Odyssey
 
-A fresh, direct-source Godot 4 title-screen milestone. The earlier game remains preserved on `archive/pre-rebuild-2026-10-16` with its history.
+A direct-source Godot 4 Android adventure prototype. Current Android release notes: [0.16 saved login and phone usability](docs/android-0.16-release.md). The historical milestone notes below describe earlier preview scope. The earlier game remains preserved on `archive/pre-rebuild-2026-10-16` with its history.
 
 ## Scope
 Landscape dusk kingdom painting, separate title and original byDABSKY artwork, animated bottom-road chase, four interactive buttons, and responsive account-preview dialogs. Guest now opens a local character creator and layered bedroom milestone. See `docs/bedroom-milestone.md` for controls, verification and remaining art dependencies. No backend, authentication, network requests or password persistence are implemented. Use dummy details in the preview forms.
@@ -10,7 +10,7 @@ Run `godot --headless --path . --editor --quit`, then `godot --headless --path .
 Native captures use `godot --path . --script res://tests/title_screenshot.gd` in a supported desktop/Xvfb environment. CI uploads title, sign-in, create-account and wide-screen captures. Pushes validate only. Manual workflow dispatch or an explicitly requested commit containing `[build-title-apk]` builds the signed Android preview after validation. Ordinary commits never build an APK.
 
 ## Android
-Package: `com.demetrecerrone.adventureodyssey`. Version code 7, version name `0.7-bedroom-preview`. Permanent release signing is retained via existing repository secrets; no keystores belong in the source tree. ARM64 phones, landscape orientation.
+Package: `com.demetrecerrone.adventureodyssey`. Version code 16, version name `0.16-remember-me`. Permanent release signing is retained via existing repository secrets; no keystores belong in the source tree. ARM64 phones, landscape orientation.
 
 Fonts: DejaVu, licensed as described in assets/fonts/LICENSE.txt. Original generated visual assets are separate from interface elements. byDABSKY is the exact user-supplied transparent file.
 

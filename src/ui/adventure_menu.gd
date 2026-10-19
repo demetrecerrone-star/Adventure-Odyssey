@@ -238,6 +238,7 @@ func _layout() -> void:
 		portrait_stage.custom_minimum_size = Vector2(clampf(body_scroll.size.x * 0.29, 222, 250), body_scroll.size.y - 2)
 		inventory_scroll.custom_minimum_size.y = body_scroll.size.y - 2
 		_place_avatar()
+	_layout_item_popup()
 
 func show_page(id: String) -> void:
 	_close_item_popup()
@@ -285,6 +286,12 @@ func set_notice(message: String, is_error: bool = false) -> void:
 	if not is_instance_valid(notice): return
 	notice.text = message
 	notice.add_theme_color_override("font_color", Color("9c3027") if is_error else Color("346b61"))
+	if is_error and is_instance_valid(item_popup):
+		var popup_notice = item_popup.find_child("ItemActionNotice", true, false)
+		if popup_notice != null:
+			popup_notice.text = message
+			popup_notice.show()
+			item_popup.find_child("ItemDetailScroll", true, false).set_deferred("scroll_vertical", 0)
 	_layout()
 
 func _clear_body() -> void:
@@ -545,6 +552,7 @@ func _open_item_popup(id: String, container: String) -> void:
 	item_container = container
 	item_popup = Control.new()
 	item_popup.name = "ItemPopup"
+	item_popup.z_index = 10 # Above preview weapon layers as well as the dimming shade.
 	item_popup.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	item_popup.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(item_popup)
@@ -563,9 +571,11 @@ func _open_item_popup(id: String, container: String) -> void:
 	close.size = Vector2(86,44)
 	close.pressed.connect(_close_item_popup)
 	var heading := _label("ITEM DETAILS",frame,20,true)
+	heading.name = "ItemPopupHeading"
 	heading.position = Vector2(22,22)
 	heading.size = Vector2(frame.size.x-150,32)
 	var scroll := ScrollContainer.new()
+	scroll.name = "ItemDetailScroll"
 	frame.add_child(scroll)
 	scroll.position = Vector2(20,68)
 	scroll.size = frame.size-Vector2(40,88)
@@ -574,6 +584,10 @@ func _open_item_popup(id: String, container: String) -> void:
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	content.add_theme_constant_override("separation",8)
 	scroll.add_child(content)
+	var popup_notice := _label("", content, 15)
+	popup_notice.name = "ItemActionNotice"
+	popup_notice.add_theme_color_override("font_color", Color("9c3027"))
+	popup_notice.hide()
 	_build_item_details(content)
 	var popup_buttons: Array[Button] = []
 	for button in _touch_buttons:
@@ -587,7 +601,18 @@ func _open_item_popup(id: String, container: String) -> void:
 		popup_buttons[i].focus_neighbor_bottom = following
 		popup_buttons[i].focus_neighbor_left = previous
 		popup_buttons[i].focus_neighbor_right = following
+	_layout_item_popup()
 	close.grab_focus()
+
+func _layout_item_popup() -> void:
+	if not is_instance_valid(item_popup): return
+	var frame = item_popup.get_node_or_null("ItemPopupFrame")
+	if frame == null or not frame.has_node("ItemDetailScroll"): return
+	frame.size = Vector2(minf(560,size.x-32),minf(490,size.y-24))
+	frame.position = (size-frame.size)*0.5
+	frame.get_node("CloseItemPopup").position = Vector2(frame.size.x-106,16)
+	frame.get_node("ItemPopupHeading").size = Vector2(frame.size.x-150,32)
+	frame.get_node("ItemDetailScroll").size = frame.size-Vector2(40,88)
 
 func _weapon_damage(id: String, container: String) -> int:
 	if id.is_empty(): return 0

@@ -1,8 +1,10 @@
 extends Node
-# Firebase public-client REST adapter. No passwords/tokens are written to disk.
+# Firebase public-client REST adapter. Optional encrypted refresh-token storage.
+# Passwords and ID tokens are never persisted.
 # This component never reads, uploads, changes or associates the guest save.
 signal completed(operation: String, ok: bool, message: String)
 signal session_changed
+const SessionStore = preload("res://src/accounts/android_session_store.gd")
 const PROJECT_ID := "adventure-odyssey-2aadf"
 const IDENTITY_URL := "https://identitytoolkit.googleapis.com/v1/"
 const TOKEN_URL := "https://securetoken.googleapis.com/v1/token"
@@ -15,6 +17,7 @@ var operation := ""
 var user_id := ""
 var email := ""
 var email_verified := false
+var verification_checked := false
 var _id_token := ""
 var _refresh_token := ""
 var _expires_at := 0
@@ -22,6 +25,74 @@ var _generation := 0
 var _was_signed_in := false
 var _next_refresh_ms := 0
 var _http: HTTPRequest
+var session_store = SessionStore.new()
+var remembered := false
+var persistence_notice := ""
+var _remember_requested := false
+var _restoring := false
+
+func remember_available() -> bool:
+ return session_store != null and session_store.available()
+
+func _forget_saved() -> bool:
+ if not remember_available():
+  if remembered or OS.has_feature("android"):
+   persistence_notice = "Saved-login storage is unavailable. Removal could not be verified; do not share this device until it can be cleared."
+   return false
+  return true
+ if not session_store.clear():
+  persistence_notice = "Could not remove the saved login. Retry signing out before sharing this device."
+  return false
+ remembered = false
+ _remember_requested = false
+ persistence_notice = ""
+ return true
+
+func forget_saved_login() -> bool:
+ cancel()
+ var ok := _forget_saved()
+ _emit_session()
+ return ok
+
+func restore_saved_login() -> bool:
+ if busy or signed_in() or not configured() or not remember_available(): return false
+ var saved: Dictionary = session_store.read()
+ if not saved.get("ok", false):
+  persistence_notice = "Saved login could not be opened. Sign out to remove it, or sign in again."
+  return _reject("restore", persistence_notice)
+ var record: Dictionary = saved.get("record", {})
+ if record.is_empty(): return false
+ if not SessionStore.valid_record(record): return _reject("restore", "Saved login is invalid. Sign out to remove it.")
+ _clear_session()
+ user_id = record.uid
+ _refresh_token = record.refresh_token
+ remembered = true
+ _remember_requested = true
+ _restoring = true
+ persistence_notice = "Checking saved login…"
+ return refresh_session()
+
+func _prepare_login(remember: bool) -> bool:
+ if busy: return false
+ if remember and not remember_available(): return _reject("signin", "Secure Remember me is unavailable on this device.")
+ if not _forget_saved(): return _reject("signin", persistence_notice)
+ _clear_session()
+ _restoring = false
+ _next_refresh_ms = 0
+ _remember_requested = remember
+ return true
+
+func _save_session() -> bool:
+ if not _remember_requested: return true
+ if session_store.write({"project":PROJECT_ID, "uid":user_id, "refresh_token":_refresh_token}):
+  remembered = true
+  persistence_notice = "Remember me is on for this device."
+  return true
+ # Never retain a stale durable token after rotation or a failed replacement.
+ var cleared := _forget_saved()
+ _remember_requested = false
+ persistence_notice = "Signed in for this session only; secure login could not be saved." if cleared else "Signed in, but saved-login storage failed. Retry signing out before sharing this device."
+ return false
 
 func configured() -> bool:
  if not api_key.begins_with("AIza") or api_key.length() != 39: return false
@@ -32,10 +103,12 @@ func configured() -> bool:
 func signed_in() -> bool:
  return not user_id.is_empty() and not _id_token.is_empty() and Time.get_unix_time_from_system() < _expires_at
 
-func sign_in(address: String, password: String) -> bool:
+func sign_in(address: String, password: String, remember: bool = false) -> bool:
+ if not _prepare_login(remember): return false
  return _start("signin", "accounts:signInWithPassword", {"email":address.strip_edges(), "password":password, "returnSecureToken":true})
 
-func create_account(address: String, password: String) -> bool:
+func create_account(address: String, password: String, remember: bool = false) -> bool:
+ if not _prepare_login(remember): return false
  return _start("create", "accounts:signUp", {"email":address.strip_edges(), "password":password, "returnSecureToken":true})
 
 func reset_password(address: String) -> bool:
@@ -53,12 +126,17 @@ func refresh_session() -> bool:
  if _refresh_token.is_empty(): return _reject("refresh", "Sign in again to continue.")
  return _start("refresh", "", {"grant_type":"refresh_token", "refresh_token":_refresh_token})
 
-func sign_out() -> void:
+func sign_out() -> bool:
  cancel()
  _clear_session()
+ var forgotten := _forget_saved()
  _emit_session()
+ return forgotten
 
 func cancel() -> void:
+ if _restoring:
+  _restoring = false
+  _clear_session()
  _generation += 1
  if is_instance_valid(_http):
   _http.cancel_request()
@@ -68,9 +146,11 @@ func cancel() -> void:
  operation = ""
 
 func _clear_session() -> void:
+ _was_signed_in = false
  user_id = ""
  email = ""
  email_verified = false
+ verification_checked = false
  _id_token = ""
  _refresh_token = ""
  _expires_at = 0
@@ -134,6 +214,8 @@ func _response(result: int, code: int, _headers: PackedStringArray, body: Packed
    return
   if op in ["refresh", "lookup"] and failure in ["INVALID_REFRESH_TOKEN", "TOKEN_EXPIRED", "USER_DISABLED", "USER_NOT_FOUND", "INVALID_ID_TOKEN", "PROJECT_NUMBER_MISMATCH"]:
    _clear_session()
+   _restoring = false
+   _forget_saved()
    _emit_session()
   _reject(op, _safe_error(failure))
   return
@@ -149,6 +231,8 @@ func _response(result: int, code: int, _headers: PackedStringArray, body: Packed
   if uid.is_empty() or token.is_empty() or refresh.is_empty() or duration <= 30 or duration > 86400 or (op == "refresh" and uid != user_id):
    if op == "refresh":
     _clear_session()
+    _restoring = false
+    _forget_saved()
     _emit_session()
    _reject(op, "The account service returned an incomplete session. Please sign in again.")
    return
@@ -161,14 +245,27 @@ func _response(result: int, code: int, _headers: PackedStringArray, body: Packed
   if op != "refresh":
    email = str(parsed.get("email", ""))
    email_verified = false # Only accounts:lookup establishes verification.
+   verification_checked = false
+  var restored := _restoring
+  _restoring = false
+  _save_session()
   _emit_session()
+  if restored:
+   completed.emit("restore", true, "Saved login checked. Your adventure remains on this device.")
+   _queue_verification()
+   return
   completed.emit(op, true, "Account created. Verify your email before using online features." if op == "create" else "Signed in. Your adventure remains saved on this device.")
+  _queue_verification()
  elif op == "lookup":
   var users = parsed.get("users", [])
   if not users is Array or users.size() != 1 or not users[0] is Dictionary or str(users[0].get("localId", "")) != user_id:
    _reject(op, "Could not verify the current account.")
    return
-  email_verified = users[0].get("emailVerified", false) == true
+  if not users[0].get("emailVerified") is bool:
+   _reject(op, "Verification status is unavailable. Try checking again when online.")
+   return
+  email_verified = users[0].emailVerified
+  verification_checked = true
   email = str(users[0].get("email", email))
   _emit_session()
   completed.emit(op, true, "Email verified." if email_verified else "Email is not verified yet. Check your inbox.")
@@ -204,3 +301,12 @@ func request_headers(content_type: String) -> PackedStringArray:
  # Public Android identity headers support app-restricted Firebase keys.
  # These headers are not attestation or a substitute for backend authorization.
  return PackedStringArray(["Content-Type: " + content_type, "X-Android-Package: " + ANDROID_PACKAGE, "X-Android-Cert: " + RELEASE_CERT_SHA1])
+
+func _queue_verification() -> void:
+ # Queue after UI success handlers, which may close the old form and cancel it.
+ # Later user cancellation/signout must invalidate this queued request too.
+ if configured(): _hydrate_verification.call_deferred(_generation, user_id)
+
+func _hydrate_verification(ticket: int, expected_uid: String) -> void:
+ if ticket != _generation or expected_uid != user_id or busy or not signed_in(): return
+ check_account()

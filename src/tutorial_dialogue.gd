@@ -189,6 +189,9 @@ func _ready() -> void:
 	notice_label = _label(content, 16)
 	notice_label.name = "TutorialNotice"
 	notice_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	notice_label.add_theme_color_override("font_color", Color("9c3027"))
+	content.move_child(notice_label, 0)
+	notice_label.hide()
 	resized.connect(_layout)
 	_layout()
 	_render()
@@ -249,12 +252,15 @@ func _layout() -> void:
 	scroll.size = Vector2(maxf(0, panel_size.x - 52), maxf(0, panel_size.y - body_top - 26))
 
 func _render() -> void:
+	_release_touch_owners()
+	_touch_buttons = _touch_buttons.filter(func(button): return is_instance_valid(button) and not choices.is_ancestor_of(button))
 	_view = describe(npc_id, tutorial_state, character_class)
 	title_label.text = _view.title
 	close_button.text = "Not right now" if _view.choices.any(func(entry): return entry.kind == "action") else "Leave"
 	body_label.text = _view.body
 	objective_label.text = ("Status: " if tutorial_state.get("stage") in ["tutorial_complete","forest_patrol_complete"] else "Current errand: ") + _view.objective
 	notice_label.text = ""
+	notice_label.hide()
 	for child in choices.get_children():
 		choices.remove_child(child)
 		child.queue_free()
@@ -311,6 +317,9 @@ func show_error(message: String) -> void:
 	set_pending(false)
 	if is_instance_valid(notice_label):
 		notice_label.text = message
+		notice_label.visible = not message.is_empty()
+		close_button.grab_focus()
+		scroll.set_deferred("scroll_vertical", 0)
 
 func _dismiss() -> void:
 	if _dismiss_pending:

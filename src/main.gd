@@ -5,6 +5,7 @@ const AccountDocuments = preload("res://src/accounts/account_documents.gd")
 const AccountConfig = preload("res://src/accounts/account_config.gd")
 var accounts: Node
 var account_submit: Button
+var remember_login: Button
 
 const PREVIEW_DOCUMENTS = preload("res://src/preview_documents.gd")
 const BODY = preload("res://assets/fonts/body.ttf")
@@ -43,6 +44,7 @@ func _ready() -> void:
 	add_child(accounts)
 	accounts.completed.connect(_account_completed)
 	accounts.session_changed.connect(_account_session_changed)
+	accounts.restore_saved_login.call_deferred()
 	get_tree().auto_accept_quit = false
 	theme = Theme.new()
 	theme.default_font = BODY
@@ -57,6 +59,7 @@ func _ready() -> void:
 	menu.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(menu)
 	var wordmark := TextureRect.new()
+	wordmark.name = "Wordmark"
 	wordmark.texture = preload("res://assets/title/adventure-odyssey-wordmark.png")
 	wordmark.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	wordmark.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -65,6 +68,7 @@ func _ready() -> void:
 	wordmark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	menu.add_child(wordmark)
 	var subtitle := _label("YOUR ADVENTURE AWAITS", 13, Color("e2ceac"))
+	subtitle.name = "Tagline"
 	subtitle.position = Vector2(29, 170)
 	menu.add_child(subtitle)
 	var names := ["Sign in with Google", "Play as Guest", "Create Account", "Sign In"]
@@ -82,7 +86,8 @@ func _ready() -> void:
 		texture_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(texture_overlay)
 		buttons.append(button)
-	var preview := _label("BEDROOM PREVIEW  •  0.7", 12, Color("e2d5bc"))
+	var preview := _label("LOCAL ADVENTURE  •  PREVIEW", 12, Color("e2d5bc"))
+	preview.name = "BuildNotice"
 	preview.position = Vector2(77, 476)
 	menu.add_child(preview)
 	brand = TextureRect.new()
@@ -156,7 +161,31 @@ func _layout() -> void:
 		return
 	background.size = size
 	var safe := _safe_rect()
-	menu.position = Vector2(safe.position.x + 34, maxf(safe.position.y + 20, size.y * 0.1))
+	var compact := safe.size.y < 540
+	var wordmark: TextureRect = menu.get_node("Wordmark")
+	var tagline: Label = menu.get_node("Tagline")
+	var build_notice: Label = menu.get_node("BuildNotice")
+	if compact:
+		# Short landscape phones need all four actions visible without shrinking
+		# their touch targets. Keep the original art, arranged above a 2x2 grid.
+		var column_width := minf(324, (safe.size.x - 40) * 0.5)
+		menu.position = Vector2(safe.position.x + 12, safe.position.y)
+		wordmark.position = Vector2(-14, -10)
+		wordmark.size = Vector2(280, 120)
+		tagline.position = Vector2(0, 112)
+		build_notice.position = Vector2(column_width + 16, 112)
+		for i in range(buttons.size()):
+			buttons[i].position = Vector2((i % 2) * (column_width + 16), 140 + (i / 2) * 64)
+			buttons[i].size = Vector2(column_width, 52)
+	else:
+		menu.position = Vector2(safe.position.x + 34, maxf(safe.position.y + 20, size.y * 0.1))
+		wordmark.position = Vector2(-25, -12)
+		wordmark.size = Vector2(400, 171)
+		tagline.position = Vector2(29, 170)
+		build_notice.position = Vector2(77, 476)
+		for i in range(buttons.size()):
+			buttons[i].position = Vector2(0, 214 + i * 64)
+			buttons[i].size = Vector2(324, 52)
 	brand.size = Vector2(180, 60)
 	brand.position = Vector2(safe.end.x - brand.size.x, safe.position.y)
 	if is_instance_valid(modal):
@@ -248,6 +277,26 @@ func open_modal(kind: String) -> void:
 		notice.text = "Email and password are sent securely to Google Firebase for your Odyssey account. Progress stays on this device; cloud saves are not available." if accounts.configured() else "Preview only • Use dummy details. Account services are not connected."
 		_add_field("Email", false)
 		_add_field("Password", true)
+		if accounts.configured():
+			remember_login = _button("Remember me: Off")
+			remember_login.toggle_mode = true
+			remember_login.toggled.connect(func(enabled: bool):
+				remember_login.text = "Remember me: On" if enabled else "Remember me: Off"
+			)
+			remember_login.custom_minimum_size.y = 48
+			remember_login.disabled = not accounts.remember_available()
+			remember_login.tooltip_text = "Stores an encrypted login token using Android Keystore. Never saves your password." if accounts.remember_available() else "Secure saved login is available only on supported Android devices."
+			modal_box.add_child(remember_login)
+			if accounts.remember_available() and (accounts.remembered or not accounts.persistence_notice.is_empty()):
+				var retry := _button("Retry saved login")
+				retry.pressed.connect(func(): accounts.restore_saved_login())
+				modal_box.add_child(retry)
+				var forget := _button("Remove saved login from this device")
+				forget.pressed.connect(func():
+					var ok: bool = accounts.forget_saved_login()
+					notice.text = "Saved login removed. Local progress is unchanged." if ok else accounts.persistence_notice
+				)
+				modal_box.add_child(forget)
 		if kind == "create":
 			_add_field("Confirm password", true)
 			_add_legal_preview()
@@ -273,7 +322,8 @@ func open_modal(kind: String) -> void:
 		notice.text = "Firebase will send a password-reset link if an account exists. Your saved adventure will not change."
 		_add_field("Email", false)
 	elif kind == "account":
-		notice.text = "Signed in as " + accounts.email + "\n" + ("Email verified." if accounts.email_verified else "Email not verified yet.") + "\nYour character and progress remain on this device. No cloud backup or account ownership transfer has occurred."
+		notice.text = ("Signed in as " + accounts.email if not accounts.email.is_empty() else "Signed in. Checking account details…") + "\n" + ("Email verified." if accounts.email_verified else "Email not verified yet." if accounts.verification_checked else "Email verification has not been checked yet.") + "\nYour character and progress remain on this device. No cloud backup or account ownership transfer has occurred."
+		notice.text += "\n" + (accounts.persistence_notice if not accounts.persistence_notice.is_empty() else "Remember me is off. Sign in again after closing the app.")
 		var play := _button("Continue local adventure")
 		play.pressed.connect(_open_bedroom)
 		modal_box.add_child(play)
@@ -285,7 +335,11 @@ func open_modal(kind: String) -> void:
 			recheck.pressed.connect(func(): accounts.check_account())
 			modal_box.add_child(recheck)
 		var logout := _button("Sign out • Keep local progress")
-		logout.pressed.connect(func(): accounts.sign_out(); close_modal())
+		logout.pressed.connect(func():
+			var forgotten: bool = accounts.sign_out()
+			if forgotten: close_modal()
+			elif is_instance_valid(notice): notice.text = accounts.persistence_notice
+		)
 		modal_box.add_child(logout)
 	elif kind in ["privacy", "terms"]:
 		notice.text = "Account feature notice • Draft for review." if accounts.configured() else "Title preview information • No account or agreement is created."
@@ -457,6 +511,7 @@ func close_modal() -> void:
 		field.clear()
 	fields.clear()
 	password_toggles.clear()
+	remember_login = null
 	legal_controls.clear()
 	DisplayServer.virtual_keyboard_hide()
 	remove_child(modal)
@@ -582,7 +637,8 @@ func _submit_account() -> void:
 		started = accounts.reset_password(address)
 	else:
 		var password := fields[1].text
-		started = accounts.create_account(address, password) if modal_kind == "create" else accounts.sign_in(address, password)
+		var remember := is_instance_valid(remember_login) and remember_login.button_pressed and not remember_login.disabled
+		started = accounts.create_account(address, password, remember) if modal_kind == "create" else accounts.sign_in(address, password, remember)
 		for index in range(1, fields.size()): fields[index].clear()
 		for toggle in password_toggles: toggle.button_pressed = false
 	if started:
@@ -594,13 +650,17 @@ func _account_completed(op: String, ok: bool, message: String) -> void:
 	# Invalid/expired sessions are handled by the session_changed signal.
 	if op == "refresh": return
 	if not is_instance_valid(modal): return
+	if op == "lookup" and modal_kind != "account": return
 	if is_instance_valid(account_submit): account_submit.disabled = false
-	if ok and op in ["signin", "create", "verify", "lookup"]:
+	if ok and op in ["signin", "create", "verify", "lookup", "restore"]:
 		close_modal()
 		open_modal("account")
-		notice.text += "\n" + message
+		if not message in notice.text: notice.text += "\n" + message
 		return
-	notice.text = message
+	if modal_kind == "account" and op in ["lookup", "verify"]:
+		if not message in notice.text: notice.text += "\n" + message
+	else:
+		notice.text = message
 
 func _account_session_changed() -> void:
 	if is_instance_valid(modal) and modal_kind == "account" and not accounts.signed_in():

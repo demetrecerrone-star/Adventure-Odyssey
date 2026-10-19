@@ -13,6 +13,7 @@ func run() -> void:
 	root.add_child(scene)
 	await process_frame
 	check(scene.buttons.size() == 4, "four real buttons")
+	check(scene.menu.get_node("BuildNotice").text == "LOCAL ADVENTURE  •  PREVIEW", "title describes current playable scope without stale version")
 	check(scene.brand.texture.get_width() == 2048, "exact brand source")
 	for document in [scene.PREVIEW_DOCUMENTS.PRIVACY, scene.PREVIEW_DOCUMENTS.TERMS]:
 		check("Draft for review" in document, "bundled document visibly a review draft")
@@ -169,18 +170,35 @@ func run() -> void:
 	escape.pressed = true
 	scene._unhandled_key_input(escape)
 	check(scene.modal == null, "Escape dismisses")
-	for viewport_size in [Vector2i(1280,720), Vector2i(1920,1080), Vector2i(2400,1080), Vector2i(1024,768)]:
+	for viewport_size in [Vector2i(844,390), Vector2i(740,360), Vector2i(568,320), Vector2i(1280,720), Vector2i(1920,1080), Vector2i(2400,1080), Vector2i(1024,768)]:
 		root.size = viewport_size
+		root.content_scale_size = viewport_size
 		await process_frame
 		scene._layout()
 		check(scene.brand.position.x >= 0, "brand fits screen")
 		for button in scene.buttons:
 			check(scene.get_global_rect().encloses(button.get_global_rect()), "button fits responsive viewport")
+			check(button.size.y >= 48, "responsive title keeps touch target height")
+			check(scene._safe_rect().encloses(button.get_global_rect()), "title action stays within safe area")
 		scene.open_modal("create")
 		await process_frame
 		check(scene.get_global_rect().encloses(scene.modal_panel.get_global_rect()), "modal fits viewport")
 		scene.close_modal()
+		if viewport_size.y <= 390:
+			for index in range(4):
+				var point: Vector2 = scene.buttons[index].get_global_rect().get_center()
+				for pressed in [true, false]:
+					var event := InputEventMouseButton.new()
+					event.button_index = MOUSE_BUTTON_LEFT
+					event.position = point
+					event.pressed = pressed
+					Input.parse_input_event(event)
+					await process_frame
+				check(scene.modal_kind == ["google", "guest", "create", "signin"][index], "phone pointer reaches correct title action")
+				scene.close_modal()
+				await process_frame
 	root.size = Vector2i(1280,720)
+	root.content_scale_size = Vector2i(1280,720)
 	await process_frame
 	scene._layout()
 	# Dispatch real pointer events through Godot's GUI, not button signals.

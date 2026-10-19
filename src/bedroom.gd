@@ -461,7 +461,9 @@ func open_menu() -> void:
 	menu.title_requested.connect(_exit)
 	menu.inventory_requested.connect(func(): open_chest(false))
 	menu.equip_requested.connect(func(item: String):
-		if not state.equip(item): menu.set_notice(state.error, true)
+		if not state.equip(item):
+			menu.set_notice(state.error, true)
+			return
 		else:
 			actor.set_equipped_weapon(state.equipped_weapon)
 			menu.set_notice("Equipment saved.")
@@ -470,21 +472,29 @@ func open_menu() -> void:
 	menu.potion_requested.connect(func(item: String):
 		var result: Dictionary = _use_inventory_potion(item)
 		menu.set_notice(result.message, not result.ok)
-		menu.refresh_state()
+		if result.ok: menu.refresh_state()
 	)
 	menu.unequip_requested.connect(func():
-		if not state.unequip(): menu.set_notice(state.error, true)
+		if not state.unequip():
+			menu.set_notice(state.error, true)
+			return
 		else:
 			actor.set_equipped_weapon(state.equipped_weapon)
 			menu.set_notice("Equipment saved.")
 		menu.refresh_state()
 	)
 	menu.ring_equip_requested.connect(func():
-		if not state.equip_ring(): menu.set_notice(state.error, true)
+		if not state.equip_ring():
+			menu.set_notice(state.error, true)
+			return
+		menu.set_notice("Ring equipped and saved.")
 		menu.refresh_state()
 	)
 	menu.ring_unequip_requested.connect(func():
-		if not state.unequip_ring(): menu.set_notice(state.error, true)
+		if not state.unequip_ring():
+			menu.set_notice(state.error, true)
+			return
+		menu.set_notice("Ring returned to your bag.")
 		menu.refresh_state()
 	)
 	menu.settings_changed.connect(func(mode: String, left_handed: bool):

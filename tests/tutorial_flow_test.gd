@@ -245,7 +245,7 @@ func _test_dialogue_controls() -> void:
 	check(view.scroll.size.y >= 150, "Phone landscape retains useful scroll height under font stress")
 	check(view.scroll.get_v_scroll_bar().max_value > view.scroll.size.y, "Long dialogue and errors remain available through scrolling")
 	check(view.scroll.get_h_scroll_bar().max_value <= view.scroll.size.x + 1, "Font stress does not clip text horizontally")
-	view.scroll.ensure_control_visible(view.notice_label)
+	view.scroll.ensure_control_visible(view.objective_label) # Errors are now at the top; objective is the final content.
 	for tick in range(3): await process_frame
 	check(view.scroll.scroll_vertical > 0, "Bottom of long conversation can be reached")
 	check(view.close_button.get_global_rect() == fixed_close, "Leave remains fixed while dialogue scrolls")

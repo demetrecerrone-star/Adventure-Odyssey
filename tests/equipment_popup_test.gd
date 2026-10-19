@@ -36,7 +36,7 @@ func run() -> void:
   await click(menu.find_child("Equip_hidden_old_stick",true,false))
   check(snap(state)==before,"Actual Equip save failure rolls back both slots")
   DirAccess.remove_absolute(state.path+".tmp")
-  await click(menu.find_child("Inspect_hidden_old_stick",true,false))
+  check(is_instance_valid(menu.item_popup),"Failed save leaves the same item ready to retry")
   await click(menu.find_child("Equip_hidden_old_stick",true,false))
   check(state.equipped_weapon=="hidden_old_stick" and state.bag[weapon]==1,"Actual UI swaps occupied slot")
   check(menu.avatar.equipped_weapon=="hidden_old_stick" and room.actor.equipped_weapon=="hidden_old_stick","Both real avatars refresh")
