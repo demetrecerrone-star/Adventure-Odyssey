@@ -1,0 +1,35 @@
+name: Publish approved v0.14 build 369 APK
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-preview-369.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish-approved-apk:
+    if: contains(github.event.head_commit.message, '[publish-preview-369]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download the exact previously verified build
+        uses: actions/download-artifact@v4
+        with:
+          name: Adventure-Odyssey-Android-APK
+          run-id: 39184645741
+          github-token: ${{ github.token }}
+          path: verified-apk
+      - name: Verify and publish this one approved APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: demetrecerrone-star/Adventure-Odyssey
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd verified-apk
+          echo '6e68d12ac609ec0f5dcca75be660ef68836d3ccf0ff0a98f86ba24eb022bf439  Adventure-Odyssey-release.apk' | sha256sum -c -
+          gh release create ao-preview-v0.14-build369 Adventure-Odyssey-release.apk \
+            --target 6931522e7977615e9f7864b3f49b16b48247d397 \
+            --title 'Adventure Odyssey v0.14 test preview' \
+            --notes 'Android ARM64 and x86_64 preview, version code 14. Build 369 from 6931522e. Larger phone combat and menu controls, evenly spaced skills, larger player and conversation panels, centered equipment slots, distinct stable town residents, and a painted directional skeleton summon based on the title artwork. All current slime and wolf groups respawn after 25 seconds; existing cooldowns migrate once without resetting rewards or quests. Skeleton attack mechanics and the intentionally overpowered hidden stick are preserved. All 58 source and 56 packaged suites passed, with native desktop phone-layout and motion checks. Same permanent release certificate and package; update without uninstalling to retain saves. No Android permissions added. Physical Android performance and live device save-upgrade testing remain unverified. SHA-256: 6e68d12ac609ec0f5dcca75be660ef68836d3ccf0ff0a98f86ba24eb022bf439' \
+            --prerelease
