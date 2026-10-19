@@ -1,0 +1,97 @@
+name: Publish verified v0.16 build 378 APK
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-preview-378.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish-approved-apk:
+    if: contains(github.event.head_commit.message, '[publish-preview-378]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Confirm exact source passed every build gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: demetrecerrone-star/Adventure-Odyssey
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api repos/$GH_REPO/actions/runs/39247342114 > /tmp/verified-run.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('/tmp/verified-run.json'))
+          assert r['head_sha']=='2ec8a0a2e7d358531d525234a912d25810754745'
+          assert r['status']=='completed' and r['conclusion']=='success'
+          print('Exact v0.16 source build passed all gates.')
+          PY
+      - name: Download exact verified APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Adventure-Odyssey-Android-APK
+          run-id: 39247342114
+          github-token: ${{ github.token }}
+          path: verified-apk
+      - name: Verify, publish, and re-download public release bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: demetrecerrone-star/Adventure-Odyssey
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd verified-apk
+          EXPECTED_SHA=61b90015c0b169f28f4117edaccaeb5e34bc7cf912a7dee6bb983216a5a08a51
+          TAG=ao-preview-v0.16-build378
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          signer="$(find "$SDK_ROOT/build-tools" -maxdepth 3 -type f -name apksigner | sort -V | tail -n 1)"
+          aapt="$(find "$SDK_ROOT/build-tools" -maxdepth 3 -type f -name aapt | sort -V | tail -n 1)"
+          test -x "$signer" && test -x "$aapt"
+          verify_apk() {
+            local apk="$1"
+            echo "$EXPECTED_SHA  $apk" | sha256sum -c -
+            "$signer" verify --verbose --print-certs "$apk" > /tmp/release-signature.txt
+            grep -Fq 'Verified using v2 scheme (APK Signature Scheme v2): true' /tmp/release-signature.txt
+            grep -Fq 'Signer #1 certificate SHA-256 digest: d66e7daf0e5c7c735bf9f1c866afc204e2d0355687ac37d385cf3016e42eac36' /tmp/release-signature.txt
+            "$aapt" dump badging "$apk" > /tmp/release-package.txt
+            grep -Eq "package: name='com.demetrecerrone.adventureodyssey' versionCode='16' versionName='0.16-remember-me'" /tmp/release-package.txt
+            grep -Eq "native-code:.*'arm64-v8a'.*'x86_64'" /tmp/release-package.txt
+            "$aapt" dump permissions "$apk" > /tmp/release-permissions.txt
+            python3 - <<'PY'
+          import re,pathlib
+          actual=set(re.findall(r"uses-permission: name='([^']+)'",pathlib.Path('/tmp/release-permissions.txt').read_text()))
+          assert actual=={'android.permission.INTERNET'}
+          PY
+          }
+          verify_apk Adventure-Odyssey-release.apk
+          echo "$EXPECTED_SHA  Adventure-Odyssey-release.apk" > SHA256SUMS.txt
+          cat > CHANGELOG.md <<'NOTES'
+          # Adventure Odyssey v0.16: saved login and phone usability
+
+          Optional Remember me is off by default and uses Android Keystore-protected AES-GCM refresh-token storage through Godot's built-in Android bridge. Passwords are never saved. A removal request disables future token saves even if deletion fails, and unresolved removal warnings stay visible after terminal account errors. Verification status refreshes automatically; offline lookups keep identity visible and describe verification as unknown.
+
+          All four title actions fit short landscape phones. Equipment-save failures keep a visible retry; inventory popups resize and cover the held weapon. Quest-save errors appear above choices, and repeated conversations release stale touch controls.
+
+          Source: 2ec8a0a2e7d358531d525234a912d25810754745, based on the approved overnight checkpoint. Signed build 378 passed all 63 source and 61 packaged regression suites, four configuration fixture groups, enabled exported client-configuration validation, native desktop capture gates, APK integrity, signing, package/version, architecture, Internet-only permissions and Android bridge presence checks.
+
+          Google sign-in is not implemented. Progress and inventory remain local with no cloud save or account ownership transfer. Actual Android Keystore encryption/decryption, restart/reboot, tamper/removal and latency still need device verification; desktop mocks and bridge presence do not prove these behaviors. No live account/email requests or external testing-service uploads were made during these checks.
+
+          Install over the previous official version without uninstalling to retain local saves. Version code 16, version name 0.16-remember-me. Package com.demetrecerrone.adventureodyssey. Same permanent signing certificate as 0.15. ARM64 and x86_64 included. Original Firebase configuration and signing keys are not distributed.
+          NOTES
+          printf '\nAPK SHA-256: %s\n' "$EXPECTED_SHA" >> CHANGELOG.md
+          printf '\nBuild verification: https://github.com/%s/actions/runs/39247342114\n' "$GH_REPO" >> CHANGELOG.md
+          gh release create "$TAG" Adventure-Odyssey-release.apk SHA256SUMS.txt Release-APK-Signature.txt Release-APK-Package.txt Release-APK-Permissions.txt CHANGELOG.md \
+            --target 2ec8a0a2e7d358531d525234a912d25810754745 \
+            --title 'Adventure Odyssey v0.16 saved login and phone usability' \
+            --notes-file CHANGELOG.md --prerelease --draft
+          mkdir draft-download
+          gh release download "$TAG" --pattern Adventure-Odyssey-release.apk --dir draft-download
+          verify_apk draft-download/Adventure-Odyssey-release.apk
+          gh release edit "$TAG" --draft=false
+          url="$(gh api repos/$GH_REPO/releases/tags/$TAG --jq '.assets[] | select(.name=="Adventure-Odyssey-release.apk") | .browser_download_url')"
+          test -n "$url"
+          mkdir public-download
+          curl --fail --location --retry 3 --output public-download/Adventure-Odyssey-release.apk "$url"
+          verify_apk public-download/Adventure-Odyssey-release.apk
+          echo 'PUBLIC RELEASE RE-DOWNLOAD: SHA-256, APK v2 signature, permanent certificate, package/version, architectures and Internet-only permissions verified.'
