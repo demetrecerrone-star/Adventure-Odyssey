@@ -379,7 +379,7 @@ jobs:
           aapt="$(find /usr/lib/android-sdk/build-tools -maxdepth 3 -type f -name aapt | sort -V | tail -n 1)"
           test -x "$aapt"
           "$aapt" dump badging "$APK" > build/Release-APK-Package.txt
-          grep -Eq "package: name='com.demetrecerrone.adventureodyssey' versionCode='13' versionName='0.13-adventure-preview'" build/Release-APK-Package.txt
+          grep -Eq "package: name='com.demetrecerrone.adventureodyssey' versionCode='14' versionName='0.14-adventure-preview'" build/Release-APK-Package.txt
           grep -Eq "native-code:.*'arm64-v8a'.*'x86_64'" build/Release-APK-Package.txt
           ls -lh "$APK"
           sha256sum "$APK" | tee build/SHA256SUMS.txt
