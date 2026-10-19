@@ -43,9 +43,9 @@ func check_layout(hud, safe: Rect2, left: bool, mode: String, context: String) -
 		for second in all_buttons(hud):
 			if first.get_instance_id() < second.get_instance_id():
 				check(not first.get_global_rect().intersects(second.get_global_rect()), context + " distinct buttons do not overlap " + first.name + "/" + second.name)
-	check(hud.attack_button.size == Vector2(96, 96), context + " attack target is enlarged from 76 to 96 px")
+	check(hud.attack_button.size == Vector2(112, 112), context + " attack target is enlarged to 112 px")
 	for skill in hud.skill_buttons:
-		check(skill.size == Vector2(64, 64), context + " skill target is enlarged from 46 to 64 px " + skill.name)
+		check(skill.size == Vector2(76, 76), context + " skill target is enlarged to 76 px " + skill.name)
 	check(not hud.message.get_global_rect().intersects(thumb), context + " message clears thumb zone")
 	for center_control in [hud.message, hud.vitals_panel, hud.interaction_panel]:
 		check(not center_control.get_global_rect().intersects(hud.action_cluster.get_global_rect()), context + " center control clears combat cluster " + center_control.name)

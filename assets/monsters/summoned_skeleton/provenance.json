@@ -1,0 +1,9 @@
+{
+  "source_reference": "assets/title/skeleton-run.png",
+  "sha256": "1cfd5cccb21a38c8c15e494f8a0fdfd4bdb2cf2ea33b0e18e62f95d03584a4ab",
+  "method": "Built-in image generation using existing title skeleton identity; directional24-pose atlas. Original title asset unchanged.",
+  "layout": "Walk down/right/up, attack down/right/up. Left mirrors right. Runtime per-pose AtlasTexture regions preserve all weapons and register feet.",
+  "visual_constraints": "Bare ivory skull, dark sockets, tan bones, leather shoulder armor/bracers/boots, blue torn waistcloth, sword; no helmet/shield.",
+  "generation_prompt": "Adapt canonical title skeleton into painted top-down three-quarter RPG four-column six-row walking/attack poses on transparent alpha; preserve identity/costume, actual back view, alternating steps and sword poses. Layout refinement adds empty gutters; per-pose runtime regions prevent grid clipping.",
+  "limitations": "Three-quarter painted sprite, not a 3D model. Front/right windup frame1 is not used because hand continuity was weaker; actual attacks use strike/recovery poses."
+}

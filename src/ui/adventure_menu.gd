@@ -235,7 +235,7 @@ func _layout() -> void:
 		portrait_stage.custom_minimum_size.y = _portrait_height
 	if is_instance_valid(inventory_row):
 		inventory_row.custom_minimum_size.y = body_scroll.size.y - 2
-		portrait_stage.custom_minimum_size = Vector2(clampf(body_scroll.size.x * 0.29, 140, 250), body_scroll.size.y - 2)
+		portrait_stage.custom_minimum_size = Vector2(clampf(body_scroll.size.x * 0.29, 222, 250), body_scroll.size.y - 2)
 		inventory_scroll.custom_minimum_size.y = body_scroll.size.y - 2
 		_place_avatar()
 
@@ -403,11 +403,12 @@ func _make_portrait(parent: Node) -> void:
 
 func _place_avatar() -> void:
 	if not is_instance_valid(avatar) or not is_instance_valid(portrait_stage): return
-	var usable := portrait_stage.size - Vector2(30, 30)
+	var reserved := 78.0 if portrait_stage.has_meta("equipment_footer") else 0.0
+	var usable := portrait_stage.size - Vector2(30, 30 + reserved)
 	var factor := minf(usable.x / 256.0, usable.y / 256.0)
 	factor = maxf(0.1, factor)
 	avatar.scale = Vector2.ONE * factor
-	avatar.position = Vector2(portrait_stage.size.x * 0.5, portrait_stage.size.y * 0.5 + 104 * factor)
+	avatar.position = Vector2(portrait_stage.size.x * 0.5, (portrait_stage.size.y - reserved) * 0.5 + 104 * factor)
 
 func _build_inventory() -> void:
 	inventory_row = HBoxContainer.new()
@@ -499,11 +500,15 @@ func _reveal_inventory_details() -> void:
 	inventory_scroll.scroll_vertical = int(inventory_details.get_parent().position.y)
 
 func _add_equipment_slots() -> void:
+	portrait_stage.set_meta("equipment_footer", true)
+	portrait_stage.custom_minimum_size.x = maxf(222, portrait_stage.custom_minimum_size.x)
+	var slot_index := 0
 	for data in [["Weapon",state.equipped_weapon,"equipped_weapon",Vector2(0,0)], ["Armor",state.equipped_armor,"equipped_armor",Vector2(1,0)], ["Ring",state.equipped_ring,"equipped_ring",Vector2(0,1)]]:
 		var button := _button("", portrait_stage)
 		button.name = "EquipmentSlot_" + data[2]
 		button.custom_minimum_size = Vector2(58,58)
 		button.size = Vector2(58,58)
+		button.clip_text = true
 		button.tooltip_text = data[0]
 		button.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
 		var icon = ItemIcon.new()
@@ -515,7 +520,9 @@ func _add_equipment_slots() -> void:
 			icon.hide()
 			button.text = data[0]
 			button.add_theme_font_size_override("font_size",12)
-		var place := func(): button.position = Vector2(4 if data[3].x == 0 else maxf(4,portrait_stage.size.x-62), 4 if data[3].y == 0 else maxf(4,portrait_stage.size.y-62))
+		var column := slot_index
+		slot_index += 1
+		var place := func(): button.position = Vector2((portrait_stage.size.x - 186) * 0.5 + column * 64, maxf(12,portrait_stage.size.y-74))
 		portrait_stage.resized.connect(place)
 		place.call()
 		button.pressed.connect(func():
@@ -959,7 +966,7 @@ func _build_quests() -> void:
 	var forest_stages := ["forest_patrol_active", "return_guild_forest", "forest_patrol_complete"]
 	var heading := "WESTERN FOREST · COMPLETE" if state.tutorial.stage == "forest_patrol_complete" else ("WESTERN FOREST · IN PROGRESS" if state.tutorial.stage in forest_stages else ("TUTORIAL · COMPLETE" if state.tutorial.stage == "tutorial_complete" else "TUTORIAL · IN PROGRESS"))
 	_card(body, heading, progress.objective(state.tutorial))
-	_card(body, "WILDERNESS GROUPS", "Slimes roam the South Meadow; wolves roam the western woods. Follow the roadside signs. You can fight without a quest. Defeated monsters return after 45 seconds; repeat fights earn gold and XP. Main roads are safe.")
+	_card(body, "WILDERNESS GROUPS", "Slimes roam the South Meadow; wolves roam the western woods. Follow the roadside signs. You can fight without a quest. Defeated monsters return after 25 seconds; repeat fights earn gold and XP. Main roads are safe.")
 	for group in state.Rewards.ENCOUNTERS:
 		if state.tutorial.stage == state.Rewards.ENCOUNTERS[group].stage:
 			_label("Assignment kills: %d / %d · Only kills after acceptance count." % [state.progression.population.quest_kills[group],state.Rewards.ENCOUNTERS[group].count],body,16,true)

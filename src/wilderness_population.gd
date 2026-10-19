@@ -3,7 +3,7 @@ extends RefCounted
 # A dead simulation life can never claim the next life by waiting or reloading.
 const GROUPS := {"south_meadow_slimes":3,"west_forest_patrol":2}
 const STAGES := {"south_meadow_slimes":"first_combat_active","west_forest_patrol":"forest_patrol_active"}
-const RESPAWN_SECONDS := 45
+const RESPAWN_SECONDS := 25
 const MAX_GENERATION := 100000000
 static func key(group: String, index: int) -> String: return "%s:%d" % [group,index]
 static func initial(legacy: Dictionary = {}, stage: String = "") -> Dictionary:

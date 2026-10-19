@@ -1,0 +1,13 @@
+{
+  "purpose": "Stable distinct outdoor neighbor identities. No dialogue, services, collision, facing or save changes.",
+  "files": {
+    "npc_plaza_neighbor_idle_down.png": {
+      "sha256": "4760d613587acecd62c19638592854325ee2ef2f77763a3494851a60661e015a",
+      "source": "Original Adventure-Odyssey-Town-NPCs fitted/npc_innkeeper/npc_innkeeper_idle_down.png; unchanged pixels."
+    },
+    "npc_well_scholar_idle_left.png": {
+      "sha256": "c2e97c4c4396958e922dd207213fc735c76cc251e550ac15069c269b43b40d03",
+      "source": "Native Godot render of existing approved male Mage layers, brown skin, Silver male_hair_08, Gray eyes, left-facing idle; tools/render_neighbor_asset.gd."
+    }
+  }
+}

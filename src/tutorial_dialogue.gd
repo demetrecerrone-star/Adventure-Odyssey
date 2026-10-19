@@ -233,7 +233,7 @@ func _button(text: String, parent: Node) -> Button:
 func _layout() -> void:
 	if not is_instance_valid(panel):
 		return
-	var panel_size := Vector2(minf(780, maxf(0, size.x - 32)), minf(590, maxf(0, size.y - 32)))
+	var panel_size := Vector2(minf(858, maxf(0, size.x - 20)), minf(649, maxf(0, size.y - 20)))
 	panel.position = (size - panel_size) * 0.5
 	panel.size = panel_size
 	# Font metrics may increase button minimums; measure them instead of letting

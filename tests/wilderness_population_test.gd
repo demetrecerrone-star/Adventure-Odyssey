@@ -15,12 +15,12 @@ func _initialize() -> void:
   check(plan.ok and plan.accepted.size()==lives.size(),"Monsters reward without quest")
   value=plan.next_state
   check(value.quest_kills[group]==0,"Pre-accept kills never count toward assignment")
-  check(not Population.ready(value,group,0,1044) and Population.ready(value,group,0,1045),"Persistent exact cooldown")
+  check(not Population.ready(value,group,0,1024) and Population.ready(value,group,0,1025),"Persistent exact cooldown")
   var replay=Population.plan_defeats(value,group,lives,Population.STAGES[group],2000)
   check(replay.ok and replay.accepted.is_empty() and replay.next_state==value,"Old incarnation never repays after cooldown")
   for life in lives: life.generation=1
-  check(not Population.plan_defeats(value,group,lives,Population.STAGES[group],1044).ok,"Future life cannot die before respawn")
-  plan=Population.plan_defeats(value,group,lives,Population.STAGES[group],1045)
+  check(not Population.plan_defeats(value,group,lives,Population.STAGES[group],1024).ok,"Future life cannot die before respawn")
+  plan=Population.plan_defeats(value,group,lives,Population.STAGES[group],1025)
   check(plan.ok and plan.accepted.size()==lives.size(),"New group life pays")
   value=plan.next_state
   check(value.quest_kills[group]==lives.size(),"Only accepted quest gets kills")

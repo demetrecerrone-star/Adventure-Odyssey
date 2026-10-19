@@ -60,7 +60,7 @@ func finish_errands(state) -> void:
 	check(state.receive_item("mana_potion", 2, "world_drop", "saved-stat-drop"), "Preserve independent acquisition")
 
 func run() -> void:
-	check(Save.VERSION == 13 and Save.new().path == "user://bedroom_guest_v1.json", "v9 stays in existing permanent slot")
+	check(Save.VERSION == 14 and Save.new().path == "user://bedroom_guest_v1.json", "v9 stays in existing permanent slot")
 	var empty = Save.new()
 	check(empty.get_stat_summary().code == "invalid_save" and empty.preview_stat_allocation({"STR":1}, 0).code == "invalid_save" and empty.allocate_stat_points({"STR":1}, 0).code == "invalid_save" and empty.advance_character_level(2, 0).code == "invalid_save", "No operations before character creation")
 	for selected_class in Catalog.CLASSES:

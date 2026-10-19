@@ -16,7 +16,11 @@ func run()->void:
  root.add_child(room);room.set_process(false)
  for tick in 3: await process_frame
  check(room.resident_ids.size()==4,"Four actual static attendants loaded")
+ var identities := {}
  for id in room.resident_ids:
+  var texture: Texture2D = room.scenery_nodes[id].texture
+  check(not identities.has(texture.resource_path), id+" has distinct stable artwork")
+  identities[texture.resource_path] = true
   var point:Vector2=room.anchors[id]
   check(room.can_stand(point),id+" stand is walkable")
   for delta in [Vector2(8,0),Vector2(-8,0),Vector2(0,8),Vector2(0,-8)]:check(room.can_stand(point+delta),id+" has input clearance")

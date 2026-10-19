@@ -3692,14 +3692,14 @@
         1036
       ],
       "group": "home_north_plaza",
-      "purpose": "A resident at the plaza-facing garden edge makes the house feel occupied while keeping the door approach empty.",
+      "purpose": "A distinct apron-clad neighbor beside the plaza home; stable original innkeeper-roster appearance, no inn service implied.",
       "collision": [
         3288,
         1029,
         24,
         14
       ],
-      "file": "residents/npc_resident_idle_down.png",
+      "file": "residents/npc_plaza_neighbor_idle_down.png",
       "interaction_stand": [
         3300,
         1092
@@ -3727,14 +3727,14 @@
         1133
       ],
       "group": "east_plaza_green",
-      "purpose": "A resident faces the shared well from its east side, separate from the resting bench.",
+      "purpose": "A silver-haired robed neighbor at the well, composed from approved male Mage layers; stable appearance, original interaction and footprint.",
       "collision": [
         3673,
         1126,
         24,
         14
       ],
-      "file": "residents/npc_resident_idle_left.png",
+      "file": "residents/npc_well_scholar_idle_left.png",
       "interaction_stand": [
         3733,
         1133

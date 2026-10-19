@@ -35,9 +35,9 @@ func run() -> void:
   check(state.wallet_gold==3 and state.wallet_sigils==1,"Real pre-quest attack receives first-life rewards")
   check(state.progression.population.quest_kills.south_meadow_slimes==0,"Kill never starts or advances unaccepted assignment")
   check(world.encounter.enemies[0].hp==0,"Killed life stays dead")
-  world._refresh_population(now+44)
+  world._refresh_population(now+24)
   check(world.encounter.enemies[0].hp==0,"Still dead before persisted deadline")
-  now+=45
+  now+=25
   world.population_clock=func(): return now
   world._refresh_population(now)
   check(world.encounter.enemies[0].hp==world.encounter.enemy_hp,"New incarnation respawns at full health")

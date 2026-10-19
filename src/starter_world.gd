@@ -360,6 +360,7 @@ var encounter_save_retry := 0.0
 var wilderness_nodes: Array[Sprite2D] = []
 var wilderness_footprints: Array[Rect2] = []
 var combat_fx: Node2D
+var summon_visual: Node2D
 var defeat_panel: Control
 var combat_data: Dictionary = {}
 var combat_checkpoint_elapsed := 0.0
@@ -386,16 +387,6 @@ class CombatFX:
 		if encounter.trap_timer > 0:
 			draw_arc(encounter.trap_position,80,0,TAU,32,Color("80dfbb"),3,true)
 			draw_line(encounter.trap_position-Vector2(15,15),encounter.trap_position+Vector2(15,15),Color("80dfbb"),3,true)
-		if encounter.summon_timer > 0:
-			var at: Vector2 = encounter.summon_position
-			var bone := Color("d5eadb")
-			draw_circle(at-Vector2(0,35),10,bone)
-			draw_circle(at-Vector2(4,37),2,Color("26352e")); draw_circle(at-Vector2(-4,37),2,Color("26352e"))
-			draw_line(at-Vector2(0,25),at-Vector2(0,6),bone,4,true)
-			for y in [17,22]: draw_line(at-Vector2(9,y),at-Vector2(-9,y),bone,3,true)
-			for side in [-1,1]:
-				draw_line(at-Vector2(0,21),at+Vector2(side*16,-13),bone,3,true)
-				draw_line(at-Vector2(0,6),at+Vector2(side*11,6),bone,3,true)
 		if encounter.skill_flash > 0:
 			var color: Color = {"burn":Color("ff975a"),"nova":Color("8edbff"),"poison":Color("98dc73"),"drain":Color("c392e8"),"holy":Color("ffec9b"),"heal":Color("9be4b1")}.get(encounter.skill_kind,Color("c8c4ff"))
 			if encounter.skill_kind in ["ranged","burn","drain","holy"]: draw_line(encounter.skill_origin-Vector2(0,25),encounter.strike_target-Vector2(0,15),color,5,true)
@@ -454,6 +445,8 @@ func _load_wilderness() -> void:
 	combat_fx.encounter = encounter
 	combat_fx.z_index = 1900
 	stage.add_child(combat_fx)
+	summon_visual = preload("res://src/summoned_skeleton.gd").new()
+	stage.add_child(summon_visual)
 	for sign_data in [[Vector2(1415,1660),"SLIME MEADOW ↓"],[Vector2(1000,2050),"SLIMES →"],[Vector2(875,1205),"← WOLF WOODS"]]:
 		var signpost = preload("res://src/wilderness_signpost.gd").new()
 		signpost.position = sign_data[0]
@@ -718,6 +711,7 @@ func _process_encounter(delta: float) -> void:
 	_sync_encounter_visuals()
 
 func _sync_encounter_visuals() -> void:
+	if is_instance_valid(summon_visual): summon_visual.sync(encounter, _combat_active())
 	for signpost in monster_signs:
 		signpost.hero = player
 		signpost.queue_redraw()

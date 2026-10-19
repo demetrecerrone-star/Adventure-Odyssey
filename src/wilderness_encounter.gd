@@ -37,6 +37,9 @@ var trap_position := Vector2.ZERO
 var summon_timer := 0.0
 var summon_cooldown := 0.0
 var summon_position := Vector2.ZERO
+var summon_facing := Vector2.DOWN
+var summon_moving := false
+var summon_attack_flash := 0.0
 var skill_flash := 0.0
 var skill_kind := ""
 var skill_origin := Vector2.ZERO
@@ -65,6 +68,8 @@ func reset() -> void:
 	trap_timer = 0.0
 	summon_timer = 0.0
 	summon_cooldown = 0.0
+	summon_moving = false
+	summon_attack_flash = 0.0
 	skill_flash = 0.0
 	attack_cooldown = 0.0
 	invulnerability = 0.0
@@ -233,7 +238,7 @@ func apply_resources(value: Dictionary) -> void:
 
 func capture() -> Dictionary:
 	var result := {}
-	for key in ["enemies","hp","mana","skill_cooldowns","potion_cooldown","attack_cooldown","invulnerability","strike_flash","hit_flash","defeated","victory","strike_target","buff_timer","shield_timer","shield_charges","trap_timer","trap_position","summon_timer","summon_cooldown","summon_position","skill_flash","skill_kind","skill_origin"]:
+	for key in ["enemies","hp","mana","skill_cooldowns","potion_cooldown","attack_cooldown","invulnerability","strike_flash","hit_flash","defeated","victory","strike_target","buff_timer","shield_timer","shield_charges","trap_timer","trap_position","summon_timer","summon_cooldown","summon_position","summon_facing","summon_moving","summon_attack_flash","skill_flash","skill_kind","skill_origin"]:
 		var value = get(key)
 		result[key] = value.duplicate(true) if value is Dictionary or value is Array else value
 	return result
@@ -313,6 +318,8 @@ func _tick_skills(dt: float, player: Vector2, can_stand: Callable) -> void:
 	if shield_timer <= 0: shield_charges = 0
 	trap_timer = maxf(0,trap_timer-dt)
 	summon_timer = maxf(0,summon_timer-dt)
+	summon_attack_flash = maxf(0,summon_attack_flash-dt)
+	summon_moving = false
 	skill_flash = maxf(0,skill_flash-dt)
 	for enemy in enemies:
 		if enemy.hp <= 0: continue
@@ -336,7 +343,12 @@ func _tick_skills(dt: float, player: Vector2, can_stand: Callable) -> void:
 			var target: Dictionary = targets[0]
 			var desired: Vector2 = target.position + Vector2(40,0)
 			var next := summon_position.move_toward(desired,140*dt)
-			if can_stand.call(next): summon_position = next
+			if can_stand.call(next) and not next.is_equal_approx(summon_position):
+				if summon_attack_flash <= 0: summon_facing = next-summon_position
+				summon_position = next
+				summon_moving = true
 			if summon_cooldown <= 0 and summon_position.distance_to(target.position) <= 110 and line_clear(summon_position,target.position,can_stand):
 				_damage(target,7)
+				summon_facing = Vector2(target.position)-summon_position
+				summon_attack_flash = 0.45
 				summon_cooldown = 1.2

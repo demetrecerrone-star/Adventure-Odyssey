@@ -81,8 +81,8 @@ class Medallion:
 			draw_line(top + Vector2(-8, -1), top + Vector2(1, 8), Color("d2c69e"), 2.5, true)
 			draw_line(top + Vector2(-12, 12), top + Vector2(-7, 7), Color("c3a05a"), 4, true)
 		elif emblem == "menu":
-			for y in [-8, 0, 8]:
-				draw_line(center + Vector2(-10, y), center + Vector2(10, y), Color("f0dba6"), 3, true)
+			for y in [-9, 0, 9]:
+				draw_line(center + Vector2(-12, y), center + Vector2(12, y), Color("f0dba6"), 3, true)
 		# Button draws its native text before this custom face. Repaint captions
 		# above the medallion so disabled skills remain identifiable on screen.
 		if emblem in ["attack", "skill"]:
@@ -154,24 +154,24 @@ func _build() -> void:
 	portrait_frame.ornamented = false
 	portrait_frame.dark = true
 	identity_panel.add_child(portrait_frame)
-	_place(portrait_frame, Rect2(9, 9, 74, 82))
+	_place(portrait_frame, Rect2(10, 10, 81, 90))
 	portrait = Control.new()
 	portrait.name = "ActualCharacterPortrait"
 	portrait.clip_contents = true
 	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	portrait_frame.add_child(portrait)
-	_place(portrait, Rect2(8, 8, 58, 66))
+	_place(portrait, Rect2(9, 9, 64, 73))
 	portrait_avatar = Avatar.new()
 	portrait_avatar.name = "SavedAppearance"
 	portrait.add_child(portrait_avatar)
 	# Original atlas is foot-pivoted at (128, 232); crop to the actual head and shoulders.
-	portrait_avatar.scale = Vector2.ONE * 0.90
-	portrait_avatar.position = Vector2(29, 174)
-	username_label = _label("Guest", identity_panel, 19)
+	portrait_avatar.scale = Vector2.ONE * 0.99
+	portrait_avatar.position = Vector2(32, 191)
+	username_label = _label("Guest", identity_panel, 21)
 	username_label.add_theme_font_override("font", TITLE_FONT)
-	class_label = _label("Class unavailable", identity_panel, 14)
-	progression_label = _label("Level / XP unavailable", identity_panel, 12, MUTED)
-	status = _label("Local adventure", identity_panel, 11, MUTED)
+	class_label = _label("Class unavailable", identity_panel, 15)
+	progression_label = _label("Level / XP unavailable", identity_panel, 13, MUTED)
+	status = _label("Local adventure", identity_panel, 12, MUTED)
 	status.name = "Status"
 	menu_button = Medallion.new()
 	menu_button.name = "MenuButton"
@@ -242,21 +242,21 @@ func _build() -> void:
 		interact_button.add_theme_stylebox_override(state, OrnatePanel.make_button_style(state in ["hover", "pressed"], state == "disabled"))
 	interaction_panel.add_child(interact_button)
 	_bind_extra_touch(interact_button)
-	attack_button = _medallion("\nAttack", "AttackButton", "attack", Rect2(160, 68, 96, 96))
+	attack_button = _medallion("\nAttack", "AttackButton", "attack", Rect2(168, 84, 112, 112))
 	attack_button.add_theme_constant_override("outline_size", 0)
 	for index in range(3):
-		var positions := [Vector2(168, 0), Vector2(88, 30), Vector2(78, 98)]
-		var skill := _medallion(["I", "II", "III"][index], "Skill%d" % (index + 1), "skill", Rect2(positions[index], Vector2(64, 64)))
+		var positions := [Vector2(0, 0), Vector2(90, 0), Vector2(180, 0)]
+		var skill := _medallion(["I", "II", "III"][index], "Skill%d" % (index + 1), "skill", Rect2(positions[index], Vector2(76, 76)))
 		skill.tooltip_text = "Skill %d unavailable. No skill system yet." % (index + 1)
 		skill_buttons.append(skill)
-	potion_button = _medallion("", "PotionUnavailable", "potion", Rect2(14, 114, 48, 48))
+	potion_button = _medallion("", "PotionUnavailable", "potion", Rect2(88, 116, 64, 64))
 	potion_button.tooltip_text = "Potion use unavailable. No combat system yet."
 	var unavailable := _label("Combat unavailable", action_cluster, 12, Color("f0e4c9"))
 	combat_status = unavailable
 	unavailable.add_theme_color_override("font_shadow_color", Color("201b13"))
 	unavailable.add_theme_constant_override("shadow_offset_y", 1)
 	unavailable.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	_place(unavailable, Rect2(54, 166, 202, 18))
+	_place(unavailable, Rect2(0, 204, 280, 18))
 	message = _label("", self, 14, Color("fff3d7"))
 	message.name = "AdventureMessage"
 	message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -385,26 +385,31 @@ func _layout() -> void:
 		available = available.intersection(layout_safe_rect)
 	var margin := 12.0
 	var compact := available.size.x < 1000
-	var identity_width := 276.0 if compact else 302.0
-	_place(identity_panel, Rect2(available.position + Vector2(margin, margin), Vector2(identity_width, 100)))
-	_place(username_label, Rect2(92, 12, identity_width - 108, 25))
-	_place(class_label, Rect2(92, 37, identity_width - 108, 20))
-	_place(progression_label, Rect2(92, 57, identity_width - 108, 18))
-	_place(status, Rect2(92, 76, identity_width - 108, 16))
-	_place(menu_button, Rect2(available.position + Vector2(margin + 8, 118), Vector2(52, 52)))
+	var identity_width := 304.0 if compact else 332.0
+	_place(identity_panel, Rect2(available.position + Vector2(margin, margin), Vector2(identity_width, 110)))
+	_place(username_label, Rect2(101, 13, identity_width - 117, 28))
+	_place(class_label, Rect2(101, 41, identity_width - 117, 22))
+	_place(progression_label, Rect2(101, 63, identity_width - 117, 20))
+	_place(status, Rect2(101, 84, identity_width - 117, 18))
+	_place(menu_button, Rect2(available.position + Vector2(margin + identity_width + 10, margin + 16), Vector2(64, 64)))
 	_place(map_panel, Rect2(available.position + Vector2(available.size.x - margin - 210, margin), Vector2(210, 87)))
 	_place(location_label, Rect2(26, 11, 158, 23))
 	_place(quest_panel, Rect2(available.position + Vector2(available.size.x - margin - 250, 105), Vector2(250, 52)))
-	var action_size := Vector2(256, 184)
+	var action_size := Vector2(280, 196)
 	var action_x := margin if left_handed else available.size.x - margin - action_size.x
 	_place(action_cluster, Rect2(available.position + Vector2(action_x, available.size.y - margin - action_size.y), action_size))
 	# Both control corners stay reserved, including the 244 px floating joystick.
 	# Only combat moves with handedness; context actions stay in the center lane.
 	var center_width := clampf(available.size.x - 2.0 * (action_size.x + margin + 12), 140, 340)
 	var center_x := available.position.x + (available.size.x - center_width) * 0.5
+	combat_status.visible = not compact
+	_place(combat_status, Rect2(Vector2(0, -20), Vector2(action_size.x, 18)))
 	_place(vitals_panel, Rect2(center_x, available.end.y - margin - 42, center_width, 42))
-	_place(hp_label, Rect2(9, 10, (center_width - 18) * 0.5, 22))
-	_place(mp_label, Rect2(center_width * 0.5, 10, (center_width - 18) * 0.5, 22))
+	_place(hp_label, Rect2(24, 10, (center_width - 48) * 0.5, 22))
+	_place(mp_label, Rect2(center_width * 0.5, 10, (center_width - 48) * 0.5, 22))
+	if center_width < 210:
+		_place(hp_label, Rect2(24, 3, center_width - 48, 18))
+		_place(mp_label, Rect2(24, 21, center_width - 48, 18))
 	var interaction_width := minf(200, center_width)
 	_place(interaction_panel, Rect2(available.position.x + (available.size.x - interaction_width) * 0.5, available.end.y - margin - 106, interaction_width, 52))
 	_place(interact_button, Rect2(Vector2.ZERO, interaction_panel.size))

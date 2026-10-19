@@ -10,7 +10,7 @@ const APPEARANCE = ["hair", "hair_color", "eyes", "skin"]
 const Inventory = preload("res://src/inventory_catalog.gd")
 const ShopCatalog = preload("res://src/shop_catalog.gd")
 const ITEMS = Inventory.LABELS
-const VERSION := 13
+const VERSION := 14
 const Relic = preload("res://src/hidden_relic.gd")
 const MAX_COUNT := 999
 const ACTION_SCENES = {
@@ -781,6 +781,11 @@ func _migrate(data: Dictionary) -> Dictionary:
 				preserved.stats = Stats.plan_level_advance(preserved.stats,earned.level,preserved.stats.revision).next_state
 		preserved.progression = Rewards.migrate(preserved.progression,str(preserved.tutorial.stage))
 		if preserved.progression.is_empty(): return {}
+		# v13 used a 45-second interval. Shift existing deadlines by the exact
+		# 20-second difference once; generations, receipts and rewards stay intact.
+		if int(data.version) <= 13:
+			for spawn in preserved.progression.population.spawns.values():
+				spawn.ready_at = maxi(0, int(spawn.ready_at) - 20)
 		# A v12 kill checkpoint could precede the separate quest-clear write.
 		# Proven accepted kill receipts complete that pending objective, never its payment.
 		for group in Rewards.ENCOUNTERS:

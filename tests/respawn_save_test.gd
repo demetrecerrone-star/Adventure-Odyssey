@@ -10,12 +10,12 @@ func run() -> void:
   check(state.progression.population.quest_kills.south_meadow_slimes==0,"No pre-accept quest credit")
   var before=snap(state)
   check(state.record_spawn_defeats("south_meadow_slimes",first,state.combat,2000) and snap(state)==before,"Old incarnation replay cannot pay later")
-  check(not state.record_spawn_defeats("south_meadow_slimes",[{"index":0,"generation":1}],state.combat,1044),"Cooldown cannot be skipped")
-  check(state.record_spawn_defeats("south_meadow_slimes",[{"index":0,"generation":1}],state.combat,1045),"Next life pays")
+  check(not state.record_spawn_defeats("south_meadow_slimes",[{"index":0,"generation":1}],state.combat,1024),"Cooldown cannot be skipped")
+  check(state.record_spawn_defeats("south_meadow_slimes",[{"index":0,"generation":1}],state.combat,1025),"Next life pays")
   check(state.wallet_gold==6 and state.wallet_sigils==1 and state.get_progression_summary().total_xp==20,"Repeat gives gold/XP, no repeat Sigils")
   var loaded=Save.new(); loaded.path=state.path
   check(loaded.load_saved() and snap(loaded)==snap(state),"Respawn counters and deadline survive reload")
-  check(not loaded.spawn_ready("south_meadow_slimes",0,1089) and loaded.spawn_ready("south_meadow_slimes",0,1090),"Reload keeps cooldown")
+  check(not loaded.spawn_ready("south_meadow_slimes",0,1049) and loaded.spawn_ready("south_meadow_slimes",0,1050),"Reload keeps cooldown")
   var data=snap(state); data.version=12; data.progression= {"version":1,"base_level":1,"kills":state.progression.kills.duplicate(true)}
   data.wallet_gold=3
   write_json(state.path,data)
@@ -25,6 +25,23 @@ func run() -> void:
   check(loaded.load_saved() and snap(loaded)==migrated,"Migration twice adds nothing")
   check(loaded.record_spawn_defeats("south_meadow_slimes",[{"index":0,"generation":1}],loaded.combat,2000),"Migrated repeat remains playable")
   check(loaded.wallet_gold==6 and loaded.wallet_sigils==1,"Migrated repeat never duplicates original Sigil")
+ var cooldown=fixture()
+ check(cooldown.set_location("starter_region",Vector2(1000,2020)),"Cooldown migration location")
+ for group in Save.Rewards.ENCOUNTERS:
+  for index in Save.Rewards.ENCOUNTERS[group].count:
+   check(cooldown.record_spawn_defeats(group,[{"index":index,"generation":0}],cooldown.combat,1000),"Prepare each paid spawn")
+ var old13=snap(cooldown);old13.version=13
+ for spawn in old13.progression.population.spawns.values():spawn.ready_at=1045
+ write_json(cooldown.path,old13)
+ fail_write(cooldown,func():return cooldown.load_saved(),"v13 cooldown migration rollback")
+ check(cooldown.load_saved(),"v13 cooldown migration succeeds")
+ for group in Save.Rewards.ENCOUNTERS:
+  for index in Save.Rewards.ENCOUNTERS[group].count:
+   check(not cooldown.spawn_ready(group,index,1024) and cooldown.spawn_ready(group,index,1025),"Existing 45-second deadline becomes 25 seconds")
+ check(cooldown.wallet_gold==old13.wallet_gold and cooldown.wallet_sigils==old13.wallet_sigils and cooldown.progression.kills==old13.progression.kills,"Migration changes no rewards or receipts")
+ var after14=snap(cooldown)
+ check(cooldown.load_saved() and snap(cooldown)==after14,"Deadline shifts only once across reloads")
+ check(cooldown.record_spawn_defeats("south_meadow_slimes",[{"index":0,"generation":0}],cooldown.combat,2000) and snap(cooldown)==after14,"Old paid incarnation stays idempotent after timer migration")
  var quest=fixture()
  var weapon: String=Save.Inventory.starter_weapon("Warrior")
  check(quest.transfer(weapon,false) and quest.equip(weapon),"Prepare ordinary starter")
@@ -40,7 +57,7 @@ func run() -> void:
  var completed_migration=snap(legacy_complete)
  check(legacy_complete.load_saved() and snap(legacy_complete)==completed_migration,"Completed migration cannot repay or advance twice")
  for generation in 3:
-  check(quest.record_spawn_defeats("south_meadow_slimes",[{"index":0,"generation":generation}],quest.combat,1000+generation*45),"Qualifying new life counts after acceptance")
+  check(quest.record_spawn_defeats("south_meadow_slimes",[{"index":0,"generation":generation}],quest.combat,1000+generation*25),"Qualifying new life counts after acceptance")
   if generation==0:
    var old=quest.snapshot(); old.version=12; old.progression={"version":1,"base_level":1,"kills":quest.progression.kills.duplicate(true)}
    write_json(quest.path,old)
@@ -49,7 +66,7 @@ func run() -> void:
    check(quest.load_saved() and snap(quest)==migrated,"Partial migration is idempotent")
  check(quest.tutorial.stage=="return_guild_first_combat" and quest.encounter_is_complete("south_meadow_slimes"),"Three qualifying accepted kills complete assignment atomically")
  for generation in range(3,30):
-  check(quest.record_spawn_defeats("south_meadow_slimes",[{"index":0,"generation":generation}],quest.combat,1000+generation*45),"Repeat world kills remain available after quest")
+  check(quest.record_spawn_defeats("south_meadow_slimes",[{"index":0,"generation":generation}],quest.combat,1000+generation*25),"Repeat world kills remain available after quest")
  check(quest.progression.kills.size()==1 and quest.progression.population.spawns.size()==5,"Thirty lives do not grow receipt storage")
  check(quest.wallet_gold==90 and quest.wallet_sigils==1 and quest.get_progression_summary().total_xp==300,"All thirty lives conserved without Sigil farm")
  check(quest.stats.level==3 and quest.get_stat_summary().unspent_points==10,"Repeated XP grants five points each earned level")
