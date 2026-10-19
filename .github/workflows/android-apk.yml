@@ -443,6 +443,7 @@ jobs:
           (root / 'tests').mkdir(exist_ok=True)
           shutil.copyfile('tests/tutorial_save_test.gd', root / 'tests/tutorial_save_test.gd')
           shutil.copyfile('tests/tutorial_flow_test.gd', root / 'tests/tutorial_flow_test.gd')
+          shutil.copyfile('tests/equipment_popup_test.gd', root / 'tests/equipment_popup_test.gd')
           assert any('runtime-layout.json' in n for n in names), 'Missing bedroom layout JSON'
           assert any('character-outfits/manifest.json' in n for n in names), 'Missing outfit manifest'
           print('PACKAGED TITLE DEPENDENCIES: PASS')
