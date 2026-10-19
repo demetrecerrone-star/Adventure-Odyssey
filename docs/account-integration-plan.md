@@ -52,3 +52,9 @@ Godot's HTTPRequest supports HTTPS/REST on Android and requires the export INTER
 ## CI client check
 
 The developer manually supplied `FIREBASE_CLIENT_CONFIG_JSON` through GitHub Actions secrets. The approved-check workflow validates it without logging its contents or contacting Firebase, writes only selected public identifiers to a runner temporary file, then removes that file. It does not upload the source JSON or generated config. Public keys embedded in a future APK are extractable; secret storage only protects repository/log exposure. Activation/injection into a distributed APK remains gated on provider restrictions and notice review. No secret values have been read by the assistant.
+
+## Independent audit corrections
+
+Configured account screens now use a factual provider/data notice draft, open at the top, rebuild verification controls from lookup results, and return to sign-in when a session expires. In-memory sessions attempt refresh before expiry, with a retry interval; expired or identity-mismatched sessions are cleared. JSON parsing does not log raw response text, and already-expiring sessions are rejected. Public Android package/certificate headers support app-restricted keys; they are not attestation. These fixes remain mock-tested and disabled for real users pending activation gates.
+
+https://docs.cloud.google.com/docs/authentication/api-keys documents the Android headers and explicitly notes that application restrictions alone are bypassable; API restrictions and server authorization remain necessary.

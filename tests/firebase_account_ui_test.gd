@@ -53,6 +53,11 @@ func run() -> void:
   check(not auth.busy, "close cancels request")
   auth._response(HTTPRequest.RESULT_SUCCESS, 200, PackedStringArray(), '{}'.to_utf8_buffer(), ticket, kind)
   check(scene.modal == null and not auth.signed_in(), "late response cannot reopen or authenticate")
+ for kind in ["privacy", "terms"]:
+  scene.open_modal(kind)
+  check("Draft for review" in scene.notice.text, "configured account documents are marked for review")
+  check("Firebase" in all_label_text(scene.modal) if kind == "privacy" else "preview feature notes" in all_label_text(scene.modal), "configured notice reflects actual account behavior")
+  scene.close_modal()
  scene.open_modal("signin")
  scene.fields[0].text = "fixture@example.com"
  scene.fields[1].text = "fixture-only"
@@ -62,6 +67,20 @@ func run() -> void:
  check(scene.modal_kind == "account" and auth.signed_in(), "real-response hook displays account")
  check("No cloud backup" in scene.notice.text, "honest local progress disclosure")
  check(scene.buttons[3].text == "Your Account", "signed title account entry")
+ await process_frame
+ await process_frame
+ check(scene.modal_scroll.scroll_vertical == 0, "account starts at identity and disclosure")
+ auth.check_account()
+ auth.respond("lookup", {"users":[{"localId":"fixture-user", "email":"fixture@example.com", "emailVerified":true}]})
+ check(not "Send verification email" in button_texts(scene.modal), "verified UI removes verification action")
+ check("Email verified." in scene.notice.text, "verified account rebuilt")
+ auth._expires_at = int(Time.get_unix_time_from_system()) - 1
+ auth._process(0.0)
+ check(scene.modal_kind == "signin" and scene.buttons[3].text == "Sign In", "expiry updates open modal and title")
+ scene.fields[0].text = "fixture@example.com"
+ scene.fields[1].text = "fixture-only"
+ scene._submit_preview()
+ auth.respond("signin", {"localId":"fixture-user", "email":"fixture@example.com", "idToken":"fixture-token", "refreshToken":"fixture-refresh", "expiresIn":"3600"})
  scene.close_modal()
  scene.open_modal("signin")
  check(scene.modal_kind == "account", "signed entry resumes account")
@@ -84,3 +103,14 @@ func capture(name: String) -> void:
  if dir.is_empty(): dir = "res://screenshots"
  var result := root.get_texture().get_image().save_png(dir.path_join(name + ".png"))
  check(result == OK, "native account capture")
+
+func button_texts(node: Node) -> Array:
+ var result: Array = []
+ if node is Button: result.append(node.text)
+ for child in node.get_children(): result.append_array(button_texts(child))
+ return result
+
+func all_label_text(node: Node) -> String:
+ var result: String = node.text if node is Label else ""
+ for child in node.get_children(): result += all_label_text(child)
+ return result

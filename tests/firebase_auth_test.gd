@@ -18,6 +18,8 @@ func _initialize() -> void:
  root.add_child(a)
  a.completed.connect(func(op, ok, message): events.append([op, ok, message]))
  check(not a.configured(), "unconfigured by default")
+ check("X-Android-Package: com.demetrecerrone.adventureodyssey" in a.request_headers("application/json"), "correct public Android package header")
+ check("X-Android-Cert: 72C3D1BA6AF92423526F34B86A4F51898D135449" in a.request_headers("application/json"), "verified permanent certificate header")
  check(not a.sign_in("test@example.com", "not-real"), "disabled client makes no request")
  check(a._http == null and not a.signed_in(), "no offline fake login")
  for key in ["AIza" + "a".repeat(35), "AIza" + "-".repeat(35), "AIza" + "_".repeat(35)]:
@@ -56,6 +58,22 @@ func _initialize() -> void:
   check(not events[-1][1] and not error in events[-1][2], "raw errors never exposed")
  respond(a, "signin", 200, session, HTTPRequest.RESULT_CANT_CONNECT)
  check(not a.signed_in(), "connection failure is not success")
+ var short_session := session.duplicate()
+ short_session.expiresIn = "1"
+ respond(a, "signin", 200, short_session)
+ check(not events[-1][1] and not a.signed_in(), "already-expiring session rejected")
+ a.busy = true
+ a.operation = "signin"
+ a._generation += 1
+ a._response(HTTPRequest.RESULT_SUCCESS, 200, PackedStringArray(), '{"secret-response-marker":'.to_utf8_buffer(), a._generation, "signin")
+ check(not events[-1][1] and not "secret-response-marker" in events[-1][2], "malformed response sanitized without raw parser logging")
+ respond(a, "signin", 200, session)
+ a._expires_at = int(Time.get_unix_time_from_system()) - 1
+ a._process(0.0)
+ check(a.user_id.is_empty() and a._refresh_token.is_empty(), "expired session clears identity and tokens")
+ respond(a, "signin", 200, session)
+ respond(a, "refresh", 200, {"user_id":"other-user", "id_token":"other-token", "refresh_token":"other-refresh", "expires_in":"3600", "project_id":"123"})
+ check(not a.signed_in(), "mismatched refresh invalidates old session")
  a.busy = true
  check(not a.create_account("test@example.com", "not-real"), "duplicate request ignored")
  a.sign_out()

@@ -1,6 +1,7 @@
 extends Control
 
 const AccountClient = preload("res://src/accounts/firebase_auth.gd")
+const AccountDocuments = preload("res://src/accounts/account_documents.gd")
 const AccountConfig = preload("res://src/accounts/account_config.gd")
 var accounts: Node
 var account_submit: Button
@@ -287,8 +288,9 @@ func open_modal(kind: String) -> void:
 		logout.pressed.connect(func(): accounts.sign_out(); close_modal())
 		modal_box.add_child(logout)
 	elif kind in ["privacy", "terms"]:
-		notice.text = "Title preview information • No account or agreement is created."
-		var document := _label(PREVIEW_DOCUMENTS.PRIVACY if kind == "privacy" else PREVIEW_DOCUMENTS.TERMS, 15, Color("f4ead8"))
+		notice.text = "Account feature notice • Draft for review." if accounts.configured() else "Title preview information • No account or agreement is created."
+		var document_text: String = (AccountDocuments.PRIVACY if kind == "privacy" else AccountDocuments.TERMS) if accounts.configured() else (PREVIEW_DOCUMENTS.PRIVACY if kind == "privacy" else PREVIEW_DOCUMENTS.TERMS)
+		var document := _label(document_text, 15, Color("f4ead8"))
 		document.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		modal_box.add_child(document)
 	elif kind == "google":
@@ -314,8 +316,9 @@ func open_modal(kind: String) -> void:
 	_layout()
 	if fields.size() > 0:
 		fields[0].grab_focus()
-	elif kind in ["privacy", "terms"]:
+	elif kind in ["privacy", "terms", "account"]:
 		modal_close.grab_focus()
+		_reset_modal_scroll.call_deferred()
 	else:
 		close.grab_focus()
 
@@ -377,7 +380,7 @@ func _add_legal_preview() -> void:
 		link.pressed.connect(_open_legal_document.bind("privacy" if caption == "Privacy Policy" else "terms"))
 		row.add_child(link)
 		legal_controls.append(link)
-	var explanation := _label("Read about this preview. No account or agreement is created.", 13, Color("cfbb98"))
+	var explanation := _label("Read how optional accounts use Firebase. Progress remains local." if accounts.configured() else "Read about this preview. No account or agreement is created.", 13, Color("cfbb98"))
 	explanation.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	modal_box.add_child(explanation)
 
@@ -589,7 +592,7 @@ func _submit_account() -> void:
 func _account_completed(op: String, ok: bool, message: String) -> void:
 	if not is_instance_valid(modal): return
 	if is_instance_valid(account_submit): account_submit.disabled = false
-	if ok and op in ["signin", "create"]:
+	if ok and op in ["signin", "create", "verify", "lookup"]:
 		close_modal()
 		open_modal("account")
 		notice.text += "\n" + message
@@ -597,5 +600,14 @@ func _account_completed(op: String, ok: bool, message: String) -> void:
 	notice.text = message
 
 func _account_session_changed() -> void:
+	if is_instance_valid(modal) and modal_kind == "account" and not accounts.signed_in():
+		close_modal()
+		open_modal("signin")
+		notice.text = "Your session ended. Sign in again, or continue your local adventure as Guest."
 	if buttons.size() >= 4:
 		buttons[3].text = "Your Account" if accounts.signed_in() else "Sign In"
+
+func _reset_modal_scroll() -> void:
+	await get_tree().process_frame
+	if is_instance_valid(modal_scroll) and modal_kind in ["account", "privacy", "terms"]:
+		modal_scroll.scroll_vertical = 0

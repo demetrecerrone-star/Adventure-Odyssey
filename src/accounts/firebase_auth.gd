@@ -7,6 +7,8 @@ const PROJECT_ID := "adventure-odyssey-2aadf"
 const IDENTITY_URL := "https://identitytoolkit.googleapis.com/v1/"
 const TOKEN_URL := "https://securetoken.googleapis.com/v1/token"
 const MAX_RESPONSE := 65536
+const ANDROID_PACKAGE := "com.demetrecerrone.adventureodyssey"
+const RELEASE_CERT_SHA1 := "72C3D1BA6AF92423526F34B86A4F51898D135449"
 var api_key := ""
 var busy := false
 var operation := ""
@@ -17,6 +19,8 @@ var _id_token := ""
 var _refresh_token := ""
 var _expires_at := 0
 var _generation := 0
+var _was_signed_in := false
+var _next_refresh_ms := 0
 var _http: HTTPRequest
 
 func configured() -> bool:
@@ -52,7 +56,7 @@ func refresh_session() -> bool:
 func sign_out() -> void:
  cancel()
  _clear_session()
- session_changed.emit()
+ _emit_session()
 
 func cancel() -> void:
  _generation += 1
@@ -95,11 +99,11 @@ func _start(op: String, endpoint: String, data: Dictionary) -> bool:
  add_child(_http)
  _http.request_completed.connect(_response.bind(ticket, op))
  var url := IDENTITY_URL + endpoint + "?key=" + api_key.uri_encode()
- var headers := PackedStringArray(["Content-Type: application/json"])
+ var headers := request_headers("application/json")
  var body := JSON.stringify(data)
  if op == "refresh":
   url = TOKEN_URL + "?key=" + api_key.uri_encode()
-  headers = PackedStringArray(["Content-Type: application/x-www-form-urlencoded"])
+  headers = request_headers("application/x-www-form-urlencoded")
   body = "grant_type=refresh_token&refresh_token=" + _refresh_token.uri_encode()
  var result := _http.request(url, headers, HTTPClient.METHOD_POST, body)
  # HTTPRequest owns the temporary request body; no retry queue or logging.
@@ -117,8 +121,10 @@ func _response(result: int, code: int, _headers: PackedStringArray, body: Packed
  if result != HTTPRequest.RESULT_SUCCESS or body.size() > MAX_RESPONSE:
   _reject(op, "Connection interrupted. Try again when you are online.")
   return
- var parsed = JSON.parse_string(body.get_string_from_utf8())
- if not parsed is Dictionary:
+ var parser := JSON.new()
+ var parse_result := parser.parse(body.get_string_from_utf8())
+ var parsed = parser.data
+ if parse_result != OK or not parsed is Dictionary:
   _reject(op, "The account service returned an unexpected response.")
   return
  if code < 200 or code >= 300:
@@ -128,7 +134,7 @@ func _response(result: int, code: int, _headers: PackedStringArray, body: Packed
    return
   if op in ["refresh", "lookup"] and failure in ["INVALID_REFRESH_TOKEN", "TOKEN_EXPIRED", "USER_DISABLED", "USER_NOT_FOUND", "INVALID_ID_TOKEN", "PROJECT_NUMBER_MISMATCH"]:
    _clear_session()
-   session_changed.emit()
+   _emit_session()
   _reject(op, _safe_error(failure))
   return
  if op in ["signin", "create", "refresh"]:
@@ -140,7 +146,10 @@ func _response(result: int, code: int, _headers: PackedStringArray, body: Packed
   var token := str(parsed.get("id_token" if op == "refresh" else "idToken", ""))
   var refresh := str(parsed.get("refresh_token" if op == "refresh" else "refreshToken", ""))
   var duration := int(str(parsed.get("expires_in" if op == "refresh" else "expiresIn", "0")))
-  if uid.is_empty() or token.is_empty() or refresh.is_empty() or duration <= 0 or duration > 86400 or (op == "refresh" and uid != user_id):
+  if uid.is_empty() or token.is_empty() or refresh.is_empty() or duration <= 30 or duration > 86400 or (op == "refresh" and uid != user_id):
+   if op == "refresh":
+    _clear_session()
+    _emit_session()
    _reject(op, "The account service returned an incomplete session. Please sign in again.")
    return
   # Firebase validates refresh-token project number against the API key.
@@ -152,7 +161,7 @@ func _response(result: int, code: int, _headers: PackedStringArray, body: Packed
   if op != "refresh":
    email = str(parsed.get("email", ""))
    email_verified = false # Only accounts:lookup establishes verification.
-  session_changed.emit()
+  _emit_session()
   completed.emit(op, true, "Account created. Verify your email before using online features." if op == "create" else "Signed in. Your adventure remains saved on this device.")
  elif op == "lookup":
   var users = parsed.get("users", [])
@@ -161,7 +170,7 @@ func _response(result: int, code: int, _headers: PackedStringArray, body: Packed
    return
   email_verified = users[0].get("emailVerified", false) == true
   email = str(users[0].get("email", email))
-  session_changed.emit()
+  _emit_session()
   completed.emit(op, true, "Email verified." if email_verified else "Email is not verified yet. Check your inbox.")
  elif op == "reset":
   completed.emit(op, true, "If an account exists for that email, a reset link has been requested. Check your inbox and spam folder.")
@@ -176,3 +185,22 @@ func _safe_error(failure: String) -> String:
  if failure in ["TOO_MANY_ATTEMPTS_TRY_LATER", "QUOTA_EXCEEDED"]: return "Too many requests. Please wait before trying again."
  if failure == "INVALID_EMAIL": return "Enter a valid email address."
  return "Account request could not be completed. Please try again later."
+
+func _emit_session() -> void:
+ _was_signed_in = signed_in()
+ session_changed.emit()
+
+func _process(_delta: float) -> void:
+ if _was_signed_in and not signed_in():
+  cancel()
+  _clear_session()
+  _emit_session()
+  return
+ if signed_in() and configured() and not busy and not _refresh_token.is_empty() and _expires_at - Time.get_unix_time_from_system() < 60 and Time.get_ticks_msec() >= _next_refresh_ms:
+  _next_refresh_ms = Time.get_ticks_msec() + 60000
+  refresh_session()
+
+func request_headers(content_type: String) -> PackedStringArray:
+ # Public Android identity headers support app-restricted Firebase keys.
+ # These headers are not attestation or a substitute for backend authorization.
+ return PackedStringArray(["Content-Type: " + content_type, "X-Android-Package: " + ANDROID_PACKAGE, "X-Android-Cert: " + RELEASE_CERT_SHA1])
