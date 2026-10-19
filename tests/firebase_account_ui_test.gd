@@ -140,6 +140,23 @@ func run() -> void:
  auth.sign_out()
  scene.close_modal()
  check(scene.buttons[3].text == "Sign In" and not auth.signed_in(), "logout clears UI identity")
+ for terminal_op in ["refresh", "lookup"]:
+  scene.open_modal("signin")
+  auth.sign_in("fixture@example.com","fixture-only",true)
+  auth.respond("signin", {"localId":"fixture-user", "email":"fixture@example.com", "idToken":"fixture-token", "refreshToken":"fixture-refresh", "expiresIn":"3600"})
+  auth.cancel()
+  auth.session_store.fail_clear=true
+  if terminal_op=="refresh": auth.refresh_session()
+  else: auth.check_account()
+  auth._response(HTTPRequest.RESULT_SUCCESS,400,PackedStringArray(),'{"error":{"message":"INVALID_REFRESH_TOKEN"}}'.to_utf8_buffer(),auth._generation,terminal_op)
+  check(scene.modal_kind=="signin" and not auth.signed_in(),"terminal account failure returns to signed-out form")
+  check("Could not remove the saved login" in scene.notice.text,"terminal account failure keeps unresolved removal warning visible")
+  check("Remove saved login from this device" in button_texts(scene.modal),"failed removal retains explicit retry action")
+  check(not auth._remember_requested,"terminal failure cannot leave future token saves enabled")
+  await capture("account_removal_warning_"+terminal_op)
+  auth.session_store.fail_clear=false
+  check(auth.sign_out() and auth.session_store.record.is_empty(),"terminal failure cleanup retry clears durable record")
+  scene.close_modal()
  var after := FileAccess.get_file_as_bytes(guest) if FileAccess.file_exists(guest) else PackedByteArray()
  check(after == existing, "auth flows do not alter guest save bytes")
  if made_fixture:

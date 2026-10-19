@@ -130,6 +130,18 @@ func run():
  store.fail_clear=false
  check(a.sign_out() and store.record.is_empty(),"clear retry succeeds")
  a.sign_in("test@example.com","dummy",true); login(a); a.cancel()
+ store.fail_clear=true
+ var before_forget_writes=store.writes
+ check(not a.forget_saved_login(),"explicit forget honestly reports deletion failure")
+ check(not a._remember_requested,"explicit forget disables future saves even when deletion fails")
+ var removal_warning=a.persistence_notice
+ refresh(a)
+ check(store.writes==before_forget_writes,"refresh cannot resave after an unsuccessful forget")
+ check(a.persistence_notice==removal_warning and "remove" in removal_warning,"refresh retains unresolved deletion warning")
+ check(a.remembered and not store.record.is_empty(),"uncleared durable record remains truthfully marked")
+ a.cancel(); store.fail_clear=false
+ check(a.forget_saved_login() and not a.remembered and store.record.is_empty(),"explicit forget retry verifies durable removal")
+ a.sign_in("test@example.com","dummy",true); login(a); a.cancel()
  refresh(a,"different")
  check(not a.signed_in() and store.record.is_empty(),"wrong refresh UID clears durable session")
  a.sign_in("test@example.com","dummy",true); login(a); a.cancel()

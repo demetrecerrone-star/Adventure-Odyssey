@@ -35,6 +35,7 @@ func remember_available() -> bool:
  return session_store != null and session_store.available()
 
 func _forget_saved() -> bool:
+ _remember_requested = false # Removal intent disables future writes even if clear fails.
  if not remember_available():
   if remembered or OS.has_feature("android"):
    persistence_notice = "Saved-login storage is unavailable. Removal could not be verified; do not share this device until it can be cleared."

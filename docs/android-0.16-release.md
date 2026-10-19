@@ -4,6 +4,7 @@ This release packages the approved overnight checkpoint `0d75052e65e6abd9aedd057
 
 ## Changes
 - Optional Remember me starts off. On supported Android builds it stores only a refresh token and expected account identity using AES-256-GCM with Android Keystore and a no-backup AtomicFile, through Godot's built-in Android Java bridge. Passwords are never saved; there is no plaintext fallback.
+- A removal request disables future saved-token writes immediately, even if deletion fails. The unresolved deletion warning remains visible after a terminal account failure.
 - Email-verification status refreshes automatically after successful authentication and restoration. An offline lookup retains the identity and reports unknown verification status honestly.
 - All four title actions fit short landscape screens.
 - Failed equipment saves remain open with an error and retry. Inventory popups resize correctly and hide the equipped weapon behind their content.

@@ -667,6 +667,7 @@ func _account_session_changed() -> void:
 		close_modal()
 		open_modal("signin")
 		notice.text = "Your session ended. Sign in again, or continue your local adventure as Guest."
+		if not accounts.persistence_notice.is_empty(): notice.text += "\n" + accounts.persistence_notice
 	if buttons.size() >= 4:
 		buttons[3].text = "Your Account" if accounts.signed_in() else "Sign In"
 
