@@ -1,0 +1,28 @@
+name: Validate approved Firebase client configuration
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/firebase-client-check.yml'
+      - 'tools/prepare_firebase_client.py'
+permissions:
+  contents: read
+jobs:
+  validate-client-config:
+    if: contains(github.event.head_commit.message, '[auth-config-check]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test configuration selector with dummy fixtures
+        run: python3 tests/firebase_config_test.py
+      - name: Validate configured project and package without contacting Firebase
+        env:
+          FIREBASE_CLIENT_CONFIG_JSON: ${{ secrets.FIREBASE_CLIENT_CONFIG_JSON }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          trap 'rm -f "$RUNNER_TEMP/odyssey-firebase-client.json"' EXIT
+          python3 tools/prepare_firebase_client.py --output "$RUNNER_TEMP/odyssey-firebase-client.json"
+          # Never upload the original secret or generated client configuration.
+          # This check does not establish API restrictions, billing or live auth.

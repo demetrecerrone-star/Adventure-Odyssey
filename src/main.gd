@@ -1,5 +1,10 @@
 extends Control
 
+const AccountClient = preload("res://src/accounts/firebase_auth.gd")
+const AccountConfig = preload("res://src/accounts/account_config.gd")
+var accounts: Node
+var account_submit: Button
+
 const PREVIEW_DOCUMENTS = preload("res://src/preview_documents.gd")
 const BODY = preload("res://assets/fonts/body.ttf")
 const TITLE = preload("res://assets/fonts/title.ttf")
@@ -32,6 +37,11 @@ var elapsed := 0.0
 var runners: Array[AnimatedSprite2D] = []
 
 func _ready() -> void:
+	accounts = AccountClient.new()
+	accounts.api_key = AccountConfig.WEB_API_KEY if AccountConfig.ENABLED else ""
+	add_child(accounts)
+	accounts.completed.connect(_account_completed)
+	accounts.session_changed.connect(_account_session_changed)
 	get_tree().auto_accept_quit = false
 	theme = Theme.new()
 	theme.default_font = BODY
@@ -184,6 +194,7 @@ func _keep_focused_field_visible() -> void:
 		modal_scroll.scroll_vertical = int(maxf(0, local_top - (visible_height - focused.size.y) * 0.5))
 
 func open_modal(kind: String) -> void:
+	if kind == "signin" and accounts.signed_in(): kind = "account"
 	if is_instance_valid(modal):
 		return
 	previous_focus = get_viewport().gui_get_focus_owner()
@@ -202,7 +213,7 @@ func open_modal(kind: String) -> void:
 	modal_panel.set_script(TEXTURED_PANEL)
 	modal_panel.add_theme_stylebox_override("panel", _style(INK, BRASS))
 	modal.add_child(modal_panel)
-	var headings := {"signin": "Sign In", "create": "Create Account", "google": "Sign in with Google", "guest": "Title Preview", "privacy": "Privacy Policy", "terms": "Terms of Use"}
+	var headings := {"signin": "Sign In", "create": "Create Account", "google": "Sign in with Google", "guest": "Title Preview", "privacy": "Privacy Policy", "terms": "Terms of Use", "account": "Your Account", "reset": "Reset Password"}
 	var heading := _label(headings[kind], 27, Color("ffe1a5"), TITLE)
 	heading.position = Vector2(24, 22)
 	modal_panel.add_child(heading)
@@ -233,7 +244,7 @@ func open_modal(kind: String) -> void:
 	notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	modal_box.add_child(notice)
 	if kind == "signin" or kind == "create":
-		notice.text = "Preview only • Use dummy details. Account services are not connected."
+		notice.text = "Email and password are sent securely to Google Firebase for your Odyssey account. Progress stays on this device; cloud saves are not available." if accounts.configured() else "Preview only • Use dummy details. Account services are not connected."
 		_add_field("Email", false)
 		_add_field("Password", true)
 		if kind == "create":
@@ -247,11 +258,34 @@ func open_modal(kind: String) -> void:
 			var recovery := _label("Password reset is unavailable in this preview.", 13, Color("cfbb98"))
 			recovery.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			modal_box.add_child(recovery)
+			if accounts.configured():
+				recovery.text = "Forgot your password?"
+				var reset := _button("Request password reset")
+				reset.pressed.connect(func(): close_modal(); open_modal("reset"))
+				modal_box.add_child(reset)
 			var create_link := _button("New here? Create Account")
 			create_link.add_theme_font_size_override("font_size", 15)
 			create_link.pressed.connect(_switch_account_modal.bind("create"))
 			modal_box.add_child(create_link)
 			_add_legal_preview()
+	elif kind == "reset":
+		notice.text = "Firebase will send a password-reset link if an account exists. Your saved adventure will not change."
+		_add_field("Email", false)
+	elif kind == "account":
+		notice.text = "Signed in as " + accounts.email + "\n" + ("Email verified." if accounts.email_verified else "Email not verified yet.") + "\nYour character and progress remain on this device. No cloud backup or account ownership transfer has occurred."
+		var play := _button("Continue local adventure")
+		play.pressed.connect(_open_bedroom)
+		modal_box.add_child(play)
+		if not accounts.email_verified:
+			var verify := _button("Send verification email")
+			verify.pressed.connect(func(): accounts.send_verification())
+			modal_box.add_child(verify)
+			var recheck := _button("I verified my email • Check again")
+			recheck.pressed.connect(func(): accounts.check_account())
+			modal_box.add_child(recheck)
+		var logout := _button("Sign out • Keep local progress")
+		logout.pressed.connect(func(): accounts.sign_out(); close_modal())
+		modal_box.add_child(logout)
 	elif kind in ["privacy", "terms"]:
 		notice.text = "Title preview information • No account or agreement is created."
 		var document := _label(PREVIEW_DOCUMENTS.PRIVACY if kind == "privacy" else PREVIEW_DOCUMENTS.TERMS, 15, Color("f4ead8"))
@@ -271,8 +305,9 @@ func open_modal(kind: String) -> void:
 	close.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	close.pressed.connect(_back_from_modal)
 	actions.add_child(close)
-	if kind == "signin" or kind == "create":
-		var submit := _button("Create Account" if kind == "create" else "Sign In")
+	if kind in ["signin", "create", "reset"]:
+		var submit := _button("Request reset link" if kind == "reset" else "Create Account" if kind == "create" else "Sign In")
+		account_submit = submit
 		submit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		submit.pressed.connect(_submit_preview)
 		actions.add_child(submit)
@@ -373,6 +408,9 @@ func _validation_error(message: String, index: int) -> void:
 	modal_scroll.scroll_vertical = 0
 
 func _submit_preview() -> void:
+	if accounts.configured():
+		_submit_account()
+		return
 	# UI validation only. No network calls, account creation, logging or persistence.
 	var email := fields[0].text.strip_edges()
 	var email_pattern := RegEx.new()
@@ -409,6 +447,7 @@ func _on_registration_succeeded(registered_email: String) -> void:
 	fields[1].grab_focus()
 
 func close_modal() -> void:
+	if is_instance_valid(accounts): accounts.cancel()
 	if not is_instance_valid(modal):
 		return
 	for field in fields:
@@ -528,3 +567,35 @@ func _open_interior(scene_id:String) -> void:
 	room.room_id = scene_id
 	room.state = bedroom.state
 	_install_adventure(room)
+
+func _submit_account() -> void:
+	if accounts.busy or fields.is_empty(): return
+	var address := fields[0].text.strip_edges()
+	if modal_kind == "create" and fields[1].text != fields[2].text:
+		_validation_error("Your passwords don't match. Try again.", 2)
+		return
+	var started := false
+	if modal_kind == "reset":
+		started = accounts.reset_password(address)
+	else:
+		var password := fields[1].text
+		started = accounts.create_account(address, password) if modal_kind == "create" else accounts.sign_in(address, password)
+		for index in range(1, fields.size()): fields[index].clear()
+		for toggle in password_toggles: toggle.button_pressed = false
+	if started:
+		notice.text = "Connecting securely… You can cancel with Back."
+		account_submit.disabled = true
+
+func _account_completed(op: String, ok: bool, message: String) -> void:
+	if not is_instance_valid(modal): return
+	if is_instance_valid(account_submit): account_submit.disabled = false
+	if ok and op in ["signin", "create"]:
+		close_modal()
+		open_modal("account")
+		notice.text += "\n" + message
+		return
+	notice.text = message
+
+func _account_session_changed() -> void:
+	if buttons.size() >= 4:
+		buttons[3].text = "Your Account" if accounts.signed_in() else "Sign In"

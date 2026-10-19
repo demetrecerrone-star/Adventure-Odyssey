@@ -2,3 +2,7 @@
 build/
 screenshots/
 *.tmp
+
+# Local test cache and generated public Firebase client config
+__pycache__/
+assets/accounts/firebase_client.json
