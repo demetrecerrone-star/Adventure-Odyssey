@@ -51,13 +51,13 @@ jobs:
           verify_apk() {
             local apk="$1"
             echo "$EXPECTED_SHA  $apk" | sha256sum -c -
-            "$signer" verify --verbose --print-certs "$apk" > /tmp/release-signature.txt
+            "$signer" verify --verbose --print-certs "$apk" | tee /tmp/release-signature.txt
             grep -Fq 'Verified using v2 scheme (APK Signature Scheme v2): true' /tmp/release-signature.txt
             grep -Fq 'Signer #1 certificate SHA-256 digest: d66e7daf0e5c7c735bf9f1c866afc204e2d0355687ac37d385cf3016e42eac36' /tmp/release-signature.txt
-            "$aapt" dump badging "$apk" > /tmp/release-package.txt
+            "$aapt" dump badging "$apk" | tee /tmp/release-package.txt
             grep -Eq "package: name='com.demetrecerrone.adventureodyssey' versionCode='16' versionName='0.16-remember-me'" /tmp/release-package.txt
             grep -Eq "native-code:.*'arm64-v8a'.*'x86_64'" /tmp/release-package.txt
-            "$aapt" dump permissions "$apk" > /tmp/release-permissions.txt
+            "$aapt" dump permissions "$apk" | tee /tmp/release-permissions.txt
             python3 - <<'PY'
           import re,pathlib
           actual=set(re.findall(r"uses-permission: name='([^']+)'",pathlib.Path('/tmp/release-permissions.txt').read_text()))
