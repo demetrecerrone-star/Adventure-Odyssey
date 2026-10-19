@@ -39,7 +39,7 @@ var runners: Array[AnimatedSprite2D] = []
 
 func _ready() -> void:
 	accounts = AccountClient.new()
-	accounts.api_key = AccountConfig.WEB_API_KEY if AccountConfig.ENABLED else ""
+	accounts.api_key = AccountConfig.WEB_API_KEY if AccountConfig.ENABLED and OS.get_environment("AO_AUTH_OFFLINE_TEST") != "1" else ""
 	add_child(accounts)
 	accounts.completed.connect(_account_completed)
 	accounts.session_changed.connect(_account_session_changed)
@@ -294,7 +294,7 @@ func open_modal(kind: String) -> void:
 		document.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		modal_box.add_child(document)
 	elif kind == "google":
-		notice.text = "Google sign-in isn't connected yet. This title-screen preview doesn't open an account or send any data."
+		notice.text = "Google sign-in isn't connected yet. Use email sign-in or continue as Guest. This Google button sends no data." if accounts.configured() else "Google sign-in isn't connected yet. This title-screen preview doesn't open an account or send any data."
 	else:
 		notice.text = "Start a local guest adventure or continue the bedroom saved on this device. This does not create an online account."
 		var begin := _button("Enter local adventure")
@@ -590,6 +590,9 @@ func _submit_account() -> void:
 		account_submit.disabled = true
 
 func _account_completed(op: String, ok: bool, message: String) -> void:
+	# Background token maintenance must not replace the account identity or form notice.
+	# Invalid/expired sessions are handled by the session_changed signal.
+	if op == "refresh": return
 	if not is_instance_valid(modal): return
 	if is_instance_valid(account_submit): account_submit.disabled = false
 	if ok and op in ["signin", "create", "verify", "lookup"]:

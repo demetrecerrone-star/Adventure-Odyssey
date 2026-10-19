@@ -815,7 +815,9 @@ func _input(event: InputEvent) -> void:
 
 func _clear_combat_touch() -> void:
 	for control in combat_touch_buttons:
-		if is_instance_valid(control) and control.has_meta("combat_touch"): control.remove_meta("combat_touch")
+		if is_instance_valid(control):
+			for key in ["combat_touch", "combat_start", "combat_dragged"]:
+				if control.has_meta(key): control.remove_meta(key)
 
 func _sync_modal_input() -> void:
 	super._sync_modal_input()
@@ -825,5 +827,6 @@ func _sync_modal_input() -> void:
 
 func _notification(what: int) -> void:
 	super._notification(what)
-	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_WINDOW_FOCUS_OUT,NOTIFICATION_PAUSED] and is_instance_valid(hud):
+	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_WINDOW_FOCUS_OUT,NOTIFICATION_PAUSED]:
+		# Base room already resets motion; release held combat controls too.
 		_clear_combat_touch()

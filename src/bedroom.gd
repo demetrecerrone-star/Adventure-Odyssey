@@ -371,7 +371,8 @@ func _exit() -> void:
 		return
 	exited.emit()
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT, NOTIFICATION_WM_WINDOW_FOCUS_OUT, NOTIFICATION_PAUSED]:
+		# A mobile pause can arrive without a separate focus-out event.
 		_reset_movement()
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		if is_instance_valid(overlay):

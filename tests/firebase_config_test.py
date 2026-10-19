@@ -14,6 +14,15 @@ class ConfigTests(unittest.TestCase):
     def test_selection_only_public_fields(self):
         selected = module.select_client(json.dumps(self.fixture()))
         self.assertEqual(set(selected), {'project_id', 'package_name', 'api_key'})
+    def test_runtime_config_contains_only_selected_public_values(self):
+        selected = module.select_client(json.dumps(self.fixture()))
+        rendered = module.render_godot_config(selected)
+        self.assertIn('const ENABLED := true', rendered)
+        self.assertIn(module.PROJECT, rendered)
+        self.assertNotIn('oauth_client', rendered)
+        self.assertNotIn('project_number', rendered)
+        self.assertNotIn('mobilesdk_app_id', rendered)
+        self.assertEqual(rendered.count(selected['api_key']), 1)
     def test_invalid_and_ambiguous(self):
         cases = ['', '{}', '[]', 'invalid', 'x' * (1024 * 1024 + 1)]
         for path, value in [('project', 'other'), ('package', 'other'), ('key', 'not-a-key'), ('number', 123), ('app', 'other')]:

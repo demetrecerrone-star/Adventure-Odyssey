@@ -67,15 +67,26 @@ def select_client(raw):
     return {'project_id': PROJECT, 'package_name': PACKAGE, 'api_key': key}
 
 
+def render_godot_config(selected):
+    # Only the already-validated public client values enter a distributed build.
+    # JSON string escaping is compatible with these restricted GDScript strings.
+    return ('extends RefCounted\n'
+            '# Generated in the approved build; public client configuration only.\n'
+            'const PROJECT_ID := ' + json.dumps(selected['project_id']) + '\n'
+            'const WEB_API_KEY := ' + json.dumps(selected['api_key']) + '\n'
+            'const ENABLED := true\n')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--output', required=True)
+    parser.add_argument('--godot-config', action='store_true', help='Write approved public runtime config instead of check-only JSON')
     args = parser.parse_args()
     try:
         selected = select_client(os.environ.get('FIREBASE_CLIENT_CONFIG_JSON', ''))
         output = Path(args.output)
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(selected, separators=(',', ':')) + '\n')
+        output.write_text(render_godot_config(selected) if args.godot_config else json.dumps(selected, separators=(',', ':')) + '\n')
     except (ValueError, OSError):
         # Do not log raw JSON, parsing context, credential values or environment.
         print('Firebase configuration check failed. Verify project, Android package and public-client JSON; no credential values were logged.', file=sys.stderr)

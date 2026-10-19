@@ -58,6 +58,9 @@ func run() -> void:
   check("Draft for review" in scene.notice.text, "configured account documents are marked for review")
   check("Firebase" in all_label_text(scene.modal) if kind == "privacy" else "preview feature notes" in all_label_text(scene.modal), "configured notice reflects actual account behavior")
   scene.close_modal()
+ scene.open_modal("google")
+ check("Use email sign-in" in scene.notice.text and "sends no data" in scene.notice.text, "Google unavailable notice is accurate for enabled email client")
+ scene.close_modal()
  scene.open_modal("signin")
  scene.fields[0].text = "fixture@example.com"
  scene.fields[1].text = "fixture-only"
@@ -67,6 +70,11 @@ func run() -> void:
  check(scene.modal_kind == "account" and auth.signed_in(), "real-response hook displays account")
  check("No cloud backup" in scene.notice.text, "honest local progress disclosure")
  check(scene.buttons[3].text == "Your Account", "signed title account entry")
+ var identity_notice: String = scene.notice.text
+ scene._account_completed("refresh", true, "Signed in.")
+ check(scene.notice.text == identity_notice, "background refresh preserves account identity notice")
+ scene._account_completed("refresh", false, "Connection interrupted.")
+ check(scene.notice.text == identity_notice, "background refresh failure preserves current account notice")
  await process_frame
  await process_frame
  check(scene.modal_scroll.scroll_vertical == 0, "account starts at identity and disclosure")
