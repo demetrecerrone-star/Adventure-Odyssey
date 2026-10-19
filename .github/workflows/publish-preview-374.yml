@@ -1,0 +1,35 @@
+name: Publish approved v0.15 build 374 APK
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-preview-374.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish-approved-apk:
+    if: contains(github.event.head_commit.message, '[publish-preview-374]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download the exact previously verified build
+        uses: actions/download-artifact@v4
+        with:
+          name: Adventure-Odyssey-Android-APK
+          run-id: 39193421319
+          github-token: ${{ github.token }}
+          path: verified-apk
+      - name: Verify and publish this one approved APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: demetrecerrone-star/Adventure-Odyssey
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd verified-apk
+          echo '34b7c52bfa82f19c7adae77ed469dd9a1657998734b40ee80a6086af50c83dfb  Adventure-Odyssey-release.apk' | sha256sum -c -
+          gh release create ao-preview-v0.15-build374 Adventure-Odyssey-release.apk \
+            --target 6d142780eb58a61f8b743e382d746d87aab5e27e \
+            --title 'Adventure Odyssey v0.15 email account test' \
+            --notes 'Signed Android ARM64 and x86_64 account test, version code 15, build 374 from 6d142780. Optional Firebase email/password registration, sign-in, verification, password reset and in-memory session handling. Enter your own credentials privately on your phone; verification and reset emails are requested only by their buttons. Google sign-in is not implemented. Existing guest character, inventory, currencies and quests stay on this device; there is no cloud save or account ownership transfer. Fixes stale movement after app pause in the field, bedroom and town interiors. All 61 source and 59 packaged regression suites passed, plus four configuration fixture groups and enabled packaged-config validation. Automated checks used simulated account responses and made no live account/email calls. Native desktop phone-sized UI captures were reviewed; real Android keyboard/network behavior and live Firebase success await the owner test. Same permanent signing certificate and package as 0.14; update without uninstalling to preserve saves. Internet is the only added permission. Firebase public client identifiers are included as required; no original configuration JSON, service-account credential or signing key is distributed. SHA-256: 34b7c52bfa82f19c7adae77ed469dd9a1657998734b40ee80a6086af50c83dfb' \
+            --prerelease
